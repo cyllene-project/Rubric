@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Rubric"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Rubric">
+				<Option output="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/libRubric.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/bizarro/Documents/Projects/Rubric/Rubric/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 Rubric"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Rubric/fast">
+				<Option output="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/libRubric.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/bizarro/Documents/Projects/Rubric/Rubric/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 Rubric/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ExampleApp">
+				<Option output="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/ExampleApp" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/bizarro/Documents/Projects/Rubric/Rubric/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 ExampleApp"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ExampleApp/fast">
+				<Option output="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/ExampleApp" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/bizarro/Documents/Projects/Rubric/Rubric/include"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 ExampleApp/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/examples/exampleapp.cpp">
+			<Option target="ExampleApp"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/include/Application.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/include/Display.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/include/DisplayManager.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/include/Object.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/include/View.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/include/Window.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/core/Application.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/core/Context.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/core/Context.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/core/Object.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/Backend.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/Backend.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/Display.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/DisplayManager.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/X11/X11Backend.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/X11/X11Backend.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/X11/X11Display.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/X11/X11Display.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/wayland/WaylandBackend.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/wayland/WaylandBackend.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/wayland/WaylandDisplay.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/draw/wayland/WaylandDisplay.h">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/main.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/ui/View.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/src/ui/Window.cpp">
+			<Option target="Rubric"/>
+		</Unit>
+		<Unit filename="/home/bizarro/Documents/Projects/Rubric/Rubric/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

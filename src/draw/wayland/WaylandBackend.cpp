@@ -8,7 +8,9 @@
 using namespace rubric::draw::wayland;
 using namespace rubric::draw;
 
-std::unique_ptr<Display> WaylandBackend::open(std::string displayName) const {
+REGISTER_BACKEND(WaylandBackend)
+
+std::unique_ptr<Display> WaylandBackend::open(const std::string &displayName) const {
 
     WLDisplay wl_display;
 

@@ -5,12 +5,20 @@
 #ifndef RUBRIC_APPLICATION_H
 #define RUBRIC_APPLICATION_H
 
+#include <string>
 #include "Object.h"
 
 namespace rubric {
 
     class Application: Object {
 
+    public:
+        explicit Application(const std::string &);
+
+        std::string getAppId() const;
+
+    private:
+        std::string appId;
     };
 
 }

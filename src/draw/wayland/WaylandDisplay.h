@@ -16,7 +16,7 @@ namespace rubric::draw {
     class WaylandDisplay: public Display {
 
     public:
-        WaylandDisplay(WLDisplay);
+        explicit WaylandDisplay(WLDisplay);
 
     private:
         WLDisplay wlDisplay;

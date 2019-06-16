@@ -6,7 +6,3 @@
 
 using namespace rubric::draw;
 
-Display& Display::open_default() {
-    auto disp = Display();
-    return disp;
-}

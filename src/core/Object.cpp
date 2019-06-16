@@ -3,3 +3,11 @@
 //
 
 #include "Object.h"
+
+using namespace rubric;
+
+std::map<std::string, ObjectFactory*> Object::factories;
+
+void Object::registerType(const std::string& name, ObjectFactory *factory) {
+    factories[name] = factory;
+}

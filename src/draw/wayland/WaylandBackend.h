@@ -9,10 +9,10 @@
 
 namespace rubric::draw::wayland {
 
-    class WaylandBackend: Backend {
+    class WaylandBackend: public Backend {
 
     public:
-        std::unique_ptr<Display> open(std::string) const override;
+        std::unique_ptr<Display> open(const std::string &) const override;
         std::string get_name() const override;
 
     };

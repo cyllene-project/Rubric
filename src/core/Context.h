@@ -16,9 +16,9 @@ namespace rubric::core {
 
     public:
         Context();
-
+        static std::shared_ptr<Context> getInstance();
     private:
-
+        static std::shared_ptr<Context> instance;
         std::unique_ptr<DisplayManager> displayManager;
 
     };

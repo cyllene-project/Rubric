@@ -6,19 +6,22 @@
 #define RUBRIC_DISPLAYMANAGER_H
 
 #include <string>
+#include <memory>
 #include "Display.h"
 
-namespace rubric {
-    namespace draw {
+namespace rubric::draw {
 
-        class DisplayManager {
+    class DisplayManager {
 
+    public:
+        std::shared_ptr<Display> openDisplay(const std::string &);
+        std::shared_ptr<Display> getDefaultDisplay() const;
+        void setDefaultDisplay(std::shared_ptr<Display>);
 
-        public:
-            Display openDisplay(std::string);
-        };
+    private:
+        std::shared_ptr<Display> defaultDisplay = nullptr;;
+    };
 
-    }
 }
 
 #endif //RUBRIC_DISPLAYMANAGER_H

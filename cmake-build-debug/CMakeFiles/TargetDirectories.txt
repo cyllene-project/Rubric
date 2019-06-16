@@ -1,4 +1,0 @@
-/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/CMakeFiles/Rubric.dir
-/home/bizarro/Documents/Projects/Rubric/Rubric/cmake-build-debug/CMakeFiles/ExampleApp.dir

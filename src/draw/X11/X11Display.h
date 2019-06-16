@@ -5,10 +5,18 @@
 #ifndef RUBRIC_X11DISPLAY_H
 #define RUBRIC_X11DISPLAY_H
 
-namespace rubric::draw {
+#include <Display.h>
+#include <X11/Xlib.h>
 
-    class X11Display {
+namespace rubric::draw::x11 {
 
+class X11Display : public rubric::draw::Display{
+
+    public:
+        explicit X11Display(::Display *xdisplay);
+
+    private:
+        ::Display * xDisplay;
     };
 
 }

@@ -3,15 +3,16 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 
-#include "../include/Rubric.h"
-#include "../include/Application.h"
+#include "Rubric.h"
+#include "Application.h"
 
 using namespace rubric;
 
 class ExampleApp: public Application {
 
-
 public:
+    ExampleApp(): Application("org.rubric.exampleapp") { }
+
     int run() const {
         return 0;
     }

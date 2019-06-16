@@ -11,9 +11,6 @@ namespace rubric::draw {
 
     class Display {
 
-    public:
-        static Display & open_default();
-
     };
 
 }

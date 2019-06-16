@@ -7,9 +7,5 @@
 
 #include "Object.h"
 
-namespace rubric {
-
-    bool init();
-}
 
 #endif //RUBRIC_H

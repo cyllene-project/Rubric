@@ -6,7 +6,9 @@
 #define RUBRIC_APPLICATION_H
 
 #include <string>
+#include <vector>
 #include "Object.h"
+#include "Window.h"
 
 namespace rubric {
 
@@ -17,8 +19,15 @@ namespace rubric {
 
         std::string getAppId() const;
 
+        int run();
+
+        void addWindow(std::shared_ptr<rubric::ui::Window>);
+
+        const std::vector<std::shared_ptr<rubric::ui::Window>> & getWindows() const;
+
     private:
         std::string appId;
+        std::vector<std::shared_ptr<rubric::ui::Window>> windows;
     };
 
 }

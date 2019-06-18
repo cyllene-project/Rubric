@@ -12,7 +12,9 @@ include_directories(${Rubric_SOURCE_DIR}/include)
 include_directories(${Rubric_SOURCE_DIR}/src)
 
 find_package(Wayland REQUIRED)
-find_package(X11 REQUIRED)
+find_package(X11_XCB REQUIRED)
+find_package(rxcpp REQUIRED)
+
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
 add_library(Rubric SHARED
@@ -39,17 +41,17 @@ add_library(Rubric SHARED
         src/draw/wayland/WaylandBackend.cpp
         src/draw/wayland/WaylandBackend.h
         src/draw/X11/X11Backend.cpp
-        src/draw/X11/X11Backend.h src/draw/Surface.cpp src/draw/Surface.h src/draw/X11/X11Surface.cpp src/draw/X11/X11Surface.h src/draw/wayland/WaylandSurface.cpp src/draw/wayland/WaylandSurface.h)
+        src/draw/X11/X11Backend.h src/draw/Surface.cpp src/draw/Surface.h src/draw/X11/X11Surface.cpp src/draw/X11/X11Surface.h src/draw/wayland/WaylandSurface.cpp src/draw/wayland/WaylandSurface.h src/core/RunLoop.cpp src/core/RunLoop.h)
 
 add_executable(ExampleApp examples/exampleapp.cpp)
 
-target_link_libraries(ExampleApp Rubric ${X11_LIBRARIES} ${WAYLAND_LIBRARIES})
+target_link_libraries(ExampleApp Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES})
 
 find_package(Catch2 REQUIRED)
 
 add_executable(tests tests/main.cpp tests/WindowTests.cpp)
 
-target_link_libraries(tests Catch2::Catch2 Rubric ${X11_LIBRARIES} ${WAYLAND_LIBRARIES})
+target_link_libraries(tests Catch2::Catch2 Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES})
 
 include(CTest)
 include(Catch)

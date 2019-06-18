@@ -12,7 +12,7 @@
 #define REGISTER_BACKEND(klass) \
 class klass##Factory : public rubric::draw::BackendFactory { \
     public: \
-        klass##Factory() { \
+        klass##Factory() noexcept { \
             rubric::draw::Backend::registerBackend(#klass, this); \
         } \
         virtual std::shared_ptr<rubric::draw::Backend> create() { \

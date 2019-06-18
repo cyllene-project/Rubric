@@ -14,3 +14,15 @@ appId(id) {
 std::string Application::getAppId() const {
     return appId;
 }
+
+int Application::run() {
+    return EXIT_SUCCESS;
+}
+
+void Application::addWindow(std::shared_ptr<rubric::ui::Window> window) {
+    windows.push_back(window);
+}
+
+const std::vector<std::shared_ptr<rubric::ui::Window>>& Application::getWindows() const {
+    return windows;
+}

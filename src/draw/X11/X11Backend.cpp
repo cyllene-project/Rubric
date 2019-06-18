@@ -18,10 +18,12 @@ static void internal_connection_watch(Display *display,
         int opening,
         XPointer *watch_data) {
 
+    /*
     if(opening)
         *watch_data = (XPointer)gdk_add_connection_handler (display, fd);
     else
         gdk_remove_connection_handler ((GdkInternalConnection *)*watch_data);
+    */
 }
 
 std::unique_ptr<draw::Display> X11Backend::open(const std::string &displayName) const {

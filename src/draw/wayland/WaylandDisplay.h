@@ -11,12 +11,13 @@
 using WLDisplay = struct wl_display*;
 using WLRegistry = struct wl_registry*;
 
-namespace rubric::draw {
+namespace rubric::draw::wayland {
 
     class WaylandDisplay: public Display {
 
     public:
         explicit WaylandDisplay(WLDisplay);
+        std::shared_ptr<Surface> createSurface() const override;
 
     private:
         WLDisplay wlDisplay;

@@ -6,16 +6,25 @@
 #define RUBRIC_WINDOW_H
 
 #include "Object.h"
+#include "View.h"
 
-namespace rubric {
 
-    enum class WindowType {};
+namespace rubric::ui {
 
-    class Window: public Object {
+    enum class WindowType { topLevel };
+
+    class Window: public View {
 
     public:
-        explicit Window(WindowType);
+        explicit Window(WindowType = WindowType::topLevel);
+        void addSubView(View &) override;
+        void show() override;
+        void hide() override;
+        void realize() override;
 
+
+    private:
+        bool clientDecorated = true;
     };
 }
 

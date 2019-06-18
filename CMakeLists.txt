@@ -39,9 +39,19 @@ add_library(Rubric SHARED
         src/draw/wayland/WaylandBackend.cpp
         src/draw/wayland/WaylandBackend.h
         src/draw/X11/X11Backend.cpp
-        src/draw/X11/X11Backend.h)
-
+        src/draw/X11/X11Backend.h src/draw/Surface.cpp src/draw/Surface.h src/draw/X11/X11Surface.cpp src/draw/X11/X11Surface.h src/draw/wayland/WaylandSurface.cpp src/draw/wayland/WaylandSurface.h)
 
 add_executable(ExampleApp examples/exampleapp.cpp)
 
 target_link_libraries(ExampleApp Rubric ${X11_LIBRARIES} ${WAYLAND_LIBRARIES})
+
+find_package(Catch2 REQUIRED)
+
+add_executable(tests tests/main.cpp tests/WindowTests.cpp)
+
+target_link_libraries(tests Catch2::Catch2 Rubric ${X11_LIBRARIES} ${WAYLAND_LIBRARIES})
+
+include(CTest)
+include(Catch)
+
+catch_discover_tests(tests)

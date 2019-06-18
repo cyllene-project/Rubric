@@ -6,10 +6,16 @@
 #define RUBRIC_DISPLAY_H
 
 #include <string>
+#include <memory>
+#include <draw/Surface.h>
 
 namespace rubric::draw {
 
     class Display {
+
+
+    public:
+        virtual std::shared_ptr<Surface> createSurface() const = 0;
 
     };
 

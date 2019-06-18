@@ -4,11 +4,30 @@
 
 #include "Window.h"
 
-namespace rubric {
+namespace rubric::ui {
 
-    Window::Window(WindowType windowType) {
-
+    Window::Window(WindowType wtype) {
 
     }
 
+    void Window::addSubView(rubric::ui::View & subView) {
+
+    }
+
+    void Window::show() {
+        setVisible(true);
+    }
+
+    void Window::hide() {
+
+    }
+
+    void Window::realize() {
+
+        if (!clientDecorated) {
+
+        }
+
+
+    }
 }

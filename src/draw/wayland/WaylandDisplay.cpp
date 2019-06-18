@@ -6,6 +6,7 @@
 #include <wayland-client.h>
 #include <iostream>
 
+using namespace rubric::draw::wayland;
 using namespace rubric::draw;
 
 static void log_handler (const char *format, va_list args) {
@@ -16,4 +17,8 @@ WaylandDisplay::WaylandDisplay(WLDisplay display):
 wlDisplay(display){
     wlRegistry = wl_display_get_registry(display);
     wl_log_set_handler_client(log_handler);
+}
+
+std::shared_ptr<Surface> WaylandDisplay::createSurface() const {
+    return std::make_shared<Surface>();
 }

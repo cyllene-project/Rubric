@@ -52,6 +52,10 @@ namespace rubric {
             return data;
         }
 
+        bool operator==(const T other) const {
+            return (data == other);
+        }
+
     private:
         PropertyType propertyType;
     };

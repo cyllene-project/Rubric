@@ -13,12 +13,10 @@ namespace rubric::draw::x11 {
 class X11Display : public rubric::draw::Display{
 
     public:
-        explicit X11Display(::Display *xdisplay);
 
         std::shared_ptr<Surface> createSurface() const override;
 
     private:
-        ::Display * xDisplay;
     };
 
 }

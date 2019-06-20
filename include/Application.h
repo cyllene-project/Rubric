@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <core/Context.h>
 #include "Object.h"
 #include "Window.h"
 
@@ -17,16 +18,23 @@ namespace rubric {
     public:
         explicit Application(const std::string &);
 
-        std::string getAppId() const;
+        const std::string & getAppId() const;
 
         int run();
 
+        void quit();
+
         void addWindow(std::shared_ptr<rubric::ui::Window>);
 
-        const std::vector<std::shared_ptr<rubric::ui::Window>> & getWindows() const;
+        virtual void startUp();
+
+        virtual void shutDown();
+
+        const auto & getWindows() const;
 
     private:
-        std::string appId;
+        const std::string appId;
+        core::Context & context;
         std::vector<std::shared_ptr<rubric::ui::Window>> windows;
     };
 

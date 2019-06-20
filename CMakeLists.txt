@@ -14,8 +14,13 @@ include_directories(${Rubric_SOURCE_DIR}/src)
 find_package(Wayland REQUIRED)
 find_package(X11_XCB REQUIRED)
 find_package(rxcpp REQUIRED)
+find_package(Protobuf REQUIRED)
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
+
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS proto/object.proto)
+
+add_library(RubricProto STATIC ${PROTO_SRCS} ${PROTO_HDRS})
 
 add_library(Rubric SHARED
         src/core/Object.cpp
@@ -41,7 +46,20 @@ add_library(Rubric SHARED
         src/draw/wayland/WaylandBackend.cpp
         src/draw/wayland/WaylandBackend.h
         src/draw/X11/X11Backend.cpp
-        src/draw/X11/X11Backend.h src/draw/Surface.cpp src/draw/Surface.h src/draw/X11/X11Surface.cpp src/draw/X11/X11Surface.h src/draw/wayland/WaylandSurface.cpp src/draw/wayland/WaylandSurface.h src/core/RunLoop.cpp src/core/RunLoop.h)
+        src/draw/X11/X11Backend.h
+        src/draw/Surface.cpp
+        src/draw/Surface.h
+        src/draw/X11/X11Surface.cpp
+        src/draw/X11/X11Surface.h
+        src/draw/wayland/WaylandSurface.cpp
+        src/draw/wayland/WaylandSurface.h
+        src/core/RunLoop.cpp
+        src/core/RunLoop.h
+        src/core/Type.cpp
+        include/Type.h
+        src/core/Property.cpp
+        src/core/Property.h
+        src/core/PropertyDef.h src/core/PropertyDef.cpp src/core/Composer.cpp src/core/Composer.h)
 
 add_executable(ExampleApp examples/exampleapp.cpp)
 
@@ -49,7 +67,7 @@ target_link_libraries(ExampleApp Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES
 
 find_package(Catch2 REQUIRED)
 
-add_executable(tests tests/main.cpp tests/WindowTests.cpp)
+add_executable(tests tests/main.cpp tests/WindowTests.cpp tests/ObjectTests.cpp tests/TypeTests.cpp)
 
 target_link_libraries(tests Catch2::Catch2 Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES})
 

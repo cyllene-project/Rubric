@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package rubric.proto;
+
+import "google/protobuf/any.proto";
+import "object.proto";
+import "window.proto";
+
+message Application {
+    Object parent = 1;
+    string app_id = 2;
+    Window main_window = 3;
+    repeated Window windows = 4;
+}

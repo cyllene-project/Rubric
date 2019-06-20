@@ -28,16 +28,16 @@ static void internal_connection_watch(Display *display,
 
 std::unique_ptr<draw::Display> X11Backend::open(const std::string &displayName) const {
 
-    XInitThreads();
+    /*XInitThreads();
 
     auto xdisplay = XOpenDisplay(displayName.c_str());
 
     if (!xdisplay)
-        throw std::runtime_error("Error opening X Display");
+        throw std::runtime_error("Error opening X Display");*/
 
-    auto display = std::make_unique<X11Display>(xdisplay);
+    auto display = std::make_unique<X11Display>();
 
-    XAddConnectionWatch(xdisplay, internal_connection_watch, nullptr);
+    //XAddConnectionWatch(xdisplay, internal_connection_watch, nullptr);
 
     return display;
 }

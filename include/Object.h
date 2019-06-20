@@ -7,38 +7,20 @@
 
 #include <string>
 #include <map>
-
-#define REGISTER_TYPE(klass) \
-    class klass##Factory : public ObjectFactory { \
-    public: \
-        klass##Factory() { \
-            Object::registerType(#klass, this); \
-        } \
-        virtual Object *create() { \
-            return new klass(); \
-        } \
-    }; \
-    static klass##Factory global_##klass##Factory;
+#include <Type.h>
+#include <any>
 
 namespace rubric {
-    class ObjectFactory;
     /**
      * Base class for all Rubric objects
      */
     class Object {
 
     public:
-        static void registerType(const std::string& name, ObjectFactory *factory);
-    private:
-        static std::map<std::string, ObjectFactory*> factories;
+        virtual Type & getType();
 
+        void setProperty(std::string &, std::any &);
     };
-
-    class ObjectFactory {
-    public:
-        virtual Object *create() = 0;
-    };
-
 
 }
 #endif //RUBRIC_OBJECT_H

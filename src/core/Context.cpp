@@ -9,18 +9,20 @@ using namespace rubric::core;
 
 namespace rubric::core {
 
-    std::shared_ptr<Context> Context::instance = std::make_shared<core::Context>();
+    Context Context::instance;
 
-    std::shared_ptr<Context> Context::getInstance() {
+    Context & Context::getInstance() {
         return instance;
     }
 
-    Context::Context() {
-        displayManager = std::make_unique<DisplayManager>();
-        auto display = displayManager->getDefaultDisplay();
+    Context::Context() noexcept {
+        auto display = displayManager.getDefaultDisplay();
         if (display == nullptr) {
-            display = displayManager->openDisplay(std::string());
+            display = displayManager.openDisplay(std::string());
         }
+    }
 
+    const DisplayManager& Context::getDisplayManager() const {
+        return displayManager;
     }
 }

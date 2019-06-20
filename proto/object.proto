@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package rubric.proto;
+
+import "google/protobuf/any.proto";
+
+message Object {
+    Object parent = 1;
+    string name = 2;
+    string type_name = 3;
+    map<string, google.protobuf.Any> properties = 4;
+}

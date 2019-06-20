@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package rubric.proto;
+
+import "google/protobuf/any.proto";
+import "object.proto";
+import "view.proto";
+
+message Window {
+
+    enum WindowType {
+        UNKNOWN = 0;
+        TOP_LEVEL = 1;
+    }
+
+    View parent = 1;
+    WindowType window_type = 2;
+
+}

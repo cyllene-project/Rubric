@@ -6,6 +6,6 @@
 #define RUBRIC_H
 
 #include "Object.h"
-
+#include "Type.h"
 
 #endif //RUBRIC_H

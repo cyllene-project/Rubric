@@ -7,6 +7,7 @@
 
 #include <DisplayManager.h>
 #include <memory>
+#include "RunLoop.h"
 
 namespace rubric::core {
 
@@ -15,11 +16,13 @@ namespace rubric::core {
     class Context {
 
     public:
-        Context();
-        static std::shared_ptr<Context> getInstance();
+        Context() noexcept;
+        static Context & getInstance();
+        const DisplayManager & getDisplayManager() const;
     private:
-        static std::shared_ptr<Context> instance;
-        std::unique_ptr<DisplayManager> displayManager;
+        static Context instance;
+        DisplayManager displayManager;
+        RunLoop runLoop;
 
     };
 }

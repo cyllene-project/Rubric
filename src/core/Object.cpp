@@ -6,8 +6,18 @@
 
 using namespace rubric;
 
-std::map<std::string, ObjectFactory*> Object::factories;
+Type& Object::getType() {
+    return Type::getType<Object>();
+}
 
-void Object::registerType(const std::string& name, ObjectFactory *factory) {
-    factories[name] = factory;
+void Object::setProperty(std::string & propertyName, std::any & propertyValue) {
+
+    auto t = getType();
+
+    auto p = t.getProperty(propertyName);
+
+    auto s = p.getSetter();
+
+    s(std::any(this), propertyValue);
+
 }

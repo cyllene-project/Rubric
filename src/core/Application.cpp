@@ -3,15 +3,16 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include "Application.h"
+#include "Context.h"
 
 using namespace rubric;
+using namespace rubric::core;
 
 Application::Application(const std::string & id):
-appId(id) {
+appId(id),
+context(Context::getInstance()) { }
 
-}
-
-std::string Application::getAppId() const {
+const std::string & Application::getAppId() const {
     return appId;
 }
 
@@ -23,6 +24,18 @@ void Application::addWindow(std::shared_ptr<rubric::ui::Window> window) {
     windows.push_back(window);
 }
 
-const std::vector<std::shared_ptr<rubric::ui::Window>>& Application::getWindows() const {
+const auto & Application::getWindows() const {
     return windows;
+}
+
+void Application::quit() {
+
+}
+
+void Application::startUp() {
+
+}
+
+void Application::shutDown() {
+
 }

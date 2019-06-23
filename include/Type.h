@@ -30,50 +30,61 @@
  *  RUBRIC_PROPERTY(synced)\
  * )
  */
+
+#define RUBRIC_TYPE_FACTORY(klass, parent, factory, ...) \
+class klass##Factory : public rubric::factory##Factory<klass> { \
+public: \
+    klass##Factory() noexcept { \
+        using type = klass; \
+        static constexpr const rubric::PropertyDef properties[] = { \
+            __VA_ARGS__ \
+        }; \
+        static const int propCount = sizeof(properties)/sizeof(rubric::PropertyDef); \
+        static constexpr const rubric::Type thisType(#klass, typeid(klass), typeid(parent), properties, propCount); \
+        static const auto typePtr = std::shared_ptr<const rubric::Type>(&thisType, [](const rubric::Type* ptr){} ); \
+        rubric::Type::registerType(typePtr); \
+    } \
+}; \
+static klass##Factory global_##klass##Factory; \
+std::shared_ptr<const rubric::Type> & klass::getType() const {\
+    return rubric::Type::getType<klass>();\
+}
+
 #define RUBRIC_REGISTER_TYPE(klass, parent, ...) \
-class klass##Factory : public rubric::TypeFactory<klass> { \
-    public: \
-        klass##Factory() noexcept { \
-            using type = klass; \
-            static constexpr const rubric::PropertyDef properties[] = { \
-                __VA_ARGS__ \
-            }; \
-            static const int propCount = sizeof(properties)/sizeof(rubric::PropertyDef); \
-            static constexpr const rubric::Type thisType(#klass, typeid(klass), typeid(parent), properties, propCount); \
-            static const auto typePtr = std::shared_ptr<const rubric::Type>(&thisType, [](const rubric::Type* ptr){} ); \
-            rubric::Type::registerType(typePtr); \
-        } \
-    }; \
-    static klass##Factory global_##klass##Factory; \
-    \
-    std::shared_ptr<const rubric::Type> klass::getType() {\
-        return rubric::Type::getType<klass>();\
-    }
+RUBRIC_TYPE_FACTORY(klass, parent, Type, __VA_ARGS__)
+
+#define RUBRIC_REGISTER_ABSTRACT_TYPE(klass, parent, ...) \
+RUBRIC_TYPE_FACTORY(klass, parent, AbstractType, __VA_ARGS__)
+
 #define RUBRIC_PROPERTY(name) \
-        rubric::PropertyDef { \
-            #name, \
-            defaultGetter<decltype(type::name), &type::name>(), \
-            defaultSetter<decltype(type::name), &type::name>() \
-        }
+rubric::PropertyDef { \
+    #name, \
+    defaultGetter<decltype(type::name), &type::name>(), \
+    defaultSetter<decltype(type::name), &type::name>() \
+}
+
 #define RUBRIC_PROPERTY_RO(name) \
-        { #name, defaultGetter<decltype(type::name), &type::name>() }
+rubric::PropertyDef { #name, defaultGetter<decltype(type::name), &type::name>() }
 
 
 namespace rubric {
 
     class Object;
 
-    template<typename T>
-    class TypeFactory {
+    class BaseFactory { };
+
+    template <typename T>
+    class AbstractTypeFactory : public BaseFactory {
+
     public:
         virtual std::shared_ptr<T> create() {
-            return std::make_shared<T>();
+            throw std::invalid_argument("Cannot instantiate Abstract Type");
         }
 
         template<class P, P T::*name>
         static constexpr const PropertyDef::Getter defaultGetter() {
             return (rubric::PropertyDef::Getter) [](std::any obj) {
-                auto * o = dynamic_cast<T*>(std::any_cast<Object*>(obj));
+                auto *o = dynamic_cast<T*>(std::any_cast<Object*>(obj));
                 auto p = o->*name;
                 return std::any(p.get());
             };
@@ -82,12 +93,21 @@ namespace rubric {
         template<class P, P T::*name>
         static constexpr const PropertyDef::Setter defaultSetter() {
             return (rubric::PropertyDef::Setter) [](std::any obj, std::any val) {
-                T * o = dynamic_cast<T*>(std::any_cast<Object*>(obj));
+                T *o = dynamic_cast<T*>(std::any_cast<Object*>(obj));
                 o->*name = val;
             };
         }
 
     };
+
+    template<typename T>
+    class TypeFactory : public AbstractTypeFactory<T> {
+    public:
+        std::shared_ptr<T> create() override {
+            return std::make_shared<T>();
+        }
+    };
+
 
     class Type {
 
@@ -117,7 +137,7 @@ namespace rubric {
         static void registerType(std::shared_ptr<const Type> type);
 
         template<typename T>
-        static std::shared_ptr<const Type> registerType(std::string name, TypeFactory<T> *factory) {
+        static std::shared_ptr<const Type> registerType(std::string name, BaseFactory *factory) {
             auto id = std::type_index(typeid(T));
             nameTable.emplace(name, id);
             auto t = registry.emplace(id, name);

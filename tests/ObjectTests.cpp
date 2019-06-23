@@ -10,7 +10,7 @@ class TestPropertiesObject: public rubric::Object {
 public:
     rubric::Property<std::string> test;
     rubric::Property<int> intTest;
-    std::shared_ptr<const rubric::Type> getType() override;
+    std::shared_ptr<const rubric::Type> & getType() const override;
 
 };
 
@@ -18,13 +18,14 @@ RUBRIC_REGISTER_TYPE(TestPropertiesObject, rubric::Object, \
     RUBRIC_PROPERTY(test), \
     RUBRIC_PROPERTY(intTest) )
 
-
 TEST_CASE( "Get and Set Properties", "[Object]" ) {
 
     TestPropertiesObject testObj {};
 
     SECTION( "get properties" ) {
-        auto intTest = std::any_cast<int>(testObj.getProperty("intTest"));
+        auto p = testObj.getProperty("intTest");
+
+        auto intTest = std::any_cast<int>(p);
 
         REQUIRE( intTest == 0 );
     }

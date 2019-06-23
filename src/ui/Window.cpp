@@ -6,6 +6,8 @@
 
 namespace rubric::ui {
 
+    RUBRIC_REGISTER_TYPE(Window, View)
+
     Window::Window(WindowType wtype) {
 
     }

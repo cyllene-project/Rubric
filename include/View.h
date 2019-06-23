@@ -22,7 +22,7 @@ namespace rubric::ui {
         bool isVisible() const;
         void setVisible(bool);
         std::weak_ptr<View> getParent() const;
-
+        std::shared_ptr<const Type> & getType() const override;
     private:
         bool visible = false;
         std::weak_ptr<View> parent;

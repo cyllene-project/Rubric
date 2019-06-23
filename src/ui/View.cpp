@@ -4,16 +4,20 @@
 
 #include "View.h"
 
-using namespace rubric::ui;
 
-bool View::isVisible() const {
-    return visible;
-}
+namespace rubric::ui {
 
-void View::setVisible(bool visible) {
-    this->visible = visible;
-}
+    RUBRIC_REGISTER_ABSTRACT_TYPE(View, Object)
 
-std::weak_ptr<View> View::getParent() const {
-    return parent;
+    bool View::isVisible() const {
+        return visible;
+    }
+
+    void View::setVisible(bool visible) {
+        this->visible = visible;
+    }
+
+    std::weak_ptr<View> View::getParent() const {
+        return parent;
+    }
 }

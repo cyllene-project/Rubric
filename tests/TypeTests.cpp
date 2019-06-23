@@ -51,7 +51,7 @@ TEST_CASE( "Register Class and Properties", "[Type]" ) {
 class TestMacroObject: public rubric::Object {
 
 public:
-    std::shared_ptr<const rubric::Type> getType() override;
+    std::shared_ptr<const rubric::Type> & getType() const override;
     rubric::Property<std::string> test;
     rubric::Property<int> intTest;
 
@@ -59,7 +59,7 @@ public:
 
 RUBRIC_REGISTER_TYPE(TestMacroObject, rubric::Object, \
     RUBRIC_PROPERTY(test), \
-    RUBRIC_PROPERTY(intTest) )
+    RUBRIC_PROPERTY(intTest))
 
 TEST_CASE( "Register Class and Properties with Macro", "[Type]" ) {
 
@@ -81,7 +81,7 @@ TEST_CASE( "Register Class and Properties with Macro", "[Type]" ) {
 class TestInheritanceObject: public TestMacroObject {
 
 public:
-    std::shared_ptr<const rubric::Type> getType() override;
+    std::shared_ptr<const rubric::Type> & getType() const override;
     rubric::Property<std::string> t3;
     rubric::Property<int> t4;
 

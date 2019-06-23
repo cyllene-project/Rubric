@@ -60,7 +60,6 @@ void Type::registerType(std::shared_ptr<const Type> type) {
 
     std::vector<const PropertyDef*> defs;
 
-
     while(parentType != null_ptr) {
         auto parentT = getType(*parentType);
         defs.insert(defs.end(), parentT->getProperties().begin(), parentT->getProperties().end());

@@ -21,6 +21,7 @@ namespace rubric::ui {
         void show() override;
         void hide() override;
         void realize() override;
+        std::shared_ptr<const Type> & getType() const override;
 
 
     private:

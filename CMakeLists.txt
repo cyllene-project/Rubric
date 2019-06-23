@@ -37,12 +37,12 @@ add_library(Rubric SHARED
         src/core/Type.cpp
         include/Object.h
         src/core/Object.cpp
+        src/ui/View.cpp
+        include/View.h
         src/ui/Window.cpp
         include/Window.h
         src/core/Application.cpp
         include/Application.h
-        src/ui/View.cpp
-        include/View.h
         src/draw/DisplayManager.cpp
         include/DisplayManager.h
         src/draw/Display.cpp

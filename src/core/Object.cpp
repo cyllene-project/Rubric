@@ -1,6 +1,6 @@
-//
-// Created by bizarro on 6/14/19.
-//
+// Rubric
+// Copyright (c) 2019 Chris Daley <chebizarro@gmail.com>
+// This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <Object.h>
 
@@ -9,8 +9,7 @@ using namespace rubric;
 RUBRIC_REGISTER_TYPE(Object, nullptr)
 
 void Object::setProperty(const std::string propertyName, std::any & propertyValue) {
-    const auto s = getType();
-    const auto l = s->getProperty(propertyName).getSetter();
+    const auto l = getType()->getProperty(propertyName).getSetter();
     l(std::any(this), propertyValue);
 }
 

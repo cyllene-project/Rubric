@@ -6,16 +6,20 @@
 #define RUBRIC_PROPERTY_H
 
 #include <any>
+#include <iostream>
 
 namespace rubric {
 
-    enum class PropertyType { readWrite, readOnly, construct };
+    enum class PropertyType { readWrite, readOnly, empty, construct };
 
     template<typename T>
     class Property {
         T data;
 
     public:
+
+        using type = T;
+
         Property() : data() { }
 
         T operator()() const {
@@ -50,6 +54,11 @@ namespace rubric {
         T& operator=(const std::any & value) {
             data = std::any_cast<T>(value);
             return data;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Property<T> & p) {
+            os << p.data << std::endl;
+            return os;
         }
 
         bool operator==(const T other) const {

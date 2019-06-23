@@ -11,108 +11,141 @@
 #include <vector>
 #include "core/PropertyDef.h"
 #include <typeindex>
+#include <utility>
+#include <iostream>
 
 /**
- * REGISTER_TYPE
+ * RUBRIC_REGISTER_TYPE
  * usage:
  *
  * With getters and setters
- * REGISTER_TYPE(MyClass, Object, PROPERTY(name, name, std::string))
+ * RUBRIC_REGISTER_TYPE(MyClass, Object, RUBRIC_PROPERTY(name))
  *
  * With getter only
- * REGISTER_TYPE(MyClass, Object, PROPERTY_RO(name, name, std::string))
- *
- * With custom getter/setter
- * REGISTER_TYPE(MyClass, Object, PROPERTY_CUSTOM(name, std::string, MyClass::getMyName, MyClass::setMyName))
+ * RUBRIC_REGISTER_TYPE(MyClass, Object, RUBRIC_PROPERTY_RO(name))
  *
  * Multiple properties
- * REGISTER_TYPE(MyClass, Object, \
- *  PROPERTY(name, name, std::string), \
- *  PROPERTY(synced, synced, bool)\
+ * RUBRIC_REGISTER_TYPE(MyClass, Object, \
+ *  RUBRIC_PROPERTY(name), \
+ *  RUBRIC_PROPERTY(synced)\
  * )
  */
-
 #define RUBRIC_REGISTER_TYPE(klass, parent, ...) \
 class klass##Factory : public rubric::TypeFactory<klass> { \
     public: \
         klass##Factory() noexcept { \
-            auto & t = rubric::Type::registerType<klass>(#klass, this); \
-            {\
-            __VA_ARGS__;\
-            }\
-        } \
-        virtual std::shared_ptr<klass> create() { \
-            return std::make_shared<klass>(); \
+            using type = klass; \
+            static constexpr const rubric::PropertyDef properties[] = { \
+                __VA_ARGS__ \
+            }; \
+            static const int propCount = sizeof(properties)/sizeof(rubric::PropertyDef); \
+            static constexpr const rubric::Type thisType(#klass, typeid(klass), typeid(parent), properties, propCount); \
+            static const auto typePtr = std::shared_ptr<const rubric::Type>(&thisType, [](const rubric::Type* ptr){} ); \
+            rubric::Type::registerType(typePtr); \
         } \
     }; \
-    static klass##Factory global_##klass##Factory;
-
-#define RUBRIC_PROPERTY(klass, name) \
-    t.addProperty(#name, \
-        (rubric::PropertyDef::Getter)[](std::any obj) { \
-            auto c = std::any_cast<klass*>(obj); \
-            return std::any(c->name); \
-        }, \
-        (rubric::PropertyDef::Setter)[](std::any obj, std::any val) { \
-            auto c = std::any_cast<klass*>(obj); \
-            c->name = val; \
-        });
+    static klass##Factory global_##klass##Factory; \
+    \
+    std::shared_ptr<const rubric::Type> klass::getType() {\
+        return rubric::Type::getType<klass>();\
+    }
+#define RUBRIC_PROPERTY(name) \
+        rubric::PropertyDef { \
+            #name, \
+            defaultGetter<decltype(type::name), &type::name>(), \
+            defaultSetter<decltype(type::name), &type::name>() \
+        }
+#define RUBRIC_PROPERTY_RO(name) \
+        { #name, defaultGetter<decltype(type::name), &type::name>() }
 
 
 namespace rubric {
 
-    template <typename T>
+    class Object;
+
+    template<typename T>
     class TypeFactory {
     public:
         virtual std::shared_ptr<T> create() {
             return std::make_shared<T>();
         }
+
+        template<class P, P T::*name>
+        static constexpr const PropertyDef::Getter defaultGetter() {
+            return (rubric::PropertyDef::Getter) [](std::any obj) {
+                auto * o = dynamic_cast<T*>(std::any_cast<Object*>(obj));
+                auto p = o->*name;
+                return std::any(p.get());
+            };
+        }
+
+        template<class P, P T::*name>
+        static constexpr const PropertyDef::Setter defaultSetter() {
+            return (rubric::PropertyDef::Setter) [](std::any obj, std::any val) {
+                T * o = dynamic_cast<T*>(std::any_cast<Object*>(obj));
+                o->*name = val;
+            };
+        }
+
     };
 
     class Type {
 
     public:
-        explicit Type(std::string &) noexcept;
-        const std::string & getName() const;
 
-        void addProperty(std::string, PropertyDef::Getter, PropertyDef::Setter);
+        constexpr Type(std::string_view name,
+                       const std::type_info &typeIndex,
+                       const std::type_info &parentType,
+                       const rubric::PropertyDef *props,
+                       int propCount) noexcept:
+                name(name),
+                properties(props),
+                propertyCount(propCount),
+                _type(typeIndex),
+                _parent(parentType) {}
 
-        void addProperty(std::string, PropertyDef::Getter);
+        Type(const Type&) noexcept;
 
-        std::vector<PropertyDef> & getProperties();
+        Type& operator=(const rubric::Type&);
 
-        PropertyDef & getProperty(std::string &);
+        const std::string getName() const;
 
-        template <typename T>
-        static Type & registerType(std::string name, TypeFactory<T> *factory) {
+        const std::vector<const PropertyDef*> & getProperties() const;
+
+        const PropertyDef &getProperty(std::string) const;
+
+        static void registerType(std::shared_ptr<const Type> type);
+
+        template<typename T>
+        static std::shared_ptr<const Type> registerType(std::string name, TypeFactory<T> *factory) {
             auto id = std::type_index(typeid(T));
             nameTable.emplace(name, id);
             auto t = registry.emplace(id, name);
             return t.first->second;
         }
 
-        static Type & getTypeByName(std::string) noexcept(false);
+        static std::shared_ptr<const Type> & getTypeByName(std::string) noexcept(false);
 
-        static Type & getType(std::type_index) noexcept(false);
+        static std::shared_ptr<const Type> & getType(std::type_index) noexcept(false);
 
-        template <typename T>
-        static Type & getType() noexcept(false) {
+        template<typename T>
+        static std::shared_ptr<const Type> & getType() noexcept(false) {
             return getType(std::type_index(typeid(T)));
         }
 
-
-
     private:
+        const std::string_view name;
+        const PropertyDef *properties;
+        const int propertyCount;
 
-        const std::string name;
-
-        std::vector<PropertyDef> properties;
+        const std::type_info &_type;
+        const std::type_info &_parent;
 
         static std::unordered_map<std::string, std::type_index> nameTable;
-        static std::unordered_map<std::type_index, Type> registry;
+        static std::unordered_map<std::type_index, std::shared_ptr<const Type>> registry;
+        static std::unordered_map<std::type_index, std::vector<const PropertyDef*>> propertyRegistry;
 
     };
-
 
 
 }

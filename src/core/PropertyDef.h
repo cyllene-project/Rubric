@@ -17,25 +17,56 @@ namespace rubric {
         using Getter = std::any (*)(std::any);
         using Setter = void (*)(std::any, std::any);
 
-        PropertyDef(std::string &,
-                Getter,
-                Setter) noexcept;
+        constexpr PropertyDef(std::string_view propName,
+                              const rubric::PropertyDef::Getter propertyGetter,
+                              const rubric::PropertyDef::Setter propertySetter) noexcept:
+                name(propName),
+                type(PropertyType::readWrite),
+                getter(propertyGetter),
+                setter(propertySetter) {}
 
-        PropertyDef(std::string &,
-                    Getter) noexcept;
+        constexpr PropertyDef(std::string_view propName,
+                              const rubric::PropertyDef::Getter propertyGetter) noexcept:
+                name(propName),
+                type(PropertyType::readOnly),
+                getter(propertyGetter),
+                setter(nullptr) {}
 
-        const std::string& getName() const noexcept {
-            return name;
+        constexpr PropertyDef() noexcept:
+                name(""),
+                type(PropertyType::empty),
+                getter(nullptr),
+                setter(nullptr) {}
+
+        constexpr PropertyDef(const PropertyDef& other) noexcept :
+        name(other.name),
+        type(other.type),
+        getter(other.getter),
+        setter(other.setter){ }
+
+
+
+        const std::string getName() const noexcept {
+            return std::string(name);
         }
 
-        Getter getGetter() noexcept;
-        Setter getSetter() noexcept;
+        constexpr Getter getGetter() const noexcept {
+            return getter;
+        }
+
+        constexpr Setter getSetter() const noexcept {
+            return setter;
+        }
+
+        constexpr PropertyType getPropertyType() const noexcept {
+            return type;
+        }
 
     private:
-        const std::string name;
-        PropertyType type;
-        Getter getter;
-        Setter setter;
+        const std::string_view name;
+        const PropertyType type;
+        const Getter getter;
+        const Setter setter;
     };
 }
 

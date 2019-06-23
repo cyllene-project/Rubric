@@ -2,22 +2,20 @@
 // Created by bizarro on 6/14/19.
 //
 
-#include "Object.h"
+#include <Object.h>
 
 using namespace rubric;
 
-Type& Object::getType() {
-    return Type::getType<Object>();
+RUBRIC_REGISTER_TYPE(Object, nullptr)
+
+void Object::setProperty(const std::string propertyName, std::any & propertyValue) {
+    const auto s = getType();
+    const auto l = s->getProperty(propertyName).getSetter();
+    l(std::any(this), propertyValue);
 }
 
-void Object::setProperty(std::string & propertyName, std::any & propertyValue) {
-
-    auto t = getType();
-
-    auto p = t.getProperty(propertyName);
-
-    auto s = p.getSetter();
-
-    s(std::any(this), propertyValue);
-
+std::any Object::getProperty(const std::string propertyName) {
+    const auto s = getType()->getProperty(propertyName).getGetter();
+    return s(std::any(this));
 }
+

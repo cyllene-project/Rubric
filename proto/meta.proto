@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package rubric.proto;
+
+import "object.proto";
+
+message Meta {
+    Object parent = 1;
+}

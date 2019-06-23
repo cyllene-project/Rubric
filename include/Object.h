@@ -17,9 +17,9 @@ namespace rubric {
     class Object {
 
     public:
-        virtual Type & getType();
-
-        void setProperty(std::string &, std::any &);
+        virtual std::shared_ptr<const Type> getType();
+        virtual void setProperty(std::string, std::any &);
+        virtual std::any getProperty(std::string);
     };
 
 }

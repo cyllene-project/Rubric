@@ -12,9 +12,8 @@ namespace rubric {
     class Composer {
 
     public:
-        Composer(std::string);
 
-        Composer();
+        void addObjects(std::string &);
 
         void build();
 

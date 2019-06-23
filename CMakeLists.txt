@@ -18,13 +18,25 @@ find_package(Protobuf REQUIRED)
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS proto/object.proto)
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
+        proto/object.proto
+        proto/meta.proto
+        proto/application.proto
+        proto/view.proto
+        proto/window.proto
+        )
 
 add_library(RubricProto STATIC ${PROTO_SRCS} ${PROTO_HDRS})
 
+target_link_libraries(RubricProto ${PROTOBUF_LIBRARIES})
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 add_library(Rubric SHARED
-        src/core/Object.cpp
+        include/Type.h
+        src/core/Type.cpp
         include/Object.h
+        src/core/Object.cpp
         src/ui/Window.cpp
         include/Window.h
         src/core/Application.cpp
@@ -55,11 +67,12 @@ add_library(Rubric SHARED
         src/draw/wayland/WaylandSurface.h
         src/core/RunLoop.cpp
         src/core/RunLoop.h
-        src/core/Type.cpp
-        include/Type.h
         src/core/Property.cpp
         src/core/Property.h
-        src/core/PropertyDef.h src/core/PropertyDef.cpp src/core/Composer.cpp src/core/Composer.h)
+        src/core/PropertyDef.h
+        src/core/PropertyDef.cpp
+        src/core/Composer.cpp
+        src/core/Composer.h)
 
 add_executable(ExampleApp examples/exampleapp.cpp)
 
@@ -69,7 +82,7 @@ find_package(Catch2 REQUIRED)
 
 add_executable(tests tests/main.cpp tests/WindowTests.cpp tests/ObjectTests.cpp tests/TypeTests.cpp tests/PropertyTests.cpp)
 
-target_link_libraries(tests Catch2::Catch2 Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES})
+target_link_libraries(tests Catch2::Catch2 Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES} ${PROTOBUF_LIBRARIES} RubricProto)
 
 include(CTest)
 include(Catch)

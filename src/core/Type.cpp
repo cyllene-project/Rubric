@@ -8,43 +8,68 @@
 
 using namespace rubric;
 
-
 std::unordered_map<std::string, std::type_index> Type::nameTable;
-std::unordered_map<std::type_index, Type> Type::registry;
+std::unordered_map<std::type_index, std::shared_ptr<const Type>> Type::registry;
+std::unordered_map<std::type_index, std::vector<const PropertyDef*>> Type::propertyRegistry;
 
-Type::Type(std::string & typeName) noexcept :
-name(typeName) {
+
+Type::Type(const rubric::Type &other) noexcept:
+name(other.name),
+properties(other.properties),
+propertyCount(other.propertyCount),
+_type(other._type),
+_parent(other._parent) {}
+
+Type& Type::operator=(const rubric::Type & other) {
+    return *this;
 }
 
-Type& Type::getTypeByName(std::string typeName) noexcept(false) {
+std::shared_ptr<const Type> & Type::getTypeByName(std::string typeName) noexcept(false) {
     return registry.at(nameTable.at(typeName));
 }
 
-Type& Type::getType(std::type_index typeIndex) noexcept(false) {
+std::shared_ptr<const Type> & Type::getType(std::type_index typeIndex) noexcept(false) {
     return registry.at(typeIndex);
 }
 
-const std::string & Type::getName() const {
-    return name;
+const std::string Type::getName() const {
+    return std::string(name);
 }
 
-std::vector<PropertyDef> &Type::getProperties() {
-    return properties;
+const std::vector<const PropertyDef*> & Type::getProperties() const {
+    return propertyRegistry[std::type_index(this->_type)];
 }
 
-void Type::addProperty(std::string propName, PropertyDef::Getter propGetter) {
-    properties.emplace_back(propName, propGetter);
-}
-
-void Type::addProperty(std::string propName, PropertyDef::Getter propGetter, PropertyDef::Setter propSetter) {
-    properties.emplace_back(propName, propGetter, propSetter);
-}
-
-PropertyDef &Type::getProperty(std::string & propName) {
-    for(auto & p : properties) {
-        if(p.getName() == propName) {
-            return p;
+const PropertyDef &Type::getProperty(const std::string propName) const {
+    for(auto i = 0; i < propertyCount; i++) {
+        if(properties[i].getName() == propName) {
+            return properties[i];
         }
     }
     throw std::invalid_argument(propName);
 }
+
+
+void Type::registerType(std::shared_ptr<const Type> type) {
+
+    nameTable.emplace(type->name, type->_type);
+    registry.emplace(std::type_index(type->_type), type);
+
+    auto parentType = &type->_parent;
+    auto null_ptr = &typeid(nullptr);
+
+    std::vector<const PropertyDef*> defs;
+
+
+    while(parentType != null_ptr) {
+        auto parentT = getType(*parentType);
+        defs.insert(defs.end(), parentT->getProperties().begin(), parentT->getProperties().end());
+        parentType = &parentT->_parent;
+    }
+
+    for (auto i=0; i< type->propertyCount; ++i) {
+        defs.insert(defs.end(), &type->properties[i]);
+    }
+    propertyRegistry[std::type_index(type->_type)] = defs;
+}
+

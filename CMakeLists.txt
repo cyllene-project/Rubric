@@ -80,7 +80,7 @@ target_link_libraries(ExampleApp Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES
 
 find_package(Catch2 REQUIRED)
 
-add_executable(tests tests/main.cpp tests/WindowTests.cpp tests/ObjectTests.cpp tests/TypeTests.cpp tests/PropertyTests.cpp)
+add_executable(tests tests/main.cpp tests/WindowTests.cpp tests/ObjectTests.cpp tests/TypeTests.cpp tests/PropertyTests.cpp tests/ComposerTests.cpp)
 
 target_link_libraries(tests Catch2::Catch2 Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES} ${PROTOBUF_LIBRARIES} RubricProto)
 

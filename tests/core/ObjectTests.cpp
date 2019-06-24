@@ -3,7 +3,7 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <catch2/catch.hpp>
-#include <Object.h>
+#include <Rubric.h>
 
 class TestPropertiesObject: public rubric::Object {
 

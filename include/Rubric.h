@@ -5,7 +5,7 @@
 #ifndef RUBRIC_H
 #define RUBRIC_H
 
-#include "Object.h"
-#include "Type.h"
+#include "core/Object.h"
+#include "core/Type.h"
 
 #endif //RUBRIC_H

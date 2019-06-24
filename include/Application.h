@@ -7,9 +7,9 @@
 
 #include <string>
 #include <vector>
-#include <core/Context.h>
-#include "Object.h"
-#include "Window.h"
+#include <draw/Context.h>
+#include "core/Object.h"
+#include "ui/Window.h"
 
 namespace rubric {
 

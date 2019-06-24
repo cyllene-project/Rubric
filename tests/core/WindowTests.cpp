@@ -3,7 +3,7 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <catch2/catch.hpp>
-#include <Window.h>
+#include <ui/Window.h>
 
 TEST_CASE( "Windows can be instantiated and shown", "[Window]" ) {
 

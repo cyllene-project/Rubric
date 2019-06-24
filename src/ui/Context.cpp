@@ -3,7 +3,7 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <iostream>
-#include "Context.h"
+#include "draw/Context.h"
 
 using namespace rubric::core;
 

@@ -2,7 +2,8 @@
 // Copyright (c) 2019 Chris Daley <chebizarro@gmail.com>
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
-#include "View.h"
+#include <Rubric.h>
+#include "ui/View.h"
 
 
 namespace rubric::ui {
@@ -13,8 +14,8 @@ namespace rubric::ui {
         return visible;
     }
 
-    void View::setVisible(bool visible) {
-        this->visible = visible;
+    void View::setVisible(bool _visible) {
+        visible = _visible;
     }
 
     std::weak_ptr<View> View::getParent() const {

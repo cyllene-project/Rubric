@@ -5,8 +5,8 @@
 #ifndef RUBRIC_WINDOW_H
 #define RUBRIC_WINDOW_H
 
-#include "Object.h"
-#include "View.h"
+#include "core/Object.h"
+#include "ui/View.h"
 
 
 namespace rubric::ui {

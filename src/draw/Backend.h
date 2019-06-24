@@ -5,11 +5,11 @@
 #ifndef RUBRIC_BACKEND_H
 #define RUBRIC_BACKEND_H
 
-#include <Display.h>
+#include <draw/Display.h>
 #include <memory>
 #include <map>
 
-#define REGISTER_BACKEND(klass) \
+#define RUBRIC_DRAW_REGISTER_BACKEND(klass) \
 class klass##Factory : public rubric::draw::BackendFactory { \
     public: \
         klass##Factory() noexcept { \
@@ -30,7 +30,7 @@ namespace rubric::draw {
 class rubric::draw::Backend {
 public:
     virtual std::unique_ptr<Display> open(const std::string &) const = 0;
-    virtual std::string get_name() const = 0;
+    virtual std::string getName() const = 0;
     static void registerBackend(const std::string &, BackendFactory *);
     static std::map<std::string, BackendFactory*> getBackends();
 private:

@@ -10,7 +10,7 @@
 using namespace rubric::draw::x11;
 using namespace rubric;
 
-REGISTER_BACKEND(X11Backend)
+RUBRIC_DRAW_REGISTER_BACKEND(X11Backend)
 
 static void internal_connection_watch(Display *display,
         XPointer arg,
@@ -42,6 +42,6 @@ std::unique_ptr<draw::Display> X11Backend::open(const std::string &displayName) 
     return display;
 }
 
-std::string X11Backend::get_name() const {
+std::string X11Backend::getName() const {
     return "x11";
 }

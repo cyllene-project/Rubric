@@ -7,11 +7,11 @@
 
 #include <string>
 #include <any>
-#include "Property.h"
+#include "core/Property.h"
 
 namespace rubric {
 
-    class PropertyDef {
+    struct PropertyDef {
 
     public:
         using Getter = std::any (*)(std::any);
@@ -38,13 +38,7 @@ namespace rubric {
                 getter(nullptr),
                 setter(nullptr) {}
 
-        constexpr PropertyDef(const PropertyDef& other) noexcept :
-        name(other.name),
-        type(other.type),
-        getter(other.getter),
-        setter(other.setter){ }
-
-
+        constexpr PropertyDef(const PropertyDef& other) noexcept = default;
 
         const std::string getName() const noexcept {
             return std::string(name);

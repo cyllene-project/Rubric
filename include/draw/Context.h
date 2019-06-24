@@ -5,9 +5,9 @@
 #ifndef RUBRIC_CONTEXT_H
 #define RUBRIC_CONTEXT_H
 
-#include <DisplayManager.h>
+#include <draw/DisplayManager.h>
 #include <memory>
-#include "RunLoop.h"
+#include "core/RunLoop.h"
 
 namespace rubric::core {
 

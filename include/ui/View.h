@@ -6,7 +6,7 @@
 #define RUBRIC_VIEW_H
 
 #include <memory>
-#include "Object.h"
+#include "core/Object.h"
 
 namespace rubric::ui {
 

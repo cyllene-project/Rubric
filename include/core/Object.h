@@ -7,10 +7,11 @@
 
 #include <string>
 #include <map>
-#include <Type.h>
 #include <any>
+#include <memory>
 
 namespace rubric {
+    class Type;
     /**
      * Base class for all Rubric objects
      */

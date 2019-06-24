@@ -5,7 +5,7 @@
 #ifndef RUBRIC_X11DISPLAY_H
 #define RUBRIC_X11DISPLAY_H
 
-#include <Display.h>
+#include <draw/Display.h>
 #include <X11/Xlib.h>
 
 namespace rubric::draw::x11 {

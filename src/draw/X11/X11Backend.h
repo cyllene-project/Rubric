@@ -13,7 +13,7 @@ class X11Backend : public Backend {
 
 public:
     std::unique_ptr<Display> open(const std::string &) const override;
-    std::string get_name() const override;
+    std::string getName() const override;
 
 };
 

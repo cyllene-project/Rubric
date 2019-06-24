@@ -5,7 +5,7 @@
 #ifndef RUBRIC_WAYLANDDISPLAY_H
 #define RUBRIC_WAYLANDDISPLAY_H
 
-#include <Display.h>
+#include <draw/Display.h>
 #include <wayland-client-core.h>
 
 using WLDisplay = struct wl_display*;

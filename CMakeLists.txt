@@ -33,28 +33,31 @@ target_link_libraries(RubricProto ${PROTOBUF_LIBRARIES})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(Rubric SHARED
-        include/Type.h
+        include/core/Type.h
         src/core/Type.cpp
-        include/Object.h
+        include/core/Object.h
         src/core/Object.cpp
-        src/ui/View.cpp
-        include/View.h
-        src/ui/Window.cpp
-        include/Window.h
-        src/core/Application.cpp
-        include/Application.h
+        src/core/RunLoop.cpp
+        include/core/RunLoop.h
+        src/core/Property.cpp
+        include/core/Property.h
+        include/core/PropertyDef.h
+        src/core/PropertyDef.cpp
+        )
+
+add_library(RubricDraw SHARED
         src/draw/DisplayManager.cpp
-        include/DisplayManager.h
+        include/draw/DisplayManager.h
         src/draw/Display.cpp
-        include/Display.h
+        include/draw/Display.h
         src/draw/Backend.cpp
         src/draw/Backend.h
         src/draw/wayland/WaylandDisplay.cpp
         src/draw/wayland/WaylandDisplay.h
         src/draw/X11/X11Display.cpp
         src/draw/X11/X11Display.h
-        src/core/Context.cpp
-        src/core/Context.h
+        include/draw/Context.h
+        src/ui/Context.cpp
         src/draw/wayland/WaylandBackend.cpp
         src/draw/wayland/WaylandBackend.h
         src/draw/X11/X11Backend.cpp
@@ -65,24 +68,51 @@ add_library(Rubric SHARED
         src/draw/X11/X11Surface.h
         src/draw/wayland/WaylandSurface.cpp
         src/draw/wayland/WaylandSurface.h
-        src/core/RunLoop.cpp
-        src/core/RunLoop.h
-        src/core/Property.cpp
-        src/core/Property.h
-        src/core/PropertyDef.h
-        src/core/PropertyDef.cpp
-        src/core/Composer.cpp
-        src/core/Composer.h)
+        )
+
+add_library(RubricUI SHARED
+        src/ui/Application.cpp
+        include/Application.h
+        src/ui/View.cpp
+        include/ui/View.h
+        src/ui/Window.cpp
+        include/ui/Window.h
+        src/ui/Composer.cpp
+        src/ui/Composer.h
+        src/ui/Control.cpp include/ui/Control.h src/ui/Container.cpp src/ui/Container.h)
 
 add_executable(ExampleApp examples/exampleapp.cpp)
 
-target_link_libraries(ExampleApp Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES})
+target_link_libraries(ExampleApp
+        RubricUI
+        RubricDraw
+        Rubric
+        RubricProto
+        ${PROTOBUF_LIBRARIES}
+        ${X11_XCB_LIBRARIES}
+        ${WAYLAND_LIBRARIES})
 
 find_package(Catch2 REQUIRED)
 
-add_executable(tests tests/main.cpp tests/WindowTests.cpp tests/ObjectTests.cpp tests/TypeTests.cpp tests/PropertyTests.cpp tests/ComposerTests.cpp)
+add_executable(tests
+        tests/main.cpp
+        tests/core/WindowTests.cpp
+        tests/core/ObjectTests.cpp
+        tests/core/TypeTests.cpp
+        tests/core/PropertyTests.cpp
+        tests/core/ComposerTests.cpp
+        )
 
-target_link_libraries(tests Catch2::Catch2 Rubric ${X11_XCB_LIBRARIES} ${WAYLAND_LIBRARIES} ${PROTOBUF_LIBRARIES} RubricProto)
+target_link_libraries(tests
+        Catch2::Catch2
+        RubricUI
+        RubricDraw
+        Rubric
+        RubricProto
+        ${PROTOBUF_LIBRARIES}
+        ${X11_XCB_LIBRARIES}
+        ${WAYLAND_LIBRARIES}
+        )
 
 include(CTest)
 include(Catch)

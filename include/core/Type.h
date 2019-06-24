@@ -9,10 +9,10 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
-#include "core/PropertyDef.h"
 #include <typeindex>
 #include <utility>
 #include <iostream>
+#include <core/PropertyDef.h>
 
 /**
  * RUBRIC_REGISTER_TYPE

@@ -3,8 +3,8 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <catch2/catch.hpp>
-#include <Type.h>
-#include <Object.h>
+#include <core/Type.h>
+#include <core/Object.h>
 
 class TestObject: public rubric::Object {
 

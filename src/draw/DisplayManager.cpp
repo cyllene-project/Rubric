@@ -3,7 +3,7 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <iostream>
-#include "DisplayManager.h"
+#include "draw/DisplayManager.h"
 #include "Backend.h"
 
 namespace rubric::draw {

@@ -13,7 +13,7 @@ namespace rubric::draw::wayland {
 
     public:
         std::unique_ptr<Display> open(const std::string &) const override;
-        std::string get_name() const override;
+        std::string getName() const override;
 
     };
 }

@@ -8,7 +8,7 @@
 using namespace rubric::draw::wayland;
 using namespace rubric::draw;
 
-REGISTER_BACKEND(WaylandBackend)
+RUBRIC_DRAW_REGISTER_BACKEND(WaylandBackend)
 
 std::unique_ptr<Display> WaylandBackend::open(const std::string &displayName) const {
 
@@ -27,6 +27,6 @@ std::unique_ptr<Display> WaylandBackend::open(const std::string &displayName) co
 
 }
 
-std::string WaylandBackend::get_name() const {
+std::string WaylandBackend::getName() const {
     return "wayland";
 }

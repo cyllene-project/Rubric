@@ -4,6 +4,7 @@
 
 #include "Composer.h"
 #include <meta.pb.h>
+#include <iostream>
 
 void rubric::Composer::addObjects(std::string & data) {
 
@@ -15,5 +16,4 @@ void rubric::Composer::addObjects(std::string & data) {
 
     auto parent = meta.parent();
 
-    //parent.type_name();
 }

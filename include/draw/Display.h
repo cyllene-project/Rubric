@@ -13,10 +13,8 @@ namespace rubric::draw {
 
     class Display {
 
-
     public:
-        virtual std::shared_ptr<Surface> createSurface() const = 0;
-
+        virtual std::unique_ptr<Surface> createSurface() = 0;
     };
 
 }

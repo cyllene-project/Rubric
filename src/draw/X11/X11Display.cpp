@@ -8,8 +8,6 @@
 using namespace rubric::draw::x11;
 using namespace rubric::draw;
 
-
-
-std::shared_ptr<Surface> X11Display::createSurface() const {
-    return std::make_shared<X11Surface>();
+std::unique_ptr<Surface> X11Display::createSurface() {
+    return std::make_unique<X11Surface>(*this);
 }

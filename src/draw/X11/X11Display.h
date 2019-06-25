@@ -14,7 +14,7 @@ class X11Display : public rubric::draw::Display{
 
     public:
 
-        std::shared_ptr<Surface> createSurface() const override;
+        std::unique_ptr<Surface> createSurface() override;
 
     private:
     };

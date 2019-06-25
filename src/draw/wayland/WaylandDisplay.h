@@ -17,7 +17,7 @@ namespace rubric::draw::wayland {
 
     public:
         explicit WaylandDisplay(WLDisplay);
-        std::shared_ptr<Surface> createSurface() const override;
+        std::unique_ptr<Surface> createSurface() override;
 
     private:
         WLDisplay wlDisplay;

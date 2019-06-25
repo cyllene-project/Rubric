@@ -3,6 +3,7 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include "WaylandDisplay.h"
+#include "WaylandSurface.h"
 #include <wayland-client.h>
 #include <iostream>
 
@@ -19,6 +20,7 @@ wlDisplay(display){
     wl_log_set_handler_client(log_handler);
 }
 
-std::shared_ptr<Surface> WaylandDisplay::createSurface() const {
-    return std::make_shared<Surface>();
+std::unique_ptr<Surface> WaylandDisplay::createSurface() {
+    return std::make_unique<WaylandSurface>(*this);
 }
+

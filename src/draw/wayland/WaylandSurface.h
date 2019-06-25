@@ -6,10 +6,18 @@
 #define RUBRIC_WAYLANDSURFACE_H
 
 #include <draw/Surface.h>
+#include "WaylandDisplay.h"
 
 namespace rubric::draw::wayland {
 
     class WaylandSurface: public Surface {
+
+    public:
+        explicit WaylandSurface(WaylandDisplay &);
+        Display & getDisplay() override;
+
+    private:
+        WaylandDisplay & wDisplay;
 
     };
 

@@ -20,6 +20,7 @@ include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
         proto/object.proto
+        proto/property.proto
         proto/meta.proto
         proto/application.proto
         proto/view.proto
@@ -68,7 +69,7 @@ add_library(RubricDraw SHARED
         src/draw/X11/X11Surface.h
         src/draw/wayland/WaylandSurface.cpp
         src/draw/wayland/WaylandSurface.h
-        )
+        src/draw/Renderer.cpp src/draw/Renderer.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -79,7 +80,10 @@ add_library(RubricUI SHARED
         include/ui/Window.h
         src/ui/Composer.cpp
         src/ui/Composer.h
-        src/ui/Control.cpp include/ui/Control.h src/ui/Container.cpp src/ui/Container.h)
+        src/ui/Control.cpp
+        include/ui/Control.h
+        src/ui/Container.cpp
+        src/ui/Container.h)
 
 add_executable(ExampleApp examples/exampleapp.cpp)
 

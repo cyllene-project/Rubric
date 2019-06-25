@@ -5,9 +5,20 @@
 #ifndef RUBRIC_SURFACE_H
 #define RUBRIC_SURFACE_H
 
+#include <memory>
+
 namespace rubric::draw {
 
+    class Display;
+
     class Surface {
+
+
+    public:
+        virtual Display & getDisplay() = 0;
+        virtual void show();
+        virtual void hide();
+        virtual void resize(int, int);
 
     };
 

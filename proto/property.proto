@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package rubric.proto;
+
+import "google/protobuf/any.proto";
+
+message Property {
+
+    string name = 1;
+
+    oneof property_value {
+        double property_double = 255;
+        float property_float = 254;
+        int32 property_int = 253;
+        int64 property_long = 252;
+        uint32 property_uint = 251;
+        uint64 property_ulong = 250;
+        bool property_bool = 249;
+        string property_string = 248;
+        bytes property_bytes = 247;
+        google.protobuf.Any property_any = 246;
+    }
+
+}

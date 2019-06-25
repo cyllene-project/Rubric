@@ -6,11 +6,18 @@
 #define RUBRIC_X11SURFACE_H
 
 #include <draw/Surface.h>
+#include "X11Display.h"
 
 namespace rubric::draw::x11 {
 
     class X11Surface: public Surface {
 
+    public:
+        explicit X11Surface(X11Display &);
+        Display & getDisplay() override;
+
+    private:
+        X11Display & xDisplay;
     };
 
 }

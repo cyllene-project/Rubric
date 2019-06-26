@@ -11,6 +11,8 @@ TEST_CASE( "Create and manipulate Properties", "[Properties]" ) {
 
     Property<std::string> testProp;
 
+    Property<decltype(testProp)::type> p;
+
     SECTION( "set property") {
         testProp = std::string("testValue");
         REQUIRE( testProp == std::string("testValue") );
@@ -18,7 +20,7 @@ TEST_CASE( "Create and manipulate Properties", "[Properties]" ) {
 
     SECTION( "get property") {
         testProp = std::string("testValue");
-        const std::string testVal = testProp;
+        auto testVal = testProp;
         REQUIRE( testVal == std::string("testValue") );
     }
 

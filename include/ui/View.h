@@ -6,9 +6,11 @@
 #define RUBRIC_VIEW_H
 
 #include <memory>
+#include <draw/Surface.h>
 #include "core/Object.h"
 
 namespace rubric::ui {
+
 
     class View: public Object {
 
@@ -18,6 +20,7 @@ namespace rubric::ui {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void realize() = 0;
+        virtual void render(rubric::draw::Surface &) = 0;
 
         bool isVisible() const;
         void setVisible(bool);
@@ -26,6 +29,7 @@ namespace rubric::ui {
     private:
         bool visible = false;
         std::weak_ptr<View> parent;
+
     };
 
 }

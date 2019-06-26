@@ -8,6 +8,9 @@
 using namespace rubric::draw::x11;
 using namespace rubric::draw;
 
+X11Display::X11Display(x::connection & xconnection) :
+connection(xconnection) {}
+
 std::unique_ptr<Surface> X11Display::createSurface() {
     return std::make_unique<X11Surface>(*this);
 }

@@ -15,6 +15,7 @@ find_package(Wayland REQUIRED)
 find_package(X11_XCB REQUIRED)
 find_package(rxcpp REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(xpp REQUIRED)
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
@@ -69,7 +70,7 @@ add_library(RubricDraw SHARED
         src/draw/X11/X11Surface.h
         src/draw/wayland/WaylandSurface.cpp
         src/draw/wayland/WaylandSurface.h
-        src/draw/Renderer.cpp src/draw/Renderer.h)
+        src/draw/Renderer.cpp include/draw/Renderer.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -100,11 +101,11 @@ find_package(Catch2 REQUIRED)
 
 add_executable(tests
         tests/main.cpp
-        tests/core/WindowTests.cpp
+        tests/ui/WindowTests.cpp
         tests/core/ObjectTests.cpp
         tests/core/TypeTests.cpp
         tests/core/PropertyTests.cpp
-        tests/core/ComposerTests.cpp
+        tests/ui/ComposerTests.cpp
         )
 
 target_link_libraries(tests
@@ -113,8 +114,10 @@ target_link_libraries(tests
         RubricDraw
         Rubric
         RubricProto
-        ${PROTOBUF_LIBRARIES}
+        -lxcb
+        ${xpp_LIBRARIES}
         ${X11_XCB_LIBRARIES}
+        ${PROTOBUF_LIBRARIES}
         ${WAYLAND_LIBRARIES}
         )
 

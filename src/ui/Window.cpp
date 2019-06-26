@@ -7,9 +7,13 @@
 
 namespace rubric::ui {
 
-    RUBRIC_REGISTER_TYPE(Window, View)
+    RUBRIC_REGISTER_TYPE(Window, View,
+        RUBRIC_PROPERTY(title),
+        RUBRIC_PROPERTY(clientDecorated)
+    )
 
-    Window::Window(WindowType wtype) {
+    Window::Window(WindowType wtype):
+    windowType(wtype) {
 
     }
 
@@ -30,7 +34,22 @@ namespace rubric::ui {
         if (!clientDecorated) {
 
         }
+        switch (windowType) {
+            case WindowType::topLevel:
 
+                break;
+
+            default:
+                break;
+        }
+
+        if (!renderer) {
+
+        }
+
+    }
+
+    void Window::render(rubric::draw::Surface &) {
 
     }
 }

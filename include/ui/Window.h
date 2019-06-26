@@ -7,9 +7,12 @@
 
 #include "core/Object.h"
 #include "ui/View.h"
-
+#include <draw/Renderer.h>
+#include <core/Property.h>
 
 namespace rubric::ui {
+
+    using namespace rubric::draw;
 
     enum class WindowType { topLevel };
 
@@ -22,10 +25,16 @@ namespace rubric::ui {
         void hide() override;
         void realize() override;
         std::shared_ptr<const Type> & getType() const override;
+        void render(rubric::draw::Surface &) override;
 
+        // Properties
+        Property<std::string> title;
+        Property<bool> clientDecorated;
 
     private:
-        bool clientDecorated = true;
+        WindowType windowType;
+        std::unique_ptr<Renderer> renderer;
+        std::unique_ptr<Surface> surface;
     };
 }
 

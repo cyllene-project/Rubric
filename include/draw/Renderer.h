@@ -6,7 +6,7 @@
 #define RUBRIC_RENDERER_H
 
 #include <memory>
-#include "Surface.h"
+#include "draw/Surface.h"
 
 namespace rubric::draw {
 

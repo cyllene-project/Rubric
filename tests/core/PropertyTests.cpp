@@ -9,20 +9,16 @@ using namespace rubric;
 
 TEST_CASE( "Create and manipulate Properties", "[Properties]" ) {
 
-    Property<std::string> testProp;
+    Property<std::string> testStringProp;
 
-    Property<decltype(testProp)::type> p;
-
-    SECTION( "set property") {
-        testProp = std::string("testValue");
-        REQUIRE( testProp == std::string("testValue") );
+    SECTION( "set string property") {
+        testStringProp = "testValue";
+        REQUIRE( testStringProp == "testValue" );
     }
 
-    SECTION( "get property") {
-        testProp = std::string("testValue");
-        auto testVal = testProp;
-        REQUIRE( testVal == std::string("testValue") );
+    SECTION( "get string property") {
+        testStringProp = "testValue";
+        REQUIRE( testStringProp == "testValue" );
     }
-
 
 }

@@ -9,11 +9,13 @@ TEST_CASE( "Windows can be instantiated and shown", "[Window]" ) {
 
     rubric::ui::Window window;
 
-    REQUIRE( !window.isVisible() );
+    window.title = "Test Window";
+
+    REQUIRE( !window.visible );
 
     SECTION( "show window" ) {
         window.show();
 
-        REQUIRE( window.isVisible() );
+        REQUIRE( window.visible );
     }
 }

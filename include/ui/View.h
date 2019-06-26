@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <draw/Surface.h>
+#include <core/Property.h>
 #include "core/Object.h"
 
 namespace rubric::ui {
@@ -22,12 +23,16 @@ namespace rubric::ui {
         virtual void realize() = 0;
         virtual void render(rubric::draw::Surface &) = 0;
 
-        bool isVisible() const;
-        void setVisible(bool);
+        // Properties
+        Property<bool> visible { false };
+
+
         std::weak_ptr<View> getParent() const;
         std::shared_ptr<const Type> & getType() const override;
+
+
+
     private:
-        bool visible = false;
         std::weak_ptr<View> parent;
 
     };

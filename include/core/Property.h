@@ -7,6 +7,8 @@
 
 #include <any>
 #include <iostream>
+#include <rxcpp/rx.hpp>
+#include "core/PropertySpecializations.h"
 
 namespace rubric {
 
@@ -20,15 +22,16 @@ namespace rubric {
 
         using type = T;
 
-        Property() : data() { }
+        Property() : data(), valueChanged(data) { }
+
+        explicit Property(T value) : data(value), valueChanged(value) { }
 
         T operator()() const {
             return data;
         }
 
         T operator()(T const & value) {
-            data = value;
-            return data;
+            return set(value);
         }
 
         // access with get()/set() syntax
@@ -37,7 +40,8 @@ namespace rubric {
         }
 
         T set(T const & value) {
-            data = value;
+            data = std::move(value);
+            valueChanged.get_subscriber().on_next(data);
             return data;
         }
 
@@ -46,29 +50,41 @@ namespace rubric {
             return data;
         }
 
-        T& operator=(T const & value) {
-            data = value;
-            return data;
+        T& operator=(const T & value) {
+            return set(value);
         }
 
-        T& operator=(const std::any & value) {
-            data = std::any_cast<T>(value);
-            return data;
+        T operator=(const std::any & value) {
+            return set(std::any_cast<T>(value));
         }
 
-        friend std::ostream& operator<<(std::ostream& os, const Property<T> & p) {
-            os << p.data << std::endl;
-            return os;
+        T operator=(char const * value) {
+            return set(value);
+        }
+
+        T operator=(const T value) {
+            return set(value);
         }
 
         bool operator==(const T other) const {
             return (data == other);
         }
 
-    private:
-        PropertyType propertyType;
-    };
+        bool operator!=(const T other) const {
+            return (data != other);
+        }
 
+        bool operator!() {
+            return !data;
+        }
+
+        auto subscribe() {
+            return valueChanged;
+        }
+
+    private:
+        rxcpp::subjects::behavior<T> valueChanged;
+    };
 }
 
 #endif //RUBRIC_PROPERTY_H

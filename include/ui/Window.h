@@ -1,6 +1,6 @@
-//
-// Created by bizarro on 6/14/19.
-//
+// Rubric
+// Copyright (c) 2019 Chris Daley <chebizarro@gmail.com>
+// This code is licensed under MIT license (see LICENSE.txt for details)
 
 #ifndef RUBRIC_WINDOW_H
 #define RUBRIC_WINDOW_H
@@ -26,10 +26,12 @@ namespace rubric::ui {
         void realize() override;
         std::shared_ptr<const Type> & getType() const override;
         void render(rubric::draw::Surface &) override;
-
-        // Properties
+        /**
+         * The Window Title.
+         * The Window Title as displayed in the Window Title Bar
+         **/
         Property<std::string> title;
-        Property<bool> clientDecorated;
+        Property<bool> clientDecorated { false };
 
     private:
         WindowType windowType;

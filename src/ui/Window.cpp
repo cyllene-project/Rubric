@@ -1,9 +1,14 @@
-//
-// Created by bizarro on 6/14/19.
-//
+// Rubric
+// Copyright (c) 2019 Chris Daley <chebizarro@gmail.com>
+// This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <Rubric.h>
 #include "ui/Window.h"
+
+namespace rubric {
+    extern template class Property<bool>;
+}
+
 
 namespace rubric::ui {
 
@@ -22,7 +27,7 @@ namespace rubric::ui {
     }
 
     void Window::show() {
-        setVisible(true);
+        visible = true;
     }
 
     void Window::hide() {

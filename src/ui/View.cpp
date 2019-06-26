@@ -8,15 +8,8 @@
 
 namespace rubric::ui {
 
-    RUBRIC_REGISTER_ABSTRACT_TYPE(View, Object)
-
-    bool View::isVisible() const {
-        return visible;
-    }
-
-    void View::setVisible(bool _visible) {
-        visible = _visible;
-    }
+    RUBRIC_REGISTER_ABSTRACT_TYPE(View, Object,
+            RUBRIC_PROPERTY(visible))
 
     std::weak_ptr<View> View::getParent() const {
         return parent;

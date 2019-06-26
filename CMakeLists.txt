@@ -45,7 +45,7 @@ add_library(Rubric SHARED
         include/core/Property.h
         include/core/PropertyDef.h
         src/core/PropertyDef.cpp
-        )
+        include/core/PropertySpecializations.h)
 
 add_library(RubricDraw SHARED
         src/draw/DisplayManager.cpp

@@ -58,8 +58,6 @@ add_library(RubricDraw SHARED
         src/draw/wayland/WaylandDisplay.h
         src/draw/X11/X11Display.cpp
         src/draw/X11/X11Display.h
-        include/draw/Context.h
-        src/ui/Context.cpp
         src/draw/wayland/WaylandBackend.cpp
         src/draw/wayland/WaylandBackend.h
         src/draw/X11/X11Backend.cpp
@@ -70,7 +68,11 @@ add_library(RubricDraw SHARED
         src/draw/X11/X11Surface.h
         src/draw/wayland/WaylandSurface.cpp
         src/draw/wayland/WaylandSurface.h
-        src/draw/Renderer.cpp include/draw/Renderer.h)
+        src/draw/Renderer.cpp
+        include/draw/Renderer.h
+        include/draw/Context.h
+        src/draw/Context.cpp
+        )
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -115,6 +117,7 @@ target_link_libraries(tests
         Rubric
         RubricProto
         -lxcb
+        -lxcb-randr
         ${xpp_LIBRARIES}
         ${X11_XCB_LIBRARIES}
         ${PROTOBUF_LIBRARIES}

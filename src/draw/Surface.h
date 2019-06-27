@@ -11,8 +11,9 @@ namespace rubric::draw {
 
     class Display;
 
-    class Surface {
+    enum class SurfaceType { topLevel, menu, popup };
 
+    class Surface {
 
     public:
         virtual Display & getDisplay() = 0;

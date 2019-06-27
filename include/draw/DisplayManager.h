@@ -14,7 +14,7 @@ namespace rubric::draw {
     class DisplayManager {
 
     public:
-        std::shared_ptr<Display> openDisplay(const std::string &);
+        void openDisplay(std::string);
         std::shared_ptr<Display> getDefaultDisplay() const;
         void setDefaultDisplay(std::shared_ptr<Display>);
 

@@ -7,7 +7,7 @@
 
 using namespace rubric::core;
 
-namespace rubric::core {
+namespace rubric::draw {
 
     Context Context::instance;
 
@@ -16,10 +16,13 @@ namespace rubric::core {
     }
 
     Context::Context() noexcept {
+
         auto display = displayManager.getDefaultDisplay();
+
         if (display == nullptr) {
-            display = displayManager.openDisplay(std::string());
+            displayManager.openDisplay("");
         }
+
     }
 
     const DisplayManager& Context::getDisplayManager() const {

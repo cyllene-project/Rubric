@@ -6,7 +6,7 @@
 #include "draw/Context.h"
 
 using namespace rubric;
-using namespace rubric::core;
+using namespace rubric::draw;
 
 Application::Application(const std::string & id):
 appId(id),

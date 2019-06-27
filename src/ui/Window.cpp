@@ -4,6 +4,7 @@
 
 #include <Rubric.h>
 #include "ui/Window.h"
+#include <draw/Context.h>
 
 namespace rubric {
     extern template class Property<bool>;
@@ -27,6 +28,7 @@ namespace rubric::ui {
     }
 
     void Window::show() {
+        realize();
         visible = true;
     }
 
@@ -41,7 +43,11 @@ namespace rubric::ui {
         }
         switch (windowType) {
             case WindowType::topLevel:
-
+                surface = rubric::ui::Context::getInstance()
+                        .getDisplayManager()
+                        .getDefaultDisplay()
+                        ->createSurface(
+                            SurfaceType::topLevel, 0, 0, 0, 0);
                 break;
 
             default:

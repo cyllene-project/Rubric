@@ -26,14 +26,13 @@ namespace rubric::ui {
         // Properties
         Property<bool> visible { false };
 
-
         std::weak_ptr<View> getParent() const;
         std::shared_ptr<const Type> & getType() const override;
 
 
-
     private:
         std::weak_ptr<View> parent;
+
 
     };
 

@@ -9,9 +9,9 @@
 #include <memory>
 #include "core/RunLoop.h"
 
-namespace rubric::core {
+namespace rubric::draw {
 
-    using namespace rubric::draw;
+    using namespace rubric::core;
 
     class Context {
 

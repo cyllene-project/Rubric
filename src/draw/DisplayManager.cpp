@@ -8,21 +8,21 @@
 
 namespace rubric::draw {
 
-    std::shared_ptr<Display> DisplayManager::openDisplay(const std::string & name) {
+    void DisplayManager::openDisplay(std::string name) {
 
         auto backend = std::getenv("RUBRIC_BACKEND");
 
         if (backend == nullptr) {
-            return nullptr;
+            throw std::invalid_argument("RUBRIC_BACKEND environment variable not set");
         }
 
         auto backends = Backend::getBackends();
+
         if (backends.count(backend) > 0) {
             auto be = backends[backend]->create();
-            return be->open(name);
+            setDefaultDisplay(be->open(name));
         }
 
-        return nullptr;
 
     }
 

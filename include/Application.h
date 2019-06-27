@@ -34,7 +34,7 @@ namespace rubric {
 
     private:
         const std::string appId;
-        core::Context & context;
+        draw::Context & context;
         std::vector<std::shared_ptr<rubric::ui::Window>> windows;
     };
 

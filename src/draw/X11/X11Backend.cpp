@@ -12,6 +12,8 @@ RUBRIC_DRAW_REGISTER_BACKEND(X11Backend)
 
 std::unique_ptr<draw::Display> X11Backend::open(const std::string &displayName) const {
 
+    using xcb_window = xpp::window<xcb_connection_t *>;
+
     static x::connection connection;
     static x::registry registry(connection);
 

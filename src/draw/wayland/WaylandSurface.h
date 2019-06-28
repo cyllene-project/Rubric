@@ -15,10 +15,11 @@ namespace rubric::draw::wayland {
     public:
         explicit WaylandSurface(WaylandDisplay &);
         Display & getDisplay() override;
+        void setTitle(const std::string &) override;
 
     private:
         WaylandDisplay & wDisplay;
-
+        std::string title;
     };
 
 }

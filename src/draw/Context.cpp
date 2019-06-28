@@ -3,6 +3,8 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <iostream>
+#include <draw/Context.h>
+
 #include "draw/Context.h"
 
 using namespace rubric::core;
@@ -19,7 +21,7 @@ namespace rubric::draw {
 
         auto display = displayManager.getDefaultDisplay();
 
-        if (display == nullptr) {
+        if (!display) {
             displayManager.openDisplay("");
         }
 
@@ -27,5 +29,9 @@ namespace rubric::draw {
 
     const DisplayManager& Context::getDisplayManager() const {
         return displayManager;
+    }
+
+    RunLoop & Context::getRunLoop() {
+        return runLoop;
     }
 }

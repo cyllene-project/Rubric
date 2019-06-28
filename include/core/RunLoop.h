@@ -13,17 +13,21 @@ namespace rubric::core {
 
     public:
 
+        RunLoop();
+
         rxcpp::schedulers::scheduler get_scheduler() const;
 
         auto observe_on_run_loop() const;
 
         bool empty() const;
 
-        void run() const;
+        void run();
 
     private:
 
-        rxcpp::schedulers::run_loop rxcpp_run_loop;
+        rxcpp::schedulers::run_loop runLoop;
+
+        bool running = false;
 
     };
 

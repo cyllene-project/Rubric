@@ -3,6 +3,8 @@ rxcpp/4.1.0@bincrafters/stable
 xpp/1.4.1@cyllene/stable
 catch2/2.5.0@bincrafters/stable
 protobuf/3.3.0@bincrafters/stable
+bgfx/1.0@cyllene/stable
+blend2d/1.0@cyllene/stable
 
 [generators]
 cmake

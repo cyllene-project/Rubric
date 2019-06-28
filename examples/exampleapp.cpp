@@ -13,14 +13,16 @@ class ExampleApp: public Application {
 public:
     ExampleApp(): Application("org.rubric.exampleapp") { }
 
-    int run() const {
-        return 0;
-    }
 };
 
 int main(int argc, char* argv[]) {
 
-    const auto app = ExampleApp();
 
-    return app.run();
+    auto & context = rubric::draw::Context::getInstance();
+    auto & rl = context.getRunLoop();
+
+    rubric::ui::Window window;
+    //window.title = "Test Window";
+    window.show();
+    rl.run();
 }

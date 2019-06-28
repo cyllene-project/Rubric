@@ -2,28 +2,42 @@
 // Copyright (c) 2019 Chris Daley <chebizarro@gmail.com>
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
-#include "core/RunLoop.h"
+#include <core/RunLoop.h>
+#include <unistd.h>
+
 
 using namespace rubric::core;
 
 rxcpp::schedulers::scheduler RunLoop::get_scheduler() const {
-    return  rxcpp_run_loop.get_scheduler();
+    return  runLoop.get_scheduler();
 }
 
 auto RunLoop::observe_on_run_loop() const {
-    return rxcpp::observe_on_run_loop(rxcpp_run_loop);
+    return rxcpp::observe_on_run_loop(runLoop);
 }
 
 bool RunLoop::empty() const {
-    return rxcpp_run_loop.empty();
+    return runLoop.empty();
 }
 
-void RunLoop::run() const {
+void RunLoop::run() {
+    running = true;
 
-    while (!rxcpp_run_loop.empty()) {
-        while (!rxcpp_run_loop.empty() && rxcpp_run_loop.peek().when < rxcpp_run_loop.now()) {
-            rxcpp_run_loop.dispatch();
+    while (true) {
+
+        if (runLoop.empty())
+            usleep(1000);
+
+        while (!runLoop.empty() && runLoop.peek().when < runLoop.now()) {
+            runLoop.dispatch();
         }
+
+        if(!running)
+            break;
     }
+
+}
+
+RunLoop::RunLoop() {
 
 }

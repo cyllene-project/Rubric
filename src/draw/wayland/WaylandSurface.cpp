@@ -14,3 +14,7 @@ wDisplay(display){ }
 Display & WaylandSurface::getDisplay() {
     return wDisplay;
 }
+
+void WaylandSurface::setTitle(const std::string & surfaceTitle) {
+    title = surfaceTitle;
+}

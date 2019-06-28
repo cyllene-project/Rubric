@@ -16,9 +16,10 @@ namespace rubric::draw {
     class Context {
 
     public:
-        Context() noexcept;
+        explicit Context() noexcept;
         static Context & getInstance();
         const DisplayManager & getDisplayManager() const;
+        RunLoop & getRunLoop();
     private:
         static Context instance;
         DisplayManager displayManager;

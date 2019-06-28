@@ -20,6 +20,7 @@ namespace rubric::draw {
         virtual void show();
         virtual void hide();
         virtual void resize(int, int);
+        virtual void setTitle(const std::string &) = 0;
 
     };
 

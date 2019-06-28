@@ -58,6 +58,10 @@ namespace rubric::ui {
 
         }
 
+        if(!title.get().empty()) {
+
+        }
+
     }
 
     void Window::render(rubric::draw::Surface &) {

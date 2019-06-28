@@ -12,5 +12,5 @@ X11Display::X11Display(x::connection & xconnection) :
 connection(xconnection) {}
 
 std::unique_ptr<Surface> X11Display::createSurface(SurfaceType, int, int, int, int) {
-    return std::make_unique<X11Surface>(*this);
+    return std::make_unique<X11Surface>(*this, connection);
 }

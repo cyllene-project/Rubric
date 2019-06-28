@@ -16,6 +16,7 @@ find_package(X11_XCB REQUIRED)
 find_package(rxcpp REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(xpp REQUIRED)
+find_package(bgfx REQUIRED)
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
@@ -25,8 +26,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
         proto/meta.proto
         proto/application.proto
         proto/view.proto
-        proto/window.proto
-        )
+        proto/window.proto)
 
 add_library(RubricProto STATIC ${PROTO_SRCS} ${PROTO_HDRS})
 
@@ -71,8 +71,7 @@ add_library(RubricDraw SHARED
         src/draw/Renderer.cpp
         include/draw/Renderer.h
         include/draw/Context.h
-        src/draw/Context.cpp
-        )
+        src/draw/Context.cpp)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -88,41 +87,35 @@ add_library(RubricUI SHARED
         src/ui/Container.cpp
         src/ui/Container.h)
 
-add_executable(ExampleApp examples/exampleapp.cpp)
-
-target_link_libraries(ExampleApp
+set(RUBRIC_LIBS
         RubricUI
         RubricDraw
         Rubric
         RubricProto
-        ${PROTOBUF_LIBRARIES}
+        xpp
+        -lxcb
+        -lxcb-randr
         ${X11_XCB_LIBRARIES}
+        ${PROTOBUF_LIBRARIES}
         ${WAYLAND_LIBRARIES})
+
+add_executable(ExampleApp examples/exampleapp.cpp)
+
+target_link_libraries(ExampleApp ${RUBRIC_LIBS})
 
 find_package(Catch2 REQUIRED)
 
-add_executable(tests
+add_executable( tests
         tests/main.cpp
         tests/ui/WindowTests.cpp
         tests/core/ObjectTests.cpp
         tests/core/TypeTests.cpp
         tests/core/PropertyTests.cpp
-        tests/ui/ComposerTests.cpp
-        )
+        tests/ui/ComposerTests.cpp )
 
-target_link_libraries(tests
+target_link_libraries( tests
         Catch2::Catch2
-        RubricUI
-        RubricDraw
-        Rubric
-        RubricProto
-        -lxcb
-        -lxcb-randr
-        ${xpp_LIBRARIES}
-        ${X11_XCB_LIBRARIES}
-        ${PROTOBUF_LIBRARIES}
-        ${WAYLAND_LIBRARIES}
-        )
+        ${RUBRIC_LIBS} )
 
 include(CTest)
 include(Catch)

@@ -3,8 +3,7 @@
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
 #include <Rubric.h>
-#include "ui/View.h"
-
+#include <ui/View.h>
 
 namespace rubric::ui {
 
@@ -14,4 +13,13 @@ namespace rubric::ui {
     std::weak_ptr<View> View::getParent() const {
         return parent;
     }
+
+    void View::addLayoutManager(std::unique_ptr<LayoutManager> lm) {
+        layoutManager = std::move(lm);
+    }
+
+    void View::render(rubric::draw::Surface &) {
+
+    }
+
 }

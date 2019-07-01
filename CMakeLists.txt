@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 project(Rubric)
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 include(cmake/conanbuildinfo.cmake)
@@ -17,6 +18,7 @@ find_package(rxcpp REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(xpp REQUIRED)
 find_package(bgfx REQUIRED)
+find_package(kiwi REQUIRED)
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
@@ -71,7 +73,13 @@ add_library(RubricDraw SHARED
         src/draw/Renderer.cpp
         include/draw/Renderer.h
         include/draw/Context.h
-        src/draw/Context.cpp)
+        src/draw/Context.cpp
+        src/draw/text/Context.cpp
+        src/draw/text/Context.h
+        src/draw/text/Layout.cpp
+        src/draw/text/Layout.h
+        src/draw/text/GlyphItem.cpp
+        src/draw/text/GlyphItem.h src/draw/text/Item.cpp src/draw/text/Item.h src/draw/text/Font.cpp src/draw/text/Font.h src/draw/RenderNode.cpp src/draw/RenderNode.h src/draw/Painter.cpp src/draw/Painter.h src/draw/Transform.cpp src/draw/Transform.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -85,7 +93,10 @@ add_library(RubricUI SHARED
         src/ui/Control.cpp
         include/ui/Control.h
         src/ui/Container.cpp
-        src/ui/Container.h)
+        src/ui/Container.h
+        src/ui/LayoutManager.cpp
+        include/ui/LayoutManager.h
+        src/ui/Label.cpp src/ui/Label.h)
 
 set(RUBRIC_LIBS
         RubricUI
@@ -105,17 +116,17 @@ target_link_libraries(ExampleApp ${RUBRIC_LIBS})
 
 find_package(Catch2 REQUIRED)
 
-add_executable( tests
+add_executable(tests
         tests/main.cpp
         tests/ui/WindowTests.cpp
         tests/core/ObjectTests.cpp
         tests/core/TypeTests.cpp
         tests/core/PropertyTests.cpp
-        tests/ui/ComposerTests.cpp )
+        tests/ui/ComposerTests.cpp)
 
-target_link_libraries( tests
+target_link_libraries(tests
         Catch2::Catch2
-        ${RUBRIC_LIBS} )
+        ${RUBRIC_LIBS})
 
 include(CTest)
 include(Catch)

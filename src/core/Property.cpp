@@ -7,19 +7,21 @@
 
 
 std::string rubric::Property<std::string>::operator=(char const* value) {
-    return set(value);
+    set(value);
+    return data;
 }
 
 std::string rubric::Property<std::string>::get() const {
     return data;
 }
 
-std::string rubric::Property<std::string>::set(std::string const & value) {
+void rubric::Property<std::string>::set(std::string const & value) {
     data = value;
 }
 
 std::string rubric::Property<std::string>::operator=(const std::any & value) {
-    return set(std::any_cast<std::string>(value));
+    set(std::any_cast<std::string>(value));
+    return data;
 }
 
 bool rubric::Property<std::string>::operator==(const std::string other) const {

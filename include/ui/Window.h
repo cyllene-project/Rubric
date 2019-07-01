@@ -26,6 +26,7 @@ namespace rubric::ui {
         void realize() override;
         std::shared_ptr<const Type> & getType() const override;
         void render(rubric::draw::Surface &) override;
+        void render(rubric::draw::Painter &) override;
         /**
          * The Window Title.
          * The Window Title as displayed in the Window Title Bar

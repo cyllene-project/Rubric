@@ -8,7 +8,7 @@ using namespace rubric;
 using namespace rubric::draw;
 using namespace rubric::draw::x11;
 
-X11Surface::X11Surface(X11Display & display, x::connection & c):
+X11Surface::X11Surface(X11Display &display, x::connection &c, SurfaceType surfaceType, int x, int y, int width, int height) :
 xDisplay(display),
 connection(c) {
     auto screen = connection.screen_of_display(0);
@@ -16,7 +16,7 @@ connection(c) {
     xpp::x::create_window(connection,
             XCB_COPY_FROM_PARENT,
             window, screen->root,
-            0, 0, 150, 150, 10,
+            x, y, width, height, 10,
             XCB_WINDOW_CLASS_INPUT_OUTPUT,
             screen->root_visual,
             0, nullptr);

@@ -50,17 +50,19 @@ namespace rubric {
             return data;
         }
 
+        /*
         T& operator=(const T & value) {
             return set(value);
-        }
+        }*/
 
         T operator=(const std::any & value) {
             return set(std::any_cast<T>(value));
         }
 
+        /*
         T operator=(char const * value) {
             return set(value);
-        }
+        }*/
 
         T operator=(const T value) {
             return set(value);

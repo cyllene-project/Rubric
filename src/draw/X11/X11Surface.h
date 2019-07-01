@@ -13,7 +13,7 @@ namespace rubric::draw::x11 {
     class X11Surface: public Surface {
 
     public:
-        explicit X11Surface(X11Display &, x::connection &);
+        explicit X11Surface(X11Display &, x::connection &, SurfaceType, int, int, int, int);
         Display & getDisplay() override;
         void setTitle(const std::string &) override;
 

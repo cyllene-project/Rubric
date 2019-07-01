@@ -15,14 +15,24 @@ public:
 
 };
 
+class TestWindow: public ui::Window {
+
+public:
+    TestWindow() : ui::Window() { }
+
+    ~TestWindow() {
+        std::cout << "Destroying Window" << std::endl;
+    }
+};
+
 int main(int argc, char* argv[]) {
 
 
     auto & context = rubric::draw::Context::getInstance();
     auto & rl = context.getRunLoop();
 
-    rubric::ui::Window window;
-    //window.title = "Test Window";
+    TestWindow window;
+    window.title = "Test Window";
     window.show();
     rl.run();
 }

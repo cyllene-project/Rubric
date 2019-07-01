@@ -11,6 +11,6 @@ using namespace rubric::draw;
 X11Display::X11Display(x::connection & xconnection) :
 connection(xconnection) {}
 
-std::unique_ptr<Surface> X11Display::createSurface(SurfaceType, int, int, int, int) {
-    return std::make_unique<X11Surface>(*this, connection);
+std::unique_ptr<Surface> X11Display::createSurface(SurfaceType surfaceType, int x, int y, int width, int height) {
+    return std::make_unique<X11Surface>(*this, connection, surfaceType, x, y, width, height);
 }

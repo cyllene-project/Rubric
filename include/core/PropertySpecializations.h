@@ -16,7 +16,7 @@ namespace rubric {
     class Property<std::string> {
         std::string data;
     public:
-        std::string set(std::string const &);
+        void set(std::string const &);
         std::string get() const;
         std::string operator=(char const*);
         std::string operator=(const std::any &);

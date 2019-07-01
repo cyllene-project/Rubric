@@ -47,7 +47,7 @@ namespace rubric::ui {
                         .getDisplayManager()
                         .getDefaultDisplay()
                         ->createSurface(
-                            SurfaceType::topLevel, 0, 0, 0, 0);
+                            SurfaceType::topLevel, 0, 0, 100, 100);
                 break;
 
             default:
@@ -67,4 +67,9 @@ namespace rubric::ui {
     void Window::render(rubric::draw::Surface &) {
 
     }
+
+    void Window::render(rubric::draw::Painter &) {
+
+    }
+
 }

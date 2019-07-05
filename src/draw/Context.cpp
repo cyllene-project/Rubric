@@ -24,14 +24,18 @@ namespace rubric::draw {
         if (!display) {
             displayManager.openDisplay("");
         }
-
     }
+
+    std::shared_ptr<Display> Context::getDefaultDisplay() const {
+        return displayManager.getDefaultDisplay();
+    }
+
 
     const DisplayManager& Context::getDisplayManager() const {
         return displayManager;
     }
 
-    RunLoop & Context::getRunLoop() {
+    MainLoop & Context::getRunLoop() {
         return runLoop;
     }
 }

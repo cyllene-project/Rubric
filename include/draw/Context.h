@@ -7,7 +7,7 @@
 
 #include <draw/DisplayManager.h>
 #include <memory>
-#include "core/RunLoop.h"
+#include "core/MainLoop.h"
 
 namespace rubric::draw {
 
@@ -18,12 +18,13 @@ namespace rubric::draw {
     public:
         explicit Context() noexcept;
         static Context & getInstance();
+        std::shared_ptr<Display> getDefaultDisplay() const;
         const DisplayManager & getDisplayManager() const;
-        RunLoop & getRunLoop();
+        MainLoop & getRunLoop();
     private:
         static Context instance;
         DisplayManager displayManager;
-        RunLoop runLoop;
+        MainLoop runLoop;
 
     };
 }

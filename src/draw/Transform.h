@@ -13,7 +13,7 @@ namespace rubric::draw {
 
         Category category;
 
-        Transform & next;
+       // Transform & next;
 
     };
 

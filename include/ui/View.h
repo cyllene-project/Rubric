@@ -8,9 +8,12 @@
 #include <memory>
 #include <draw/Surface.h>
 #include <core/Property.h>
-#include <draw/Painter.h>
+#include <draw/Frame.h>
+#include <draw/Region.h>
+#include <draw/Renderer.h>
 #include "core/Object.h"
 #include "LayoutManager.h"
+
 
 namespace rubric::ui {
 
@@ -23,9 +26,9 @@ namespace rubric::ui {
         virtual void show() = 0;
         virtual void hide() = 0;
         virtual void realize() = 0;
-        virtual void render(rubric::draw::Painter &) = 0;
+        virtual void render(rubric::draw::Frame &) = 0;
+        virtual std::tuple<int, int> getSurfaceTransform() = 0;
         // Virtual methods that can be overriden by subclasses
-        virtual void render(rubric::draw::Surface &);
         // Base implementations
         void addLayoutManager(std::unique_ptr<LayoutManager>);
         std::weak_ptr<View> getParent() const;
@@ -34,8 +37,10 @@ namespace rubric::ui {
         Property<bool> visible { false };
 
     protected:
+        void render(rubric::draw::Surface &, draw::Region);
         std::weak_ptr<View> parent;
         std::unique_ptr<LayoutManager> layoutManager;
+        std::unique_ptr<draw::Renderer> renderer;
 
     };
 

@@ -6,6 +6,11 @@
 
 using namespace rubric::draw;
 
+/*
+rxcpp::observable<Surface&> Surface::onRender() {
+    return render.get_observable();
+}*/
+
 void Surface::show() {
 
 }

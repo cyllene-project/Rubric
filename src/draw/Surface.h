@@ -6,6 +6,8 @@
 #define RUBRIC_SURFACE_H
 
 #include <memory>
+#include <rxcpp/rx.hpp>
+#include "Region.h"
 
 namespace rubric::draw {
 
@@ -21,6 +23,15 @@ namespace rubric::draw {
         virtual void hide();
         virtual void resize(int, int);
         virtual void setTitle(const std::string &) = 0;
+
+        auto onRender() {
+            return render.get_observable();
+        }
+
+
+    private:
+       rxcpp::subjects::subject<Region> render;
+
 
     };
 

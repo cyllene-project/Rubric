@@ -41,8 +41,8 @@ add_library(Rubric SHARED
         src/core/Type.cpp
         include/core/Object.h
         src/core/Object.cpp
-        src/core/RunLoop.cpp
-        include/core/RunLoop.h
+        src/core/MainLoop.cpp
+        include/core/MainLoop.h
         src/core/Property.cpp
         include/core/Property.h
         include/core/PropertyDef.h
@@ -79,7 +79,19 @@ add_library(RubricDraw SHARED
         src/draw/text/Layout.cpp
         src/draw/text/Layout.h
         src/draw/text/GlyphItem.cpp
-        src/draw/text/GlyphItem.h src/draw/text/Item.cpp src/draw/text/Item.h src/draw/text/Font.cpp src/draw/text/Font.h src/draw/RenderNode.cpp src/draw/RenderNode.h src/draw/Painter.cpp src/draw/Painter.h src/draw/Transform.cpp src/draw/Transform.h)
+        src/draw/text/GlyphItem.h
+        src/draw/text/Item.cpp
+        src/draw/text/Item.h
+        src/draw/text/Font.cpp
+        src/draw/text/Font.h
+        src/draw/RenderNode.cpp
+        src/draw/RenderNode.h
+        src/draw/Frame.cpp
+        src/draw/Frame.h
+        src/draw/Transform.cpp
+        src/draw/Transform.h
+        src/draw/Region.cpp
+        src/draw/Region.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -113,6 +125,28 @@ set(RUBRIC_LIBS
 add_executable(ExampleApp examples/exampleapp.cpp)
 
 target_link_libraries(ExampleApp ${RUBRIC_LIBS})
+
+find_library(LIBOAUTH_LIBRARY NAMES oauth)
+
+set(LIBOAUTH_LIBRARIES ${LIBOAUTH_LIBRARY})
+set(LIBOAUTH_INCLUDE_DIRS ${LIBOAUTH_INCLUDE_DIR})
+
+find_package_handle_standard_args(liboauth DEFAULT_MSG
+        LIBOAUTH_LIBRARY LIBOAUTH_INCLUDE_DIR)
+mark_as_advanced(LIBOAUTH INCLUDE_DIR LIBOAUTH_LIBRARY)
+
+find_package(jsonformoderncpp REQUIRED)
+find_package(range-v3 REQUIRED)
+find_package(CURL REQUIRED)
+include_directories(${jsonformoderncpp_INCLUDE_DIR} ${range-v3_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
+
+add_executable(Twitter
+        examples/twitter/main.cpp
+        examples/twitter/TwitterApp.cpp
+        examples/twitter/TwitterApp.h
+        examples/twitter/tweets.cpp examples/twitter/rxcurl.cpp examples/twitter/model.cpp)
+
+target_link_libraries(Twitter ${RUBRIC_LIBS} ${CURL_LIBRARIES} ${LIBOAUTH_LIBRARY})
 
 find_package(Catch2 REQUIRED)
 

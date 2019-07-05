@@ -18,8 +18,15 @@ namespace rubric::ui {
         layoutManager = std::move(lm);
     }
 
-    void View::render(rubric::draw::Surface &) {
+    void View::render(draw::Surface & surface, draw::Region region) {
 
+        auto frame = std::make_shared<draw::Frame>();
+
+        auto [x, y] = getSurfaceTransform();
+        //frame->translate(x, y);
+        render(*frame);
+        // auto root = frame.toNode(frame);
+        renderer->render(frame);
     }
 
 }

@@ -32,6 +32,11 @@ namespace rubric {
 
         const auto & getWindows() const;
 
+
+        struct State {
+
+        };
+
     private:
         const std::string appId;
         draw::Context & context;

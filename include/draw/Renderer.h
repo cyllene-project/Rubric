@@ -10,12 +10,13 @@
 
 namespace rubric::draw {
 
+    class Frame;
+
     class Renderer {
 
     public:
-        virtual void realize(std::shared_ptr<Surface> &) = 0;
-
-
+        virtual void realize(std::shared_ptr<Surface>) = 0;
+        virtual void render(std::shared_ptr<Frame>) = 0;
     };
 }
 

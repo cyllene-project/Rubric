@@ -81,11 +81,11 @@ namespace rubric {
         }
 
         auto subscribe() {
-            return valueChanged;
+            return valueChanged.get_observable();
         }
 
     private:
-        rxcpp::subjects::behavior<T> valueChanged;
+        rxcpp::subjects::subject<T> valueChanged;
     };
 }
 

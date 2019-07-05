@@ -13,13 +13,17 @@
 
 namespace rubric::draw {
 
-    class Painter {
+    class Frame {
+
+    public:
+        explicit Frame();
 
         //std::shared_ptr<RenderNode> getNode();
         //std::unique_ptr<RenderNode> toNode();
 
         //void transform(Matrix);
         //void transform(Point);
+
 
 
     private:
@@ -31,6 +35,9 @@ namespace rubric::draw {
             std::any data;
         };
 
+        Frame::State & getCurrentState();
+
+        void pushState();
 
         std::vector<State> states;
         std::vector<std::unique_ptr<RenderNode>> node;

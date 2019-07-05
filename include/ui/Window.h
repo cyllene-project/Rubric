@@ -25,8 +25,9 @@ namespace rubric::ui {
         void hide() override;
         void realize() override;
         std::shared_ptr<const Type> & getType() const override;
-        void render(rubric::draw::Surface &) override;
-        void render(rubric::draw::Painter &) override;
+        void render(rubric::draw::Surface &);
+        void render(rubric::draw::Frame &) override;
+        std::tuple<int, int> getSurfaceTransform() override;
         /**
          * The Window Title.
          * The Window Title as displayed in the Window Title Bar
@@ -36,7 +37,6 @@ namespace rubric::ui {
 
     private:
         WindowType windowType;
-        std::unique_ptr<Renderer> renderer;
         std::unique_ptr<Surface> surface;
     };
 }

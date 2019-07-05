@@ -43,8 +43,7 @@ namespace rubric::ui {
         }
         switch (windowType) {
             case WindowType::topLevel:
-                surface = rubric::ui::Context::getInstance()
-                        .getDisplayManager()
+                surface = Context::getInstance()
                         .getDefaultDisplay()
                         ->createSurface(
                             SurfaceType::topLevel, 0, 0, 100, 100);
@@ -53,6 +52,11 @@ namespace rubric::ui {
             default:
                 break;
         }
+
+        surface->onRender()
+        .subscribe([this](Region r) {
+            View::render(*surface, r);
+        });
 
         if (!renderer) {
 
@@ -64,12 +68,12 @@ namespace rubric::ui {
 
     }
 
-    void Window::render(rubric::draw::Surface &) {
+    void Window::render(rubric::draw::Frame &) {
 
     }
 
-    void Window::render(rubric::draw::Painter &) {
 
+    std::tuple<int, int> Window::getSurfaceTransform() {
+        return std::tuple<int, int>(0,0);
     }
-
 }

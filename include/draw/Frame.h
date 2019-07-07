@@ -5,8 +5,8 @@
 #ifndef RUBRIC_PAINTER_H
 #define RUBRIC_PAINTER_H
 
-#include "RenderNode.h"
-#include "Transform.h"
+#include "draw/RenderNode.h"
+#include "draw/Transform.h"
 #include <vector>
 #include <memory>
 #include <any>

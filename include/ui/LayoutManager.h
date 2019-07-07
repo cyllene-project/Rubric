@@ -18,7 +18,6 @@ namespace rubric::ui {
         virtual void measure(View &, Orientation, int, int, int, int, int) = 0;
         virtual void allocate(View &, int, int, int) = 0;
 
-
     };
 }
 

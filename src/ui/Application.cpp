@@ -2,10 +2,11 @@
 // Copyright (c) 2019 Chris Daley <chebizarro@gmail.com>
 // This code is licensed under MIT license (see LICENSE.txt for details)
 
-#include "Application.h"
+#include "ui/Application.h"
 #include "draw/Context.h"
 
 using namespace rubric;
+using namespace rubric::ui;
 using namespace rubric::draw;
 
 Application::Application(const std::string & id):
@@ -20,7 +21,7 @@ int Application::run() {
     return EXIT_SUCCESS;
 }
 
-void Application::addWindow(std::shared_ptr<rubric::ui::Window> window) {
+void Application::addWindow(std::shared_ptr<Window> window) {
     windows.push_back(window);
 }
 

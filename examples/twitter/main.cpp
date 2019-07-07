@@ -5,6 +5,9 @@
 #include "TwitterApp.h"
 
 int main(int argc, char *argv[]) {
+
     auto app = TwitterApp("org.rubric.Twitter");
+
     return app.run();
+
 }

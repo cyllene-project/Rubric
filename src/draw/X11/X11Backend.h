@@ -12,7 +12,7 @@ namespace rubric::draw::x11 {
 class X11Backend : public Backend {
 
 public:
-    std::unique_ptr<Display> open(const std::string &) const override;
+    std::unique_ptr<Display> open(rubric::draw::Context &, const std::string &) const override;
     std::string getName() const override;
 
 };

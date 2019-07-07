@@ -30,7 +30,7 @@ namespace rubric::draw::x11 {
 
         explicit X11Display(x::connection &);
 
-        std::unique_ptr<Surface> createSurface(SurfaceType, int, int, int, int) override;
+        std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) override;
 
     private:
 

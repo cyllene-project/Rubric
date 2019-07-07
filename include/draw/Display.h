@@ -14,7 +14,7 @@ namespace rubric::draw {
     class Display {
 
     public:
-        virtual std::unique_ptr<Surface> createSurface(SurfaceType, int, int, int, int) = 0;
+        virtual std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) = 0;
     };
 
 }

@@ -23,16 +23,19 @@ namespace rubric::ui {
     public:
         // Abstract methods to be implemented by each subclass
         virtual void addSubView(View &) = 0;
-        virtual void show() = 0;
         virtual void hide() = 0;
         virtual void realize() = 0;
-        virtual void render(rubric::draw::Frame &) = 0;
+        virtual void draw(rubric::draw::Frame &) = 0;
         virtual std::tuple<int, int> getSurfaceTransform() = 0;
+
         // Virtual methods that can be overriden by subclasses
+        virtual void show();
+
         // Base implementations
         void addLayoutManager(std::unique_ptr<LayoutManager>);
         std::weak_ptr<View> getParent() const;
         std::shared_ptr<const Type> & getType() const override;
+
         // Properties
         Property<bool> visible { false };
 

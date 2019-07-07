@@ -24,9 +24,21 @@ namespace rubric::ui {
 
         auto [x, y] = getSurfaceTransform();
         //frame->translate(x, y);
-        render(*frame);
+        draw(*frame);
         // auto root = frame.toNode(frame);
         renderer->render(frame);
+    }
+
+    void View::show() {
+        if(!visible) {
+
+            auto p = parent.lock();
+            if(p) {
+                // queue resize
+                // compute the expansion
+            }
+
+        }
     }
 
 }

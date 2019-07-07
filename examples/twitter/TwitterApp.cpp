@@ -19,32 +19,24 @@ TwitterApp::TwitterApp(const std::string & id) : Application(id){
 
     // add settings
 
-    subjects::subject<int> framebus;
-    auto frameout = framebus.get_subscriber();
-    auto sendframe = [=]() {
-        frameout.on_next(1);
-    };
-
-    auto frames = framebus.get_observable();
-
     auto & mainLoop = rubric::draw::Context::getInstance().getRunLoop();
 
+    auto frames = mainLoop.getFrameBus();
     auto mainthreadid = mainLoop.getMainThreadId();
-
     auto mainthread = mainLoop.getMainThread();
+    auto poolthread = mainLoop.getEventLoop();
 
     auto tweetthread = observe_on_new_thread();
-
     auto factory = create_rxcurl();
 
-    auto poolthread = mainLoop.getEventLoop();
 
     composite_subscription lifetime;
 
+
     // ==== Constants - paths
     const string URL = "https://stream.twitter.com/1.1/statuses/";
-
     std::string settingsFile("/settings.json");
+
 
     rxsub::replay<json, decltype(mainthread)> setting_update(1, mainthread, lifetime);
     auto setting_updates = setting_update.get_observable();
@@ -60,18 +52,16 @@ TwitterApp::TwitterApp(const std::string & id) : Application(id){
     };
 
     json settings;
-
     // initial update
     update_settings(settings);
 
-    /* filter settings updates to changes that change the url for the twitter stream.
-
-   distinct_until_changed is used to filter out settings updates that do not change the url
-
-   debounce is used to wait until the updates pause before signaling the url has changed.
-     this is important since typing in keywords would cause many intermediate changes to the url
-     and twitter rate limits the user if there are too many fast restarts.
-*/
+    /*
+     * filter settings updates to changes that change the url for the twitter stream.
+     * distinct_until_changed is used to filter out settings updates that do not change the url
+     * debounce is used to wait until the updates pause before signaling the url has changed.
+     * this is important since typing in keywords would cause many intermediate changes to the url
+     * and twitter rate limits the user if there are too many fast restarts.
+     */
     auto urlchanges = setting_updates |
           rxo::map([=](const json& settings){
               string url = URL + settings["Query"]["Action"].get<std::string>() + ".json?";

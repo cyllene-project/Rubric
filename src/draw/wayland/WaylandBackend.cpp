@@ -10,7 +10,7 @@ using namespace rubric::draw;
 
 RUBRIC_DRAW_REGISTER_BACKEND(WaylandBackend)
 
-std::unique_ptr<Display> WaylandBackend::open(const std::string &displayName) const {
+std::unique_ptr<Display> WaylandBackend::open(rubric::draw::Context &, const std::string &displayName) const {
 
     WLDisplay wl_display;
 

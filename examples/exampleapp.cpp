@@ -4,7 +4,7 @@
 
 
 #include "Rubric.h"
-#include "Application.h"
+#include "ui/Application.h"
 
 #include <rxcpp/rx.hpp>
 

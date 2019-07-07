@@ -6,7 +6,7 @@
 #define RUBRIC_TWITTERAPP_H
 
 
-#include <Application.h>
+#include <ui/Application.h>
 
 class TwitterApp: public rubric::Application {
 

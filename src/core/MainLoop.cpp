@@ -16,11 +16,22 @@ MainLoop::MainThread MainLoop::getMainThread() const {
     return rxcpp::observe_on_run_loop(runLoop);
 }
 
+MainLoop::FrameBus MainLoop::getFrameBus() const {
+    return framebus.get_observable();
+}
+
 bool MainLoop::empty() const {
     return runLoop.empty();
 }
 
 void MainLoop::run() {
+
+    auto frameout = framebus.get_subscriber();
+
+    auto sendframe = [=]() {
+        frameout.on_next(1);
+    };
+
 
     while (lifetime.is_subscribed()) {
 
@@ -35,7 +46,7 @@ void MainLoop::run() {
             runLoop.dispatch();
         }
 
-        // sendFrame();
+        sendframe();
 
         while (!runLoop.empty() && runLoop.peek().when < runLoop.now()) {
             runLoop.dispatch();

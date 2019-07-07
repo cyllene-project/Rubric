@@ -6,13 +6,12 @@
 #include "X11Display.h"
 
 using namespace rubric::draw::x11;
+using namespace rubric::draw;
 using namespace rubric;
 
 RUBRIC_DRAW_REGISTER_BACKEND(X11Backend)
 
-std::unique_ptr<draw::Display> X11Backend::open(const std::string &displayName) const {
-
-    using xcb_window = xpp::window<xcb_connection_t *>;
+std::unique_ptr<Display> X11Backend::open(rubric::draw::Context &, const std::string &displayName) const {
 
     static x::connection connection;
     static x::registry registry(connection);

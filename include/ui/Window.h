@@ -26,7 +26,7 @@ namespace rubric::ui {
         void realize() override;
         std::shared_ptr<const Type> & getType() const override;
         void render(rubric::draw::Surface &);
-        void render(rubric::draw::Frame &) override;
+        void draw(rubric::draw::Frame &) override;
         std::tuple<int, int> getSurfaceTransform() override;
         /**
          * The Window Title.

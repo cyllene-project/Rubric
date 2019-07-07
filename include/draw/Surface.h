@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <rxcpp/rx.hpp>
-#include "Region.h"
+#include "draw/Region.h"
 
 namespace rubric::draw {
 
@@ -30,8 +30,8 @@ namespace rubric::draw {
 
 
     private:
-       rxcpp::subjects::subject<Region> render;
-
+        rxcpp::subjects::subject<Region> render;
+        std::shared_ptr<Surface> parent;
 
     };
 

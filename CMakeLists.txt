@@ -65,7 +65,7 @@ add_library(RubricDraw SHARED
         src/draw/X11/X11Backend.cpp
         src/draw/X11/X11Backend.h
         src/draw/Surface.cpp
-        src/draw/Surface.h
+        include/draw/Surface.h
         src/draw/X11/X11Surface.cpp
         src/draw/X11/X11Surface.h
         src/draw/wayland/WaylandSurface.cpp
@@ -87,7 +87,7 @@ add_library(RubricDraw SHARED
         src/draw/RenderNode.cpp
         src/draw/RenderNode.h
         src/draw/Frame.cpp
-        src/draw/Frame.h
+        include/draw/Frame.h
         src/draw/Transform.cpp
         src/draw/Transform.h
         src/draw/Region.cpp
@@ -95,20 +95,20 @@ add_library(RubricDraw SHARED
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
-        include/Application.h
+        include/ui/Application.h
         src/ui/View.cpp
         include/ui/View.h
         src/ui/Window.cpp
         include/ui/Window.h
         src/ui/Composer.cpp
-        src/ui/Composer.h
+        include/ui/Composer.h
         src/ui/Control.cpp
         include/ui/Control.h
         src/ui/Container.cpp
-        src/ui/Container.h
+        include/ui/Container.h
         src/ui/LayoutManager.cpp
         include/ui/LayoutManager.h
-        src/ui/Label.cpp src/ui/Label.h)
+        src/ui/Label.cpp include/ui/Label.h)
 
 set(RUBRIC_LIBS
         RubricUI

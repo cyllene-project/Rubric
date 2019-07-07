@@ -8,6 +8,7 @@
 #include <draw/Display.h>
 #include <memory>
 #include <map>
+#include <draw/Context.h>
 
 #define RUBRIC_DRAW_REGISTER_BACKEND(klass) \
 class klass##Factory : public rubric::draw::BackendFactory { \
@@ -29,7 +30,7 @@ namespace rubric::draw {
 
 class rubric::draw::Backend {
 public:
-    virtual std::unique_ptr<Display> open(const std::string &) const = 0;
+    virtual std::unique_ptr<Display> open(rubric::draw::Context &, const std::string &) const = 0;
     virtual std::string getName() const = 0;
     static void registerBackend(const std::string &, BackendFactory *);
     static std::map<std::string, BackendFactory*> getBackends();

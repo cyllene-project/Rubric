@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include "Display.h"
+#include "Context.h"
 
 namespace rubric::draw {
 
@@ -19,6 +20,9 @@ namespace rubric::draw {
         void setDefaultDisplay(std::shared_ptr<Display>);
 
     private:
+        friend class Context;
+        explicit DisplayManager(Context &);
+        Context & context;
         std::shared_ptr<Display> defaultDisplay = nullptr;;
     };
 

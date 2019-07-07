@@ -46,7 +46,7 @@ namespace rubric::ui {
                 surface = Context::getInstance()
                         .getDefaultDisplay()
                         ->createSurface(
-                            SurfaceType::topLevel, 0, 0, 100, 100);
+                                SurfaceType::topLevel, std::shared_ptr<Surface>(), 0, 0, 100, 100);
                 break;
 
             default:
@@ -68,7 +68,7 @@ namespace rubric::ui {
 
     }
 
-    void Window::render(rubric::draw::Frame &) {
+    void Window::draw(rubric::draw::Frame &) {
 
     }
 

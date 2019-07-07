@@ -11,7 +11,7 @@
 #include "core/Object.h"
 #include "ui/Window.h"
 
-namespace rubric {
+namespace rubric::ui {
 
     class Application: Object {
 
@@ -24,7 +24,7 @@ namespace rubric {
 
         void quit();
 
-        void addWindow(std::shared_ptr<rubric::ui::Window>);
+        void addWindow(std::shared_ptr<Window>);
 
         virtual void startUp();
 
@@ -33,14 +33,10 @@ namespace rubric {
         const auto & getWindows() const;
 
 
-        struct State {
-
-        };
-
     private:
         const std::string appId;
         draw::Context & context;
-        std::vector<std::shared_ptr<rubric::ui::Window>> windows;
+        std::vector<std::shared_ptr<Window>> windows;
     };
 
 }

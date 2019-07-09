@@ -5,26 +5,30 @@
 #ifndef RUBRIC_CONTEXT_H
 #define RUBRIC_CONTEXT_H
 
-#include <draw/DisplayManager.h>
 #include <memory>
 #include "core/MainLoop.h"
+#include <draw/Display.h>
 
 namespace rubric::draw {
-
-    using namespace rubric::core;
 
     class Context {
 
     public:
         explicit Context() noexcept;
+
         static Context & getInstance();
+
         std::shared_ptr<Display> getDefaultDisplay() const;
-        const DisplayManager & getDisplayManager() const;
-        MainLoop & getRunLoop();
+
+        core::MainLoop & getRunLoop();
+
     private:
+
+        class ContextImpl;
+
+        std::unique_ptr<ContextImpl> impl;
+
         static Context instance;
-        DisplayManager displayManager;
-        MainLoop runLoop;
 
     };
 }

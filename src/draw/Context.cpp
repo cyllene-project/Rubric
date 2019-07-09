@@ -4,12 +4,22 @@
 
 #include <iostream>
 #include <draw/Context.h>
-
-#include "draw/Context.h"
+#include <draw/Display.h>
+#include <draw/DisplayManager.h>
 
 using namespace rubric::core;
 
 namespace rubric::draw {
+
+    struct Context::ContextImpl {
+
+        explicit ContextImpl(Context & ctxt):
+        displayManager(ctxt){ }
+
+        DisplayManager displayManager;
+        MainLoop runLoop;
+    };
+
 
     Context Context::instance;
 
@@ -17,25 +27,22 @@ namespace rubric::draw {
         return instance;
     }
 
-    Context::Context() noexcept {
+    Context::Context() noexcept :
+    impl(std::make_unique<ContextImpl>(*this)) {
 
-        auto display = displayManager.getDefaultDisplay();
+        auto display = impl->displayManager.getDefaultDisplay();
 
         if (!display) {
-            displayManager.openDisplay("");
+            impl->displayManager.openDisplay("");
         }
     }
 
     std::shared_ptr<Display> Context::getDefaultDisplay() const {
-        return displayManager.getDefaultDisplay();
+        return impl->displayManager.getDefaultDisplay();
     }
 
-
-    const DisplayManager& Context::getDisplayManager() const {
-        return displayManager;
-    }
 
     MainLoop & Context::getRunLoop() {
-        return runLoop;
+        return impl->runLoop;
     }
 }

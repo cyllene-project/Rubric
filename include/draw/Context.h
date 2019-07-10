@@ -14,20 +14,19 @@ namespace rubric::draw {
     class Context {
 
     public:
-        explicit Context() noexcept;
-
         static Context & getInstance();
 
         std::shared_ptr<Display> getDefaultDisplay() const;
 
         core::MainLoop & getRunLoop();
 
+        core::MainLoop::FrameBus getFrameBus() const;
+
     private:
+        explicit Context() noexcept;
 
         class ContextImpl;
-
         std::unique_ptr<ContextImpl> impl;
-
         static Context instance;
 
     };

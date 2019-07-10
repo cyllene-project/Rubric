@@ -21,6 +21,8 @@ namespace rubric::ui {
     class View: public Object {
 
     public:
+        virtual ~View() = default;
+
         // Abstract methods to be implemented by each subclass
         virtual void addSubView(View &) = 0;
         virtual void hide() = 0;

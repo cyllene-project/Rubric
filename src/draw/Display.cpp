@@ -6,3 +6,9 @@
 
 using namespace rubric::draw;
 
+Display::Display(rubric::draw::Context & ctxt) noexcept :
+context(ctxt){ }
+
+Context& Display::getContext() const noexcept {
+    return context;
+}

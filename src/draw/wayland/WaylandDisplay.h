@@ -16,7 +16,7 @@ namespace rubric::draw::wayland {
     class WaylandDisplay: public Display {
 
     public:
-        explicit WaylandDisplay(WLDisplay);
+        explicit WaylandDisplay(Context &, WLDisplay) noexcept;
         std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) override;
 
     private:

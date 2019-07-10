@@ -10,7 +10,7 @@ using namespace rubric::draw;
 
 RUBRIC_DRAW_REGISTER_BACKEND(WaylandBackend)
 
-std::unique_ptr<Display> WaylandBackend::open(rubric::draw::Context &, const std::string &displayName) const {
+std::unique_ptr<Display> WaylandBackend::open(rubric::draw::Context & ctxt, const std::string &displayName) const {
 
     WLDisplay wl_display;
 
@@ -21,7 +21,7 @@ std::unique_ptr<Display> WaylandBackend::open(rubric::draw::Context &, const std
     if (!wl_display)
         throw std::runtime_error("Unable to connect to the Wayland Server");
 
-    auto display = std::make_unique<WaylandDisplay>(wl_display);
+    auto display = std::make_unique<WaylandDisplay>(ctxt, wl_display);
 
     return display;
 

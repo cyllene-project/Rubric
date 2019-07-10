@@ -22,3 +22,7 @@ void Surface::hide() {
 void Surface::resize(int width, int height) {
 
 }
+
+void Surface::tick() const {
+    render.get_subscriber().on_next(Region { });
+}

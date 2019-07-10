@@ -18,6 +18,8 @@ namespace rubric::ui {
     public:
         explicit Application(const std::string &);
 
+        virtual ~Application() = default;
+
         const std::string & getAppId() const;
 
         int run();

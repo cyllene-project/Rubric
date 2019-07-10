@@ -55,7 +55,8 @@ namespace rubric::ui {
 
         surface->onRender()
         .subscribe([this](Region r) {
-            View::render(*surface, r);
+            //std::cout << "rendering" << std::endl;
+            //View::render(*surface, r);
         });
 
         if (!renderer) {

@@ -16,7 +16,6 @@ namespace rubric::draw::x11 {
         explicit X11Surface(X11Display &, x::connection &, SurfaceType, int, int, int, int);
         Display & getDisplay() override;
         void setTitle(const std::string &) override;
-
     private:
         X11Display & xDisplay;
         x::connection & connection;

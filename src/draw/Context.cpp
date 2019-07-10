@@ -12,14 +12,11 @@ using namespace rubric::core;
 namespace rubric::draw {
 
     struct Context::ContextImpl {
-
         explicit ContextImpl(Context & ctxt):
         displayManager(ctxt){ }
-
         DisplayManager displayManager;
         MainLoop runLoop;
     };
-
 
     Context Context::instance;
 
@@ -41,6 +38,10 @@ namespace rubric::draw {
         return impl->displayManager.getDefaultDisplay();
     }
 
+
+    MainLoop::FrameBus Context::getFrameBus() const {
+        return impl->runLoop.getFrameBus();
+    }
 
     MainLoop & Context::getRunLoop() {
         return impl->runLoop;

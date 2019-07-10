@@ -11,10 +11,19 @@
 
 namespace rubric::draw {
 
+    class Context;
+
     class Display {
 
     public:
+        explicit Display(Context &) noexcept;
         virtual std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) = 0;
+
+        Context & getContext() const noexcept;
+
+    protected:
+        Context & context;
+
     };
 
 }

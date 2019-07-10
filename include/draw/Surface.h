@@ -24,12 +24,14 @@ namespace rubric::draw {
         virtual void resize(int, int);
         virtual void setTitle(const std::string &) = 0;
 
+        virtual void tick() const;
+
         auto onRender() {
             return render.get_observable();
         }
 
-
     private:
+
         rxcpp::subjects::subject<Region> render;
         std::shared_ptr<Surface> parent;
 

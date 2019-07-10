@@ -5,11 +5,15 @@
 #include "X11Display.h"
 #include "X11Surface.h"
 
+#include <draw/Context.h>
+#include <core/MainLoop.h>
+
 using namespace rubric::draw::x11;
 using namespace rubric::draw;
 
-X11Display::X11Display(x::connection &xconnection) :
-        connection(xconnection) {}
+X11Display::X11Display(Context & ctxt, x::connection &xconnection) :
+    Display(ctxt),
+    connection(xconnection) {}
 
 std::unique_ptr<Surface> X11Display::createSurface(SurfaceType surfaceType,
                                                    std::shared_ptr<Surface> parent,
@@ -17,9 +21,6 @@ std::unique_ptr<Surface> X11Display::createSurface(SurfaceType surfaceType,
                                                    int width, int height) {
 
     auto surface = std::make_unique<X11Surface>(*this, connection, surfaceType, x, y, width, height);
-
-
-
 
     return surface;
 }

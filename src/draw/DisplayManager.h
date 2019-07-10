@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 #include <draw/Display.h>
-#include "Context.h"
+#include "draw/Context.h"
 
 namespace rubric::draw {
 

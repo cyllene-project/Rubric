@@ -28,7 +28,7 @@ namespace rubric::draw::x11 {
 
     public:
 
-        explicit X11Display(x::connection &);
+        explicit X11Display(Context &, x::connection &);
 
         std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) override;
 

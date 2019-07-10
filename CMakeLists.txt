@@ -47,11 +47,11 @@ add_library(Rubric SHARED
         include/core/Property.h
         include/core/PropertyDef.h
         src/core/PropertyDef.cpp
-        include/core/PropertySpecializations.h)
+        include/core/PropertySpecializations.h src/core/Event.cpp include/core/Event.h)
 
 add_library(RubricDraw SHARED
         src/draw/DisplayManager.cpp
-        include/draw/DisplayManager.h
+        src/draw/DisplayManager.h
         src/draw/Display.cpp
         include/draw/Display.h
         src/draw/Backend.cpp
@@ -91,7 +91,7 @@ add_library(RubricDraw SHARED
         src/draw/Transform.cpp
         src/draw/Transform.h
         src/draw/Region.cpp
-        src/draw/Region.h src/draw/blend2d/Blend2DRenderer.cpp src/draw/blend2d/Blend2DRenderer.h)
+        src/draw/Region.h src/draw/blend2d/Blend2DRenderer.cpp src/draw/blend2d/Blend2DRenderer.h src/draw/X11/X11EventHandler.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp
@@ -118,6 +118,7 @@ set(RUBRIC_LIBS
         xpp
         -lxcb
         -lxcb-randr
+        -lX11
         ${X11_XCB_LIBRARIES}
         ${PROTOBUF_LIBRARIES}
         ${WAYLAND_LIBRARIES})

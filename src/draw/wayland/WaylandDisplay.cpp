@@ -14,7 +14,8 @@ static void log_handler (const char *format, va_list args) {
     std::cout << printf(format, args) << std::endl;
 }
 
-WaylandDisplay::WaylandDisplay(WLDisplay display):
+WaylandDisplay::WaylandDisplay(Context & ctxt, WLDisplay display) noexcept:
+Display(ctxt),
 wlDisplay(display){
     wlRegistry = wl_display_get_registry(display);
     wl_log_set_handler_client(log_handler);

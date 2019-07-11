@@ -16,33 +16,8 @@ RUBRIC_DRAW_REGISTER_BACKEND(X11Backend)
 
 std::unique_ptr<rubric::draw::Display>
 X11Backend::open(rubric::draw::Context &ctxt, const std::string &displayName) const {
-    static x::connection connection;
-    static x::registry registry(connection);
-    static EventHandler<x::connection &> eventHandler(connection);
-    registry.attach(0, &eventHandler);
 
-
-    using duration_type = rxcpp::schedulers::scheduler::clock_type::time_point::duration;
-    using namespace std::chrono;
-
-    auto values = rxcpp::observable<>::interval(milliseconds(50 / 3))
-            .time_interval();
-
-    values.subscribe(
-        [&](duration_type v) {
-            connection.flush();
-            registry.dispatch(connection.wait_for_event());
-        },
-        [](std::exception_ptr ep) {
-            try {
-                std::rethrow_exception(ep);
-            } catch (const std::exception &ex) {
-                printf("OnError: %s\n", ex.what());
-            }
-        });
-
-
-    return std::make_unique<X11Display>(ctxt, connection);
+    return std::make_unique<X11Display>(ctxt);
 }
 
 std::string X11Backend::getName() const {

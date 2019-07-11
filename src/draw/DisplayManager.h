@@ -12,9 +12,6 @@
 
 namespace rubric::draw {
 
-
-
-
     class DisplayManager {
 
     public:

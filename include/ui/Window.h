@@ -37,7 +37,7 @@ namespace rubric::ui {
 
     private:
         WindowType windowType;
-        std::unique_ptr<Surface> surface;
+        std::shared_ptr<Surface> surface;
     };
 }
 

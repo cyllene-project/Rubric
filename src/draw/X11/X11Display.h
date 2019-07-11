@@ -7,34 +7,23 @@
 
 #include <draw/Display.h>
 #include <xpp/xpp.hpp>
+#include "X11EventHandler.h"
 
 namespace rubric::draw::x11 {
 
-    namespace x {
-        typedef xpp::connection<> connection;
-        typedef xpp::event::registry<connection &> registry;
-
-        typedef xpp::font<connection &> font;
-        typedef xpp::cursor<connection &> cursor;
-        typedef xpp::window<connection &> window;
-
-        typedef xpp::x::event::key_press<connection &> key_press;
-        typedef xpp::x::event::key_release<connection &> key_release;
-        typedef xpp::x::event::button_press<connection &> button_press;
-    };
-
-
-    class X11Display : public rubric::draw::Display{
+    class X11Display : public rubric::draw::Display {
 
     public:
 
-        explicit X11Display(Context &, x::connection &);
+        explicit X11Display(Context &);
 
-        std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) override;
+        std::shared_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) override;
+
+        EventHandler<x::connection &> eventHandler;
 
     private:
-
-        x::connection & connection;
+        x::connection connection;
+        x::registry registry;
 
     };
 

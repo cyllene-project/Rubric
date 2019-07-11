@@ -17,7 +17,7 @@ namespace rubric::draw {
 
     public:
         explicit Display(Context &) noexcept;
-        virtual std::unique_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) = 0;
+        virtual std::shared_ptr<Surface> createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) = 0;
 
         Context & getContext() const noexcept;
 

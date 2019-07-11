@@ -8,80 +8,96 @@
 #include <xpp/xpp.hpp>
 #include <X11/Xlib.h> // XKeysymToString
 #include <X11/keysym.h> // XK_Escape
+#include <typeindex>
+#include <any>
 
 namespace rubric::draw::x11 {
 
     namespace x {
         using connection = xpp::connection<>;
-
+        using registry = xpp::event::registry<connection &>;
         using window = xpp::window<connection &>;
 
         using key_press = xpp::x::event::key_press<connection &>;
         using key_release = xpp::x::event::key_release<connection &>;
         using button_press = xpp::x::event::button_press<connection &>;
+        using expose = xpp::x::event::expose<connection &>;
     }
 
-    template<typename Connection>
+
+    struct Event {
+        std::any event;
+        const std::type_index typeInfo;
+
+        template<typename E>
+        operator E() const {
+            return std::any_cast<E>(event);
+        }
+
+        template<typename E>
+        bool eventType() {
+            return typeInfo == std::type_index(typeid(E));
+        }
+    };
+
+
+    template<typename Connection, typename ... Extensions>
     class EventHandler :
-            public xpp::event::sink<x::key_press, x::key_release, x::button_press> {
+            public xpp::x::event::dispatcher<Connection>
+            , public Extensions::template event_dispatcher<Connection> ... {
+
 
     public:
-        template <typename C>
-        explicit EventHandler(C && c):
-        m_c(std::forward<C>(c)) {}
+        template<typename C>
+        explicit
+        EventHandler(C && c)
+        : xpp::x::event::dispatcher<Connection>(std::forward<C>(c))
+        , Extensions::template event_dispatcher<Connection>(
+                std::forward<C>(c), c.template extension<Extensions>()) ...{}
 
-        void handle(const x::key_press & e) override {
-            auto kbd_mapping = m_c.get_keyboard_mapping(e->detail, 1);
-            // take the first value from the kbd_mapping list
-            // This might throw, but for simplicity, no error handling here
-            auto keysym = *kbd_mapping.keysyms().begin();
-
-            if (keysym == XK_Escape) {
-                std::cerr << "quitting" << std::endl;
-                // parameter has a default value: XCB_TIME_CURRENT_TIME
-                m_c.ungrab_keyboard();
-                //g_quit = true;
-            } else {
-                std::cerr << "key press: " << XKeysymToString(keysym) << std::endl;
-            }
+        void handle(const std::shared_ptr<xcb_generic_event_t> & event) const {
+            handle<xpp::x::extension, Extensions ...>(event);
         }
 
-        // xpp::event::sink<x::key_release>::handle(...) interface
-        void handle(const x::key_release & e) override {
-            auto kbd_mapping = m_c.get_keyboard_mapping(e->detail, 1);
-            auto keysym = *kbd_mapping.keysyms().begin();
-            std::cerr << "key release: " << XKeysymToString(keysym) << std::endl;
+        rxcpp::observable<Event> eventStream() {
+            return events.get_observable();
         }
 
-        // xpp::event::sink<x::button_press>::handle(...) interface
-        void handle(const x::button_press & e) override {
-            m_c.ungrab_pointer(XCB_TIME_CURRENT_TIME);
-
-            // event & reply accessors have a default template parameter, the c-type
-            // Usable with any type which is constructible from the c-type or
-            // connection + c-type
-            // xcb_window_t grab_window = e.event();
-            x::window grab_window = e.event<x::window>();
-
-            if (e->event == e->root) {
-                // xpp::window, etc. are assignable with the c-type
-                grab_window = e.child();
-                // xpp::window, etc. are implicitly convertible to c-type
-                auto translate = grab_window.translate_coordinates(grab_window, 1, 1);
-                grab_window = translate->child;
-            }
-
-            *m_c.grab_keyboard(true, grab_window,
-                               XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
-
-            std::cerr << "Grabbed " << grab_window
-                      << ". Press Escape to quit." << std::endl;
+        template<typename E>
+        rxcpp::observable<E> eventStream() {
+            return events
+            .get_observable()
+            .filter([](Event e) {
+                return e.eventType<E>();
+            });
         }
 
-
+        rxcpp::subjects::subject<Event> events;
 
     private:
-        Connection m_c;
+
+
+        struct handler {
+            explicit handler(const EventHandler<Connection, Extensions ...> & registry)
+                    : m_registry(registry)
+            {}
+
+            const EventHandler<Connection, Extensions ...> & m_registry;
+
+            template<typename Event>
+            void operator()(const Event & event) const {
+                m_registry
+                .events
+                .get_subscriber()
+                .on_next(rubric::draw::x11::Event { event, typeid(decltype(event)) });
+            }
+        };
+
+        template<typename Extension>
+        bool handle(const std::shared_ptr<xcb_generic_event_t> & event) const {
+            typedef const typename Extension::template event_dispatcher<Connection> & dispatcher;
+            return static_cast<dispatcher>(*this)(handler(*this), event);
+        }
 
     };
 

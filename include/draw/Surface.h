@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <rxcpp/rx.hpp>
+#include <core/Event.h>
 #include "draw/Region.h"
 
 namespace rubric::draw {
@@ -14,6 +15,7 @@ namespace rubric::draw {
     class Display;
 
     enum class SurfaceType { topLevel, menu, popup };
+
 
     class Surface {
 
@@ -26,13 +28,23 @@ namespace rubric::draw {
 
         virtual void tick() const;
 
-        auto onRender() {
-            return render.get_observable();
-        }
+        rxcpp::observable<Region> renderUpdates();
 
-    private:
+        rxcpp::observable<Event> eventStream();
+
+        rxcpp::observable<std::shared_ptr<Surface>> sizeUpdates();
+
+
+
+
+    protected:
 
         rxcpp::subjects::subject<Region> render;
+
+        rxcpp::subjects::subject<Event> events;
+
+        rxcpp::subjects::subject<std::shared_ptr<Surface>> sizeChanged;
+
         std::shared_ptr<Surface> parent;
 
     };

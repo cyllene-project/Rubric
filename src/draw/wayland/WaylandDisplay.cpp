@@ -21,7 +21,7 @@ wlDisplay(display){
     wl_log_set_handler_client(log_handler);
 }
 
-std::unique_ptr<Surface> WaylandDisplay::createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) {
-    return std::make_unique<WaylandSurface>(*this);
+std::shared_ptr<Surface> WaylandDisplay::createSurface(SurfaceType, std::shared_ptr<Surface>, int, int, int, int) {
+    return std::make_shared<WaylandSurface>(*this);
 }
 

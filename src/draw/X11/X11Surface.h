@@ -20,6 +20,9 @@ namespace rubric::draw::x11 {
         X11Display & xDisplay;
         x::connection & connection;
         std::string title;
+        uint32_t window;
+        xcb_screen_t * screen;
+
         bool frameSync = true;
 
     };

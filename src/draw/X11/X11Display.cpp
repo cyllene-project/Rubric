@@ -15,10 +15,7 @@ using duration_type = rxcpp::schedulers::scheduler::clock_type::time_point::dura
 
 X11Display::X11Display(rubric::draw::Context & ctxt) :
     Display(ctxt),
-    registry(connection),
     eventHandler(connection) {
-
-    //registry.attach(0, &eventHandler);
 
     auto values = rxcpp::observable<>::interval(milliseconds(50 / 3))
             .time_interval();

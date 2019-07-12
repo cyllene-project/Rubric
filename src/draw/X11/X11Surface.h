@@ -23,8 +23,6 @@ namespace rubric::draw::x11 {
         uint32_t window;
         xcb_screen_t * screen;
 
-        bool frameSync = true;
-
     };
 
 }

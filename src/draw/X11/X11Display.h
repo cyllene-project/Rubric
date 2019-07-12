@@ -23,7 +23,6 @@ namespace rubric::draw::x11 {
 
     private:
         x::connection connection;
-        x::registry registry;
 
     };
 

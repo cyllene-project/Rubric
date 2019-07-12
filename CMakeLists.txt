@@ -91,7 +91,7 @@ add_library(RubricDraw SHARED
         src/draw/Transform.cpp
         src/draw/Transform.h
         src/draw/Region.cpp
-        src/draw/Region.h src/draw/blend2d/Blend2DRenderer.cpp src/draw/blend2d/Blend2DRenderer.h src/draw/X11/X11EventHandler.h)
+        src/draw/Region.h src/draw/blend2d/Blend2DRenderer.cpp src/draw/blend2d/Blend2DRenderer.h src/draw/X11/X11EventHandler.h src/draw/css/parser/CSSParser.cpp src/draw/css/parser/CSSParser.h src/draw/css/parser/CSSParserContext.cpp src/draw/css/parser/CSSParserContext.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp

@@ -11,8 +11,8 @@ using namespace rubric;
 using namespace rubric::draw;
 using namespace rubric::draw::x11;
 
-X11Surface::X11Surface(X11Display &display, x::connection &c, SurfaceType surfaceType, int x, int y, int width,
-                       int height) :
+X11Surface::X11Surface(
+        X11Display &display, x::connection &c, SurfaceType surfaceType, int x, int y, int width, int height) :
         xDisplay(display),
         connection(c) {
 
@@ -49,6 +49,9 @@ X11Surface::X11Surface(X11Display &display, x::connection &c, SurfaceType surfac
     auto expose = events
             .filter([](Event e) {
                 return e.eventType<x::expose>();
+            })
+            .filter([=](x::expose e) {
+                return (e.window() == window);
             });
 
     expose.subscribe([](x::expose e) {

@@ -17,14 +17,41 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include <draw/css/parser/CSSParserContext.h>
+
+#include "config.h"
 #include "StyleSheetContents.h"
 
-using namespace rubric::draw::css;
+#include "CSSImportRule.h"
+#include "CSSParser.h"
+#include "CSSStyleSheet.h"
+#include "CachedCSSStyleSheet.h"
+#include "ContentRuleListResults.h"
+#include "Document.h"
+#include "Frame.h"
+#include "FrameLoader.h"
+#include "MediaList.h"
+#include "Node.h"
+#include "Page.h"
+#include "PageConsoleClient.h"
+#include "ResourceLoadInfo.h"
+#include "RuleSet.h"
+#include "SecurityOrigin.h"
+#include "StyleRule.h"
+#include "StyleRuleImport.h"
+#include <wtf/Deque.h>
+#include <wtf/NeverDestroyed.h>
+#include <wtf/Ref.h>
+
+#if ENABLE(CONTENT_EXTENSIONS)
+#include "UserContentController.h"
+#endif
+
+namespace WebCore {
 
 // Rough size estimate for the memory cache.
-unsigned StyleSheetContents::estimatedSizeInBytes() const {
-    // Note that this does not take into account size of the strings hanging from various objects.
+unsigned StyleSheetContents::estimatedSizeInBytes() const
+{
+    // Note that this does not take into account size of the strings hanging from various objects. 
     // The assumption is that nearly all of of them are atomic and would exist anyway.
     unsigned size = sizeof(*this);
 
@@ -40,28 +67,29 @@ unsigned StyleSheetContents::estimatedSizeInBytes() const {
 }
 
 StyleSheetContents::StyleSheetContents(StyleRuleImport* ownerRule, const String& originalURL, const CSSParserContext& context)
-        : m_ownerRule(ownerRule)
-        , m_originalURL(originalURL)
-        , m_defaultNamespace(starAtom())
-        , m_isUserStyleSheet(ownerRule && ownerRule->parentStyleSheet() && ownerRule->parentStyleSheet()->isUserStyleSheet())
-        , m_parserContext(context)
-{ }
+    : m_ownerRule(ownerRule)
+    , m_originalURL(originalURL)
+    , m_defaultNamespace(starAtom())
+    , m_isUserStyleSheet(ownerRule && ownerRule->parentStyleSheet() && ownerRule->parentStyleSheet()->isUserStyleSheet())
+    , m_parserContext(context)
+{
+}
 
 StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
-        : RefCounted<StyleSheetContents>()
-        , m_ownerRule(0)
-        , m_originalURL(o.m_originalURL)
-        , m_encodingFromCharsetRule(o.m_encodingFromCharsetRule)
-        , m_importRules(o.m_importRules.size())
-        , m_namespaceRules(o.m_namespaceRules.size())
-        , m_childRules(o.m_childRules.size())
-        , m_namespaces(o.m_namespaces)
-        , m_defaultNamespace(o.m_defaultNamespace)
-        , m_isUserStyleSheet(o.m_isUserStyleSheet)
-        , m_loadCompleted(true)
-        , m_hasSyntacticallyValidCSSHeader(o.m_hasSyntacticallyValidCSSHeader)
-        , m_usesStyleBasedEditability(o.m_usesStyleBasedEditability)
-        , m_parserContext(o.m_parserContext)
+    : RefCounted<StyleSheetContents>()
+    , m_ownerRule(0)
+    , m_originalURL(o.m_originalURL)
+    , m_encodingFromCharsetRule(o.m_encodingFromCharsetRule)
+    , m_importRules(o.m_importRules.size())
+    , m_namespaceRules(o.m_namespaceRules.size())
+    , m_childRules(o.m_childRules.size())
+    , m_namespaces(o.m_namespaces)
+    , m_defaultNamespace(o.m_defaultNamespace)
+    , m_isUserStyleSheet(o.m_isUserStyleSheet)
+    , m_loadCompleted(true)
+    , m_hasSyntacticallyValidCSSHeader(o.m_hasSyntacticallyValidCSSHeader)
+    , m_usesStyleBasedEditability(o.m_usesStyleBasedEditability)
+    , m_parserContext(o.m_parserContext)
 {
     ASSERT(o.isCacheable());
 
@@ -139,18 +167,18 @@ void StyleSheetContents::parserAppendRule(Ref<StyleRuleBase>&& rule)
 StyleRuleBase* StyleSheetContents::ruleAt(unsigned index) const
 {
     ASSERT_WITH_SECURITY_IMPLICATION(index < ruleCount());
-
+    
     unsigned childVectorIndex = index;
     if (childVectorIndex < m_importRules.size())
         return m_importRules[childVectorIndex].get();
 
     childVectorIndex -= m_importRules.size();
-
+    
     if (childVectorIndex < m_namespaceRules.size())
         return m_namespaceRules[childVectorIndex].get();
-
+    
     childVectorIndex -= m_namespaceRules.size();
-
+    
     return m_childRules[childVectorIndex].get();
 }
 
@@ -184,7 +212,7 @@ void StyleSheetContents::parserSetEncodingFromCharsetRule(const String& encoding
 {
     // Parser enforces that there is ever only one @charset.
     ASSERT(m_encodingFromCharsetRule.isNull());
-    m_encodingFromCharsetRule = encoding;
+    m_encodingFromCharsetRule = encoding; 
 }
 
 bool StyleSheetContents::wrapperInsertRule(Ref<StyleRuleBase>&& rule, unsigned index)
@@ -193,7 +221,7 @@ bool StyleSheetContents::wrapperInsertRule(Ref<StyleRuleBase>&& rule, unsigned i
     ASSERT_WITH_SECURITY_IMPLICATION(index <= ruleCount());
     // Parser::parseRule doesn't currently allow @charset so we don't need to deal with it.
     ASSERT(!rule->isCharsetRule());
-
+    
     unsigned childVectorIndex = index;
     if (childVectorIndex < m_importRules.size() || (childVectorIndex == m_importRules.size() && rule->isImportRule())) {
         // Inserting non-import rule before @import is not allowed.
@@ -210,7 +238,7 @@ bool StyleSheetContents::wrapperInsertRule(Ref<StyleRuleBase>&& rule, unsigned i
         return false;
     childVectorIndex -= m_importRules.size();
 
-
+    
     if (childVectorIndex < m_namespaceRules.size() || (childVectorIndex == m_namespaceRules.size() && rule->isNamespaceRule())) {
         // Inserting non-namespace rules other than import rule before @namespace is
         // not allowed.
@@ -220,10 +248,10 @@ bool StyleSheetContents::wrapperInsertRule(Ref<StyleRuleBase>&& rule, unsigned i
         // are present is not allowed.
         if (!m_childRules.isEmpty())
             return false;
-
+        
         StyleRuleNamespace& namespaceRule = downcast<StyleRuleNamespace>(rule.get());
         m_namespaceRules.insert(index, downcast<StyleRuleNamespace>(rule.ptr()));
-
+        
         // For now to be compatible with IE and Firefox if a namespace rule with the same
         // prefix is added, it overwrites previous ones.
         // FIXME: The eventual correct behavior would be to ensure that the last value in
@@ -398,28 +426,28 @@ static bool traverseRulesInVector(const Vector<RefPtr<StyleRuleBase>>& rules, co
         if (handler(*rule))
             return true;
         switch (rule->type()) {
-            case StyleRuleBase::Media: {
-                auto* childRules = downcast<StyleRuleMedia>(*rule).childRulesWithoutDeferredParsing();
-                if (childRules && traverseRulesInVector(*childRules, handler))
-                    return true;
-                break;
-            }
-            case StyleRuleBase::Import:
-                ASSERT_NOT_REACHED();
-                break;
-            case StyleRuleBase::Style:
-            case StyleRuleBase::FontFace:
-            case StyleRuleBase::Page:
-            case StyleRuleBase::Keyframes:
-            case StyleRuleBase::Namespace:
-            case StyleRuleBase::Unknown:
-            case StyleRuleBase::Charset:
-            case StyleRuleBase::Keyframe:
-            case StyleRuleBase::Supports:
+        case StyleRuleBase::Media: {
+            auto* childRules = downcast<StyleRuleMedia>(*rule).childRulesWithoutDeferredParsing();
+            if (childRules && traverseRulesInVector(*childRules, handler))
+                return true;
+            break;
+        }
+        case StyleRuleBase::Import:
+            ASSERT_NOT_REACHED();
+            break;
+        case StyleRuleBase::Style:
+        case StyleRuleBase::FontFace:
+        case StyleRuleBase::Page:
+        case StyleRuleBase::Keyframes:
+        case StyleRuleBase::Namespace:
+        case StyleRuleBase::Unknown:
+        case StyleRuleBase::Charset:
+        case StyleRuleBase::Keyframe:
+        case StyleRuleBase::Supports:
 #if ENABLE(CSS_DEVICE_ADAPTATION)
-                case StyleRuleBase::Viewport:
+        case StyleRuleBase::Viewport:
 #endif
-                break;
+            break;
         }
     }
     return false;
@@ -441,28 +469,28 @@ bool StyleSheetContents::traverseSubresources(const WTF::Function<bool (const Ca
 {
     return traverseRules([&] (const StyleRuleBase& rule) {
         switch (rule.type()) {
-            case StyleRuleBase::Style: {
-                auto* properties = downcast<StyleRule>(rule).propertiesWithoutDeferredParsing();
-                return properties && properties->traverseSubresources(handler);
-            }
-            case StyleRuleBase::FontFace:
-                return downcast<StyleRuleFontFace>(rule).properties().traverseSubresources(handler);
-            case StyleRuleBase::Import:
-                if (auto* cachedResource = downcast<StyleRuleImport>(rule).cachedCSSStyleSheet())
-                    return handler(*cachedResource);
-                return false;
-            case StyleRuleBase::Media:
-            case StyleRuleBase::Page:
-            case StyleRuleBase::Keyframes:
-            case StyleRuleBase::Namespace:
-            case StyleRuleBase::Unknown:
-            case StyleRuleBase::Charset:
-            case StyleRuleBase::Keyframe:
-            case StyleRuleBase::Supports:
+        case StyleRuleBase::Style: {
+            auto* properties = downcast<StyleRule>(rule).propertiesWithoutDeferredParsing();
+            return properties && properties->traverseSubresources(handler);
+        }
+        case StyleRuleBase::FontFace:
+            return downcast<StyleRuleFontFace>(rule).properties().traverseSubresources(handler);
+        case StyleRuleBase::Import:
+            if (auto* cachedResource = downcast<StyleRuleImport>(rule).cachedCSSStyleSheet())
+                return handler(*cachedResource);
+            return false;
+        case StyleRuleBase::Media:
+        case StyleRuleBase::Page:
+        case StyleRuleBase::Keyframes:
+        case StyleRuleBase::Namespace:
+        case StyleRuleBase::Unknown:
+        case StyleRuleBase::Charset:
+        case StyleRuleBase::Keyframe:
+        case StyleRuleBase::Supports:
 #if ENABLE(CSS_DEVICE_ADAPTATION)
-                case StyleRuleBase::Viewport:
+        case StyleRuleBase::Viewport:
 #endif
-                return false;
+            return false;
         };
         ASSERT_NOT_REACHED();
         return false;
@@ -538,4 +566,6 @@ void StyleSheetContents::shrinkToFit()
 {
     m_importRules.shrinkToFit();
     m_childRules.shrinkToFit();
+}
+
 }

@@ -27,14 +27,15 @@
  * SUCH DAMAGE.
  */
 
-#include "config.h"
 #include "BasicShapeFunctions.h"
 
 #include "BasicShapes.h"
+
 #include "CSSBasicShapes.h"
 #include "CSSPrimitiveValueMappings.h"
 #include "CSSValuePool.h"
 #include "Pair.h"
+
 #include "RenderStyle.h"
 #include "SVGPathByteStream.h"
 

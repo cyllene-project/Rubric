@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#include "config.h"
 #include "CSSBasicShapes.h"
 
 #include "CSSMarkup.h"

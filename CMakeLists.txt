@@ -12,6 +12,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include_directories(${Rubric_SOURCE_DIR}/include)
 include_directories(${Rubric_SOURCE_DIR}/src)
 include_directories(${Rubric_SOURCE_DIR}/src/draw/css)
+include_directories(${Rubric_SOURCE_DIR}/src/draw/css/parser)
 
 find_package(Wayland REQUIRED)
 find_package(X11_XCB REQUIRED)
@@ -20,6 +21,37 @@ find_package(Protobuf REQUIRED)
 find_package(xpp REQUIRED)
 find_package(bgfx REQUIRED)
 find_package(kiwi REQUIRED)
+
+# Generate CSS Properties
+find_package(Perl REQUIRED)
+
+set(CSS_PROPERTY_NAMES ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/CSSProperties.json)
+set(CSS_VALUE_KEYWORDS ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/CSSValueKeywords.in ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/SVGCSSValueKeywords.in)
+
+set(CSS_PROPERTY_NAME_FILES
+        CSSPropertyNames.cpp
+        CSSPropertyNames.h
+        StyleBuilder.cpp
+        StylePropertyShorthandFunctions.cpp
+        StylePropertyShorthandFunctions.h )
+
+add_custom_command(
+        OUTPUT  CSSProperties.json ${CSS_PROPERTY_NAME_FILES}
+        COMMAND ${PERL_EXECUTABLE} -pe '' ${CSS_PROPERTY_NAMES} > CSSProperties.json
+        COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makeprop.pl --defines
+        #DEPENDS someInputFile.cpp.in
+)
+
+set(CSS_VALUE_KEYWORD_FILES
+        CSSValueKeywords.h
+        CSSValueKeywords.cpp)
+
+add_custom_command(
+        OUTPUT  CSSValueKeywords.in ${CSS_VALUE_KEYWORD_FILES}
+        COMMAND ${PERL_EXECUTABLE} -pe '' ${CSS_VALUE_KEYWORDS} > CSSValueKeywords.in
+        COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makevalues.pl --defines
+        #DEPENDS someInputFile.cpp.in
+)
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
@@ -38,6 +70,7 @@ target_link_libraries(RubricProto ${PROTOBUF_LIBRARIES})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(Rubric SHARED
+        CSSProperties.json
         include/core/Type.h
         src/core/Type.cpp
         include/core/Object.h
@@ -96,7 +129,11 @@ add_library(RubricDraw SHARED
         src/draw/blend2d/Blend2DRenderer.cpp
         src/draw/blend2d/Blend2DRenderer.h
         src/draw/X11/X11EventHandler.h
+
         # css sources
+        ${CSS_PROPERTY_NAME_FILES}
+        ${CSS_VALUE_KEYWORD_FILES}
+
         src/draw/css/BasicShapeFunctions.cpp
         src/draw/css/CSSAspectRatioValue.cpp
         src/draw/css/CSSBasicShapes.cpp
@@ -264,7 +301,7 @@ add_library(RubricDraw SHARED
         src/draw/css/parser/SizesAttributeParser.h
         src/draw/css/parser/SizesCalcParser.cpp
         src/draw/css/parser/SizesCalcParser.h
-        )
+        src/draw/css/config.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp

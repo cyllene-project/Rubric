@@ -40,19 +40,12 @@
 #include "CSSTokenizer.h"
 #include "CSSVariableData.h"
 #include "CSSVariableReferenceValue.h"
-#include "Document.h"
-#include "Element.h"
-#include "Page.h"
-#include "RenderStyle.h"
-#include "RenderTheme.h"
-#include "RuntimeEnabledFeatures.h"
-#include "Settings.h"
+
 #include "StyleColor.h"
 #include "StyleResolver.h"
 #include "StyleRule.h"
 #include "StyleSheetContents.h"
-#include <wtf/NeverDestroyed.h>
-#include <wtf/text/StringBuilder.h>
+
 
 namespace WebCore {
 
@@ -63,36 +56,36 @@ CSSParser::CSSParser(const CSSParserContext& context)
 
 CSSParser::~CSSParser() = default;
 
-void CSSParser::parseSheet(StyleSheetContents* sheet, const String& string, RuleParsing ruleParsing)
+void CSSParser::parseSheet(StyleSheetContents* sheet, const std::string& string, RuleParsing ruleParsing)
 {
     return CSSParserImpl::parseStyleSheet(string, m_context, sheet, ruleParsing);
 }
 
-void CSSParser::parseSheetForInspector(const CSSParserContext& context, StyleSheetContents* sheet, const String& string, CSSParserObserver& observer)
+void CSSParser::parseSheetForInspector(const CSSParserContext& context, StyleSheetContents* sheet, const std::string& string, CSSParserObserver& observer)
 {
     return CSSParserImpl::parseStyleSheetForInspector(string, context, sheet, observer);
 }
 
-RefPtr<StyleRuleBase> CSSParser::parseRule(const CSSParserContext& context, StyleSheetContents* sheet, const String& string)
+std::shared_ptr<StyleRuleBase> CSSParser::parseRule(const CSSParserContext& context, StyleSheetContents* sheet, const std::string& string)
 {
     return CSSParserImpl::parseRule(string, context, sheet, CSSParserImpl::AllowImportRules);
 }
 
-RefPtr<StyleRuleKeyframe> CSSParser::parseKeyframeRule(const String& string)
+std::shared_ptr<StyleRuleKeyframe> CSSParser::parseKeyframeRule(const std::string& string)
 {
-    RefPtr<StyleRuleBase> keyframe = CSSParserImpl::parseRule(string, m_context, nullptr, CSSParserImpl::KeyframeRules);
+    std::shared_ptr<StyleRuleBase> keyframe = CSSParserImpl::parseRule(string, m_context, nullptr, CSSParserImpl::KeyframeRules);
     return downcast<StyleRuleKeyframe>(keyframe.get());
 }
 
-bool CSSParser::parseSupportsCondition(const String& condition)
+bool CSSParser::parseSupportsCondition(const std::string& condition)
 {
     CSSParserImpl parser(m_context, condition);
     return CSSSupportsParser::supportsCondition(parser.tokenizer()->tokenRange(), parser, CSSSupportsParser::ForWindowCSS) == CSSSupportsParser::Supported;
 }
 
-Color CSSParser::parseColor(const String& string, bool strict)
+Color CSSParser::parseColor(const std::string& string, bool strict)
 {
-    if (string.isEmpty())
+    if (string.empty())
         return Color();
     
     // Try named colors first.
@@ -101,7 +94,7 @@ Color CSSParser::parseColor(const String& string, bool strict)
         return namedColor;
     
     // Try the fast path to parse hex and rgb.
-    RefPtr<CSSValue> value = CSSParserFastPaths::parseColor(string, strict ? HTMLStandardMode : HTMLQuirksMode);
+    std::shared_ptr<CSSValue> value = CSSParserFastPaths::parseColor(string, strict ? HTMLStandardMode : HTMLQuirksMode);
     
     // If that fails, try the full parser.
     if (!value)
@@ -114,7 +107,7 @@ Color CSSParser::parseColor(const String& string, bool strict)
     return primitiveValue.color();
 }
 
-Color CSSParser::parseSystemColor(const String& string, const CSSParserContext* context)
+Color CSSParser::parseSystemColor(const std::string& string, const CSSParserContext* context)
 {
     CSSValueID id = cssValueKeywordID(string);
     if (!StyleColor::isSystemColor(id))
@@ -126,20 +119,20 @@ Color CSSParser::parseSystemColor(const String& string, const CSSParserContext* 
     return RenderTheme::singleton().systemColor(id, options);
 }
 
-RefPtr<CSSValue> CSSParser::parseSingleValue(CSSPropertyID propertyID, const String& string, const CSSParserContext& context)
+std::shared_ptr<CSSValue> CSSParser::parseSingleValue(CSSPropertyID propertyID, const std::string& string, const CSSParserContext& context)
 {
-    if (string.isEmpty())
+    if (string.empty())
         return nullptr;
-    if (RefPtr<CSSValue> value = CSSParserFastPaths::maybeParseValue(propertyID, string, context.mode))
+    if (std::shared_ptr<CSSValue> value = CSSParserFastPaths::maybeParseValue(propertyID, string, context.mode))
         return value;
     CSSTokenizer tokenizer(string);
     return CSSPropertyParser::parseSingleValue(propertyID, tokenizer.tokenRange(), context);
 }
 
-CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration, CSSPropertyID propertyID, const String& string, bool important, const CSSParserContext& context)
+CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration, CSSPropertyID propertyID, const std::string& string, bool important, const CSSParserContext& context)
 {
-    ASSERT(!string.isEmpty());
-    RefPtr<CSSValue> value = CSSParserFastPaths::maybeParseValue(propertyID, string, context.mode);
+    ASSERT(!string.empty());
+    std::shared_ptr<CSSValue> value = CSSParserFastPaths::maybeParseValue(propertyID, string, context.mode);
     if (value)
         return declaration.addParsedProperty(CSSProperty(propertyID, WTFMove(value), important)) ? CSSParser::ParseResult::Changed : CSSParser::ParseResult::Unchanged;
 
@@ -147,38 +140,38 @@ CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration
     return parser.parseValue(declaration, propertyID, string, important);
 }
 
-CSSParser::ParseResult CSSParser::parseCustomPropertyValue(MutableStyleProperties& declaration, const AtomString& propertyName, const String& string, bool important, const CSSParserContext& context)
+CSSParser::ParseResult CSSParser::parseCustomPropertyValue(MutableStyleProperties& declaration, const AtomString& propertyName, const std::string& string, bool important, const CSSParserContext& context)
 {
     return CSSParserImpl::parseCustomPropertyValue(&declaration, propertyName, string, important, context);
 }
 
-CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration, CSSPropertyID propertyID, const String& string, bool important)
+CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration, CSSPropertyID propertyID, const std::string& string, bool important)
 {
     return CSSParserImpl::parseValue(&declaration, propertyID, string, important, m_context);
 }
 
-void CSSParser::parseSelector(const String& string, CSSSelectorList& selectorList)
+void CSSParser::parseSelector(const std::string& string, CSSSelectorList& selectorList)
 {
     CSSTokenizer tokenizer(string);
     selectorList = CSSSelectorParser::parseSelector(tokenizer.tokenRange(), m_context, nullptr);
 }
 
-Ref<ImmutableStyleProperties> CSSParser::parseInlineStyleDeclaration(const String& string, const Element* element)
+Ref<ImmutableStyleProperties> CSSParser::parseInlineStyleDeclaration(const std::string& string, const Element* element)
 {
     return CSSParserImpl::parseInlineStyleDeclaration(string, element);
 }
 
-bool CSSParser::parseDeclaration(MutableStyleProperties& declaration, const String& string)
+bool CSSParser::parseDeclaration(MutableStyleProperties& declaration, const std::string& string)
 {
     return CSSParserImpl::parseDeclarationList(&declaration, string, m_context);
 }
 
-void CSSParser::parseDeclarationForInspector(const CSSParserContext& context, const String& string, CSSParserObserver& observer)
+void CSSParser::parseDeclarationForInspector(const CSSParserContext& context, const std::string& string, CSSParserObserver& observer)
 {
     CSSParserImpl::parseDeclarationListForInspector(string, context, observer);
 }
 
-RefPtr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropertyID propID, const CSSValue& value, ApplyCascadedPropertyState& state)
+std::shared_ptr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropertyID propID, const CSSValue& value, ApplyCascadedPropertyState& state)
 {
     ASSERT((propID == CSSPropertyCustom && value.isCustomPropertyValue()) || (propID != CSSPropertyCustom && !value.isCustomPropertyValue()));
     auto& style = *state.styleResolver->style();
@@ -240,12 +233,12 @@ RefPtr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropertyID propI
     return CSSPropertyParser::parseTypedCustomPropertyValue(name, syntax, resolvedData->tokens(), *state.styleResolver, m_context);
 }
 
-std::unique_ptr<Vector<double>> CSSParser::parseKeyframeKeyList(const String& selector)
+std::unique_ptr<Vector<double>> CSSParser::parseKeyframeKeyList(const std::string& selector)
 {
     return CSSParserImpl::parseKeyframeKeyList(selector);
 }
 
-RefPtr<CSSValue> CSSParser::parseFontFaceDescriptor(CSSPropertyID propertyID, const String& propertyValue, const CSSParserContext& context)
+std::shared_ptr<CSSValue> CSSParser::parseFontFaceDescriptor(CSSPropertyID propertyID, const std::string& propertyValue, const CSSParserContext& context)
 {
     StringBuilder builder;
     builder.appendLiteral("@font-face { ");
@@ -253,7 +246,7 @@ RefPtr<CSSValue> CSSParser::parseFontFaceDescriptor(CSSPropertyID propertyID, co
     builder.appendLiteral(" : ");
     builder.append(propertyValue);
     builder.appendLiteral("; }");
-    RefPtr<StyleRuleBase> rule = parseRule(context, nullptr, builder.toString());
+    std::shared_ptr<StyleRuleBase> rule = parseRule(context, nullptr, builder.toString());
     if (!rule || !rule->isFontFaceRule())
         return nullptr;
     return downcast<StyleRuleFontFace>(*rule.get()).properties().getPropertyCSSValue(propertyID);

@@ -22,7 +22,7 @@
 #   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 #   Boston, MA 02110-1301, USA.
 use FindBin;
-use lib "$FindBin::Bin/../bindings/scripts";
+use lib "$FindBin::Bin/bindings";
 
 use Getopt::Long;
 use preprocessor;

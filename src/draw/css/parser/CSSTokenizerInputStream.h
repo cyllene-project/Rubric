@@ -29,17 +29,18 @@
 
 #pragma once
 
-#include <wtf/text/StringView.h>
+
 
 namespace WebCore {
 
 constexpr LChar kEndOfFileMarker = 0;
 
 class CSSTokenizerInputStream {
-    WTF_MAKE_NONCOPYABLE(CSSTokenizerInputStream);
-    WTF_MAKE_FAST_ALLOCATED;
+    CSSTokenizerInputStream(const CSSTokenizerInputStream&) = delete;
+        CSSTokenizerInputStream& operator=(const CSSTokenizerInputStream&) = delete;
+
 public:
-    explicit CSSTokenizerInputStream(const String& input);
+    explicit CSSTokenizerInputStream(const std::string& input);
 
     // Gets the char in the stream replacing NUL characters with a unicode
     // replacement character. Will return (NUL) kEndOfFileMarker when at the
@@ -92,7 +93,7 @@ public:
     unsigned length() const { return m_stringLength; }
     unsigned offset() const { return std::min(m_offset, m_stringLength); }
 
-    StringView rangeAt(unsigned start, unsigned length) const
+    std::string_view rangeAt(unsigned start, unsigned length) const
     {
         ASSERT(start + length <= m_stringLength);
         return StringView(m_string.get()).substring(start, length); // FIXME: Should make a constructor on StringView for this.
@@ -101,7 +102,7 @@ public:
 private:
     size_t m_offset;
     const size_t m_stringLength;
-    RefPtr<StringImpl> m_string;
+    std::shared_ptr<StringImpl> m_string;
 };
 
 } // namespace WebCore

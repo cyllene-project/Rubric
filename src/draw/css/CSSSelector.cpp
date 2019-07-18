@@ -32,8 +32,7 @@
 #include "SelectorPseudoTypeMap.h"
 #include <wtf/Assertions.h>
 #include <wtf/StdLibExtras.h>
-#include <wtf/Vector.h>
-#include <wtf/text/AtomStringHash.h>
+#include <vector>#include <wtf/text/AtomStringHash.h>
 #include <wtf/text/StringBuilder.h>
 
 namespace WebCore {

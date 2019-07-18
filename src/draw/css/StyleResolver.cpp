@@ -110,8 +110,7 @@
 #include <bitset>
 #include <wtf/Seconds.h>
 #include <wtf/StdLibExtras.h>
-#include <wtf/Vector.h>
-#include <wtf/text/AtomStringHash.h>
+#include <vector>#include <wtf/text/AtomStringHash.h>
 
 namespace WebCore {
 
@@ -1614,8 +1613,7 @@ static inline bool isValidMarkerStyleProperty(CSSPropertyID id)
     case CSSPropertyFontVariantNumeric:
     case CSSPropertyFontVariantPosition:
     case CSSPropertyFontWeight:
-#if ENABLE(VARIATION_FONTS)
-    case CSSPropertyFontOpticalSizing:
+case CSSPropertyFontOpticalSizing:
     case CSSPropertyFontVariationSettings:
 #endif
         return true;
@@ -2085,7 +2083,7 @@ bool StyleResolver::createFilterOperations(const CSSValue& inValue, FilterOperat
             if (!primitiveValue.isURI())
                 continue;
 
-            String cssUrl = primitiveValue.stringValue();
+            std::string cssUrl = primitiveValue.stringValue();
             URL url = document().completeURL(cssUrl);
 
             auto operation = ReferenceFilterOperation::create(cssUrl, url.fragmentIdentifier());

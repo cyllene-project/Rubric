@@ -24,9 +24,7 @@
 
 #include "CSSRule.h"
 #include <memory>
-#include <wtf/Vector.h>
-
-namespace WebCore {
+#include <vector>namespace WebCore {
 
 class CSSRuleList;
 class StyleRuleGroup;
@@ -35,10 +33,10 @@ class CSSGroupingRule : public CSSRule {
 public:
     virtual ~CSSGroupingRule();
 
-    WEBCORE_EXPORT CSSRuleList& cssRules() const;
+    CSSRuleList& cssRules() const;
 
-    WEBCORE_EXPORT ExceptionOr<unsigned> insertRule(const String& rule, unsigned index);
-    WEBCORE_EXPORT ExceptionOr<void> deleteRule(unsigned index);
+    ExceptionOr<unsigned> insertRule(const String& rule, unsigned index);
+    ExceptionOr<void> deleteRule(unsigned index);
         
     // For CSSRuleList
     unsigned length() const;

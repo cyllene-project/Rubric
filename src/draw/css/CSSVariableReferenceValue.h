@@ -33,9 +33,7 @@
 #include "CSSParserTokenRange.h"
 #include "CSSValue.h"
 #include "CSSVariableData.h"
-#include <wtf/HashSet.h>
-#include <wtf/RefPtr.h>
-#include <wtf/text/WTFString.h>
+
 
 namespace WebCore {
 
@@ -50,7 +48,7 @@ public:
     }
 
     bool equals(const CSSVariableReferenceValue& other) const { return m_data.get() == other.m_data.get(); }
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     RefPtr<CSSVariableData> resolveVariableReferences(ApplyCascadedPropertyState&) const;
 

@@ -77,20 +77,20 @@ public:
 
     bool equals(const DeprecatedCSSOMPrimitiveValue& other) const { return m_value->equals(other.m_value); }
     unsigned cssValueType() const { return m_value->cssValueType(); }
-    String cssText() const { return m_value->cssText(); }
+    std::string cssText() const { return m_value->cssText(); }
     
     // FIXME: Eventually these will contain more code and not just call through to
     // CSSPrimitiveValue.
-    WEBCORE_EXPORT unsigned short primitiveType() const;
-    WEBCORE_EXPORT ExceptionOr<void> setFloatValue(unsigned short unitType, double);
-    WEBCORE_EXPORT ExceptionOr<float> getFloatValue(unsigned short unitType) const;
-    WEBCORE_EXPORT ExceptionOr<void> setStringValue(unsigned short stringType, const String&);
-    WEBCORE_EXPORT ExceptionOr<String> getStringValue() const;
-    WEBCORE_EXPORT ExceptionOr<Ref<DeprecatedCSSOMCounter>> getCounterValue() const;
-    WEBCORE_EXPORT ExceptionOr<Ref<DeprecatedCSSOMRect>> getRectValue() const;
-    WEBCORE_EXPORT ExceptionOr<Ref<DeprecatedCSSOMRGBColor>> getRGBColorValue() const;
+    unsigned short primitiveType() const;
+    ExceptionOr<void> setFloatValue(unsigned short unitType, double);
+    ExceptionOr<float> getFloatValue(unsigned short unitType) const;
+    ExceptionOr<void> setStringValue(unsigned short stringType, const String&);
+    ExceptionOr<String> getStringValue() const;
+    ExceptionOr<Ref<DeprecatedCSSOMCounter>> getCounterValue() const;
+    ExceptionOr<Ref<DeprecatedCSSOMRect>> getRectValue() const;
+    ExceptionOr<Ref<DeprecatedCSSOMRGBColor>> getRGBColorValue() const;
 
-    String stringValue() const { return m_value->stringValue(); }
+    std::string stringValue() const { return m_value->stringValue(); }
 
 protected:
     DeprecatedCSSOMPrimitiveValue(const CSSPrimitiveValue& value, CSSStyleDeclaration& owner)

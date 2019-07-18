@@ -21,8 +21,6 @@
 #pragma once
 
 #include "CSSPrimitiveValue.h"
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 class Counter final : public RefCounted<Counter> {
@@ -32,9 +30,9 @@ public:
         return adoptRef(*new Counter(WTFMove(identifier), WTFMove(listStyle), WTFMove(separator)));
     }
 
-    String identifier() const { return m_identifier->stringValue(); }
-    String listStyle() const { return m_listStyle->stringValue(); }
-    String separator() const { return m_separator->stringValue(); }
+    std::string identifier() const { return m_identifier->stringValue(); }
+    std::string listStyle() const { return m_listStyle->stringValue(); }
+    std::string separator() const { return m_separator->stringValue(); }
 
     const CSSPrimitiveValue& identifierValue() const { return m_identifier; }
     const CSSPrimitiveValue& listStyleValue() const { return m_listStyle; }

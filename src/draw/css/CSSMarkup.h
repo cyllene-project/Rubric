@@ -22,8 +22,6 @@
 
 #pragma once
 
-#include <wtf/text/WTFString.h>
-
 // Helper functions for converting from CSSValues to text.
 
 namespace WebCore {

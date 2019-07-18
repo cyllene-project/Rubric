@@ -56,50 +56,50 @@ enum class UnitlessQuirk {
     Forbid
 };
 
-RefPtr<CSSPrimitiveValue> consumeInteger(CSSParserTokenRange&, double minimumValue = -std::numeric_limits<double>::max());
+std::shared_ptr<CSSPrimitiveValue> consumeInteger(CSSParserTokenRange&, double minimumValue = -std::numeric_limits<double>::max());
 bool consumePositiveIntegerRaw(CSSParserTokenRange&, int& result);
-RefPtr<CSSPrimitiveValue> consumePositiveInteger(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumePositiveInteger(CSSParserTokenRange&);
 bool consumeNumberRaw(CSSParserTokenRange&, double& result);
-RefPtr<CSSPrimitiveValue> consumeNumber(CSSParserTokenRange&, ValueRange);
-RefPtr<CSSPrimitiveValue> consumeFontWeightNumber(CSSParserTokenRange&);
-RefPtr<CSSPrimitiveValue> consumeLength(CSSParserTokenRange&, CSSParserMode, ValueRange, UnitlessQuirk = UnitlessQuirk::Forbid);
-RefPtr<CSSPrimitiveValue> consumePercent(CSSParserTokenRange&, ValueRange);
-RefPtr<CSSPrimitiveValue> consumeLengthOrPercent(CSSParserTokenRange&, CSSParserMode, ValueRange, UnitlessQuirk = UnitlessQuirk::Forbid);
-RefPtr<CSSPrimitiveValue> consumeAngle(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk = UnitlessQuirk::Forbid);
-RefPtr<CSSPrimitiveValue> consumeTime(CSSParserTokenRange&, CSSParserMode, ValueRange, UnitlessQuirk = UnitlessQuirk::Forbid);
-RefPtr<CSSPrimitiveValue> consumeResolution(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumeNumber(CSSParserTokenRange&, ValueRange);
+std::shared_ptr<CSSPrimitiveValue> consumeFontWeightNumber(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumeLength(CSSParserTokenRange&, CSSParserMode, ValueRange, UnitlessQuirk = UnitlessQuirk::Forbid);
+std::shared_ptr<CSSPrimitiveValue> consumePercent(CSSParserTokenRange&, ValueRange);
+std::shared_ptr<CSSPrimitiveValue> consumeLengthOrPercent(CSSParserTokenRange&, CSSParserMode, ValueRange, UnitlessQuirk = UnitlessQuirk::Forbid);
+std::shared_ptr<CSSPrimitiveValue> consumeAngle(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk = UnitlessQuirk::Forbid);
+std::shared_ptr<CSSPrimitiveValue> consumeTime(CSSParserTokenRange&, CSSParserMode, ValueRange, UnitlessQuirk = UnitlessQuirk::Forbid);
+std::shared_ptr<CSSPrimitiveValue> consumeResolution(CSSParserTokenRange&);
 
-RefPtr<CSSPrimitiveValue> consumeIdent(CSSParserTokenRange&);
-RefPtr<CSSPrimitiveValue> consumeIdentRange(CSSParserTokenRange&, CSSValueID lower, CSSValueID upper);
+std::shared_ptr<CSSPrimitiveValue> consumeIdent(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumeIdentRange(CSSParserTokenRange&, CSSValueID lower, CSSValueID upper);
 template<CSSValueID, CSSValueID...> inline bool identMatches(CSSValueID id);
-template<CSSValueID... allowedIdents> RefPtr<CSSPrimitiveValue> consumeIdent(CSSParserTokenRange&);
+template<CSSValueID... allowedIdents> std::shared_ptr<CSSPrimitiveValue> consumeIdent(CSSParserTokenRange&);
 
-RefPtr<CSSPrimitiveValue> consumeCustomIdent(CSSParserTokenRange&);
-RefPtr<CSSPrimitiveValue> consumeString(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumeCustomIdent(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumeString(CSSParserTokenRange&);
 StringView consumeUrlAsStringView(CSSParserTokenRange&);
-RefPtr<CSSPrimitiveValue> consumeUrl(CSSParserTokenRange&);
+std::shared_ptr<CSSPrimitiveValue> consumeUrl(CSSParserTokenRange&);
 
-RefPtr<CSSPrimitiveValue> consumeColor(CSSParserTokenRange&, CSSParserMode, bool acceptQuirkyColors = false);
+std::shared_ptr<CSSPrimitiveValue> consumeColor(CSSParserTokenRange&, CSSParserMode, bool acceptQuirkyColors = false);
 
-RefPtr<CSSPrimitiveValue> consumePosition(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk);
-bool consumePosition(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk, RefPtr<CSSPrimitiveValue>& resultX, RefPtr<CSSPrimitiveValue>& resultY);
-bool consumeOneOrTwoValuedPosition(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk, RefPtr<CSSPrimitiveValue>& resultX, RefPtr<CSSPrimitiveValue>& resultY);
+std::shared_ptr<CSSPrimitiveValue> consumePosition(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk);
+bool consumePosition(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk, std::shared_ptr<CSSPrimitiveValue>& resultX, std::shared_ptr<CSSPrimitiveValue>& resultY);
+bool consumeOneOrTwoValuedPosition(CSSParserTokenRange&, CSSParserMode, UnitlessQuirk, std::shared_ptr<CSSPrimitiveValue>& resultX, std::shared_ptr<CSSPrimitiveValue>& resultY);
 
 enum class ConsumeGeneratedImage {
     Allow,
     Forbid
 };
 
-RefPtr<CSSValue> consumeImage(CSSParserTokenRange&, CSSParserContext, ConsumeGeneratedImage = ConsumeGeneratedImage::Allow);
-RefPtr<CSSValue> consumeImageOrNone(CSSParserTokenRange&, CSSParserContext);
+std::shared_ptr<CSSValue> consumeImage(CSSParserTokenRange&, CSSParserContext, ConsumeGeneratedImage = ConsumeGeneratedImage::Allow);
+std::shared_ptr<CSSValue> consumeImageOrNone(CSSParserTokenRange&, CSSParserContext);
 
 enum class AllowedFilterFunctions {
     PixelFilters,
     ColorFilters
 };
 
-RefPtr<CSSValue> consumeFilter(CSSParserTokenRange&, const CSSParserContext&, AllowedFilterFunctions);
-RefPtr<CSSShadowValue> consumeSingleShadow(CSSParserTokenRange&, CSSParserMode, bool allowInset, bool allowSpread);
+std::shared_ptr<CSSValue> consumeFilter(CSSParserTokenRange&, const CSSParserContext&, AllowedFilterFunctions);
+std::shared_ptr<CSSShadowValue> consumeSingleShadow(CSSParserTokenRange&, CSSParserMode, bool allowInset, bool allowSpread);
 
 // Template implementations are at the bottom of the file for readability.
 
@@ -110,7 +110,7 @@ template<CSSValueID head, CSSValueID... tail> inline bool identMatches(CSSValueI
 }
 
 // FIXME-NEWPARSER - converted to a RefPtr return type from a raw ptr.
-template<CSSValueID... names> RefPtr<CSSPrimitiveValue> consumeIdent(CSSParserTokenRange& range)
+template<CSSValueID... names> std::shared_ptr<CSSPrimitiveValue> consumeIdent(CSSParserTokenRange& range)
 {
     if (range.peek().type() != IdentToken || !identMatches<names...>(range.peek().id()))
         return nullptr;

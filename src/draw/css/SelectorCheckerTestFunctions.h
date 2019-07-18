@@ -156,7 +156,7 @@ ALWAYS_INLINE bool containslanguageSubtagMatchingRange(StringView language, Stri
         if (languageSubtagsStartIndex > languageSubtagsEndIndex)
             return false;
 
-        StringView languageSubtag = language.substring(languageSubtagsStartIndex, languageSubtagsEndIndex - languageSubtagsStartIndex);
+        std::string_view languageSubtag = language.substring(languageSubtagsStartIndex, languageSubtagsEndIndex - languageSubtagsStartIndex);
         bool isEqual = equalIgnoringASCIICase(range, languageSubtag);
         if (!isAsteriskRange) {
             if ((!isEqual && !languageSubtagsStartIndex) || (languageSubtag.length() == 1 && languageSubtagsStartIndex > 0))
@@ -187,7 +187,7 @@ ALWAYS_INLINE bool matchesLangPseudoClass(const Element& element, const Vector<A
 
     // Implement basic and extended filterings of given language tags
     // as specified in www.ietf.org/rfc/rfc4647.txt.
-    StringView languageStringView = language.string();
+    std::string_view languageStringView = language.string();
     unsigned languageLength = language.length();
     for (const AtomString& range : argumentList) {
         if (range.isEmpty())
@@ -196,7 +196,7 @@ ALWAYS_INLINE bool matchesLangPseudoClass(const Element& element, const Vector<A
         if (range == "*")
             return true;
 
-        StringView rangeStringView = range.string();
+        std::string_view rangeStringView = range.string();
         if (equalIgnoringASCIICase(languageStringView, rangeStringView) && !languageStringView.contains('-'))
             return true;
         
@@ -212,7 +212,7 @@ ALWAYS_INLINE bool matchesLangPseudoClass(const Element& element, const Vector<A
             if (rangeSubtagsStartIndex > languageLength)
                 return false;
             rangeSubtagsEndIndex = std::min<unsigned>(rangeStringView.find('-', rangeSubtagsStartIndex), rangeLength);
-            StringView rangeSubtag = rangeStringView.substring(rangeSubtagsStartIndex, rangeSubtagsEndIndex - rangeSubtagsStartIndex);
+            std::string_view rangeSubtag = rangeStringView.substring(rangeSubtagsStartIndex, rangeSubtagsEndIndex - rangeSubtagsStartIndex);
             if (!containslanguageSubtagMatchingRange(languageStringView, rangeSubtag, languageLength, lastMatchedLanguageSubtagIndex)) {
                 matchedRange = false;
                 break;

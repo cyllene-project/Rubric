@@ -40,7 +40,6 @@
 #include "CSSCustomPropertyValue.h"
 #include "CSSFontFaceSrcValue.h"
 #include "CSSFontFeatureValue.h"
-#if ENABLE(VARIATION_FONTS)
 #include "CSSFontVariationValue.h"
 #endif
 #include "CSSFontStyleRangeValue.h"
@@ -68,7 +67,7 @@
 // FIXME-NEWPARSER: Replace Pair and Rect with actual CSSValue subclasses (CSSValuePair and CSSQuadValue).
 #include "Pair.h"
 #include "Rect.h"
-#include "RenderTheme.h"
+//#include "RenderTheme.h"
 #include "RuntimeEnabledFeatures.h"
 #include "SVGPathByteStream.h"
 #include "SVGPathUtilities.h"
@@ -82,7 +81,7 @@
 
 namespace WebCore {
 
-bool isCustomPropertyName(const String& propertyName)
+bool isCustomPropertyName(const std::string& propertyName)
 {
     return propertyName.length() > 2 && propertyName.characterAt(0) == '-' && propertyName.characterAt(1) == '-';
 }
@@ -222,7 +221,7 @@ CSSPropertyID cssPropertyID(StringView string)
     
 using namespace CSSPropertyParserHelpers;
 
-CSSPropertyParser::CSSPropertyParser(const CSSParserTokenRange& range, const CSSParserContext& context, Vector<CSSProperty, 256>* parsedProperties, bool consumeWhitespace)
+CSSPropertyParser::CSSPropertyParser(const CSSParserTokenRange& range, const CSSParserContext& context, std::vector<CSSProperty, 256>* parsedProperties, bool consumeWhitespace)
     : m_range(range)
     , m_context(context)
     , m_parsedProperties(parsedProperties)
@@ -246,7 +245,7 @@ void CSSPropertyParser::addProperty(CSSPropertyID property, CSSPropertyID curren
             shorthandIndex = indexOfShorthandForLonghand(currentShorthand, shorthands);
     }
 
-    m_parsedProperties->append(CSSProperty(property, WTFMove(value), important, setFromShorthand, shorthandIndex, implicit));
+    m_parsedProperties->append(CSSProperty(property, std::move(value), important, setFromShorthand, shorthandIndex, implicit));
 }
 
 void CSSPropertyParser::addExpandedPropertyForValue(CSSPropertyID property, Ref<CSSValue>&& value, bool important)
@@ -282,31 +281,31 @@ bool CSSPropertyParser::parseValue(CSSPropertyID propertyID, bool important, con
     return parseSuccess;
 }
 
-RefPtr<CSSValue> CSSPropertyParser::parseSingleValue(CSSPropertyID property, const CSSParserTokenRange& range, const CSSParserContext& context)
+std::shared_ptr<CSSValue> CSSPropertyParser::parseSingleValue(CSSPropertyID property, const CSSParserTokenRange& range, const CSSParserContext& context)
 {
     CSSPropertyParser parser(range, context, nullptr);
-    RefPtr<CSSValue> value = parser.parseSingleValue(property);
+    std::shared_ptr<CSSValue> value = parser.parseSingleValue(property);
     if (!value || !parser.m_range.atEnd())
         return nullptr;
     return value;
 }
 
-bool CSSPropertyParser::canParseTypedCustomPropertyValue(const String& syntax, const CSSParserTokenRange& tokens, const CSSParserContext& context)
+bool CSSPropertyParser::canParseTypedCustomPropertyValue(const std::string& syntax, const CSSParserTokenRange& tokens, const CSSParserContext& context)
 {
     CSSPropertyParser parser(tokens, context, nullptr);
     return parser.canParseTypedCustomPropertyValue(syntax);
 }
 
-RefPtr<CSSCustomPropertyValue> CSSPropertyParser::parseTypedCustomPropertyValue(const String& name, const String& syntax, const CSSParserTokenRange& tokens, const StyleResolver& styleResolver, const CSSParserContext& context)
+std::shared_ptr<CSSCustomPropertyValue> CSSPropertyParser::parseTypedCustomPropertyValue(const std::string& name, const std::string& syntax, const CSSParserTokenRange& tokens, const StyleResolver& styleResolver, const CSSParserContext& context)
 {
     CSSPropertyParser parser(tokens, context, nullptr, false);
-    RefPtr<CSSCustomPropertyValue> value = parser.parseTypedCustomPropertyValue(name, syntax, styleResolver);
+    std::shared_ptr<CSSCustomPropertyValue> value = parser.parseTypedCustomPropertyValue(name, syntax, styleResolver);
     if (!value || !parser.m_range.atEnd())
         return nullptr;
     return value;
 }
 
-void CSSPropertyParser::collectParsedCustomPropertyValueDependencies(const String& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies, const CSSParserTokenRange& tokens, const CSSParserContext& context)
+void CSSPropertyParser::collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies, const CSSParserTokenRange& tokens, const CSSParserContext& context)
 {
     CSSPropertyParser parser(tokens, context, nullptr);
     parser.collectParsedCustomPropertyValueDependencies(syntax, isRoot, dependencies);
@@ -325,7 +324,7 @@ bool CSSPropertyParser::parseValueStart(CSSPropertyID propertyID, bool important
         if (parseShorthand(propertyID, important))
             return true;
     } else {
-        RefPtr<CSSValue> parsedValue = parseSingleValue(propertyID);
+        std::shared_ptr<CSSValue> parsedValue = parseSingleValue(propertyID);
         if (parsedValue && m_range.atEnd()) {
             addProperty(propertyID, CSSPropertyInvalid, *parsedValue, important);
             return true;
@@ -333,10 +332,10 @@ bool CSSPropertyParser::parseValueStart(CSSPropertyID propertyID, bool important
     }
 
     if (CSSVariableParser::containsValidVariableReferences(originalRange, m_context)) {
-        RefPtr<CSSVariableReferenceValue> variable = CSSVariableReferenceValue::create(originalRange);
+        std::shared_ptr<CSSVariableReferenceValue> variable = CSSVariableReferenceValue::create(originalRange);
 
         if (isShorthand) {
-            RefPtr<CSSPendingSubstitutionValue> pendingValue = CSSPendingSubstitutionValue::create(propertyID, variable.releaseNonNull());
+            std::shared_ptr<CSSPendingSubstitutionValue> pendingValue = CSSPendingSubstitutionValue::create(propertyID, variable.releaseNonNull());
             addExpandedPropertyForValue(propertyID, pendingValue.releaseNonNull(), important);
         } else
             addProperty(propertyID, CSSPropertyInvalid, variable.releaseNonNull(), important);
@@ -353,7 +352,7 @@ bool CSSPropertyParser::consumeCSSWideKeyword(CSSPropertyID propertyID, bool imp
     if (!rangeCopy.atEnd())
         return false;
 
-    RefPtr<CSSValue> value;
+    std::shared_ptr<CSSValue> value;
     if (valueID == CSSValueInherit)
         value = CSSValuePool::singleton().createInheritedValue();
     else if (valueID == CSSValueInitial)
@@ -378,12 +377,12 @@ bool CSSPropertyParser::consumeCSSWideKeyword(CSSPropertyID propertyID, bool imp
 
 bool CSSPropertyParser::consumeTransformOrigin(bool important)
 {
-    RefPtr<CSSPrimitiveValue> resultX;
-    RefPtr<CSSPrimitiveValue> resultY;
+    std::shared_ptr<CSSPrimitiveValue> resultX;
+    std::shared_ptr<CSSPrimitiveValue> resultY;
     if (consumeOneOrTwoValuedPosition(m_range, m_context.mode, UnitlessQuirk::Forbid, resultX, resultY)) {
         m_range.consumeWhitespace();
         bool atEnd = m_range.atEnd();
-        RefPtr<CSSPrimitiveValue> resultZ = consumeLength(m_range, m_context.mode, ValueRangeAll);
+        std::shared_ptr<CSSPrimitiveValue> resultZ = consumeLength(m_range, m_context.mode, ValueRangeAll);
         bool hasZ = resultZ;
         if (!hasZ && !atEnd)
             return false;
@@ -398,8 +397,8 @@ bool CSSPropertyParser::consumeTransformOrigin(bool important)
 
 bool CSSPropertyParser::consumePerspectiveOrigin(bool important)
 {
-    RefPtr<CSSPrimitiveValue> resultX;
-    RefPtr<CSSPrimitiveValue> resultY;
+    std::shared_ptr<CSSPrimitiveValue> resultX;
+    std::shared_ptr<CSSPrimitiveValue> resultY;
     if (consumePosition(m_range, m_context.mode, UnitlessQuirk::Forbid, resultX, resultY)) {
         addProperty(CSSPropertyPerspectiveOriginX, CSSPropertyPerspectiveOrigin, resultX.releaseNonNull(), important);
         addProperty(CSSPropertyPerspectiveOriginY, CSSPropertyPerspectiveOrigin, resultY.releaseNonNull(), important);
@@ -409,12 +408,12 @@ bool CSSPropertyParser::consumePerspectiveOrigin(bool important)
 }
 
 // Methods for consuming non-shorthand properties starts here.
-static RefPtr<CSSValue> consumeWillChange(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeWillChange(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> values = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createCommaSeparated();
     // Every comma-separated list of identifiers is a valid will-change value,
     // unless the list includes an explicitly disallowed identifier.
     while (true) {
@@ -458,7 +457,7 @@ static RefPtr<CSSValue> consumeWillChange(CSSParserTokenRange& range)
     return values;
 }
 
-static RefPtr<CSSFontFeatureValue> consumeFontFeatureTag(CSSParserTokenRange& range)
+static std::shared_ptr<CSSFontFeatureValue> consumeFontFeatureTag(CSSParserTokenRange& range)
 {
     // Feature tag name consists of 4-letter characters.
     static const unsigned tagNameLength = 4;
@@ -489,16 +488,16 @@ static RefPtr<CSSFontFeatureValue> consumeFontFeatureTag(CSSParserTokenRange& ra
         else
             return nullptr;
     }
-    return CSSFontFeatureValue::create(WTFMove(tag), tagValue);
+    return CSSFontFeatureValue::create(std::move(tag), tagValue);
 }
 
-static RefPtr<CSSValue> consumeFontFeatureSettings(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontFeatureSettings(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
-    RefPtr<CSSValueList> settings = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> settings = CSSValueList::createCommaSeparated();
     do {
-        RefPtr<CSSFontFeatureValue> fontFeatureValue = consumeFontFeatureTag(range);
+        std::shared_ptr<CSSFontFeatureValue> fontFeatureValue = consumeFontFeatureTag(range);
         if (!fontFeatureValue)
             return nullptr;
         settings->append(fontFeatureValue.releaseNonNull());
@@ -506,8 +505,7 @@ static RefPtr<CSSValue> consumeFontFeatureSettings(CSSParserTokenRange& range)
     return settings;
 }
 
-#if ENABLE(VARIATION_FONTS)
-static RefPtr<CSSValue> consumeFontVariationTag(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontVariationTag(CSSParserTokenRange& range)
 {
     if (range.peek().type() != StringToken)
         return nullptr;
@@ -536,14 +534,14 @@ static RefPtr<CSSValue> consumeFontVariationTag(CSSParserTokenRange& range)
     return CSSFontVariationValue::create(tag, tagValue);
 }
     
-static RefPtr<CSSValue> consumeFontVariationSettings(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontVariationSettings(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
     
     auto settings = CSSValueList::createCommaSeparated();
     do {
-        RefPtr<CSSValue> variationValue = consumeFontVariationTag(range);
+        std::shared_ptr<CSSValue> variationValue = consumeFontVariationTag(range);
         if (!variationValue)
             return nullptr;
         settings->append(variationValue.releaseNonNull());
@@ -556,20 +554,20 @@ static RefPtr<CSSValue> consumeFontVariationSettings(CSSParserTokenRange& range)
 }
 #endif // ENABLE(VARIATION_FONTS)
 
-static RefPtr<CSSValue> consumePage(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumePage(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumeCustomIdent(range);
 }
 
-static RefPtr<CSSValue> consumeQuotes(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeQuotes(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
-    RefPtr<CSSValueList> values = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createSpaceSeparated();
     while (!range.atEnd()) {
-        RefPtr<CSSPrimitiveValue> parsedValue = consumeString(range);
+        std::shared_ptr<CSSPrimitiveValue> parsedValue = consumeString(range);
         if (!parsedValue)
             return nullptr;
         values->append(parsedValue.releaseNonNull());
@@ -631,11 +629,11 @@ public:
         return ParseResult::ConsumedValue;
     }
 
-    RefPtr<CSSValue> finalizeValue()
+    std::shared_ptr<CSSValue> finalizeValue()
     {
         if (!m_result->length())
             return CSSValuePool::singleton().createIdentifierValue(CSSValueNormal);
-        return WTFMove(m_result);
+        return std::move(m_result);
     }
 
 private:
@@ -643,10 +641,10 @@ private:
     bool m_sawDiscretionaryLigaturesValue;
     bool m_sawHistoricalLigaturesValue;
     bool m_sawContextualLigaturesValue;
-    RefPtr<CSSValueList> m_result;
+    std::shared_ptr<CSSValueList> m_result;
 };
 
-static RefPtr<CSSValue> consumeFontVariantLigatures(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontVariantLigatures(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNormal || range.peek().id() == CSSValueNone)
         return consumeIdent(range);
@@ -661,12 +659,12 @@ static RefPtr<CSSValue> consumeFontVariantLigatures(CSSParserTokenRange& range)
     return ligaturesParser.finalizeValue();
 }
 
-static RefPtr<CSSValue> consumeFontVariantEastAsian(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontVariantEastAsian(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
     
-    RefPtr<CSSValueList> values = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createSpaceSeparated();
     FontVariantEastAsianVariant variant = FontVariantEastAsianVariant::Normal;
     FontVariantEastAsianWidth width = FontVariantEastAsianWidth::Normal;
     FontVariantEastAsianRuby ruby = FontVariantEastAsianRuby::Normal;
@@ -759,19 +757,19 @@ static RefPtr<CSSValue> consumeFontVariantEastAsian(CSSParserTokenRange& range)
     return values;
 }
     
-static RefPtr<CSSPrimitiveValue> consumeFontVariantCaps(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontVariantCaps(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueNormal, CSSValueSmallCaps, CSSValueAllSmallCaps,
         CSSValuePetiteCaps, CSSValueAllPetiteCaps,
         CSSValueUnicase, CSSValueTitlingCaps>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeFontVariantAlternates(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontVariantAlternates(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueNormal, CSSValueHistoricalForms>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeFontVariantPosition(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontVariantPosition(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueNormal, CSSValueSub, CSSValueSuper>(range);
 }
@@ -833,11 +831,11 @@ public:
         return ParseResult::ConsumedValue;
     }
 
-    RefPtr<CSSValue> finalizeValue()
+    std::shared_ptr<CSSValue> finalizeValue()
     {
         if (!m_result->length())
             return CSSValuePool::singleton().createIdentifierValue(CSSValueNormal);
-        return WTFMove(m_result);
+        return std::move(m_result);
     }
 
 
@@ -847,10 +845,10 @@ private:
     bool m_sawNumericFractionValue;
     bool m_sawOrdinalValue;
     bool m_sawSlashedZeroValue;
-    RefPtr<CSSValueList> m_result;
+    std::shared_ptr<CSSValueList> m_result;
 };
 
-static RefPtr<CSSValue> consumeFontVariantNumeric(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontVariantNumeric(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
@@ -865,25 +863,24 @@ static RefPtr<CSSValue> consumeFontVariantNumeric(CSSParserTokenRange& range)
     return numericParser.finalizeValue();
 }
 
-static RefPtr<CSSPrimitiveValue> consumeFontVariantCSS21(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontVariantCSS21(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueNormal, CSSValueSmallCaps>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeFontWeightKeywordValue(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontWeightKeywordValue(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueNormal, CSSValueBold, CSSValueBolder, CSSValueLighter>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeFontWeight(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontWeight(CSSParserTokenRange& range)
 {
     if (auto result = consumeFontWeightKeywordValue(range))
         return result;
     return consumeFontWeightNumber(range);
 }
 
-#if ENABLE(VARIATION_FONTS)
-static RefPtr<CSSValue> consumeFontWeightRange(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontWeightRange(CSSParserTokenRange& range)
 {
     if (auto result = consumeFontWeightKeywordValue(range))
         return result;
@@ -898,35 +895,32 @@ static RefPtr<CSSValue> consumeFontWeightRange(CSSParserTokenRange& range)
     auto result = CSSValueList::createSpaceSeparated();
     result->append(firstNumber.releaseNonNull());
     result->append(secondNumber.releaseNonNull());
-    return RefPtr<CSSValue>(WTFMove(result));
+    return std::shared_ptr<CSSValue>(std::move(result));
 }
 #endif
 
-static RefPtr<CSSPrimitiveValue> consumeFontStretchKeywordValue(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontStretchKeywordValue(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueUltraCondensed, CSSValueExtraCondensed, CSSValueCondensed, CSSValueSemiCondensed, CSSValueNormal, CSSValueSemiExpanded, CSSValueExpanded, CSSValueExtraExpanded, CSSValueUltraExpanded>(range);
 }
 
-#if ENABLE(VARIATION_FONTS)
 static bool fontStretchIsWithinRange(float stretch)
 {
     return stretch > 0;
 }
 #endif
 
-static RefPtr<CSSPrimitiveValue> consumeFontStretch(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontStretch(CSSParserTokenRange& range)
 {
     if (auto result = consumeFontStretchKeywordValue(range))
         return result;
-#if ENABLE(VARIATION_FONTS)
-    if (auto percent = consumePercent(range, ValueRangeNonNegative))
+if (auto percent = consumePercent(range, ValueRangeNonNegative))
         return fontStretchIsWithinRange(percent->value<float>()) ? percent : nullptr;
 #endif
     return nullptr;
 }
 
-#if ENABLE(VARIATION_FONTS)
-static RefPtr<CSSValue> consumeFontStretchRange(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontStretchRange(CSSParserTokenRange& range)
 {
     if (auto result = consumeFontStretchKeywordValue(range))
         return result;
@@ -941,23 +935,22 @@ static RefPtr<CSSValue> consumeFontStretchRange(CSSParserTokenRange& range)
     auto result = CSSValueList::createSpaceSeparated();
     result->append(firstPercent.releaseNonNull());
     result->append(secondPercent.releaseNonNull());
-    return RefPtr<CSSValue>(WTFMove(result));
+    return std::shared_ptr<CSSValue>(std::move(result));
 }
 #endif
 
-static RefPtr<CSSPrimitiveValue> consumeFontStyleKeywordValue(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontStyleKeywordValue(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueNormal, CSSValueItalic, CSSValueOblique>(range);
 }
 
-#if ENABLE(VARIATION_FONTS)
 static bool fontStyleIsWithinRange(float oblique)
 {
     return oblique > -90 && oblique < 90;
 }
 #endif
 
-static RefPtr<CSSFontStyleValue> consumeFontStyle(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSFontStyleValue> consumeFontStyle(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     auto result = consumeFontStyleKeywordValue(range);
     if (!result)
@@ -967,11 +960,10 @@ static RefPtr<CSSFontStyleValue> consumeFontStyle(CSSParserTokenRange& range, CS
     if (valueID == CSSValueNormal || valueID == CSSValueItalic)
         return CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(valueID));
     ASSERT(result->valueID() == CSSValueOblique);
-#if ENABLE(VARIATION_FONTS)
-    if (!range.atEnd()) {
+if (!range.atEnd()) {
         if (auto angle = consumeAngle(range, cssParserMode)) {
             if (fontStyleIsWithinRange(angle->value<float>(CSSPrimitiveValue::CSS_DEG)))
-                return CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(CSSValueOblique), WTFMove(angle));
+                return CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(CSSValueOblique), std::move(angle));
             return nullptr;
         }
     }
@@ -981,8 +973,7 @@ static RefPtr<CSSFontStyleValue> consumeFontStyle(CSSParserTokenRange& range, CS
     return CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(CSSValueOblique));
 }
 
-#if ENABLE(VARIATION_FONTS)
-static RefPtr<CSSFontStyleRangeValue> consumeFontStyleRange(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSFontStyleRangeValue> consumeFontStyleRange(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     auto keyword = consumeFontStyleKeywordValue(range);
     if (!keyword)
@@ -997,7 +988,7 @@ static RefPtr<CSSFontStyleRangeValue> consumeFontStyleRange(CSSParserTokenRange&
         if (range.atEnd()) {
             auto result = CSSValueList::createSpaceSeparated();
             result->append(firstAngle.releaseNonNull());
-            return CSSFontStyleRangeValue::create(keyword.releaseNonNull(), WTFMove(result));
+            return CSSFontStyleRangeValue::create(keyword.releaseNonNull(), std::move(result));
         }
         auto secondAngle = consumeAngle(range, cssParserMode);
         if (!secondAngle || !fontStyleIsWithinRange(secondAngle->value<float>(CSSPrimitiveValue::CSS_DEG)) || firstAngle->floatValue(CSSPrimitiveValue::CSS_DEG) > secondAngle->floatValue(CSSPrimitiveValue::CSS_DEG))
@@ -1005,7 +996,7 @@ static RefPtr<CSSFontStyleRangeValue> consumeFontStyleRange(CSSParserTokenRange&
         auto result = CSSValueList::createSpaceSeparated();
         result->append(firstAngle.releaseNonNull());
         result->append(secondAngle.releaseNonNull());
-        return CSSFontStyleRangeValue::create(keyword.releaseNonNull(), WTFMove(result));
+        return CSSFontStyleRangeValue::create(keyword.releaseNonNull(), std::move(result));
     }
 
     return nullptr;
@@ -1018,7 +1009,7 @@ static String concatenateFamilyName(CSSParserTokenRange& range)
     bool addedSpace = false;
     const CSSParserToken& firstToken = range.peek();
     while (range.peek().type() == IdentToken) {
-        if (!builder.isEmpty()) {
+        if (!builder.empty()) {
             builder.append(' ');
             addedSpace = true;
         }
@@ -1029,26 +1020,26 @@ static String concatenateFamilyName(CSSParserTokenRange& range)
     return builder.toString();
 }
 
-static RefPtr<CSSValue> consumeFamilyName(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFamilyName(CSSParserTokenRange& range)
 {
     if (range.peek().type() == StringToken)
         return CSSValuePool::singleton().createFontFamilyValue(range.consumeIncludingWhitespace().value().toString());
     if (range.peek().type() != IdentToken)
         return nullptr;
-    String familyName = concatenateFamilyName(range);
+    std::string familyName = concatenateFamilyName(range);
     if (familyName.isNull())
         return nullptr;
     return CSSValuePool::singleton().createFontFamilyValue(familyName);
 }
 
-static RefPtr<CSSValue> consumeGenericFamily(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeGenericFamily(CSSParserTokenRange& range)
 {
     return consumeIdentRange(range, CSSValueSerif, CSSValueWebkitBody);
 }
 
-static RefPtr<CSSValueList> consumeFontFamily(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValueList> consumeFontFamily(CSSParserTokenRange& range)
 {
-    RefPtr<CSSValueList> list = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createCommaSeparated();
     do {
         if (auto parsedValue = consumeGenericFamily(range))
             list->append(parsedValue.releaseNonNull());
@@ -1062,15 +1053,15 @@ static RefPtr<CSSValueList> consumeFontFamily(CSSParserTokenRange& range)
     return list;
 }
 
-static RefPtr<CSSValueList> consumeFontFamilyDescriptor(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValueList> consumeFontFamilyDescriptor(CSSParserTokenRange& range)
 {
     // FIXME-NEWPARSER: https://bugs.webkit.org/show_bug.cgi?id=196381 For compatibility with the old parser, we have to make
     // a list here, even though the list always contains only a single family name.
     // Once the old parser is gone, we can delete this function, make the caller
     // use consumeFamilyName instead, and then patch the @font-face code to
     // not expect a list with a single name in it.
-    RefPtr<CSSValueList> list = CSSValueList::createCommaSeparated();
-    RefPtr<CSSValue> parsedValue = consumeFamilyName(range);
+    std::shared_ptr<CSSValueList> list = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValue> parsedValue = consumeFamilyName(range);
     if (parsedValue)
         list->append(parsedValue.releaseNonNull());
     
@@ -1080,14 +1071,14 @@ static RefPtr<CSSValueList> consumeFontFamilyDescriptor(CSSParserTokenRange& ran
     return list;
 }
 
-static RefPtr<CSSValue> consumeFontSynthesis(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontSynthesis(CSSParserTokenRange& range)
 {
     // none | [ weight || style || small-caps ]
     CSSValueID id = range.peek().id();
     if (id == CSSValueNone)
         return consumeIdent(range);
     
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     while (true) {
         auto ident = consumeIdent<CSSValueWeight, CSSValueStyle, CSSValueSmallCaps>(range);
         if (!ident)
@@ -1102,7 +1093,7 @@ static RefPtr<CSSValue> consumeFontSynthesis(CSSParserTokenRange& range)
     return list;
 }
 
-static RefPtr<CSSValue> consumeLetterSpacing(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeLetterSpacing(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
@@ -1110,7 +1101,7 @@ static RefPtr<CSSValue> consumeLetterSpacing(CSSParserTokenRange& range, CSSPars
     return consumeLength(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumeWordSpacing(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeWordSpacing(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
@@ -1118,7 +1109,7 @@ static RefPtr<CSSValue> consumeWordSpacing(CSSParserTokenRange& range, CSSParser
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow);
 }
     
-static RefPtr<CSSValue> consumeTabSize(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeTabSize(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     auto tabSize = consumeNumber(range, ValueRangeNonNegative);
     if (tabSize)
@@ -1127,7 +1118,7 @@ static RefPtr<CSSValue> consumeTabSize(CSSParserTokenRange& range, CSSParserMode
 }
 
 #if ENABLE(TEXT_AUTOSIZING)
-static RefPtr<CSSValue> consumeTextSizeAdjust(CSSParserTokenRange& range, CSSParserMode /* cssParserMode */)
+static std::shared_ptr<CSSValue> consumeTextSizeAdjust(CSSParserTokenRange& range, CSSParserMode /* cssParserMode */)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
@@ -1137,19 +1128,19 @@ static RefPtr<CSSValue> consumeTextSizeAdjust(CSSParserTokenRange& range, CSSPar
 }
 #endif
 
-static RefPtr<CSSValue> consumeFontSize(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
+static std::shared_ptr<CSSValue> consumeFontSize(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
 {
     if (range.peek().id() >= CSSValueXxSmall && range.peek().id() <= CSSValueLarger)
         return consumeIdent(range);
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative, unitless);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeLineHeight(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeLineHeight(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
 
-    RefPtr<CSSPrimitiveValue> lineHeight = consumeNumber(range, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> lineHeight = consumeNumber(range, ValueRangeNonNegative);
     if (lineHeight)
         return lineHeight;
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
@@ -1162,48 +1153,48 @@ static Ref<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
 }
 
 
-static RefPtr<CSSValue> consumeCounter(CSSParserTokenRange& range, int defaultValue)
+static std::shared_ptr<CSSValue> consumeCounter(CSSParserTokenRange& range, int defaultValue)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     do {
-        RefPtr<CSSPrimitiveValue> counterName = consumeCustomIdent(range);
+        std::shared_ptr<CSSPrimitiveValue> counterName = consumeCustomIdent(range);
         if (!counterName)
             return nullptr;
         int i = defaultValue;
-        if (RefPtr<CSSPrimitiveValue> counterValue = consumeInteger(range))
+        if (std::shared_ptr<CSSPrimitiveValue> counterValue = consumeInteger(range))
             i = counterValue->intValue();
         list->append(createPrimitiveValuePair(counterName.releaseNonNull(), CSSPrimitiveValue::create(i, CSSPrimitiveValue::UnitType::CSS_NUMBER), Pair::IdenticalValueEncoding::Coalesce));
     } while (!range.atEnd());
     return list;
 }
 
-static RefPtr<CSSValue> consumePageSize(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumePageSize(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueA3, CSSValueA4, CSSValueA5, CSSValueB4, CSSValueB5, CSSValueLedger, CSSValueLegal, CSSValueLetter>(range);
 }
 
-static RefPtr<CSSValueList> consumeSize(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValueList> consumeSize(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
-    RefPtr<CSSValueList> result = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> result = CSSValueList::createSpaceSeparated();
 
     if (range.peek().id() == CSSValueAuto) {
         result->append(consumeIdent(range).releaseNonNull());
         return result;
     }
 
-    if (RefPtr<CSSValue> width = consumeLength(range, cssParserMode, ValueRangeNonNegative)) {
-        RefPtr<CSSValue> height = consumeLength(range, cssParserMode, ValueRangeNonNegative);
+    if (std::shared_ptr<CSSValue> width = consumeLength(range, cssParserMode, ValueRangeNonNegative)) {
+        std::shared_ptr<CSSValue> height = consumeLength(range, cssParserMode, ValueRangeNonNegative);
         result->append(width.releaseNonNull());
         if (height)
             result->append(height.releaseNonNull());
         return result;
     }
 
-    RefPtr<CSSValue> pageSize = consumePageSize(range);
-    RefPtr<CSSValue> orientation = consumeIdent<CSSValuePortrait, CSSValueLandscape>(range);
+    std::shared_ptr<CSSValue> pageSize = consumePageSize(range);
+    std::shared_ptr<CSSValue> orientation = consumeIdent<CSSValuePortrait, CSSValueLandscape>(range);
     if (!pageSize)
         pageSize = consumePageSize(range);
 
@@ -1216,11 +1207,11 @@ static RefPtr<CSSValueList> consumeSize(CSSParserTokenRange& range, CSSParserMod
     return result;
 }
 
-static RefPtr<CSSValue> consumeTextIndent(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeTextIndent(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     // [ <length> | <percentage> ] && hanging? && each-line?
     // Keywords only allowed when css3Text is enabled.
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
 
     bool hasLengthOrPercentage = false;
 //    bool hasEachLine = false;
@@ -1228,7 +1219,7 @@ static RefPtr<CSSValue> consumeTextIndent(CSSParserTokenRange& range, CSSParserM
 
     do {
         if (!hasLengthOrPercentage) {
-            if (RefPtr<CSSValue> textIndent = consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow)) {
+            if (std::shared_ptr<CSSValue> textIndent = consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow)) {
                 list->append(*textIndent);
                 hasLengthOrPercentage = true;
                 continue;
@@ -1267,35 +1258,35 @@ static bool validWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& /*c
     return false;
 }
 
-static RefPtr<CSSValue> consumeMaxWidthOrHeight(CSSParserTokenRange& range, const CSSParserContext& context, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
+static std::shared_ptr<CSSValue> consumeMaxWidthOrHeight(CSSParserTokenRange& range, const CSSParserContext& context, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
 {
     if (range.peek().id() == CSSValueNone || validWidthOrHeightKeyword(range.peek().id(), context))
         return consumeIdent(range);
     return consumeLengthOrPercent(range, context.mode, ValueRangeNonNegative, unitless);
 }
 
-static RefPtr<CSSValue> consumeWidthOrHeight(CSSParserTokenRange& range, const CSSParserContext& context, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
+static std::shared_ptr<CSSValue> consumeWidthOrHeight(CSSParserTokenRange& range, const CSSParserContext& context, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
 {
     if (range.peek().id() == CSSValueAuto || validWidthOrHeightKeyword(range.peek().id(), context))
         return consumeIdent(range);
     return consumeLengthOrPercent(range, context.mode, ValueRangeNonNegative, unitless);
 }
 
-static RefPtr<CSSValue> consumeMarginOrOffset(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless)
+static std::shared_ptr<CSSValue> consumeMarginOrOffset(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, unitless);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeClipComponent(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeClipComponent(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumeLength(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumeClip(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeClip(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
@@ -1305,17 +1296,17 @@ static RefPtr<CSSValue> consumeClip(CSSParserTokenRange& range, CSSParserMode cs
 
     CSSParserTokenRange args = consumeFunction(range);
     // rect(t, r, b, l) || rect(t r b l)
-    RefPtr<CSSPrimitiveValue> top = consumeClipComponent(args, cssParserMode);
+    std::shared_ptr<CSSPrimitiveValue> top = consumeClipComponent(args, cssParserMode);
     if (!top)
         return nullptr;
     bool needsComma = consumeCommaIncludingWhitespace(args);
-    RefPtr<CSSPrimitiveValue> right = consumeClipComponent(args, cssParserMode);
+    std::shared_ptr<CSSPrimitiveValue> right = consumeClipComponent(args, cssParserMode);
     if (!right || (needsComma && !consumeCommaIncludingWhitespace(args)))
         return nullptr;
-    RefPtr<CSSPrimitiveValue> bottom = consumeClipComponent(args, cssParserMode);
+    std::shared_ptr<CSSPrimitiveValue> bottom = consumeClipComponent(args, cssParserMode);
     if (!bottom || (needsComma && !consumeCommaIncludingWhitespace(args)))
         return nullptr;
-    RefPtr<CSSPrimitiveValue> left = consumeClipComponent(args, cssParserMode);
+    std::shared_ptr<CSSPrimitiveValue> left = consumeClipComponent(args, cssParserMode);
     if (!left || !args.atEnd())
         return nullptr;
     
@@ -1324,11 +1315,11 @@ static RefPtr<CSSValue> consumeClip(CSSParserTokenRange& range, CSSParserMode cs
     rect->setTop(top.releaseNonNull());
     rect->setRight(right.releaseNonNull());
     rect->setBottom(bottom.releaseNonNull());
-    return CSSValuePool::singleton().createValue(WTFMove(rect));
+    return CSSValuePool::singleton().createValue(std::move(rect));
 }
 
 #if ENABLE(POINTER_EVENTS)
-static RefPtr<CSSValue> consumeTouchAction(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeTouchAction(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueNone || id == CSSValueAuto || id == CSSValueManipulation)
@@ -1350,64 +1341,64 @@ static RefPtr<CSSValue> consumeTouchAction(CSSParserTokenRange& range)
 }
 #endif
 
-static RefPtr<CSSPrimitiveValue> consumeLineClamp(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeLineClamp(CSSParserTokenRange& range)
 {
-    RefPtr<CSSPrimitiveValue> clampValue = consumePercent(range, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> clampValue = consumePercent(range, ValueRangeNonNegative);
     if (clampValue)
         return clampValue;
     // When specifying number of lines, don't allow 0 as a valid value.
     return consumePositiveInteger(range);
 }
 
-static RefPtr<CSSValue> consumeAutoOrString(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeAutoOrString(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumeString(range);
 }
 
-static RefPtr<CSSValue> consumeHyphenateLimit(CSSParserTokenRange& range, CSSValueID valueID)
+static std::shared_ptr<CSSValue> consumeHyphenateLimit(CSSParserTokenRange& range, CSSValueID valueID)
 {
     if (range.peek().id() == valueID)
         return consumeIdent(range);
     return consumeNumber(range, ValueRangeNonNegative);
 }
 
-static RefPtr<CSSValue> consumeColumnWidth(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeColumnWidth(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     // Always parse lengths in strict mode here, since it would be ambiguous otherwise when used in
     // the 'columns' shorthand property.
-    RefPtr<CSSPrimitiveValue> columnWidth = consumeLength(range, HTMLStandardMode, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> columnWidth = consumeLength(range, HTMLStandardMode, ValueRangeNonNegative);
     if (!columnWidth || (!columnWidth->isCalculated() && !columnWidth->doubleValue()) || (columnWidth->cssCalcValue() && !columnWidth->cssCalcValue()->doubleValue()))
         return nullptr;
     return columnWidth;
 }
 
-static RefPtr<CSSValue> consumeColumnCount(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeColumnCount(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumePositiveInteger(range);
 }
 
-static RefPtr<CSSValue> consumeGapLength(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeGapLength(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
 }
 
-static RefPtr<CSSValue> consumeColumnSpan(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeColumnSpan(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueAll, CSSValueNone>(range);
 }
 
-static RefPtr<CSSValue> consumeZoom(CSSParserTokenRange& range, const CSSParserContext& /*context*/)
+static std::shared_ptr<CSSValue> consumeZoom(CSSParserTokenRange& range, const CSSParserContext& /*context*/)
 {
     const CSSParserToken& token = range.peek();
-    RefPtr<CSSPrimitiveValue> zoom;
+    std::shared_ptr<CSSPrimitiveValue> zoom;
     if (token.type() == IdentToken)
         zoom = consumeIdent<CSSValueNormal, CSSValueReset, CSSValueDocument>(range);
     else {
@@ -1418,14 +1409,14 @@ static RefPtr<CSSValue> consumeZoom(CSSParserTokenRange& range, const CSSParserC
     return zoom;
 }
 
-static RefPtr<CSSValue> consumeAnimationIterationCount(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeAnimationIterationCount(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueInfinite)
         return consumeIdent(range);
     return consumeNumber(range, ValueRangeNonNegative);
 }
 
-static RefPtr<CSSValue> consumeAnimationName(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeAnimationName(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
@@ -1441,7 +1432,7 @@ static RefPtr<CSSValue> consumeAnimationName(CSSParserTokenRange& range)
     return consumeCustomIdent(range);
 }
 
-static RefPtr<CSSValue> consumeTransitionProperty(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeTransitionProperty(CSSParserTokenRange& range)
 {
     const CSSParserToken& token = range.peek();
     if (token.type() != IdentToken)
@@ -1465,13 +1456,13 @@ static RefPtr<CSSValue> consumeTransitionProperty(CSSParserTokenRange& range)
 }
 
     
-static RefPtr<CSSValue> consumeSteps(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeSteps(CSSParserTokenRange& range)
 {
     ASSERT(range.peek().functionId() == CSSValueSteps);
     CSSParserTokenRange rangeCopy = range;
     CSSParserTokenRange args = consumeFunction(rangeCopy);
     
-    RefPtr<CSSPrimitiveValue> steps = consumePositiveInteger(args);
+    std::shared_ptr<CSSPrimitiveValue> steps = consumePositiveInteger(args);
     if (!steps)
         return nullptr;
     
@@ -1497,7 +1488,7 @@ static RefPtr<CSSValue> consumeSteps(CSSParserTokenRange& range)
     return CSSStepsTimingFunctionValue::create(steps->intValue(), stepAtStart);
 }
 
-static RefPtr<CSSValue> consumeCubicBezier(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeCubicBezier(CSSParserTokenRange& range)
 {
     ASSERT(range.peek().functionId() == CSSValueCubicBezier);
     CSSParserTokenRange rangeCopy = range;
@@ -1521,7 +1512,7 @@ static RefPtr<CSSValue> consumeCubicBezier(CSSParserTokenRange& range)
     return nullptr;
 }
 
-static RefPtr<CSSValue> consumeSpringFunction(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeSpringFunction(CSSParserTokenRange& range)
 {
     ASSERT(range.peek().functionId() == CSSValueSpring);
     CSSParserTokenRange rangeCopy = range;
@@ -1555,7 +1546,7 @@ static RefPtr<CSSValue> consumeSpringFunction(CSSParserTokenRange& range)
     return CSSSpringTimingFunctionValue::create(mass, stiffness, damping, initialVelocity);
 }
 
-static RefPtr<CSSValue> consumeAnimationTimingFunction(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeAnimationTimingFunction(CSSParserTokenRange& range, const CSSParserContext& context)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueEase || id == CSSValueLinear || id == CSSValueEaseIn
@@ -1572,7 +1563,7 @@ static RefPtr<CSSValue> consumeAnimationTimingFunction(CSSParserTokenRange& rang
     return nullptr;
 }
 
-static RefPtr<CSSValue> consumeAnimationValue(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeAnimationValue(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
 {
     switch (property) {
     case CSSPropertyAnimationDelay:
@@ -1614,12 +1605,12 @@ static bool isValidAnimationPropertyList(CSSPropertyID property, const CSSValueL
     return true;
 }
 
-static RefPtr<CSSValue> consumeAnimationPropertyList(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeAnimationPropertyList(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    RefPtr<CSSValueList> list;
-    RefPtr<CSSValue> singleton;
+    std::shared_ptr<CSSValueList> list;
+    std::shared_ptr<CSSValue> singleton;
     do {
-        RefPtr<CSSValue> currentValue = consumeAnimationValue(property, range, context);
+        std::shared_ptr<CSSValue> currentValue = consumeAnimationValue(property, range, context);
         if (!currentValue)
             return nullptr;
         
@@ -1631,7 +1622,7 @@ static RefPtr<CSSValue> consumeAnimationPropertyList(CSSPropertyID property, CSS
         if (list)
             list->append(currentValue.releaseNonNull());
         else
-            singleton = WTFMove(currentValue);
+            singleton = std::move(currentValue);
         
     } while (consumeCommaIncludingWhitespace(range));
 
@@ -1649,7 +1640,7 @@ static RefPtr<CSSValue> consumeAnimationPropertyList(CSSPropertyID property, CSS
 bool CSSPropertyParser::consumeAnimationShorthand(const StylePropertyShorthand& shorthand, bool important)
 {
     const unsigned longhandCount = shorthand.length();
-    RefPtr<CSSValueList> longhands[8];
+    std::shared_ptr<CSSValueList> longhands[8];
     ASSERT(longhandCount <= 8);
     for (size_t i = 0; i < longhandCount; ++i)
         longhands[i] = CSSValueList::createCommaSeparated();
@@ -1662,7 +1653,7 @@ bool CSSPropertyParser::consumeAnimationShorthand(const StylePropertyShorthand& 
                 if (parsedLonghand[i])
                     continue;
 
-                if (RefPtr<CSSValue> value = consumeAnimationValue(shorthand.properties()[i], m_range, m_context)) {
+                if (std::shared_ptr<CSSValue> value = consumeAnimationValue(shorthand.properties()[i], m_range, m_context)) {
                     parsedLonghand[i] = true;
                     foundProperty = true;
                     longhands[i]->append(*value);
@@ -1692,21 +1683,21 @@ bool CSSPropertyParser::consumeAnimationShorthand(const StylePropertyShorthand& 
     return m_range.atEnd();
 }
 
-static RefPtr<CSSValue> consumeZIndex(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeZIndex(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumeInteger(range);
 }
 
-static RefPtr<CSSValue> consumeShadow(CSSParserTokenRange& range, CSSParserMode cssParserMode, bool isBoxShadowProperty)
+static std::shared_ptr<CSSValue> consumeShadow(CSSParserTokenRange& range, CSSParserMode cssParserMode, bool isBoxShadowProperty)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> shadowValueList = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> shadowValueList = CSSValueList::createCommaSeparated();
     do {
-        if (RefPtr<CSSShadowValue> shadowValue = consumeSingleShadow(range, cssParserMode, isBoxShadowProperty, isBoxShadowProperty))
+        if (std::shared_ptr<CSSShadowValue> shadowValue = consumeSingleShadow(range, cssParserMode, isBoxShadowProperty, isBoxShadowProperty))
             shadowValueList->append(*shadowValue);
         else
             return nullptr;
@@ -1714,18 +1705,18 @@ static RefPtr<CSSValue> consumeShadow(CSSParserTokenRange& range, CSSParserMode 
     return shadowValueList;
 }
 
-static RefPtr<CSSValue> consumeTextDecorationLine(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeTextDecorationLine(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueNone)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     while (true) {
 #if ENABLE(LETTERPRESS)
-        RefPtr<CSSPrimitiveValue> ident = consumeIdent<CSSValueBlink, CSSValueUnderline, CSSValueOverline, CSSValueLineThrough, CSSValueWebkitLetterpress>(range);
+        std::shared_ptr<CSSPrimitiveValue> ident = consumeIdent<CSSValueBlink, CSSValueUnderline, CSSValueOverline, CSSValueLineThrough, CSSValueWebkitLetterpress>(range);
 #else
-        RefPtr<CSSPrimitiveValue> ident = consumeIdent<CSSValueBlink, CSSValueUnderline, CSSValueOverline, CSSValueLineThrough>(range);
+        std::shared_ptr<CSSPrimitiveValue> ident = consumeIdent<CSSValueBlink, CSSValueUnderline, CSSValueOverline, CSSValueLineThrough>(range);
 #endif
         if (!ident)
             break;
@@ -1739,13 +1730,13 @@ static RefPtr<CSSValue> consumeTextDecorationLine(CSSParserTokenRange& range)
     return list;
 }
 
-static RefPtr<CSSValue> consumeTextDecorationSkip(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeTextDecorationSkip(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueNone)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     while (true) {
         auto ident = consumeIdent<CSSValueAuto, CSSValueInk, CSSValueObjects>(range);
         if (!ident)
@@ -1760,21 +1751,21 @@ static RefPtr<CSSValue> consumeTextDecorationSkip(CSSParserTokenRange& range)
     return list;
 }
 
-static RefPtr<CSSValue> consumeTextEmphasisStyle(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeTextEmphasisStyle(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueNone)
         return consumeIdent(range);
 
-    if (RefPtr<CSSValue> textEmphasisStyle = consumeString(range))
+    if (std::shared_ptr<CSSValue> textEmphasisStyle = consumeString(range))
         return textEmphasisStyle;
 
-    RefPtr<CSSPrimitiveValue> fill = consumeIdent<CSSValueFilled, CSSValueOpen>(range);
-    RefPtr<CSSPrimitiveValue> shape = consumeIdent<CSSValueDot, CSSValueCircle, CSSValueDoubleCircle, CSSValueTriangle, CSSValueSesame>(range);
+    std::shared_ptr<CSSPrimitiveValue> fill = consumeIdent<CSSValueFilled, CSSValueOpen>(range);
+    std::shared_ptr<CSSPrimitiveValue> shape = consumeIdent<CSSValueDot, CSSValueCircle, CSSValueDoubleCircle, CSSValueTriangle, CSSValueSesame>(range);
     if (!fill)
         fill = consumeIdent<CSSValueFilled, CSSValueOpen>(range);
     if (fill && shape) {
-        RefPtr<CSSValueList> parsedValues = CSSValueList::createSpaceSeparated();
+        std::shared_ptr<CSSValueList> parsedValues = CSSValueList::createSpaceSeparated();
         parsedValues->append(fill.releaseNonNull());
         parsedValues->append(shape.releaseNonNull());
         return parsedValues;
@@ -1786,14 +1777,14 @@ static RefPtr<CSSValue> consumeTextEmphasisStyle(CSSParserTokenRange& range)
     return nullptr;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeCaretColor(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeCaretColor(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
     return consumeColor(range, cssParserMode);
 }
 
-static RefPtr<CSSValue> consumeOutlineColor(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeOutlineColor(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     // Allow the special focus color even in HTML Standard parsing mode.
     if (range.peek().id() == CSSValueWebkitFocusRingColor)
@@ -1801,7 +1792,7 @@ static RefPtr<CSSValue> consumeOutlineColor(CSSParserTokenRange& range, CSSParse
     return consumeColor(range, cssParserMode);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeLineWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless)
+static std::shared_ptr<CSSPrimitiveValue> consumeLineWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueThin || id == CSSValueMedium || id == CSSValueThick)
@@ -1809,25 +1800,25 @@ static RefPtr<CSSPrimitiveValue> consumeLineWidth(CSSParserTokenRange& range, CS
     return consumeLength(range, cssParserMode, ValueRangeNonNegative, unitless);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBorderWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless)
+static std::shared_ptr<CSSPrimitiveValue> consumeBorderWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless)
 {
     return consumeLineWidth(range, cssParserMode, unitless);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeTextStrokeWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeTextStrokeWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     return consumeLineWidth(range, cssParserMode, UnitlessQuirk::Forbid);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeColumnRuleWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeColumnRuleWidth(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     return consumeLineWidth(range, cssParserMode, UnitlessQuirk::Forbid);
 }
 
-static bool consumeTranslate3d(CSSParserTokenRange& args, CSSParserMode cssParserMode, RefPtr<CSSFunctionValue>& transformValue)
+static bool consumeTranslate3d(CSSParserTokenRange& args, CSSParserMode cssParserMode, std::shared_ptr<CSSFunctionValue>& transformValue)
 {
     unsigned numberOfArguments = 2;
-    RefPtr<CSSValue> parsedValue;
+    std::shared_ptr<CSSValue> parsedValue;
     do {
         parsedValue = consumeLengthOrPercent(args, cssParserMode, ValueRangeAll);
         if (!parsedValue)
@@ -1843,10 +1834,10 @@ static bool consumeTranslate3d(CSSParserTokenRange& args, CSSParserMode cssParse
     return true;
 }
 
-static bool consumeNumbers(CSSParserTokenRange& args, RefPtr<CSSFunctionValue>& transformValue, unsigned numberOfArguments)
+static bool consumeNumbers(CSSParserTokenRange& args, std::shared_ptr<CSSFunctionValue>& transformValue, unsigned numberOfArguments)
 {
     do {
-        RefPtr<CSSPrimitiveValue> parsedValue = consumeNumber(args, ValueRangeAll);
+        std::shared_ptr<CSSPrimitiveValue> parsedValue = consumeNumber(args, ValueRangeAll);
         if (!parsedValue)
             return false;
         transformValue->append(parsedValue.releaseNonNull());
@@ -1856,9 +1847,9 @@ static bool consumeNumbers(CSSParserTokenRange& args, RefPtr<CSSFunctionValue>& 
     return true;
 }
 
-static bool consumePerspective(CSSParserTokenRange& args, CSSParserMode cssParserMode, RefPtr<CSSFunctionValue>& transformValue)
+static bool consumePerspective(CSSParserTokenRange& args, CSSParserMode cssParserMode, std::shared_ptr<CSSFunctionValue>& transformValue)
 {
-    RefPtr<CSSPrimitiveValue> parsedValue = consumeLength(args, cssParserMode, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> parsedValue = consumeLength(args, cssParserMode, ValueRangeNonNegative);
     if (!parsedValue) {
         double perspective;
         if (!consumeNumberRaw(args, perspective) || perspective < 0)
@@ -1871,7 +1862,7 @@ static bool consumePerspective(CSSParserTokenRange& args, CSSParserMode cssParse
     return true;
 }
 
-static RefPtr<CSSValue> consumeTransformValue(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeTransformValue(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     CSSValueID functionId = range.peek().functionId();
     if (functionId == CSSValueInvalid)
@@ -1880,8 +1871,8 @@ static RefPtr<CSSValue> consumeTransformValue(CSSParserTokenRange& range, CSSPar
     if (args.atEnd())
         return nullptr;
     
-    RefPtr<CSSFunctionValue> transformValue = CSSFunctionValue::create(functionId);
-    RefPtr<CSSValue> parsedValue;
+    std::shared_ptr<CSSFunctionValue> transformValue = CSSFunctionValue::create(functionId);
+    std::shared_ptr<CSSValue> parsedValue;
     switch (functionId) {
     case CSSValueRotate:
     case CSSValueRotateX:
@@ -1964,14 +1955,14 @@ static RefPtr<CSSValue> consumeTransformValue(CSSParserTokenRange& range, CSSPar
     return transformValue;
 }
 
-static RefPtr<CSSValue> consumeTransform(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeTransform(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     do {
-        RefPtr<CSSValue> parsedTransformValue = consumeTransformValue(range, cssParserMode);
+        std::shared_ptr<CSSValue> parsedTransformValue = consumeTransformValue(range, cssParserMode);
         if (!parsedTransformValue)
             return nullptr;
         list->append(parsedTransformValue.releaseNonNull());
@@ -1981,7 +1972,7 @@ static RefPtr<CSSValue> consumeTransform(CSSParserTokenRange& range, CSSParserMo
 }
 
 template <CSSValueID start, CSSValueID end>
-static RefPtr<CSSPrimitiveValue> consumePositionLonghand(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumePositionLonghand(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().type() == IdentToken) {
         CSSValueID id = range.peek().id();
@@ -2000,29 +1991,29 @@ static RefPtr<CSSPrimitiveValue> consumePositionLonghand(CSSParserTokenRange& ra
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeAll);
 }
 
-static RefPtr<CSSPrimitiveValue> consumePositionX(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumePositionX(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     return consumePositionLonghand<CSSValueLeft, CSSValueRight>(range, cssParserMode);
 }
 
-static RefPtr<CSSPrimitiveValue> consumePositionY(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumePositionY(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     return consumePositionLonghand<CSSValueTop, CSSValueBottom>(range, cssParserMode);
 }
 
-static RefPtr<CSSValue> consumePaintStroke(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumePaintStroke(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
-    RefPtr<CSSPrimitiveValue> url = consumeUrl(range);
+    std::shared_ptr<CSSPrimitiveValue> url = consumeUrl(range);
     if (url) {
-        RefPtr<CSSValue> parsedValue;
+        std::shared_ptr<CSSValue> parsedValue;
         if (range.peek().id() == CSSValueNone)
             parsedValue = consumeIdent(range);
         else
             parsedValue = consumeColor(range, cssParserMode);
         if (parsedValue) {
-            RefPtr<CSSValueList> values = CSSValueList::createSpaceSeparated();
+            std::shared_ptr<CSSValueList> values = CSSValueList::createSpaceSeparated();
             values->append(url.releaseNonNull());
             values->append(parsedValue.releaseNonNull());
             return values;
@@ -2032,7 +2023,7 @@ static RefPtr<CSSValue> consumePaintStroke(CSSParserTokenRange& range, CSSParser
     return consumeColor(range, cssParserMode);
 }
 
-static RefPtr<CSSValue> consumeGlyphOrientation(CSSParserTokenRange& range, CSSParserMode mode, CSSPropertyID property)
+static std::shared_ptr<CSSValue> consumeGlyphOrientation(CSSParserTokenRange& range, CSSParserMode mode, CSSPropertyID property)
 {
     if (range.peek().id() == CSSValueAuto) {
         if (property == CSSPropertyGlyphOrientationVertical)
@@ -2043,15 +2034,15 @@ static RefPtr<CSSValue> consumeGlyphOrientation(CSSParserTokenRange& range, CSSP
     return consumeAngle(range, mode, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumePaintOrder(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumePaintOrder(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNormal)
         return consumeIdent(range);
 
-    Vector<CSSValueID, 3> paintTypeList;
-    RefPtr<CSSPrimitiveValue> fill;
-    RefPtr<CSSPrimitiveValue> stroke;
-    RefPtr<CSSPrimitiveValue> markers;
+    std::vector<CSSValueID, 3> paintTypeList;
+    std::shared_ptr<CSSPrimitiveValue> fill;
+    std::shared_ptr<CSSPrimitiveValue> stroke;
+    std::shared_ptr<CSSPrimitiveValue> markers;
     do {
         CSSValueID id = range.peek().id();
         if (id == CSSValueFill && !fill)
@@ -2069,7 +2060,7 @@ static RefPtr<CSSValue> consumePaintOrder(CSSParserTokenRange& range)
     // pop a last list items from CSSValueList without bigger cost, we create the
     // list after parsing.
     CSSValueID firstPaintOrderType = paintTypeList.at(0);
-    RefPtr<CSSValueList> paintOrderList = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> paintOrderList = CSSValueList::createSpaceSeparated();
     switch (firstPaintOrderType) {
     case CSSValueFill:
     case CSSValueStroke:
@@ -2093,14 +2084,14 @@ static RefPtr<CSSValue> consumePaintOrder(CSSParserTokenRange& range)
     return paintOrderList;
 }
 
-static RefPtr<CSSValue> consumeNoneOrURI(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeNoneOrURI(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
     return consumeUrl(range);
 }
 
-static RefPtr<CSSValue> consumeFlexBasis(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeFlexBasis(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     // FIXME: Support intrinsic dimensions too.
     if (range.peek().id() == CSSValueAuto)
@@ -2108,23 +2099,23 @@ static RefPtr<CSSValue> consumeFlexBasis(CSSParserTokenRange& range, CSSParserMo
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
 }
 
-static RefPtr<CSSValue> consumeKerning(CSSParserTokenRange& range, CSSParserMode mode)
+static std::shared_ptr<CSSValue> consumeKerning(CSSParserTokenRange& range, CSSParserMode mode)
 {
-    RefPtr<CSSValue> result = consumeIdent<CSSValueAuto, CSSValueNormal>(range);
+    std::shared_ptr<CSSValue> result = consumeIdent<CSSValueAuto, CSSValueNormal>(range);
     if (result)
         return result;
     return consumeLength(range, mode, ValueRangeAll, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumeStrokeDasharray(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeStrokeDasharray(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueNone)
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> dashes = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> dashes = CSSValueList::createCommaSeparated();
     do {
-        RefPtr<CSSPrimitiveValue> dash = consumeLengthOrPercent(range, SVGAttributeMode, ValueRangeNonNegative);
+        std::shared_ptr<CSSPrimitiveValue> dash = consumeLengthOrPercent(range, SVGAttributeMode, ValueRangeNonNegative);
         if (!dash || (consumeCommaIncludingWhitespace(range) && range.atEnd()))
             return nullptr;
         dashes->append(dash.releaseNonNull());
@@ -2132,7 +2123,7 @@ static RefPtr<CSSValue> consumeStrokeDasharray(CSSParserTokenRange& range)
     return dashes;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBaselineShift(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeBaselineShift(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueBaseline || id == CSSValueSub || id == CSSValueSuper)
@@ -2140,7 +2131,7 @@ static RefPtr<CSSPrimitiveValue> consumeBaselineShift(CSSParserTokenRange& range
     return consumeLengthOrPercent(range, SVGAttributeMode, ValueRangeAll);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeRxOrRy(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeRxOrRy(CSSParserTokenRange& range)
 {
     // FIXME-NEWPARSER: We don't support auto values when mapping, so for now turn this
     // off until we can figure out if we're even supposed to support it.
@@ -2149,10 +2140,10 @@ static RefPtr<CSSPrimitiveValue> consumeRxOrRy(CSSParserTokenRange& range)
     return consumeLengthOrPercent(range, SVGAttributeMode, ValueRangeAll, UnitlessQuirk::Forbid);
 }
 
-static RefPtr<CSSValue> consumeCursor(CSSParserTokenRange& range, const CSSParserContext& context, bool inQuirksMode)
+static std::shared_ptr<CSSValue> consumeCursor(CSSParserTokenRange& range, const CSSParserContext& context, bool inQuirksMode)
 {
-    RefPtr<CSSValueList> list;
-    while (RefPtr<CSSValue> image = consumeImage(range, context, ConsumeGeneratedImage::Forbid)) {
+    std::shared_ptr<CSSValueList> list;
+    while (std::shared_ptr<CSSValue> image = consumeImage(range, context, ConsumeGeneratedImage::Forbid)) {
         double num;
         IntPoint hotSpot(-1, -1);
         bool hotSpotSpecified = false;
@@ -2173,7 +2164,7 @@ static RefPtr<CSSValue> consumeCursor(CSSParserTokenRange& range, const CSSParse
     }
 
     CSSValueID id = range.peek().id();
-    RefPtr<CSSValue> cursorType;
+    std::shared_ptr<CSSValue> cursorType;
     if (id == CSSValueHand) {
         if (!inQuirksMode) // Non-standard behavior
             return nullptr;
@@ -2191,7 +2182,7 @@ static RefPtr<CSSValue> consumeCursor(CSSParserTokenRange& range, const CSSParse
     return list;
 }
 
-static RefPtr<CSSValue> consumeAttr(CSSParserTokenRange args, CSSParserContext context)
+static std::shared_ptr<CSSValue> consumeAttr(CSSParserTokenRange args, CSSParserContext context)
 {
     if (args.peek().type() != IdentToken)
         return nullptr;
@@ -2210,13 +2201,13 @@ static RefPtr<CSSValue> consumeAttr(CSSParserTokenRange args, CSSParserContext c
     return CSSValuePool::singleton().createValue(attrName, CSSPrimitiveValue::CSS_ATTR);
 }
 
-static RefPtr<CSSValue> consumeCounterContent(CSSParserTokenRange args, bool counters)
+static std::shared_ptr<CSSValue> consumeCounterContent(CSSParserTokenRange args, bool counters)
 {
-    RefPtr<CSSPrimitiveValue> identifier = consumeCustomIdent(args);
+    std::shared_ptr<CSSPrimitiveValue> identifier = consumeCustomIdent(args);
     if (!identifier)
         return nullptr;
 
-    RefPtr<CSSPrimitiveValue> separator;
+    std::shared_ptr<CSSPrimitiveValue> separator;
     if (!counters)
         separator = CSSPrimitiveValue::create(String(), CSSPrimitiveValue::UnitType::CSS_STRING);
     else {
@@ -2225,7 +2216,7 @@ static RefPtr<CSSValue> consumeCounterContent(CSSParserTokenRange args, bool cou
         separator = CSSPrimitiveValue::create(args.consumeIncludingWhitespace().value().toString(), CSSPrimitiveValue::UnitType::CSS_STRING);
     }
 
-    RefPtr<CSSPrimitiveValue> listStyle;
+    std::shared_ptr<CSSPrimitiveValue> listStyle;
     if (consumeCommaIncludingWhitespace(args)) {
         CSSValueID id = args.peek().id();
         if ((id != CSSValueNone && (id < CSSValueDisc || id > CSSValueKatakanaIroha)))
@@ -2241,15 +2232,15 @@ static RefPtr<CSSValue> consumeCounterContent(CSSParserTokenRange args, bool cou
     return CSSValuePool::singleton().createValue(Counter::create(identifier.releaseNonNull(), listStyle.releaseNonNull(), separator.releaseNonNull()));
 }
 
-static RefPtr<CSSValue> consumeContent(CSSParserTokenRange& range, CSSParserContext context)
+static std::shared_ptr<CSSValue> consumeContent(CSSParserTokenRange& range, CSSParserContext context)
 {
     if (identMatches<CSSValueNone, CSSValueNormal>(range.peek().id()))
         return consumeIdent(range);
 
-    RefPtr<CSSValueList> values = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createSpaceSeparated();
 
     do {
-        RefPtr<CSSValue> parsedValue = consumeImage(range, context);
+        std::shared_ptr<CSSValue> parsedValue = consumeImage(range, context);
         if (!parsedValue)
             parsedValue = consumeIdent<CSSValueOpenQuote, CSSValueCloseQuote, CSSValueNoOpenQuote, CSSValueNoCloseQuote>(range);
         if (!parsedValue)
@@ -2270,11 +2261,11 @@ static RefPtr<CSSValue> consumeContent(CSSParserTokenRange& range, CSSParserCont
     return values;
 }
 
-static RefPtr<CSSPrimitiveValue> consumePerspective(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumePerspective(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
-    RefPtr<CSSPrimitiveValue> parsedValue = consumeLength(range, cssParserMode, ValueRangeAll);
+    std::shared_ptr<CSSPrimitiveValue> parsedValue = consumeLength(range, cssParserMode, ValueRangeAll);
     if (!parsedValue) {
         // FIXME: Make this quirk only apply to the webkit prefixed version of the property.
         double perspective;
@@ -2289,10 +2280,10 @@ static RefPtr<CSSPrimitiveValue> consumePerspective(CSSParserTokenRange& range, 
 
 #if ENABLE(CSS_SCROLL_SNAP)
 
-static RefPtr<CSSValueList> consumeScrollSnapAlign(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValueList> consumeScrollSnapAlign(CSSParserTokenRange& range)
 {
-    RefPtr<CSSValueList> alignmentValue = CSSValueList::createSpaceSeparated();
-    if (RefPtr<CSSPrimitiveValue> firstValue = consumeIdent<CSSValueNone, CSSValueStart, CSSValueCenter, CSSValueEnd>(range)) {
+    std::shared_ptr<CSSValueList> alignmentValue = CSSValueList::createSpaceSeparated();
+    if (std::shared_ptr<CSSPrimitiveValue> firstValue = consumeIdent<CSSValueNone, CSSValueStart, CSSValueCenter, CSSValueEnd>(range)) {
         alignmentValue->append(firstValue.releaseNonNull());
         if (auto secondValue = consumeIdent<CSSValueNone, CSSValueStart, CSSValueCenter, CSSValueEnd>(range))
             alignmentValue->append(secondValue.releaseNonNull());
@@ -2300,10 +2291,10 @@ static RefPtr<CSSValueList> consumeScrollSnapAlign(CSSParserTokenRange& range)
     return alignmentValue->length() ? alignmentValue : nullptr;
 }
 
-static RefPtr<CSSValueList> consumeScrollSnapType(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValueList> consumeScrollSnapType(CSSParserTokenRange& range)
 {
-    RefPtr<CSSValueList> typeValue = CSSValueList::createSpaceSeparated();
-    RefPtr<CSSPrimitiveValue> secondValue;
+    std::shared_ptr<CSSValueList> typeValue = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSPrimitiveValue> secondValue;
 
     auto firstValue = consumeIdent<CSSValueX, CSSValueY, CSSValueBlock, CSSValueInline, CSSValueBoth>(range);
     if (firstValue)
@@ -2323,56 +2314,56 @@ static RefPtr<CSSValueList> consumeScrollSnapType(CSSParserTokenRange& range)
 
 #endif
 
-static RefPtr<CSSValue> consumeBorderRadiusCorner(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeBorderRadiusCorner(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
-    RefPtr<CSSPrimitiveValue> parsedValue1 = consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> parsedValue1 = consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
     if (!parsedValue1)
         return nullptr;
-    RefPtr<CSSPrimitiveValue> parsedValue2 = consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> parsedValue2 = consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative);
     if (!parsedValue2)
         parsedValue2 = parsedValue1;
     return createPrimitiveValuePair(parsedValue1.releaseNonNull(), parsedValue2.releaseNonNull(), Pair::IdenticalValueEncoding::Coalesce);
 }
 
-static RefPtr<CSSValue> consumeTextUnderlineOffset(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeTextUnderlineOffset(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (auto value = consumeIdent<CSSValueAuto>(range))
         return value;
     return consumeLength(range, cssParserMode, ValueRangeAll);
 }
 
-static RefPtr<CSSValue> consumeTextDecorationThickness(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeTextDecorationThickness(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (auto value = consumeIdent<CSSValueAuto, CSSValueFromFont>(range))
         return value;
     return consumeLength(range, cssParserMode, ValueRangeAll);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeVerticalAlign(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeVerticalAlign(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
-    RefPtr<CSSPrimitiveValue> parsedValue = consumeIdentRange(range, CSSValueBaseline, CSSValueWebkitBaselineMiddle);
+    std::shared_ptr<CSSPrimitiveValue> parsedValue = consumeIdentRange(range, CSSValueBaseline, CSSValueWebkitBaselineMiddle);
     if (!parsedValue)
         parsedValue = consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow);
     return parsedValue;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeShapeRadius(CSSParserTokenRange& args, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeShapeRadius(CSSParserTokenRange& args, CSSParserMode cssParserMode)
 {
     if (identMatches<CSSValueClosestSide, CSSValueFarthestSide>(args.peek().id()))
         return consumeIdent(args);
     return consumeLengthOrPercent(args, cssParserMode, ValueRangeNonNegative);
 }
 
-static RefPtr<CSSBasicShapeCircle> consumeBasicShapeCircle(CSSParserTokenRange& args, const CSSParserContext& context)
+static std::shared_ptr<CSSBasicShapeCircle> consumeBasicShapeCircle(CSSParserTokenRange& args, const CSSParserContext& context)
 {
     // spec: https://drafts.csswg.org/css-shapes/#supported-basic-shapes
     // circle( [<shape-radius>]? [at <position>]? )
-    RefPtr<CSSBasicShapeCircle> shape = CSSBasicShapeCircle::create();
-    if (RefPtr<CSSPrimitiveValue> radius = consumeShapeRadius(args, context.mode))
+    std::shared_ptr<CSSBasicShapeCircle> shape = CSSBasicShapeCircle::create();
+    if (std::shared_ptr<CSSPrimitiveValue> radius = consumeShapeRadius(args, context.mode))
         shape->setRadius(radius.releaseNonNull());
     if (consumeIdent<CSSValueAt>(args)) {
-        RefPtr<CSSPrimitiveValue> centerX;
-        RefPtr<CSSPrimitiveValue> centerY;
+        std::shared_ptr<CSSPrimitiveValue> centerX;
+        std::shared_ptr<CSSPrimitiveValue> centerY;
         if (!consumePosition(args, context.mode, UnitlessQuirk::Forbid, centerX, centerY))
             return nullptr;
         shape->setCenterX(centerX.releaseNonNull());
@@ -2381,19 +2372,19 @@ static RefPtr<CSSBasicShapeCircle> consumeBasicShapeCircle(CSSParserTokenRange& 
     return shape;
 }
 
-static RefPtr<CSSBasicShapeEllipse> consumeBasicShapeEllipse(CSSParserTokenRange& args, const CSSParserContext& context)
+static std::shared_ptr<CSSBasicShapeEllipse> consumeBasicShapeEllipse(CSSParserTokenRange& args, const CSSParserContext& context)
 {
     // spec: https://drafts.csswg.org/css-shapes/#supported-basic-shapes
     // ellipse( [<shape-radius>{2}]? [at <position>]? )
-    RefPtr<CSSBasicShapeEllipse> shape = CSSBasicShapeEllipse::create();
-    if (RefPtr<CSSPrimitiveValue> radiusX = consumeShapeRadius(args, context.mode)) {
+    std::shared_ptr<CSSBasicShapeEllipse> shape = CSSBasicShapeEllipse::create();
+    if (std::shared_ptr<CSSPrimitiveValue> radiusX = consumeShapeRadius(args, context.mode)) {
         shape->setRadiusX(radiusX.releaseNonNull());
-        if (RefPtr<CSSPrimitiveValue> radiusY = consumeShapeRadius(args, context.mode))
+        if (std::shared_ptr<CSSPrimitiveValue> radiusY = consumeShapeRadius(args, context.mode))
             shape->setRadiusY(radiusY.releaseNonNull());
     }
     if (consumeIdent<CSSValueAt>(args)) {
-        RefPtr<CSSPrimitiveValue> centerX;
-        RefPtr<CSSPrimitiveValue> centerY;
+        std::shared_ptr<CSSPrimitiveValue> centerX;
+        std::shared_ptr<CSSPrimitiveValue> centerY;
         if (!consumePosition(args, context.mode, UnitlessQuirk::Forbid, centerX, centerY))
             return nullptr;
         shape->setCenterX(centerX.releaseNonNull());
@@ -2402,9 +2393,9 @@ static RefPtr<CSSBasicShapeEllipse> consumeBasicShapeEllipse(CSSParserTokenRange
     return shape;
 }
 
-static RefPtr<CSSBasicShapePolygon> consumeBasicShapePolygon(CSSParserTokenRange& args, const CSSParserContext& context)
+static std::shared_ptr<CSSBasicShapePolygon> consumeBasicShapePolygon(CSSParserTokenRange& args, const CSSParserContext& context)
 {
-    RefPtr<CSSBasicShapePolygon> shape = CSSBasicShapePolygon::create();
+    std::shared_ptr<CSSBasicShapePolygon> shape = CSSBasicShapePolygon::create();
     if (identMatches<CSSValueEvenodd, CSSValueNonzero>(args.peek().id())) {
         shape->setWindRule(args.consumeIncludingWhitespace().id() == CSSValueEvenodd ? WindRule::EvenOdd : WindRule::NonZero);
         if (!consumeCommaIncludingWhitespace(args))
@@ -2412,10 +2403,10 @@ static RefPtr<CSSBasicShapePolygon> consumeBasicShapePolygon(CSSParserTokenRange
     }
 
     do {
-        RefPtr<CSSPrimitiveValue> xLength = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
+        std::shared_ptr<CSSPrimitiveValue> xLength = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
         if (!xLength)
             return nullptr;
-        RefPtr<CSSPrimitiveValue> yLength = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
+        std::shared_ptr<CSSPrimitiveValue> yLength = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
         if (!yLength)
             return nullptr;
         shape->appendPoint(xLength.releaseNonNull(), yLength.releaseNonNull());
@@ -2423,7 +2414,7 @@ static RefPtr<CSSBasicShapePolygon> consumeBasicShapePolygon(CSSParserTokenRange
     return shape;
 }
 
-static RefPtr<CSSBasicShapePath> consumeBasicShapePath(CSSParserTokenRange& args)
+static std::shared_ptr<CSSBasicShapePath> consumeBasicShapePath(CSSParserTokenRange& args)
 {
     WindRule windRule = WindRule::NonZero;
     if (identMatches<CSSValueEvenodd, CSSValueNonzero>(args.peek().id())) {
@@ -2439,13 +2430,13 @@ static RefPtr<CSSBasicShapePath> consumeBasicShapePath(CSSParserTokenRange& args
     if (!buildSVGPathByteStreamFromString(args.consumeIncludingWhitespace().value().toString(), *byteStream, UnalteredParsing))
         return nullptr;
     
-    auto shape = CSSBasicShapePath::create(WTFMove(byteStream));
+    auto shape = CSSBasicShapePath::create(std::move(byteStream));
     shape->setWindRule(windRule);
     
     return shape;
 }
 
-static void complete4Sides(RefPtr<CSSPrimitiveValue> side[4])
+static void complete4Sides(std::shared_ptr<CSSPrimitiveValue> side[4])
 {
     if (side[3])
         return;
@@ -2457,7 +2448,7 @@ static void complete4Sides(RefPtr<CSSPrimitiveValue> side[4])
     side[3] = side[1];
 }
 
-static bool consumeRadii(RefPtr<CSSPrimitiveValue> horizontalRadii[4], RefPtr<CSSPrimitiveValue> verticalRadii[4], CSSParserTokenRange& range, CSSParserMode cssParserMode, bool useLegacyParsing)
+static bool consumeRadii(std::shared_ptr<CSSPrimitiveValue> horizontalRadii[4], std::shared_ptr<CSSPrimitiveValue> verticalRadii[4], CSSParserTokenRange& range, CSSParserMode cssParserMode, bool useLegacyParsing)
 {
     unsigned i = 0;
     for (; i < 4 && !range.atEnd() && range.peek().type() != DelimiterToken; ++i) {
@@ -2494,15 +2485,15 @@ static bool consumeRadii(RefPtr<CSSPrimitiveValue> horizontalRadii[4], RefPtr<CS
     return true;
 }
 
-static RefPtr<CSSBasicShapeInset> consumeBasicShapeInset(CSSParserTokenRange& args, const CSSParserContext& context)
+static std::shared_ptr<CSSBasicShapeInset> consumeBasicShapeInset(CSSParserTokenRange& args, const CSSParserContext& context)
 {
-    RefPtr<CSSBasicShapeInset> shape = CSSBasicShapeInset::create();
-    RefPtr<CSSPrimitiveValue> top = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
+    std::shared_ptr<CSSBasicShapeInset> shape = CSSBasicShapeInset::create();
+    std::shared_ptr<CSSPrimitiveValue> top = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
     if (!top)
         return nullptr;
-    RefPtr<CSSPrimitiveValue> right = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
-    RefPtr<CSSPrimitiveValue> bottom;
-    RefPtr<CSSPrimitiveValue> left;
+    std::shared_ptr<CSSPrimitiveValue> right = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
+    std::shared_ptr<CSSPrimitiveValue> bottom;
+    std::shared_ptr<CSSPrimitiveValue> left;
     if (right) {
         bottom = consumeLengthOrPercent(args, context.mode, ValueRangeAll);
         if (bottom)
@@ -2518,8 +2509,8 @@ static RefPtr<CSSBasicShapeInset> consumeBasicShapeInset(CSSParserTokenRange& ar
         shape->updateShapeSize1Value(top.releaseNonNull());
 
     if (consumeIdent<CSSValueRound>(args)) {
-        RefPtr<CSSPrimitiveValue> horizontalRadii[4] = { 0 };
-        RefPtr<CSSPrimitiveValue> verticalRadii[4] = { 0 };
+        std::shared_ptr<CSSPrimitiveValue> horizontalRadii[4] = { 0 };
+        std::shared_ptr<CSSPrimitiveValue> verticalRadii[4] = { 0 };
         if (!consumeRadii(horizontalRadii, verticalRadii, args, context.mode, false))
             return nullptr;
         shape->setTopLeftRadius(createPrimitiveValuePair(horizontalRadii[0].releaseNonNull(), verticalRadii[0].releaseNonNull(), Pair::IdenticalValueEncoding::Coalesce));
@@ -2530,9 +2521,9 @@ static RefPtr<CSSBasicShapeInset> consumeBasicShapeInset(CSSParserTokenRange& ar
     return shape;
 }
 
-static RefPtr<CSSValue> consumeBasicShape(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeBasicShape(CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    RefPtr<CSSValue> result;
+    std::shared_ptr<CSSValue> result;
     if (range.peek().type() != FunctionToken)
         return nullptr;
     CSSValueID id = range.peek().functionId();
@@ -2540,7 +2531,7 @@ static RefPtr<CSSValue> consumeBasicShape(CSSParserTokenRange& range, const CSSP
     CSSParserTokenRange args = consumeFunction(rangeCopy);
     
     // FIXME-NEWPARSER: CSSBasicShape should be a CSSValue, and shapes should not be primitive values.
-    RefPtr<CSSBasicShape> shape;
+    std::shared_ptr<CSSBasicShape> shape;
     if (id == CSSValueCircle)
         shape = consumeBasicShapeCircle(args, context);
     else if (id == CSSValueEllipse)
@@ -2561,13 +2552,13 @@ static RefPtr<CSSValue> consumeBasicShape(CSSParserTokenRange& range, const CSSP
     return CSSValuePool::singleton().createValue(shape.releaseNonNull());
 }
 
-static RefPtr<CSSValue> consumeBasicShapeOrBox(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeBasicShapeOrBox(CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     bool shapeFound = false;
     bool boxFound = false;
     while (!range.atEnd() && !(shapeFound && boxFound)) {
-        RefPtr<CSSValue> componentValue;
+        std::shared_ptr<CSSValue> componentValue;
         if (range.peek().type() == FunctionToken && !shapeFound) {
             componentValue = consumeBasicShape(range, context);
             shapeFound = true;
@@ -2586,26 +2577,26 @@ static RefPtr<CSSValue> consumeBasicShapeOrBox(CSSParserTokenRange& range, const
     return list;
 }
     
-static RefPtr<CSSValue> consumeWebkitClipPath(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeWebkitClipPath(CSSParserTokenRange& range, const CSSParserContext& context)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
-    if (RefPtr<CSSPrimitiveValue> url = consumeUrl(range))
+    if (std::shared_ptr<CSSPrimitiveValue> url = consumeUrl(range))
         return url;
     return consumeBasicShapeOrBox(range, context);
 }
 
-static RefPtr<CSSValue> consumeShapeOutside(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeShapeOutside(CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    if (RefPtr<CSSValue> imageValue = consumeImageOrNone(range, context))
+    if (std::shared_ptr<CSSValue> imageValue = consumeImageOrNone(range, context))
         return imageValue;
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
-    if (RefPtr<CSSValue> boxValue = consumeIdent<CSSValueContentBox, CSSValuePaddingBox, CSSValueBorderBox, CSSValueMarginBox>(range))
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    if (std::shared_ptr<CSSValue> boxValue = consumeIdent<CSSValueContentBox, CSSValuePaddingBox, CSSValueBorderBox, CSSValueMarginBox>(range))
         list->append(boxValue.releaseNonNull());
-    if (RefPtr<CSSValue> shapeValue = consumeBasicShape(range, context)) {
+    if (std::shared_ptr<CSSValue> shapeValue = consumeBasicShape(range, context)) {
         list->append(shapeValue.releaseNonNull());
         if (list->length() < 2) {
-            if (RefPtr<CSSValue> boxValue = consumeIdent<CSSValueContentBox, CSSValuePaddingBox, CSSValueBorderBox, CSSValueMarginBox>(range))
+            if (std::shared_ptr<CSSValue> boxValue = consumeIdent<CSSValueContentBox, CSSValuePaddingBox, CSSValueBorderBox, CSSValueMarginBox>(range))
                 list->append(boxValue.releaseNonNull());
         }
     }
@@ -2654,12 +2645,12 @@ static bool isBaselineKeyword(CSSValueID id)
     return identMatches<CSSValueFirst, CSSValueLast, CSSValueBaseline>(id);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeOverflowPositionKeyword(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeOverflowPositionKeyword(CSSParserTokenRange& range)
 {
     return isOverflowKeyword(range.peek().id()) ? consumeIdent(range) : nullptr;
 }
 
-static CSSValueID getBaselineKeyword(RefPtr<CSSValue> value)
+static CSSValueID getBaselineKeyword(std::shared_ptr<CSSValue> value)
 {
     auto& primitiveValue = downcast<CSSPrimitiveValue>(*value);
     if (primitiveValue.pairValue()) {
@@ -2671,10 +2662,10 @@ static CSSValueID getBaselineKeyword(RefPtr<CSSValue> value)
     return CSSValueBaseline;
 }
 
-static RefPtr<CSSValue> consumeBaselineKeyword(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeBaselineKeyword(CSSParserTokenRange& range)
 {
-    RefPtr<CSSPrimitiveValue> preference = consumeIdent<CSSValueFirst, CSSValueLast>(range);
-    RefPtr<CSSPrimitiveValue> baseline = consumeIdent<CSSValueBaseline>(range);
+    std::shared_ptr<CSSPrimitiveValue> preference = consumeIdent<CSSValueFirst, CSSValueLast>(range);
+    std::shared_ptr<CSSPrimitiveValue> baseline = consumeIdent<CSSValueBaseline>(range);
     if (!baseline)
         return nullptr;
     if (preference && preference->valueID() == CSSValueLast)
@@ -2684,7 +2675,7 @@ static RefPtr<CSSValue> consumeBaselineKeyword(CSSParserTokenRange& range)
 
 using IsPositionKeyword = bool (*)(CSSValueID);
 
-static RefPtr<CSSValue> consumeContentDistributionOverflowPosition(CSSParserTokenRange& range, IsPositionKeyword isPositionKeyword)
+static std::shared_ptr<CSSValue> consumeContentDistributionOverflowPosition(CSSParserTokenRange& range, IsPositionKeyword isPositionKeyword)
 {
     ASSERT(isPositionKeyword);
     CSSValueID id = range.peek().id();
@@ -2692,7 +2683,7 @@ static RefPtr<CSSValue> consumeContentDistributionOverflowPosition(CSSParserToke
         return CSSContentDistributionValue::create(CSSValueInvalid, range.consumeIncludingWhitespace().id(), CSSValueInvalid);
 
     if (isBaselineKeyword(id)) {
-        RefPtr<CSSValue> baseline = consumeBaselineKeyword(range);
+        std::shared_ptr<CSSValue> baseline = consumeBaselineKeyword(range);
         if (!baseline)
             return nullptr;
         return CSSContentDistributionValue::create(CSSValueInvalid, getBaselineKeyword(baseline), CSSValueInvalid);
@@ -2708,29 +2699,29 @@ static RefPtr<CSSValue> consumeContentDistributionOverflowPosition(CSSParserToke
     return nullptr;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBorderImageRepeatKeyword(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeBorderImageRepeatKeyword(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueStretch, CSSValueRepeat, CSSValueSpace, CSSValueRound>(range);
 }
 
-static RefPtr<CSSValue> consumeBorderImageRepeat(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeBorderImageRepeat(CSSParserTokenRange& range)
 {
-    RefPtr<CSSPrimitiveValue> horizontal = consumeBorderImageRepeatKeyword(range);
+    std::shared_ptr<CSSPrimitiveValue> horizontal = consumeBorderImageRepeatKeyword(range);
     if (!horizontal)
         return nullptr;
-    RefPtr<CSSPrimitiveValue> vertical = consumeBorderImageRepeatKeyword(range);
+    std::shared_ptr<CSSPrimitiveValue> vertical = consumeBorderImageRepeatKeyword(range);
     if (!vertical)
         vertical = horizontal;
     return createPrimitiveValuePair(horizontal.releaseNonNull(), vertical.releaseNonNull(), Pair::IdenticalValueEncoding::Coalesce);
 }
 
-static RefPtr<CSSValue> consumeBorderImageSlice(CSSPropertyID property, CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeBorderImageSlice(CSSPropertyID property, CSSParserTokenRange& range)
 {
     bool fill = consumeIdent<CSSValueFill>(range);
-    RefPtr<CSSPrimitiveValue> slices[4] = { 0 };
+    std::shared_ptr<CSSPrimitiveValue> slices[4] = { 0 };
 
     for (size_t index = 0; index < 4; ++index) {
-        RefPtr<CSSPrimitiveValue> value = consumePercent(range, ValueRangeNonNegative);
+        std::shared_ptr<CSSPrimitiveValue> value = consumePercent(range, ValueRangeNonNegative);
         if (!value)
             value = consumeNumber(range, ValueRangeNonNegative);
         if (!value)
@@ -2759,14 +2750,14 @@ static RefPtr<CSSValue> consumeBorderImageSlice(CSSPropertyID property, CSSParse
     quad->setLeft(slices[3].releaseNonNull());
     
     // Make our new border image value now.
-    return CSSBorderImageSliceValue::create(CSSValuePool::singleton().createValue(WTFMove(quad)), fill);
+    return CSSBorderImageSliceValue::create(CSSValuePool::singleton().createValue(std::move(quad)), fill);
 }
 
-static RefPtr<CSSValue> consumeBorderImageOutset(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeBorderImageOutset(CSSParserTokenRange& range)
 {
-    RefPtr<CSSPrimitiveValue> outsets[4] = { 0 };
+    std::shared_ptr<CSSPrimitiveValue> outsets[4] = { 0 };
 
-    RefPtr<CSSPrimitiveValue> value;
+    std::shared_ptr<CSSPrimitiveValue> value;
     for (size_t index = 0; index < 4; ++index) {
         value = consumeNumber(range, ValueRangeNonNegative);
         if (!value)
@@ -2786,14 +2777,14 @@ static RefPtr<CSSValue> consumeBorderImageOutset(CSSParserTokenRange& range)
     quad->setBottom(outsets[2].releaseNonNull());
     quad->setLeft(outsets[3].releaseNonNull());
     
-    return CSSValuePool::singleton().createValue(WTFMove(quad));
+    return CSSValuePool::singleton().createValue(std::move(quad));
 }
 
-static RefPtr<CSSValue> consumeBorderImageWidth(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeBorderImageWidth(CSSParserTokenRange& range)
 {
-    RefPtr<CSSPrimitiveValue> widths[4];
+    std::shared_ptr<CSSPrimitiveValue> widths[4];
 
-    RefPtr<CSSPrimitiveValue> value;
+    std::shared_ptr<CSSPrimitiveValue> value;
     for (size_t index = 0; index < 4; ++index) {
         value = consumeNumber(range, ValueRangeNonNegative);
         if (!value)
@@ -2815,11 +2806,11 @@ static RefPtr<CSSValue> consumeBorderImageWidth(CSSParserTokenRange& range)
     quad->setBottom(widths[2].releaseNonNull());
     quad->setLeft(widths[3].releaseNonNull());
     
-    return CSSValuePool::singleton().createValue(WTFMove(quad));
+    return CSSValuePool::singleton().createValue(std::move(quad));
 }
 
-static bool consumeBorderImageComponents(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context, RefPtr<CSSValue>& source,
-    RefPtr<CSSValue>& slice, RefPtr<CSSValue>& width, RefPtr<CSSValue>& outset, RefPtr<CSSValue>& repeat)
+static bool consumeBorderImageComponents(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context, std::shared_ptr<CSSValue>& source,
+    std::shared_ptr<CSSValue>& slice, std::shared_ptr<CSSValue>& width, std::shared_ptr<CSSValue>& outset, std::shared_ptr<CSSValue>& repeat)
 {
     do {
         if (!source) {
@@ -2856,28 +2847,28 @@ static bool consumeBorderImageComponents(CSSPropertyID property, CSSParserTokenR
     return true;
 }
 
-static RefPtr<CSSValue> consumeWebkitBorderImage(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeWebkitBorderImage(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    RefPtr<CSSValue> source;
-    RefPtr<CSSValue> slice;
-    RefPtr<CSSValue> width;
-    RefPtr<CSSValue> outset;
-    RefPtr<CSSValue> repeat;
+    std::shared_ptr<CSSValue> source;
+    std::shared_ptr<CSSValue> slice;
+    std::shared_ptr<CSSValue> width;
+    std::shared_ptr<CSSValue> outset;
+    std::shared_ptr<CSSValue> repeat;
     if (consumeBorderImageComponents(property, range, context, source, slice, width, outset, repeat))
-        return createBorderImageValue(WTFMove(source), WTFMove(slice), WTFMove(width), WTFMove(outset), WTFMove(repeat));
+        return createBorderImageValue(std::move(source), std::move(slice), std::move(width), std::move(outset), std::move(repeat));
     return nullptr;
 }
 
-static RefPtr<CSSValue> consumeReflect(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeReflect(CSSParserTokenRange& range, const CSSParserContext& context)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
     
-    RefPtr<CSSPrimitiveValue> direction = consumeIdent<CSSValueAbove, CSSValueBelow, CSSValueLeft, CSSValueRight>(range);
+    std::shared_ptr<CSSPrimitiveValue> direction = consumeIdent<CSSValueAbove, CSSValueBelow, CSSValueLeft, CSSValueRight>(range);
     if (!direction)
         return nullptr;
 
-    RefPtr<CSSPrimitiveValue> offset;
+    std::shared_ptr<CSSPrimitiveValue> offset;
     if (range.atEnd())
         offset = CSSValuePool::singleton().createValue(0, CSSPrimitiveValue::UnitType::CSS_PX);
     else {
@@ -2886,20 +2877,20 @@ static RefPtr<CSSValue> consumeReflect(CSSParserTokenRange& range, const CSSPars
             return nullptr;
     }
 
-    RefPtr<CSSValue> mask;
+    std::shared_ptr<CSSValue> mask;
     if (!range.atEnd()) {
         mask = consumeWebkitBorderImage(CSSPropertyWebkitBoxReflect, range, context);
         if (!mask)
             return nullptr;
     }
-    return CSSReflectValue::create(direction.releaseNonNull(), offset.releaseNonNull(), WTFMove(mask));
+    return CSSReflectValue::create(direction.releaseNonNull(), offset.releaseNonNull(), std::move(mask));
 }
 
 #if ENABLE(CSS_IMAGE_ORIENTATION)
-static RefPtr<CSSValue> consumeImageOrientation(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
+static std::shared_ptr<CSSValue> consumeImageOrientation(CSSParserTokenRange& range, CSSParserMode cssParserMode, UnitlessQuirk unitless = UnitlessQuirk::Forbid)
 {
     if (range.peek().type() != NumberToken) {
-        RefPtr<CSSPrimitiveValue> angle = consumeAngle(range, cssParserMode, unitless);
+        std::shared_ptr<CSSPrimitiveValue> angle = consumeAngle(range, cssParserMode, unitless);
         if (angle && angle->doubleValue() == 0)
             return angle;
     }
@@ -2907,7 +2898,7 @@ static RefPtr<CSSValue> consumeImageOrientation(CSSParserTokenRange& range, CSSP
 }
 #endif
 
-static RefPtr<CSSPrimitiveValue> consumeBackgroundBlendMode(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeBackgroundBlendMode(CSSParserTokenRange& range)
 {
     CSSValueID id = range.peek().id();
     if (id == CSSValueNormal || id == CSSValueOverlay || (id >= CSSValueMultiply && id <= CSSValueLuminosity))
@@ -2915,48 +2906,48 @@ static RefPtr<CSSPrimitiveValue> consumeBackgroundBlendMode(CSSParserTokenRange&
     return nullptr;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBackgroundAttachment(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeBackgroundAttachment(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueScroll, CSSValueFixed, CSSValueLocal>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBackgroundBox(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeBackgroundBox(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueBorderBox, CSSValuePaddingBox, CSSValueContentBox, CSSValueWebkitText>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBackgroundComposite(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeBackgroundComposite(CSSParserTokenRange& range)
 {
     return consumeIdentRange(range, CSSValueClear, CSSValuePlusLighter);
 }
 
-static RefPtr<CSSPrimitiveValue> consumeWebkitMaskSourceType(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeWebkitMaskSourceType(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueAuto, CSSValueAlpha, CSSValueLuminance>(range);
 }
 
-static RefPtr<CSSPrimitiveValue> consumePrefixedBackgroundBox(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& /*context*/)
+static std::shared_ptr<CSSPrimitiveValue> consumePrefixedBackgroundBox(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& /*context*/)
 {
     // The values 'border', 'padding' and 'content' are deprecated and do not apply to the version of the property that has the -webkit- prefix removed.
-    if (RefPtr<CSSPrimitiveValue> value = consumeIdentRange(range, CSSValueBorder, CSSValuePaddingBox))
+    if (std::shared_ptr<CSSPrimitiveValue> value = consumeIdentRange(range, CSSValueBorder, CSSValuePaddingBox))
         return value;
     if (range.peek().id() == CSSValueWebkitText || ((property == CSSPropertyWebkitBackgroundClip || property == CSSPropertyWebkitMaskClip) && range.peek().id() == CSSValueText))
         return consumeIdent(range);
     return nullptr;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeBackgroundSize(CSSPropertyID property, CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeBackgroundSize(CSSPropertyID property, CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (identMatches<CSSValueContain, CSSValueCover>(range.peek().id()))
         return consumeIdent(range);
 
     // FIXME: We're allowing the unitless quirk on this property because our
     // tests assume that. Other browser engines don't allow it though.
-    RefPtr<CSSPrimitiveValue> horizontal = consumeIdent<CSSValueAuto>(range);
+    std::shared_ptr<CSSPrimitiveValue> horizontal = consumeIdent<CSSValueAuto>(range);
     if (!horizontal)
         horizontal = consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow);
 
-    RefPtr<CSSPrimitiveValue> vertical;
+    std::shared_ptr<CSSPrimitiveValue> vertical;
     if (!range.atEnd()) {
         if (range.peek().id() == CSSValueAuto) // `auto' is the default
             range.consumeIncludingWhitespace();
@@ -2971,16 +2962,16 @@ static RefPtr<CSSPrimitiveValue> consumeBackgroundSize(CSSPropertyID property, C
     return createPrimitiveValuePair(horizontal.releaseNonNull(), vertical.releaseNonNull(), property == CSSPropertyWebkitBackgroundSize ? Pair::IdenticalValueEncoding::Coalesce : Pair::IdenticalValueEncoding::DoNotCoalesce);
 }
 
-static RefPtr<CSSValueList> consumeGridAutoFlow(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValueList> consumeGridAutoFlow(CSSParserTokenRange& range)
 {
-    RefPtr<CSSPrimitiveValue> rowOrColumnValue = consumeIdent<CSSValueRow, CSSValueColumn>(range);
-    RefPtr<CSSPrimitiveValue> denseAlgorithm = consumeIdent<CSSValueDense>(range);
+    std::shared_ptr<CSSPrimitiveValue> rowOrColumnValue = consumeIdent<CSSValueRow, CSSValueColumn>(range);
+    std::shared_ptr<CSSPrimitiveValue> denseAlgorithm = consumeIdent<CSSValueDense>(range);
     if (!rowOrColumnValue) {
         rowOrColumnValue = consumeIdent<CSSValueRow, CSSValueColumn>(range);
         if (!rowOrColumnValue && !denseAlgorithm)
             return nullptr;
     }
-    RefPtr<CSSValueList> parsedValues = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> parsedValues = CSSValueList::createSpaceSeparated();
     if (rowOrColumnValue)
         parsedValues->append(rowOrColumnValue.releaseNonNull());
     if (denseAlgorithm)
@@ -2988,7 +2979,7 @@ static RefPtr<CSSValueList> consumeGridAutoFlow(CSSParserTokenRange& range)
     return parsedValues;
 }
 
-static RefPtr<CSSValue> consumeBackgroundComponent(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeBackgroundComponent(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
 {
     switch (property) {
     case CSSPropertyBackgroundClip:
@@ -3030,26 +3021,26 @@ static RefPtr<CSSValue> consumeBackgroundComponent(CSSPropertyID property, CSSPa
     return nullptr;
 }
 
-static void addBackgroundValue(RefPtr<CSSValue>& list, Ref<CSSValue>&& value)
+static void addBackgroundValue(std::shared_ptr<CSSValue>& list, Ref<CSSValue>&& value)
 {
     if (list) {
         if (!list->isBaseValueList()) {
-            RefPtr<CSSValue> firstValue = list;
+            std::shared_ptr<CSSValue> firstValue = list;
             list = CSSValueList::createCommaSeparated();
             downcast<CSSValueList>(*list).append(firstValue.releaseNonNull());
         }
-        downcast<CSSValueList>(*list).append(WTFMove(value));
+        downcast<CSSValueList>(*list).append(std::move(value));
     } else {
         // To conserve memory we don't actually wrap a single value in a list.
-        list = WTFMove(value);
+        list = std::move(value);
     }
 }
 
-static RefPtr<CSSValue> consumeCommaSeparatedBackgroundComponent(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeCommaSeparatedBackgroundComponent(CSSPropertyID property, CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    RefPtr<CSSValue> result;
+    std::shared_ptr<CSSValue> result;
     do {
-        RefPtr<CSSValue> value = consumeBackgroundComponent(property, range, context);
+        std::shared_ptr<CSSValue> value = consumeBackgroundComponent(property, range, context);
         if (!value)
             return nullptr;
         addBackgroundValue(result, value.releaseNonNull());
@@ -3067,7 +3058,7 @@ static bool isSelfPositionOrLeftOrRightKeyword(CSSValueID id)
     return isSelfPositionKeyword(id) || isLeftOrRightKeyword(id);
 }
 
-static RefPtr<CSSValue> consumeSelfPositionOverflowPosition(CSSParserTokenRange& range, IsPositionKeyword isPositionKeyword)
+static std::shared_ptr<CSSValue> consumeSelfPositionOverflowPosition(CSSParserTokenRange& range, IsPositionKeyword isPositionKeyword)
 {
     ASSERT(isPositionKeyword);
     CSSValueID id = range.peek().id();
@@ -3077,16 +3068,16 @@ static RefPtr<CSSValue> consumeSelfPositionOverflowPosition(CSSParserTokenRange&
     if (isBaselineKeyword(id))
         return consumeBaselineKeyword(range);
 
-    RefPtr<CSSPrimitiveValue> overflowPosition = consumeOverflowPositionKeyword(range);
+    std::shared_ptr<CSSPrimitiveValue> overflowPosition = consumeOverflowPositionKeyword(range);
     if (!isPositionKeyword(range.peek().id()))
         return nullptr;
-    RefPtr<CSSPrimitiveValue> selfPosition = consumeIdent(range);
+    std::shared_ptr<CSSPrimitiveValue> selfPosition = consumeIdent(range);
     if (overflowPosition)
         return createPrimitiveValuePair(overflowPosition.releaseNonNull(), selfPosition.releaseNonNull(), Pair::IdenticalValueEncoding::Coalesce);
     return selfPosition;
 }
 
-static RefPtr<CSSValue> consumeAlignItems(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeAlignItems(CSSParserTokenRange& range)
 {
     // align-items property does not allow the 'auto' value.
     if (identMatches<CSSValueAuto>(range.peek().id()))
@@ -3094,14 +3085,14 @@ static RefPtr<CSSValue> consumeAlignItems(CSSParserTokenRange& range)
     return consumeSelfPositionOverflowPosition(range, isSelfPositionKeyword);
 }
 
-static RefPtr<CSSValue> consumeJustifyItems(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeJustifyItems(CSSParserTokenRange& range)
 {
     // justify-items property does not allow the 'auto' value.
     if (identMatches<CSSValueAuto>(range.peek().id()))
         return nullptr;
     CSSParserTokenRange rangeCopy = range;
-    RefPtr<CSSPrimitiveValue> legacy = consumeIdent<CSSValueLegacy>(rangeCopy);
-    RefPtr<CSSPrimitiveValue> positionKeyword = consumeIdent<CSSValueCenter, CSSValueLeft, CSSValueRight>(rangeCopy);
+    std::shared_ptr<CSSPrimitiveValue> legacy = consumeIdent<CSSValueLegacy>(rangeCopy);
+    std::shared_ptr<CSSPrimitiveValue> positionKeyword = consumeIdent<CSSValueCenter, CSSValueLeft, CSSValueRight>(rangeCopy);
     if (!legacy)
         legacy = consumeIdent<CSSValueLegacy>(rangeCopy);
     if (legacy) {
@@ -3113,34 +3104,34 @@ static RefPtr<CSSValue> consumeJustifyItems(CSSParserTokenRange& range)
     return consumeSelfPositionOverflowPosition(range, isSelfPositionOrLeftOrRightKeyword);
 }
 
-static RefPtr<CSSValue> consumeFitContent(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeFitContent(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     CSSParserTokenRange rangeCopy = range;
     CSSParserTokenRange args = consumeFunction(rangeCopy);
-    RefPtr<CSSPrimitiveValue> length = consumeLengthOrPercent(args, cssParserMode, ValueRangeNonNegative, UnitlessQuirk::Allow);
+    std::shared_ptr<CSSPrimitiveValue> length = consumeLengthOrPercent(args, cssParserMode, ValueRangeNonNegative, UnitlessQuirk::Allow);
     if (!length || !args.atEnd())
         return nullptr;
     range = rangeCopy;
-    RefPtr<CSSFunctionValue> result = CSSFunctionValue::create(CSSValueFitContent);
+    std::shared_ptr<CSSFunctionValue> result = CSSFunctionValue::create(CSSValueFitContent);
     result->append(length.releaseNonNull());
     return result;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeCustomIdentForGridLine(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeCustomIdentForGridLine(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto || range.peek().id() == CSSValueSpan)
         return nullptr;
     return consumeCustomIdent(range);
 }
 
-static RefPtr<CSSValue> consumeGridLine(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeGridLine(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueAuto)
         return consumeIdent(range);
 
-    RefPtr<CSSPrimitiveValue> spanValue;
-    RefPtr<CSSPrimitiveValue> gridLineName;
-    RefPtr<CSSPrimitiveValue> numericValue = consumeInteger(range);
+    std::shared_ptr<CSSPrimitiveValue> spanValue;
+    std::shared_ptr<CSSPrimitiveValue> gridLineName;
+    std::shared_ptr<CSSPrimitiveValue> numericValue = consumeInteger(range);
     if (numericValue) {
         gridLineName = consumeCustomIdentForGridLine(range);
         spanValue = consumeIdent<CSSValueSpan>(range);
@@ -3171,7 +3162,7 @@ static RefPtr<CSSValue> consumeGridLine(CSSParserTokenRange& range)
     if (numericValue && numericValue->intValue() == 0)
         return nullptr; // An <integer> value of zero makes the declaration invalid.
 
-    RefPtr<CSSValueList> values = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createSpaceSeparated();
     if (spanValue)
         values->append(spanValue.releaseNonNull());
     if (numericValue)
@@ -3206,17 +3197,17 @@ static bool isGridTrackFixedSized(const CSSValue& value)
     return isGridTrackFixedSized(*minPrimitiveValue) || isGridTrackFixedSized(*maxPrimitiveValue);
 }
 
-static Vector<String> parseGridTemplateAreasColumnNames(const String& gridRowNames)
+static std::vector<String> parseGridTemplateAreasColumnNames(const std::string& gridRowNames)
 {
-    ASSERT(!gridRowNames.isEmpty());
-    Vector<String> columnNames;
+    ASSERT(!gridRowNames.empty());
+    std::vector<String> columnNames;
     // Using StringImpl to avoid checks and indirection in every call to String::operator[].
     StringImpl& text = *gridRowNames.impl();
 
     StringBuilder areaName;
     for (unsigned i = 0; i < text.length(); ++i) {
         if (isCSSSpace(text[i])) {
-            if (!areaName.isEmpty()) {
+            if (!areaName.empty()) {
                 columnNames.append(areaName.toString());
                 areaName.clear();
             }
@@ -3225,13 +3216,13 @@ static Vector<String> parseGridTemplateAreasColumnNames(const String& gridRowNam
         if (text[i] == '.') {
             if (areaName == ".")
                 continue;
-            if (!areaName.isEmpty()) {
+            if (!areaName.empty()) {
                 columnNames.append(areaName.toString());
                 areaName.clear();
             }
         } else {
             if (!isNameCodePoint(text[i]))
-                return Vector<String>();
+                return std::vector<String>();
             if (areaName == ".") {
                 columnNames.append(areaName.toString());
                 areaName.clear();
@@ -3241,18 +3232,18 @@ static Vector<String> parseGridTemplateAreasColumnNames(const String& gridRowNam
         areaName.append(text[i]);
     }
 
-    if (!areaName.isEmpty())
+    if (!areaName.empty())
         columnNames.append(areaName.toString());
 
     return columnNames;
 }
 
-static bool parseGridTemplateAreasRow(const String& gridRowNames, NamedGridAreaMap& gridAreaMap, const size_t rowCount, size_t& columnCount)
+static bool parseGridTemplateAreasRow(const std::string& gridRowNames, NamedGridAreaMap& gridAreaMap, const size_t rowCount, size_t& columnCount)
 {
     if (gridRowNames.isAllSpecialCharacters<isCSSSpace>())
         return false;
 
-    Vector<String> columnNames = parseGridTemplateAreasColumnNames(gridRowNames);
+    std::vector<String> columnNames = parseGridTemplateAreasColumnNames(gridRowNames);
     if (rowCount == 0) {
         columnCount = columnNames.size();
         if (columnCount == 0)
@@ -3263,7 +3254,7 @@ static bool parseGridTemplateAreasRow(const String& gridRowNames, NamedGridAreaM
     }
 
     for (size_t currentColumn = 0; currentColumn < columnCount; ++currentColumn) {
-        const String& gridAreaName = columnNames[currentColumn];
+        const std::string& gridAreaName = columnNames[currentColumn];
 
         // Unamed areas are always valid (we consider them to be 1x1).
         if (gridAreaName == ".")
@@ -3300,7 +3291,7 @@ static bool parseGridTemplateAreasRow(const String& gridRowNames, NamedGridAreaM
     return true;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeGridBreadth(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSPrimitiveValue> consumeGridBreadth(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     const CSSParserToken& token = range.peek();
     if (identMatches<CSSValueMinContent, CSSValueWebkitMinContent, CSSValueMaxContent, CSSValueWebkitMaxContent, CSSValueAuto>(token.id()))
@@ -3313,7 +3304,7 @@ static RefPtr<CSSPrimitiveValue> consumeGridBreadth(CSSParserTokenRange& range, 
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeNonNegative, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumeGridTrackSize(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeGridTrackSize(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     const CSSParserToken& token = range.peek();
     if (identMatches<CSSValueAuto>(token.id()))
@@ -3322,14 +3313,14 @@ static RefPtr<CSSValue> consumeGridTrackSize(CSSParserTokenRange& range, CSSPars
     if (token.functionId() == CSSValueMinmax) {
         CSSParserTokenRange rangeCopy = range;
         CSSParserTokenRange args = consumeFunction(rangeCopy);
-        RefPtr<CSSPrimitiveValue> minTrackBreadth = consumeGridBreadth(args, cssParserMode);
+        std::shared_ptr<CSSPrimitiveValue> minTrackBreadth = consumeGridBreadth(args, cssParserMode);
         if (!minTrackBreadth || minTrackBreadth->isFlex() || !consumeCommaIncludingWhitespace(args))
             return nullptr;
-        RefPtr<CSSPrimitiveValue> maxTrackBreadth = consumeGridBreadth(args, cssParserMode);
+        std::shared_ptr<CSSPrimitiveValue> maxTrackBreadth = consumeGridBreadth(args, cssParserMode);
         if (!maxTrackBreadth || !args.atEnd())
             return nullptr;
         range = rangeCopy;
-        RefPtr<CSSFunctionValue> result = CSSFunctionValue::create(CSSValueMinmax);
+        std::shared_ptr<CSSFunctionValue> result = CSSFunctionValue::create(CSSValueMinmax);
         result->append(minTrackBreadth.releaseNonNull());
         result->append(maxTrackBreadth.releaseNonNull());
         return result;
@@ -3342,16 +3333,16 @@ static RefPtr<CSSValue> consumeGridTrackSize(CSSParserTokenRange& range, CSSPars
 }
 
 // Appends to the passed in CSSGridLineNamesValue if any, otherwise creates a new one.
-static RefPtr<CSSGridLineNamesValue> consumeGridLineNames(CSSParserTokenRange& range, CSSGridLineNamesValue* lineNames = nullptr)
+static std::shared_ptr<CSSGridLineNamesValue> consumeGridLineNames(CSSParserTokenRange& range, CSSGridLineNamesValue* lineNames = nullptr)
 {
     CSSParserTokenRange rangeCopy = range;
     if (rangeCopy.consumeIncludingWhitespace().type() != LeftBracketToken)
         return nullptr;
     
-    RefPtr<CSSGridLineNamesValue> result = lineNames;
+    std::shared_ptr<CSSGridLineNamesValue> result = lineNames;
     if (!result)
         result = CSSGridLineNamesValue::create();
-    while (RefPtr<CSSPrimitiveValue> lineName = consumeCustomIdentForGridLine(rangeCopy))
+    while (std::shared_ptr<CSSPrimitiveValue> lineName = consumeCustomIdentForGridLine(rangeCopy))
         result->append(lineName.releaseNonNull());
     if (rangeCopy.consumeIncludingWhitespace().type() != RightBracketToken)
         return nullptr;
@@ -3366,12 +3357,12 @@ static bool consumeGridTrackRepeatFunction(CSSParserTokenRange& range, CSSParser
     // because it will be computed later, let's set it to 1.
     size_t repetitions = 1;
     isAutoRepeat = identMatches<CSSValueAutoFill, CSSValueAutoFit>(args.peek().id());
-    RefPtr<CSSValueList> repeatedValues;
+    std::shared_ptr<CSSValueList> repeatedValues;
     if (isAutoRepeat)
         repeatedValues = CSSGridAutoRepeatValue::create(args.consumeIncludingWhitespace().id());
     else {
         // FIXME: a consumeIntegerRaw would be more efficient here.
-        RefPtr<CSSPrimitiveValue> repetition = consumePositiveInteger(args);
+        std::shared_ptr<CSSPrimitiveValue> repetition = consumePositiveInteger(args);
         if (!repetition)
             return false;
         repetitions = clampTo<size_t>(repetition->doubleValue(), 0, GridPosition::max());
@@ -3379,13 +3370,13 @@ static bool consumeGridTrackRepeatFunction(CSSParserTokenRange& range, CSSParser
     }
     if (!consumeCommaIncludingWhitespace(args))
         return false;
-    RefPtr<CSSGridLineNamesValue> lineNames = consumeGridLineNames(args);
+    std::shared_ptr<CSSGridLineNamesValue> lineNames = consumeGridLineNames(args);
     if (lineNames)
         repeatedValues->append(lineNames.releaseNonNull());
 
     size_t numberOfTracks = 0;
     while (!args.atEnd()) {
-        RefPtr<CSSValue> trackSize = consumeGridTrackSize(args, cssParserMode);
+        std::shared_ptr<CSSValue> trackSize = consumeGridTrackSize(args, cssParserMode);
         if (!trackSize)
             return false;
         if (allTracksAreFixedSized)
@@ -3405,7 +3396,7 @@ static bool consumeGridTrackRepeatFunction(CSSParserTokenRange& range, CSSParser
     else {
         // We clamp the repetitions to a multiple of the repeat() track list's size, while staying below the max grid size.
         repetitions = std::min(repetitions, GridPosition::max() / numberOfTracks);
-        RefPtr<CSSValueList> integerRepeatedValues = CSSGridIntegerRepeatValue::create(repetitions);
+        std::shared_ptr<CSSValueList> integerRepeatedValues = CSSGridIntegerRepeatValue::create(repetitions);
         for (size_t i = 0; i < repeatedValues->length(); ++i)
             integerRepeatedValues->append(*repeatedValues->itemWithoutBoundsCheck(i));
         list.append(integerRepeatedValues.releaseNonNull());
@@ -3415,11 +3406,11 @@ static bool consumeGridTrackRepeatFunction(CSSParserTokenRange& range, CSSParser
 
 enum TrackListType { GridTemplate, GridTemplateNoRepeat, GridAuto };
 
-static RefPtr<CSSValue> consumeGridTrackList(CSSParserTokenRange& range, CSSParserMode cssParserMode, TrackListType trackListType)
+static std::shared_ptr<CSSValue> consumeGridTrackList(CSSParserTokenRange& range, CSSParserMode cssParserMode, TrackListType trackListType)
 {
     bool allowGridLineNames = trackListType != GridAuto;
-    RefPtr<CSSValueList> values = CSSValueList::createSpaceSeparated();
-    RefPtr<CSSGridLineNamesValue> lineNames = consumeGridLineNames(range);
+    std::shared_ptr<CSSValueList> values = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSGridLineNamesValue> lineNames = consumeGridLineNames(range);
     if (lineNames) {
         if (!allowGridLineNames)
             return nullptr;
@@ -3439,7 +3430,7 @@ static RefPtr<CSSValue> consumeGridTrackList(CSSParserTokenRange& range, CSSPars
             if (isAutoRepeat && seenAutoRepeat)
                 return nullptr;
             seenAutoRepeat = seenAutoRepeat || isAutoRepeat;
-        } else if (RefPtr<CSSValue> value = consumeGridTrackSize(range, cssParserMode)) {
+        } else if (std::shared_ptr<CSSValue> value = consumeGridTrackSize(range, cssParserMode)) {
             if (allTracksAreFixedSized)
                 allTracksAreFixedSized = isGridTrackFixedSized(*value);
             values->append(value.releaseNonNull());
@@ -3458,14 +3449,14 @@ static RefPtr<CSSValue> consumeGridTrackList(CSSParserTokenRange& range, CSSPars
     return values;
 }
 
-static RefPtr<CSSValue> consumeGridTemplatesRowsOrColumns(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeGridTemplatesRowsOrColumns(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
     return consumeGridTrackList(range, cssParserMode, GridTemplate);
 }
 
-static RefPtr<CSSValue> consumeGridTemplateAreas(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeGridTemplateAreas(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
@@ -3486,7 +3477,7 @@ static RefPtr<CSSValue> consumeGridTemplateAreas(CSSParserTokenRange& range)
     return CSSGridTemplateAreasValue::create(gridAreaMap, rowCount, columnCount);
 }
 
-static RefPtr<CSSValue> consumeLineBoxContain(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeLineBoxContain(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
@@ -3534,24 +3525,24 @@ static RefPtr<CSSValue> consumeLineBoxContain(CSSParserTokenRange& range)
     return CSSLineBoxContainValue::create(lineBoxContain);
 }
 
-static RefPtr<CSSValue> consumeLineGrid(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeLineGrid(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
     return consumeCustomIdent(range);
 }
 
-static RefPtr<CSSValue> consumeInitialLetter(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeInitialLetter(CSSParserTokenRange& range)
 {
-    RefPtr<CSSValue> ident = consumeIdent<CSSValueNormal>(range);
+    std::shared_ptr<CSSValue> ident = consumeIdent<CSSValueNormal>(range);
     if (ident)
         return ident;
     
-    RefPtr<CSSPrimitiveValue> height = consumeNumber(range, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> height = consumeNumber(range, ValueRangeNonNegative);
     if (!height)
         return nullptr;
     
-    RefPtr<CSSPrimitiveValue> position;
+    std::shared_ptr<CSSPrimitiveValue> position;
     if (!range.atEnd()) {
         position = consumeNumber(range, ValueRangeNonNegative);
         if (!position || !range.atEnd())
@@ -3559,15 +3550,15 @@ static RefPtr<CSSValue> consumeInitialLetter(CSSParserTokenRange& range)
     } else
         position = height.copyRef();
     
-    return createPrimitiveValuePair(position.releaseNonNull(), WTFMove(height));
+    return createPrimitiveValuePair(position.releaseNonNull(), std::move(height));
 }
 
-static RefPtr<CSSValue> consumeSpeakAs(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeSpeakAs(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
     
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     
     bool seenNormal = false;
     bool seenSpellOut = false;
@@ -3582,7 +3573,7 @@ static RefPtr<CSSValue> consumeSpeakAs(CSSParserTokenRange& range)
             || (valueID == CSSValueLiteralPunctuation && seenNoPunctuation)
             || (valueID == CSSValueNoPunctuation && seenLiteralPunctuation))
             return nullptr;
-        RefPtr<CSSValue> ident = consumeIdent<CSSValueNormal, CSSValueSpellOut, CSSValueDigits, CSSValueLiteralPunctuation, CSSValueNoPunctuation>(range);
+        std::shared_ptr<CSSValue> ident = consumeIdent<CSSValueNormal, CSSValueSpellOut, CSSValueDigits, CSSValueLiteralPunctuation, CSSValueNoPunctuation>(range);
         if (!ident)
             return nullptr;
         switch (valueID) {
@@ -3607,12 +3598,12 @@ static RefPtr<CSSValue> consumeSpeakAs(CSSParserTokenRange& range)
     return list->length() ? list : nullptr;
 }
     
-static RefPtr<CSSValue> consumeHangingPunctuation(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeHangingPunctuation(CSSParserTokenRange& range)
 {
     if (range.peek().id() == CSSValueNone)
         return consumeIdent(range);
     
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
 
     bool seenForceEnd = false;
     bool seenAllowEnd = false;
@@ -3626,7 +3617,7 @@ static RefPtr<CSSValue> consumeHangingPunctuation(CSSParserTokenRange& range)
             || (valueID == CSSValueAllowEnd && (seenAllowEnd || seenForceEnd))
             || (valueID == CSSValueForceEnd && (seenAllowEnd || seenForceEnd)))
             return nullptr;
-        RefPtr<CSSValue> ident = consumeIdent<CSSValueAllowEnd, CSSValueForceEnd, CSSValueFirst, CSSValueLast>(range);
+        std::shared_ptr<CSSValue> ident = consumeIdent<CSSValueAllowEnd, CSSValueForceEnd, CSSValueFirst, CSSValueLast>(range);
         if (!ident)
             return nullptr;
         switch (valueID) {
@@ -3651,28 +3642,28 @@ static RefPtr<CSSValue> consumeHangingPunctuation(CSSParserTokenRange& range)
     return list->length() ? list : nullptr;
 }
 
-static RefPtr<CSSValue> consumeWebkitMarqueeIncrement(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeWebkitMarqueeIncrement(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().type() == IdentToken)
         return consumeIdent<CSSValueSmall, CSSValueMedium, CSSValueLarge>(range);
     return consumeLengthOrPercent(range, cssParserMode, ValueRangeAll, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumeWebkitMarqueeRepetition(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeWebkitMarqueeRepetition(CSSParserTokenRange& range)
 {
     if (range.peek().type() == IdentToken)
         return consumeIdent<CSSValueInfinite>(range);
     return consumeNumber(range, ValueRangeNonNegative);
 }
 
-static RefPtr<CSSValue> consumeWebkitMarqueeSpeed(CSSParserTokenRange& range, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeWebkitMarqueeSpeed(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
     if (range.peek().type() == IdentToken)
         return consumeIdent<CSSValueSlow, CSSValueNormal, CSSValueFast>(range);
     return consumeTime(range, cssParserMode, ValueRangeNonNegative, UnitlessQuirk::Allow);
 }
 
-static RefPtr<CSSValue> consumeAlt(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeAlt(CSSParserTokenRange& range, const CSSParserContext& context)
 {
     if (range.peek().type() == StringToken)
         return consumeString(range);
@@ -3683,22 +3674,22 @@ static RefPtr<CSSValue> consumeAlt(CSSParserTokenRange& range, const CSSParserCo
     return consumeAttr(consumeFunction(range), context);
 }
 
-static RefPtr<CSSValue> consumeWebkitAspectRatio(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeWebkitAspectRatio(CSSParserTokenRange& range)
 {
     if (range.peek().type() == IdentToken)
         return consumeIdent<CSSValueAuto, CSSValueFromDimensions, CSSValueFromIntrinsic>(range);
     
-    RefPtr<CSSPrimitiveValue> leftValue = consumeNumber(range, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> leftValue = consumeNumber(range, ValueRangeNonNegative);
     if (!leftValue || !leftValue->floatValue() || range.atEnd() || !consumeSlashIncludingWhitespace(range))
         return nullptr;
-    RefPtr<CSSPrimitiveValue> rightValue = consumeNumber(range, ValueRangeNonNegative);
+    std::shared_ptr<CSSPrimitiveValue> rightValue = consumeNumber(range, ValueRangeNonNegative);
     if (!rightValue || !rightValue->floatValue())
         return nullptr;
     
     return CSSAspectRatioValue::create(leftValue->floatValue(), rightValue->floatValue());
 }
 
-static RefPtr<CSSValue> consumeTextEmphasisPosition(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeTextEmphasisPosition(CSSParserTokenRange& range)
 {
     bool foundOverOrUnder = false;
     CSSValueID overUnderValueID = CSSValueOver;
@@ -3738,7 +3729,7 @@ static RefPtr<CSSValue> consumeTextEmphasisPosition(CSSParserTokenRange& range)
     }
     if (!foundOverOrUnder)
         return nullptr;
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     list->append(CSSValuePool::singleton().createIdentifierValue(overUnderValueID));
     if (foundLeftOrRight)
         list->append(CSSValuePool::singleton().createIdentifierValue(leftRightValueID));
@@ -3747,12 +3738,12 @@ static RefPtr<CSSValue> consumeTextEmphasisPosition(CSSParserTokenRange& range)
 
 #if ENABLE(DARK_MODE_CSS)
 
-static RefPtr<CSSValue> consumeColorScheme(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeColorScheme(CSSParserTokenRange& range)
 {
     if (isAuto(range.peek().id()))
         return consumeIdent(range);
 
-    Vector<CSSValueID, 3> identifiers;
+    std::vector<CSSValueID, 3> identifiers;
 
     while (!range.atEnd()) {
         if (range.peek().type() != IdentToken)
@@ -3781,7 +3772,7 @@ static RefPtr<CSSValue> consumeColorScheme(CSSParserTokenRange& range)
         range.consumeIncludingWhitespace();
     }
 
-    RefPtr<CSSValueList> list = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> list = CSSValueList::createSpaceSeparated();
     for (auto id : identifiers)
         list->append(CSSValuePool::singleton().createIdentifierValue(id));
     return list;
@@ -3789,7 +3780,7 @@ static RefPtr<CSSValue> consumeColorScheme(CSSParserTokenRange& range)
 
 #endif
 
-RefPtr<CSSValue> CSSPropertyParser::parseSingleValue(CSSPropertyID property, CSSPropertyID currentShorthand)
+std::shared_ptr<CSSValue> CSSPropertyParser::parseSingleValue(CSSPropertyID property, CSSPropertyID currentShorthand)
 {
     if (CSSParserFastPaths::isKeywordPropertyID(property)) {
         if (!CSSParserFastPaths::isValidKeywordPropertyAndValue(property, m_range.peek().id(), m_context))
@@ -3824,8 +3815,7 @@ RefPtr<CSSValue> CSSPropertyParser::parseSingleValue(CSSPropertyID property, CSS
         return consumeFontStyle(m_range, m_context.mode);
     case CSSPropertyFontSynthesis:
         return consumeFontSynthesis(m_range);
-#if ENABLE(VARIATION_FONTS)
-    case CSSPropertyFontVariationSettings:
+case CSSPropertyFontVariationSettings:
         return consumeFontVariationSettings(m_range);
 #endif
     case CSSPropertyLetterSpacing:
@@ -4248,7 +4238,7 @@ RefPtr<CSSValue> CSSPropertyParser::parseSingleValue(CSSPropertyID property, CSS
     }
 }
 
-bool CSSPropertyParser::canParseTypedCustomPropertyValue(const String& syntax)
+bool CSSPropertyParser::canParseTypedCustomPropertyValue(const std::string& syntax)
 {
     if (syntax != "*") {
         m_range.consumeWhitespace();
@@ -4274,7 +4264,7 @@ bool CSSPropertyParser::canParseTypedCustomPropertyValue(const String& syntax)
     return true;
 }
 
-void CSSPropertyParser::collectParsedCustomPropertyValueDependencies(const String& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies)
+void CSSPropertyParser::collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies)
 {
     if (syntax != "*") {
         m_range.consumeWhitespace();
@@ -4289,7 +4279,7 @@ void CSSPropertyParser::collectParsedCustomPropertyValueDependencies(const Strin
     }
 }
 
-RefPtr<CSSCustomPropertyValue> CSSPropertyParser::parseTypedCustomPropertyValue(const String& name, const String& syntax, const StyleResolver& styleResolver)
+std::shared_ptr<CSSCustomPropertyValue> CSSPropertyParser::parseTypedCustomPropertyValue(const std::string& name, const std::string& syntax, const StyleResolver& styleResolver)
 {
     if (syntax != "*") {
         m_range.consumeWhitespace();
@@ -4297,21 +4287,21 @@ RefPtr<CSSCustomPropertyValue> CSSPropertyParser::parseTypedCustomPropertyValue(
         if (primitiveVal && primitiveVal->isPrimitiveValue() && downcast<CSSPrimitiveValue>(*primitiveVal).isLength()) {
             auto length = StyleBuilderConverter::convertLength(styleResolver, *primitiveVal);
             if (!length.isCalculated() && !length.isUndefined())
-                return CSSCustomPropertyValue::createSyntaxLength(name, WTFMove(length));
+                return CSSCustomPropertyValue::createSyntaxLength(name, std::move(length));
         }
     } else {
         auto propertyValue = CSSCustomPropertyValue::createSyntaxAll(name, CSSVariableData::create(m_range));
         while (!m_range.atEnd())
             m_range.consume();
-        return { WTFMove(propertyValue) };
+        return { std::move(propertyValue) };
     }
 
     return nullptr;
 }
 
-static RefPtr<CSSValueList> consumeFontFaceUnicodeRange(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValueList> consumeFontFaceUnicodeRange(CSSParserTokenRange& range)
 {
-    RefPtr<CSSValueList> values = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createCommaSeparated();
 
     do {
         const CSSParserToken& token = range.consumeIncludingWhitespace();
@@ -4328,18 +4318,18 @@ static RefPtr<CSSValueList> consumeFontFaceUnicodeRange(CSSParserTokenRange& ran
     return values;
 }
 
-static RefPtr<CSSPrimitiveValue> consumeFontFaceFontDisplay(CSSParserTokenRange& range)
+static std::shared_ptr<CSSPrimitiveValue> consumeFontFaceFontDisplay(CSSParserTokenRange& range)
 {
     return consumeIdent<CSSValueAuto, CSSValueBlock, CSSValueSwap, CSSValueFallback, CSSValueOptional>(range);
 }
 
-static RefPtr<CSSValue> consumeFontFaceSrcURI(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> consumeFontFaceSrcURI(CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    String url = consumeUrlAsStringView(range).toString();
+    std::string url = consumeUrlAsStringView(range).toString();
     if (url.isNull())
         return nullptr;
 
-    RefPtr<CSSFontFaceSrcValue> uriValue = CSSFontFaceSrcValue::create(context.completeURL(url), context.isContentOpaque ? LoadedFromOpaqueSource::Yes : LoadedFromOpaqueSource::No);
+    std::shared_ptr<CSSFontFaceSrcValue> uriValue = CSSFontFaceSrcValue::create(context.completeURL(url), context.isContentOpaque ? LoadedFromOpaqueSource::Yes : LoadedFromOpaqueSource::No);
 
     if (range.peek().functionId() != CSSValueFormat)
         return uriValue;
@@ -4357,7 +4347,7 @@ static RefPtr<CSSValue> consumeFontFaceSrcURI(CSSParserTokenRange& range, const 
     return uriValue;
 }
 
-static RefPtr<CSSValue> consumeFontFaceSrcLocal(CSSParserTokenRange& range)
+static std::shared_ptr<CSSValue> consumeFontFaceSrcLocal(CSSParserTokenRange& range)
 {
     CSSParserTokenRange args = consumeFunction(range);
     if (args.peek().type() == StringToken) {
@@ -4367,7 +4357,7 @@ static RefPtr<CSSValue> consumeFontFaceSrcLocal(CSSParserTokenRange& range)
         return CSSFontFaceSrcValue::createLocal(arg.value().toString());
     }
     if (args.peek().type() == IdentToken) {
-        String familyName = concatenateFamilyName(args);
+        std::string familyName = concatenateFamilyName(args);
         if (!args.atEnd())
             return nullptr;
         return CSSFontFaceSrcValue::createLocal(familyName);
@@ -4375,13 +4365,13 @@ static RefPtr<CSSValue> consumeFontFaceSrcLocal(CSSParserTokenRange& range)
     return nullptr;
 }
 
-static RefPtr<CSSValueList> consumeFontFaceSrc(CSSParserTokenRange& range, const CSSParserContext& context)
+static std::shared_ptr<CSSValueList> consumeFontFaceSrc(CSSParserTokenRange& range, const CSSParserContext& context)
 {
-    RefPtr<CSSValueList> values = CSSValueList::createCommaSeparated();
+    std::shared_ptr<CSSValueList> values = CSSValueList::createCommaSeparated();
 
     do {
         const CSSParserToken& token = range.peek();
-        RefPtr<CSSValue> parsedValue;
+        std::shared_ptr<CSSValue> parsedValue;
         if (token.functionId() == CSSValueLocal)
             parsedValue = consumeFontFaceSrcLocal(range);
         else
@@ -4395,7 +4385,7 @@ static RefPtr<CSSValueList> consumeFontFaceSrc(CSSParserTokenRange& range, const
 
 bool CSSPropertyParser::parseFontFaceDescriptor(CSSPropertyID propId)
 {
-    RefPtr<CSSValue> parsedValue;
+    std::shared_ptr<CSSValue> parsedValue;
     switch (propId) {
     case CSSPropertyFontFamily:
         parsedValue = consumeFontFamilyDescriptor(m_range);
@@ -4410,22 +4400,19 @@ bool CSSPropertyParser::parseFontFaceDescriptor(CSSPropertyID propId)
         parsedValue = consumeFontFaceFontDisplay(m_range);
         break;
     case CSSPropertyFontWeight:
-#if ENABLE(VARIATION_FONTS)
-        parsedValue = consumeFontWeightRange(m_range);
+parsedValue = consumeFontWeightRange(m_range);
 #else
         parsedValue = consumeFontWeight(m_range);
 #endif
         break;
     case CSSPropertyFontStretch:
-#if ENABLE(VARIATION_FONTS)
-        parsedValue = consumeFontStretchRange(m_range);
+parsedValue = consumeFontStretchRange(m_range);
 #else
         parsedValue = consumeFontStretch(m_range);
 #endif
         break;
     case CSSPropertyFontStyle:
-#if ENABLE(VARIATION_FONTS)
-        parsedValue = consumeFontStyleRange(m_range, m_context.mode);
+parsedValue = consumeFontStyleRange(m_range, m_context.mode);
 #else
         parsedValue = consumeFontStyle(m_range, m_context.mode);
 #endif
@@ -4481,7 +4468,7 @@ bool CSSPropertyParser::consumeSystemFont(bool important)
     addProperty(CSSPropertyFontSize, CSSPropertyFont, CSSValuePool::singleton().createValue(fontDescription.specifiedSize(), CSSPrimitiveValue::CSS_PX), important);
     Ref<CSSValueList> fontFamilyList = CSSValueList::createCommaSeparated();
     fontFamilyList->append(CSSValuePool::singleton().createFontFamilyValue(fontDescription.familyAt(0), FromSystemFontID::Yes));
-    addProperty(CSSPropertyFontFamily, CSSPropertyFont, WTFMove(fontFamilyList), important);
+    addProperty(CSSPropertyFontFamily, CSSPropertyFont, std::move(fontFamilyList), important);
     addProperty(CSSPropertyFontVariantCaps, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(CSSValueNormal), important);
     addProperty(CSSPropertyLineHeight, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(CSSValueNormal), important);
 
@@ -4500,10 +4487,10 @@ bool CSSPropertyParser::consumeFont(bool important)
             return false;
     }
     // Optional font-style, font-variant, font-stretch and font-weight.
-    RefPtr<CSSFontStyleValue> fontStyle;
-    RefPtr<CSSPrimitiveValue> fontVariantCaps;
-    RefPtr<CSSPrimitiveValue> fontWeight;
-    RefPtr<CSSPrimitiveValue> fontStretch;
+    std::shared_ptr<CSSFontStyleValue> fontStyle;
+    std::shared_ptr<CSSPrimitiveValue> fontVariantCaps;
+    std::shared_ptr<CSSPrimitiveValue> fontWeight;
+    std::shared_ptr<CSSPrimitiveValue> fontStretch;
 
     while (!m_range.atEnd()) {
         CSSValueID id = m_range.peek().id();
@@ -4555,14 +4542,14 @@ bool CSSPropertyParser::consumeFont(bool important)
     addProperty(CSSPropertyFontStretch, CSSPropertyFont, fontStretch ? fontStretch.releaseNonNull() : CSSValuePool::singleton().createIdentifierValue(CSSValueNormal), important, !hasStretch);
 
     // Now a font size _must_ come.
-    RefPtr<CSSValue> fontSize = consumeFontSize(m_range, m_context.mode);
+    std::shared_ptr<CSSValue> fontSize = consumeFontSize(m_range, m_context.mode);
     if (!fontSize || m_range.atEnd())
         return false;
 
     addProperty(CSSPropertyFontSize, CSSPropertyFont, *fontSize, important);
 
     if (consumeSlashIncludingWhitespace(m_range)) {
-        RefPtr<CSSPrimitiveValue> lineHeight = consumeLineHeight(m_range, m_context.mode);
+        std::shared_ptr<CSSPrimitiveValue> lineHeight = consumeLineHeight(m_range, m_context.mode);
         if (!lineHeight)
             return false;
         addProperty(CSSPropertyLineHeight, CSSPropertyFont, lineHeight.releaseNonNull(), important);
@@ -4570,7 +4557,7 @@ bool CSSPropertyParser::consumeFont(bool important)
         addProperty(CSSPropertyLineHeight, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(CSSValueNormal), important, true);
 
     // Font family must come now.
-    RefPtr<CSSValue> parsedFamilyValue = consumeFontFamily(m_range);
+    std::shared_ptr<CSSValue> parsedFamilyValue = consumeFontFamily(m_range);
     if (!parsedFamilyValue)
         return false;
 
@@ -4589,11 +4576,11 @@ bool CSSPropertyParser::consumeFontVariantShorthand(bool important)
         return m_range.atEnd();
     }
 
-    RefPtr<CSSPrimitiveValue> capsValue;
-    RefPtr<CSSPrimitiveValue> alternatesValue;
-    RefPtr<CSSPrimitiveValue> positionValue;
+    std::shared_ptr<CSSPrimitiveValue> capsValue;
+    std::shared_ptr<CSSPrimitiveValue> alternatesValue;
+    std::shared_ptr<CSSPrimitiveValue> positionValue;
 
-    RefPtr<CSSValue> eastAsianValue;
+    std::shared_ptr<CSSValue> eastAsianValue;
     FontVariantLigaturesParser ligaturesParser;
     FontVariantNumericParser numericParser;
     do {
@@ -4651,10 +4638,10 @@ bool CSSPropertyParser::consumeFontVariantShorthand(bool important)
 
 bool CSSPropertyParser::consumeBorderSpacing(bool important)
 {
-    RefPtr<CSSValue> horizontalSpacing = consumeLength(m_range, m_context.mode, ValueRangeNonNegative, UnitlessQuirk::Allow);
+    std::shared_ptr<CSSValue> horizontalSpacing = consumeLength(m_range, m_context.mode, ValueRangeNonNegative, UnitlessQuirk::Allow);
     if (!horizontalSpacing)
         return false;
-    RefPtr<CSSValue> verticalSpacing = horizontalSpacing;
+    std::shared_ptr<CSSValue> verticalSpacing = horizontalSpacing;
     if (!m_range.atEnd())
         verticalSpacing = consumeLength(m_range, m_context.mode, ValueRangeNonNegative, UnitlessQuirk::Allow);
     if (!verticalSpacing || !m_range.atEnd())
@@ -4666,7 +4653,7 @@ bool CSSPropertyParser::consumeBorderSpacing(bool important)
 
 #if ENABLE(CSS_DEVICE_ADAPTATION)
 
-static RefPtr<CSSValue> consumeSingleViewportDescriptor(CSSParserTokenRange& range, CSSPropertyID propId, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> consumeSingleViewportDescriptor(CSSParserTokenRange& range, CSSPropertyID propId, CSSParserMode cssParserMode)
 {
     CSSValueID id = range.peek().id();
     switch (propId) {
@@ -4682,7 +4669,7 @@ static RefPtr<CSSValue> consumeSingleViewportDescriptor(CSSParserTokenRange& ran
     case CSSPropertyZoom: {
         if (id == CSSValueAuto)
             return consumeIdent(range);
-        RefPtr<CSSValue> parsedValue = consumeNumber(range, ValueRangeNonNegative);
+        std::shared_ptr<CSSValue> parsedValue = consumeNumber(range, ValueRangeNonNegative);
         if (parsedValue)
             return parsedValue;
         return consumePercent(range, ValueRangeNonNegative);
@@ -4704,10 +4691,10 @@ bool CSSPropertyParser::parseViewportDescriptor(CSSPropertyID propId, bool impor
 {
     switch (propId) {
     case CSSPropertyWidth: {
-        RefPtr<CSSValue> minWidth = consumeSingleViewportDescriptor(m_range, CSSPropertyMinWidth, m_context.mode);
+        std::shared_ptr<CSSValue> minWidth = consumeSingleViewportDescriptor(m_range, CSSPropertyMinWidth, m_context.mode);
         if (!minWidth)
             return false;
-        RefPtr<CSSValue> maxWidth = minWidth;
+        std::shared_ptr<CSSValue> maxWidth = minWidth;
         if (!m_range.atEnd())
             maxWidth = consumeSingleViewportDescriptor(m_range, CSSPropertyMaxWidth, m_context.mode);
         if (!maxWidth || !m_range.atEnd())
@@ -4717,10 +4704,10 @@ bool CSSPropertyParser::parseViewportDescriptor(CSSPropertyID propId, bool impor
         return true;
     }
     case CSSPropertyHeight: {
-        RefPtr<CSSValue> minHeight = consumeSingleViewportDescriptor(m_range, CSSPropertyMinHeight, m_context.mode);
+        std::shared_ptr<CSSValue> minHeight = consumeSingleViewportDescriptor(m_range, CSSPropertyMinHeight, m_context.mode);
         if (!minHeight)
             return false;
-        RefPtr<CSSValue> maxHeight = minHeight;
+        std::shared_ptr<CSSValue> maxHeight = minHeight;
         if (!m_range.atEnd())
             maxHeight = consumeSingleViewportDescriptor(m_range, CSSPropertyMaxHeight, m_context.mode);
         if (!maxHeight || !m_range.atEnd())
@@ -4738,7 +4725,7 @@ bool CSSPropertyParser::parseViewportDescriptor(CSSPropertyID propId, bool impor
     case CSSPropertyZoom:
     case CSSPropertyUserZoom:
     case CSSPropertyOrientation: {
-        RefPtr<CSSValue> parsedValue = consumeSingleViewportDescriptor(m_range, propId, m_context.mode);
+        std::shared_ptr<CSSValue> parsedValue = consumeSingleViewportDescriptor(m_range, propId, m_context.mode);
         if (!parsedValue || !m_range.atEnd())
             return false;
         addProperty(propId, CSSPropertyInvalid, parsedValue.releaseNonNull(), important);
@@ -4753,8 +4740,8 @@ bool CSSPropertyParser::parseViewportDescriptor(CSSPropertyID propId, bool impor
 
 bool CSSPropertyParser::consumeColumns(bool important)
 {
-    RefPtr<CSSValue> columnWidth;
-    RefPtr<CSSValue> columnCount;
+    std::shared_ptr<CSSValue> columnWidth;
+    std::shared_ptr<CSSValue> columnCount;
     bool hasPendingExplicitAuto = false;
     
     for (unsigned propertiesParsed = 0; propertiesParsed < 2 && !m_range.atEnd(); ++propertiesParsed) {
@@ -4799,7 +4786,7 @@ bool CSSPropertyParser::consumeColumns(bool important)
 bool CSSPropertyParser::consumeShorthandGreedily(const StylePropertyShorthand& shorthand, bool important)
 {
     ASSERT(shorthand.length() <= 6); // Existing shorthands have at most 6 longhands.
-    RefPtr<CSSValue> longhands[6];
+    std::shared_ptr<CSSValue> longhands[6];
     const CSSPropertyID* shorthandProperties = shorthand.properties();
     do {
         bool foundLonghand = false;
@@ -4828,7 +4815,7 @@ bool CSSPropertyParser::consumeFlex(bool important)
     static const double unsetValue = -1;
     double flexGrow = unsetValue;
     double flexShrink = unsetValue;
-    RefPtr<CSSPrimitiveValue> flexBasis;
+    std::shared_ptr<CSSPrimitiveValue> flexBasis;
 
     if (m_range.peek().id() == CSSValueNone) {
         flexGrow = 0;
@@ -4882,7 +4869,7 @@ bool CSSPropertyParser::consumeFlex(bool important)
     return true;
 }
 
-bool CSSPropertyParser::consumeBorder(RefPtr<CSSValue>& width, RefPtr<CSSValue>& style, RefPtr<CSSValue>& color)
+bool CSSPropertyParser::consumeBorder(std::shared_ptr<CSSValue>& width, std::shared_ptr<CSSValue>& style, std::shared_ptr<CSSValue>& color)
 {
     while (!width || !style || !color) {
         if (!width) {
@@ -4920,11 +4907,11 @@ bool CSSPropertyParser::consume2ValueShorthand(const StylePropertyShorthand& sho
 {
     ASSERT(shorthand.length() == 2);
     const CSSPropertyID* longhands = shorthand.properties();
-    RefPtr<CSSValue> start = parseSingleValue(longhands[0], shorthand.id());
+    std::shared_ptr<CSSValue> start = parseSingleValue(longhands[0], shorthand.id());
     if (!start)
         return false;
 
-    RefPtr<CSSValue> end = parseSingleValue(longhands[1], shorthand.id());
+    std::shared_ptr<CSSValue> end = parseSingleValue(longhands[1], shorthand.id());
     bool endImplicit = !end;
     if (endImplicit)
         end = start;
@@ -4938,13 +4925,13 @@ bool CSSPropertyParser::consume4ValueShorthand(const StylePropertyShorthand& sho
 {
     ASSERT(shorthand.length() == 4);
     const CSSPropertyID* longhands = shorthand.properties();
-    RefPtr<CSSValue> top = parseSingleValue(longhands[0], shorthand.id());
+    std::shared_ptr<CSSValue> top = parseSingleValue(longhands[0], shorthand.id());
     if (!top)
         return false;
 
-    RefPtr<CSSValue> right = parseSingleValue(longhands[1], shorthand.id());
-    RefPtr<CSSValue> bottom;
-    RefPtr<CSSValue> left;
+    std::shared_ptr<CSSValue> right = parseSingleValue(longhands[1], shorthand.id());
+    std::shared_ptr<CSSValue> bottom;
+    std::shared_ptr<CSSValue> left;
     if (right) {
         bottom = parseSingleValue(longhands[2], shorthand.id());
         if (bottom)
@@ -4972,11 +4959,11 @@ bool CSSPropertyParser::consume4ValueShorthand(const StylePropertyShorthand& sho
 
 bool CSSPropertyParser::consumeBorderImage(CSSPropertyID property, bool important)
 {
-    RefPtr<CSSValue> source;
-    RefPtr<CSSValue> slice;
-    RefPtr<CSSValue> width;
-    RefPtr<CSSValue> outset;
-    RefPtr<CSSValue> repeat;
+    std::shared_ptr<CSSValue> source;
+    std::shared_ptr<CSSValue> slice;
+    std::shared_ptr<CSSValue> width;
+    std::shared_ptr<CSSValue> outset;
+    std::shared_ptr<CSSValue> repeat;
     
     if (consumeBorderImageComponents(property, m_range, m_context, source, slice, width, outset, repeat)) {
         if (!source)
@@ -5054,7 +5041,7 @@ bool CSSPropertyParser::consumeLegacyBreakProperty(CSSPropertyID property, bool 
     // The fragmentation spec says that page-break-(after|before|inside) are to be treated as
     // shorthands for their break-(after|before|inside) counterparts. We'll do the same for the
     // non-standard properties -webkit-column-break-(after|before|inside).
-    RefPtr<CSSPrimitiveValue> keyword = consumeIdent(m_range);
+    std::shared_ptr<CSSPrimitiveValue> keyword = consumeIdent(m_range);
     if (!keyword)
         return false;
     if (!m_range.atEnd())
@@ -5084,11 +5071,11 @@ bool CSSPropertyParser::consumeLegacyBreakProperty(CSSPropertyID property, bool 
     return true;
 }
 
-static bool consumeBackgroundPosition(CSSParserTokenRange& range, const CSSParserContext& context, UnitlessQuirk unitless, RefPtr<CSSValue>& resultX, RefPtr<CSSValue>& resultY)
+static bool consumeBackgroundPosition(CSSParserTokenRange& range, const CSSParserContext& context, UnitlessQuirk unitless, std::shared_ptr<CSSValue>& resultX, std::shared_ptr<CSSValue>& resultY)
 {
     do {
-        RefPtr<CSSPrimitiveValue> positionX;
-        RefPtr<CSSPrimitiveValue> positionY;
+        std::shared_ptr<CSSPrimitiveValue> positionX;
+        std::shared_ptr<CSSPrimitiveValue> positionY;
         if (!consumePosition(range, context.mode, unitless, positionX, positionY))
             return false;
         addBackgroundValue(resultX, positionX.releaseNonNull());
@@ -5097,7 +5084,7 @@ static bool consumeBackgroundPosition(CSSParserTokenRange& range, const CSSParse
     return true;
 }
 
-static bool consumeRepeatStyleComponent(CSSParserTokenRange& range, RefPtr<CSSPrimitiveValue>& value1, RefPtr<CSSPrimitiveValue>& value2, bool& implicit)
+static bool consumeRepeatStyleComponent(CSSParserTokenRange& range, std::shared_ptr<CSSPrimitiveValue>& value1, std::shared_ptr<CSSPrimitiveValue>& value2, bool& implicit)
 {
     if (consumeIdent<CSSValueRepeatX>(range)) {
         value1 = CSSValuePool::singleton().createIdentifierValue(CSSValueRepeat);
@@ -5123,11 +5110,11 @@ static bool consumeRepeatStyleComponent(CSSParserTokenRange& range, RefPtr<CSSPr
     return true;
 }
 
-static bool consumeRepeatStyle(CSSParserTokenRange& range, RefPtr<CSSValue>& resultX, RefPtr<CSSValue>& resultY, bool& implicit)
+static bool consumeRepeatStyle(CSSParserTokenRange& range, std::shared_ptr<CSSValue>& resultX, std::shared_ptr<CSSValue>& resultY, bool& implicit)
 {
     do {
-        RefPtr<CSSPrimitiveValue> repeatX;
-        RefPtr<CSSPrimitiveValue> repeatY;
+        std::shared_ptr<CSSPrimitiveValue> repeatX;
+        std::shared_ptr<CSSPrimitiveValue> repeatY;
         if (!consumeRepeatStyleComponent(range, repeatX, repeatY, implicit))
             return false;
         addBackgroundValue(resultX, repeatX.releaseNonNull());
@@ -5141,32 +5128,32 @@ static bool consumeRepeatStyle(CSSParserTokenRange& range, RefPtr<CSSValue>& res
 bool CSSPropertyParser::consumeBackgroundShorthand(const StylePropertyShorthand& shorthand, bool important)
 {
     const unsigned longhandCount = shorthand.length();
-    RefPtr<CSSValue> longhands[10];
+    std::shared_ptr<CSSValue> longhands[10];
     ASSERT(longhandCount <= 10);
 
     bool implicit = false;
     do {
         bool parsedLonghand[10] = { false };
-        RefPtr<CSSValue> originValue;
+        std::shared_ptr<CSSValue> originValue;
         do {
             bool foundProperty = false;
             for (size_t i = 0; i < longhandCount; ++i) {
                 if (parsedLonghand[i])
                     continue;
 
-                RefPtr<CSSValue> value;
-                RefPtr<CSSValue> valueY;
+                std::shared_ptr<CSSValue> value;
+                std::shared_ptr<CSSValue> valueY;
                 CSSPropertyID property = shorthand.properties()[i];
                 if (property == CSSPropertyBackgroundRepeatX || property == CSSPropertyWebkitMaskRepeatX) {
-                    RefPtr<CSSPrimitiveValue> primitiveValue;
-                    RefPtr<CSSPrimitiveValue> primitiveValueY;
+                    std::shared_ptr<CSSPrimitiveValue> primitiveValue;
+                    std::shared_ptr<CSSPrimitiveValue> primitiveValueY;
                     consumeRepeatStyleComponent(m_range, primitiveValue, primitiveValueY, implicit);
                     value = primitiveValue;
                     valueY = primitiveValueY;
                 } else if (property == CSSPropertyBackgroundPositionX || property == CSSPropertyWebkitMaskPositionX) {
                     CSSParserTokenRange rangeCopy = m_range;
-                    RefPtr<CSSPrimitiveValue> primitiveValue;
-                    RefPtr<CSSPrimitiveValue> primitiveValueY;
+                    std::shared_ptr<CSSPrimitiveValue> primitiveValue;
+                    std::shared_ptr<CSSPrimitiveValue> primitiveValueY;
                     if (!consumePosition(rangeCopy, m_context.mode, UnitlessQuirk::Forbid, primitiveValue, primitiveValueY))
                         continue;
                     value = primitiveValue;
@@ -5240,11 +5227,11 @@ bool CSSPropertyParser::consumeGridItemPositionShorthand(CSSPropertyID shorthand
 {
     const StylePropertyShorthand& shorthand = shorthandForProperty(shorthandId);
     ASSERT(shorthand.length() == 2);
-    RefPtr<CSSValue> startValue = consumeGridLine(m_range);
+    std::shared_ptr<CSSValue> startValue = consumeGridLine(m_range);
     if (!startValue)
         return false;
 
-    RefPtr<CSSValue> endValue;
+    std::shared_ptr<CSSValue> endValue;
     if (consumeSlashIncludingWhitespace(m_range)) {
         endValue = consumeGridLine(m_range);
         if (!endValue)
@@ -5261,12 +5248,12 @@ bool CSSPropertyParser::consumeGridItemPositionShorthand(CSSPropertyID shorthand
 
 bool CSSPropertyParser::consumeGridAreaShorthand(bool important)
 {
-    RefPtr<CSSValue> rowStartValue = consumeGridLine(m_range);
+    std::shared_ptr<CSSValue> rowStartValue = consumeGridLine(m_range);
     if (!rowStartValue)
         return false;
-    RefPtr<CSSValue> columnStartValue;
-    RefPtr<CSSValue> rowEndValue;
-    RefPtr<CSSValue> columnEndValue;
+    std::shared_ptr<CSSValue> columnStartValue;
+    std::shared_ptr<CSSValue> rowEndValue;
+    std::shared_ptr<CSSValue> columnEndValue;
     if (consumeSlashIncludingWhitespace(m_range)) {
         columnStartValue = consumeGridLine(m_range);
         if (!columnStartValue)
@@ -5303,11 +5290,11 @@ bool CSSPropertyParser::consumeGridTemplateRowsAndAreasAndColumns(CSSPropertyID 
     NamedGridAreaMap gridAreaMap;
     size_t rowCount = 0;
     size_t columnCount = 0;
-    RefPtr<CSSValueList> templateRows = CSSValueList::createSpaceSeparated();
+    std::shared_ptr<CSSValueList> templateRows = CSSValueList::createSpaceSeparated();
 
     // Persists between loop iterations so we can use the same value for
     // consecutive <line-names> values
-    RefPtr<CSSGridLineNamesValue> lineNames;
+    std::shared_ptr<CSSGridLineNamesValue> lineNames;
 
     do {
         // Handle leading <custom-ident>*.
@@ -5322,7 +5309,7 @@ bool CSSPropertyParser::consumeGridTemplateRowsAndAreasAndColumns(CSSPropertyID 
         ++rowCount;
 
         // Handle template-rows's track-size.
-        RefPtr<CSSValue> value = consumeGridTrackSize(m_range, m_context.mode);
+        std::shared_ptr<CSSValue> value = consumeGridTrackSize(m_range, m_context.mode);
         if (!value)
             value = CSSValuePool::singleton().createIdentifierValue(CSSValueAuto);
         templateRows->append(*value);
@@ -5333,7 +5320,7 @@ bool CSSPropertyParser::consumeGridTemplateRowsAndAreasAndColumns(CSSPropertyID 
             templateRows->append(lineNames.releaseNonNull());
     } while (!m_range.atEnd() && !(m_range.peek().type() == DelimiterToken && m_range.peek().delimiter() == '/'));
 
-    RefPtr<CSSValue> columnsValue;
+    std::shared_ptr<CSSValue> columnsValue;
     if (!m_range.atEnd()) {
         if (!consumeSlashIncludingWhitespace(m_range))
             return false;
@@ -5352,7 +5339,7 @@ bool CSSPropertyParser::consumeGridTemplateRowsAndAreasAndColumns(CSSPropertyID 
 bool CSSPropertyParser::consumeGridTemplateShorthand(CSSPropertyID shorthandId, bool important)
 {
     CSSParserTokenRange rangeCopy = m_range;
-    RefPtr<CSSValue> rowsValue = consumeIdent<CSSValueNone>(m_range);
+    std::shared_ptr<CSSValue> rowsValue = consumeIdent<CSSValueNone>(m_range);
 
     // 1- 'none' case.
     if (rowsValue && m_range.atEnd()) {
@@ -5369,7 +5356,7 @@ bool CSSPropertyParser::consumeGridTemplateShorthand(CSSPropertyID shorthandId, 
     if (rowsValue) {
         if (!consumeSlashIncludingWhitespace(m_range))
             return false;
-        RefPtr<CSSValue> columnsValue = consumeGridTemplatesRowsOrColumns(m_range, m_context.mode);
+        std::shared_ptr<CSSValue> columnsValue = consumeGridTemplatesRowsOrColumns(m_range, m_context.mode);
         if (!columnsValue || !m_range.atEnd())
             return false;
 
@@ -5384,16 +5371,16 @@ bool CSSPropertyParser::consumeGridTemplateShorthand(CSSPropertyID shorthandId, 
     return consumeGridTemplateRowsAndAreasAndColumns(shorthandId, important);
 }
 
-static RefPtr<CSSValue> consumeImplicitGridAutoFlow(CSSParserTokenRange& range, Ref<CSSPrimitiveValue>&& flowDirection)
+static std::shared_ptr<CSSValue> consumeImplicitGridAutoFlow(CSSParserTokenRange& range, Ref<CSSPrimitiveValue>&& flowDirection)
 {
     // [ auto-flow && dense? ]
     if (range.atEnd())
         return nullptr;
     auto list = CSSValueList::createSpaceSeparated();
-    list->append(WTFMove(flowDirection));
+    list->append(std::move(flowDirection));
     if (range.peek().id() == CSSValueAutoFlow) {
         range.consumeIncludingWhitespace();
-        RefPtr<CSSValue> denseIdent = consumeIdent<CSSValueDense>(range);
+        std::shared_ptr<CSSValue> denseIdent = consumeIdent<CSSValueDense>(range);
         if (denseIdent)
             list->append(denseIdent.releaseNonNull());
     } else {
@@ -5428,11 +5415,11 @@ bool CSSPropertyParser::consumeGridShorthand(bool important)
 
     m_range = rangeCopy;
 
-    RefPtr<CSSValue> autoColumnsValue;
-    RefPtr<CSSValue> autoRowsValue;
-    RefPtr<CSSValue> templateRows;
-    RefPtr<CSSValue> templateColumns;
-    RefPtr<CSSValue> gridAutoFlow;
+    std::shared_ptr<CSSValue> autoColumnsValue;
+    std::shared_ptr<CSSValue> autoRowsValue;
+    std::shared_ptr<CSSValue> templateRows;
+    std::shared_ptr<CSSValue> templateColumns;
+    std::shared_ptr<CSSValue> gridAutoFlow;
     
     if (m_range.peek().id() == CSSValueAutoFlow || m_range.peek().id() == CSSValueDense) {
         // 2- [ auto-flow && dense? ] <grid-auto-rows>? / <grid-template-columns>
@@ -5500,7 +5487,7 @@ bool CSSPropertyParser::consumePlaceContentShorthand(bool important)
 
     CSSParserTokenRange rangeCopy = m_range;
     bool isBaseline = isBaselineKeyword(m_range.peek().id());
-    RefPtr<CSSValue> alignContentValue = consumeContentDistributionOverflowPosition(m_range, isContentPositionKeyword);
+    std::shared_ptr<CSSValue> alignContentValue = consumeContentDistributionOverflowPosition(m_range, isContentPositionKeyword);
     if (!alignContentValue)
         return false;
 
@@ -5512,7 +5499,7 @@ bool CSSPropertyParser::consumePlaceContentShorthand(bool important)
 
     if (m_range.atEnd())
         m_range = rangeCopy;
-    RefPtr<CSSValue> justifyContentValue = consumeContentDistributionOverflowPosition(m_range, isContentPositionOrLeftOrRightKeyword);
+    std::shared_ptr<CSSValue> justifyContentValue = consumeContentDistributionOverflowPosition(m_range, isContentPositionOrLeftOrRightKeyword);
     if (!justifyContentValue)
         return false;
     if (!m_range.atEnd())
@@ -5528,13 +5515,13 @@ bool CSSPropertyParser::consumePlaceItemsShorthand(bool important)
     ASSERT(shorthandForProperty(CSSPropertyPlaceItems).length() == 2);
 
     CSSParserTokenRange rangeCopy = m_range;
-    RefPtr<CSSValue> alignItemsValue = consumeAlignItems(m_range);
+    std::shared_ptr<CSSValue> alignItemsValue = consumeAlignItems(m_range);
     if (!alignItemsValue)
         return false;
 
     if (m_range.atEnd())
         m_range = rangeCopy;
-    RefPtr<CSSValue> justifyItemsValue = consumeJustifyItems(m_range);
+    std::shared_ptr<CSSValue> justifyItemsValue = consumeJustifyItems(m_range);
     if (!justifyItemsValue)
         return false;
 
@@ -5551,13 +5538,13 @@ bool CSSPropertyParser::consumePlaceSelfShorthand(bool important)
     ASSERT(shorthandForProperty(CSSPropertyPlaceSelf).length() == 2);
 
     CSSParserTokenRange rangeCopy = m_range;
-    RefPtr<CSSValue> alignSelfValue = consumeSelfPositionOverflowPosition(m_range, isSelfPositionKeyword);
+    std::shared_ptr<CSSValue> alignSelfValue = consumeSelfPositionOverflowPosition(m_range, isSelfPositionKeyword);
     if (!alignSelfValue)
         return false;
 
     if (m_range.atEnd())
         m_range = rangeCopy;
-    RefPtr<CSSValue> justifySelfValue = consumeSelfPositionOverflowPosition(m_range, isSelfPositionOrLeftOrRightKeyword);
+    std::shared_ptr<CSSValue> justifySelfValue = consumeSelfPositionOverflowPosition(m_range, isSelfPositionOrLeftOrRightKeyword);
     if (!justifySelfValue)
         return false;
 
@@ -5593,8 +5580,8 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
             return false;
         if (!m_range.atEnd())
             return false;
-        RefPtr<CSSValue> overflowYValue = CSSValuePool::singleton().createIdentifierValue(id);
-        RefPtr<CSSValue> overflowXValue;
+        std::shared_ptr<CSSValue> overflowYValue = CSSValuePool::singleton().createIdentifierValue(id);
+        std::shared_ptr<CSSValue> overflowXValue;
 
         // FIXME: -webkit-paged-x or -webkit-paged-y only apply to overflow-y. If this value has been
         // set using the shorthand, then for now overflow-x will default to auto, but once we implement
@@ -5658,9 +5645,9 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
     case CSSPropertyOutline:
         return consumeShorthandGreedily(outlineShorthand(), important);
     case CSSPropertyBorderInline: {
-        RefPtr<CSSValue> width;
-        RefPtr<CSSValue> style;
-        RefPtr<CSSValue> color;
+        std::shared_ptr<CSSValue> width;
+        std::shared_ptr<CSSValue> style;
+        std::shared_ptr<CSSValue> color;
         if (!consumeBorder(width, style, color))
             return false;
 
@@ -5680,9 +5667,9 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
     case CSSPropertyBorderInlineEnd:
         return consumeShorthandGreedily(borderInlineEndShorthand(), important);
     case CSSPropertyBorderBlock: {
-        RefPtr<CSSValue> width;
-        RefPtr<CSSValue> style;
-        RefPtr<CSSValue> color;
+        std::shared_ptr<CSSValue> width;
+        std::shared_ptr<CSSValue> style;
+        std::shared_ptr<CSSValue> color;
         if (!consumeBorder(width, style, color))
             return false;
 
@@ -5704,7 +5691,7 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
     case CSSPropertyWebkitTextStroke:
         return consumeShorthandGreedily(webkitTextStrokeShorthand(), important);
     case CSSPropertyMarker: {
-        RefPtr<CSSValue> marker = parseSingleValue(CSSPropertyMarkerStart);
+        std::shared_ptr<CSSValue> marker = parseSingleValue(CSSPropertyMarkerStart);
         if (!marker || !m_range.atEnd())
             return false;
         auto markerRef = marker.releaseNonNull();
@@ -5723,8 +5710,8 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
         return consumeShorthandGreedily(listStyleShorthand(), important);
     case CSSPropertyBorderRadius:
     case CSSPropertyWebkitBorderRadius: {
-        RefPtr<CSSPrimitiveValue> horizontalRadii[4];
-        RefPtr<CSSPrimitiveValue> verticalRadii[4];
+        std::shared_ptr<CSSPrimitiveValue> horizontalRadii[4];
+        std::shared_ptr<CSSPrimitiveValue> verticalRadii[4];
         if (!consumeRadii(horizontalRadii, verticalRadii, m_range, m_context.mode, property == CSSPropertyWebkitBorderRadius))
             return false;
         addProperty(CSSPropertyBorderTopLeftRadius, CSSPropertyBorderRadius, createPrimitiveValuePair(horizontalRadii[0].releaseNonNull(), verticalRadii[0].releaseNonNull(), Pair::IdenticalValueEncoding::Coalesce), important);
@@ -5748,9 +5735,9 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
     case CSSPropertyBorderLeft:
         return consumeShorthandGreedily(borderLeftShorthand(), important);
     case CSSPropertyBorder: {
-        RefPtr<CSSValue> width;
-        RefPtr<CSSValue> style;
-        RefPtr<CSSValue> color;
+        std::shared_ptr<CSSValue> width;
+        std::shared_ptr<CSSValue> style;
+        std::shared_ptr<CSSValue> color;
         if (!consumeBorder(width, style, color))
             return false;
 
@@ -5771,8 +5758,8 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
         return consumeLegacyBreakProperty(property, important);
     case CSSPropertyWebkitMaskPosition:
     case CSSPropertyBackgroundPosition: {
-        RefPtr<CSSValue> resultX;
-        RefPtr<CSSValue> resultY;
+        std::shared_ptr<CSSValue> resultX;
+        std::shared_ptr<CSSValue> resultY;
         if (!consumeBackgroundPosition(m_range, m_context, UnitlessQuirk::Allow, resultX, resultY) || !m_range.atEnd())
             return false;
         addProperty(property == CSSPropertyBackgroundPosition ? CSSPropertyBackgroundPositionX : CSSPropertyWebkitMaskPositionX, property, resultX.releaseNonNull(), important);
@@ -5781,8 +5768,8 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
     }
     case CSSPropertyBackgroundRepeat:
     case CSSPropertyWebkitMaskRepeat: {
-        RefPtr<CSSValue> resultX;
-        RefPtr<CSSValue> resultY;
+        std::shared_ptr<CSSValue> resultX;
+        std::shared_ptr<CSSValue> resultY;
         bool implicit = false;
         if (!consumeRepeatStyle(m_range, resultX, resultY, implicit) || !m_range.atEnd())
             return false;
@@ -5799,8 +5786,8 @@ bool CSSPropertyParser::parseShorthand(CSSPropertyID property, bool important)
     case CSSPropertyPerspectiveOrigin:
         return consumePerspectiveOrigin(important);
     case CSSPropertyGap: {
-        RefPtr<CSSValue> rowGap = consumeGapLength(m_range, m_context.mode);
-        RefPtr<CSSValue> columnGap = consumeGapLength(m_range, m_context.mode);
+        std::shared_ptr<CSSValue> rowGap = consumeGapLength(m_range, m_context.mode);
+        std::shared_ptr<CSSValue> columnGap = consumeGapLength(m_range, m_context.mode);
         if (!rowGap || !m_range.atEnd())
             return false;
         if (!columnGap)

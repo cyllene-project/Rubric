@@ -230,7 +230,7 @@ static void addResolutionWarningMessageToConsole(Document& document, const Strin
     static NeverDestroyed<String> lengthUnitInch(MAKE_STATIC_STRING_IMPL("inch"));
     static NeverDestroyed<String> lengthUnitCentimeter(MAKE_STATIC_STRING_IMPL("centimeter"));
 
-    String message;
+    std::string message;
     if (value.isDotsPerInch())
         message = mediaQueryMessage.get().replace("%replacementUnits%", mediaValueDPI).replace("%lengthUnit%", lengthUnitInch);
     else if (value.isDotsPerCentimeter())

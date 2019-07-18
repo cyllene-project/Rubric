@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <wtf/RefCounted.h>
+
 
 namespace WebCore {
 
@@ -48,10 +48,10 @@ public:
     CSSPrimitiveValue* first() const { return m_first.get(); }
     CSSPrimitiveValue* second() const { return m_second.get(); }
 
-    String cssText() const
+    std::string cssText() const
     {
-        String first = this->first()->cssText();
-        String second = this->second()->cssText();
+        std::string first = this->first()->cssText();
+        std::string second = this->second()->cssText();
         if (m_encoding == IdenticalValueEncoding::Coalesce && first == second)
             return first;
         return first + ' ' + second;

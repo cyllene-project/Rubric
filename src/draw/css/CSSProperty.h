@@ -23,8 +23,7 @@
 
 #include "CSSPropertyNames.h"
 #include "CSSValue.h"
-#include "WritingMode.h"
-#include <wtf/RefPtr.h>
+//#include "WritingMode.h"
 
 namespace WebCore {
 

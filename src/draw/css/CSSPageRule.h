@@ -36,16 +36,16 @@ public:
 
     virtual ~CSSPageRule();
 
-    WEBCORE_EXPORT CSSStyleDeclaration& style();
+    CSSStyleDeclaration& style();
 
-    WEBCORE_EXPORT String selectorText() const;
-    WEBCORE_EXPORT void setSelectorText(const String&);
+    std::string selectorText() const;
+    void setSelectorText(const String&);
 
 private:
     CSSPageRule(StyleRulePage&, CSSStyleSheet*);
 
     CSSRule::Type type() const final { return PAGE_RULE; }
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
     Ref<StyleRulePage> m_pageRule;

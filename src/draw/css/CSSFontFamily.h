@@ -25,8 +25,6 @@
 
 #pragma once
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 // We use a CSSFontFamily instead of a String to store the font family inside CSSPrimitiveValue.
@@ -39,7 +37,7 @@ namespace WebCore {
 // sign" hack.
 
 struct CSSFontFamily {
-    String familyName;
+    std::string familyName;
     bool fromSystemFontID;
 };
 

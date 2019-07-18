@@ -36,10 +36,10 @@ struct Length;
 struct LengthSize;
 
 int intValueForLength(const Length&, LayoutUnit maximumValue);
-WEBCORE_EXPORT LayoutUnit valueForLength(const Length&, LayoutUnit maximumValue);
+LayoutUnit valueForLength(const Length&, LayoutUnit maximumValue);
 LayoutSize sizeForLengthSize(const LengthSize&, const LayoutSize& maximumValue);
 float floatValueForLength(const Length&, LayoutUnit maximumValue);
-WEBCORE_EXPORT float floatValueForLength(const Length&, float maximumValue);
+float floatValueForLength(const Length&, float maximumValue);
 FloatSize floatSizeForLengthSize(const LengthSize&, const FloatSize&);
 
 inline LayoutUnit minimumValueForLength(const Length& length, LayoutUnit maximumValue)

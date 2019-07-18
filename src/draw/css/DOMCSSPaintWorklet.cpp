@@ -32,8 +32,6 @@
 #include "Document.h"
 #include "Worklet.h"
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 Worklet& DOMCSSPaintWorklet::ensurePaintWorklet(Document& document)

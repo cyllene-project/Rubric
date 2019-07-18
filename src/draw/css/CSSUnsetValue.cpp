@@ -26,8 +26,6 @@
 #include "config.h"
 #include "CSSUnsetValue.h"
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 String CSSUnsetValue::customCSSText() const

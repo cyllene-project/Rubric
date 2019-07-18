@@ -25,8 +25,6 @@
 
 #include "config.h"
 
-#if ENABLE(VARIATION_FONTS)
-
 #include "CSSFontVariationValue.h"
 
 #include <wtf/text/StringBuilder.h>

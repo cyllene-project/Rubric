@@ -20,13 +20,9 @@
 
 #pragma once
 
-#include "ExceptionOr.h"
+//#include "ExceptionOr.h"
 #include "StyleSheet.h"
 #include <memory>
-#include <wtf/Noncopyable.h>
-#include <wtf/TypeCasts.h>
-#include <wtf/text/AtomStringHash.h>
-#include <wtf/text/TextPosition.h>
 
 namespace WebCore {
 
@@ -57,17 +53,17 @@ public:
     CSSStyleSheet* parentStyleSheet() const final;
     Node* ownerNode() const final { return m_ownerNode; }
     MediaList* media() const final;
-    String href() const final;
-    String title() const final { return m_title; }
+    std::string href() const final;
+    std::string title() const final { return m_title; }
     bool disabled() const final { return m_isDisabled; }
     void setDisabled(bool) final;
     
-    WEBCORE_EXPORT RefPtr<CSSRuleList> cssRules();
-    WEBCORE_EXPORT ExceptionOr<unsigned> insertRule(const String& rule, unsigned index);
-    WEBCORE_EXPORT ExceptionOr<void> deleteRule(unsigned index);
+    RefPtr<CSSRuleList> cssRules();
+    ExceptionOr<unsigned> insertRule(const String& rule, unsigned index);
+    ExceptionOr<void> deleteRule(unsigned index);
     
-    WEBCORE_EXPORT RefPtr<CSSRuleList> rules();
-    WEBCORE_EXPORT ExceptionOr<int> addRule(const String& selector, const String& style, Optional<unsigned> index);
+    RefPtr<CSSRuleList> rules();
+    ExceptionOr<int> addRule(const String& selector, const String& style, Optional<unsigned> index);
     ExceptionOr<void> removeRule(unsigned index) { return deleteRule(index); }
     
     // For CSSRuleList.
@@ -97,7 +93,8 @@ public:
     enum WhetherContentsWereClonedForMutation { ContentsWereNotClonedForMutation = 0, ContentsWereClonedForMutation };
 
     class RuleMutationScope {
-        WTF_MAKE_NONCOPYABLE(RuleMutationScope);
+        RuleMutationScope(const RuleMutationScope&) = delete;
+        RuleMutationScope& operator=(const RuleMutationScope&) = delete;
     public:
         RuleMutationScope(CSSStyleSheet*, RuleMutationType = OtherMutation, StyleRuleKeyframes* insertedKeyframesRule = nullptr);
         RuleMutationScope(CSSRule*);
@@ -133,14 +130,14 @@ private:
     CSSStyleSheet(Ref<StyleSheetContents>&&, Node& ownerNode, const TextPosition& startPosition, bool isInlineStylesheet, const Optional<bool>&);
 
     bool isCSSStyleSheet() const final { return true; }
-    String type() const final { return "text/css"_s; }
+    std::string type() const final { return "text/css"_s; }
 
     Ref<StyleSheetContents> m_contents;
     bool m_isInlineStylesheet;
     bool m_isDisabled;
     bool m_mutatedRules;
     Optional<bool> m_isOriginClean;
-    String m_title;
+    std::string m_title;
     RefPtr<MediaQuerySet> m_mediaQueries;
 
     Node* m_ownerNode;

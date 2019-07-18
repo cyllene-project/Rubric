@@ -33,7 +33,7 @@ namespace WebCore {
 String DeprecatedCSSOMValueList::cssText() const
 {
     StringBuilder result;
-    String separator;
+    std::string separator;
     switch (m_valueListSeparator) {
     case CSSValue::SpaceSeparator:
         separator = " "_s;

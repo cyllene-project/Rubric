@@ -21,7 +21,6 @@
 #pragma once
 
 #include "CSSValue.h"
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
 
@@ -40,7 +39,7 @@ public:
         return adoptRef(*new CSSShadowValue(WTFMove(x), WTFMove(y), WTFMove(blur), WTFMove(spread), WTFMove(style), WTFMove(color)));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSShadowValue&) const;
 

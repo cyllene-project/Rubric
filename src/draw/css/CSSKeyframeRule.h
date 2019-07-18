@@ -48,7 +48,7 @@ public:
     }
     ~StyleRuleKeyframe();
 
-    String keyText() const;
+    std::string keyText() const;
     bool setKeyText(const String&);
     void setKey(double key)
     {
@@ -62,7 +62,7 @@ public:
     const StyleProperties& properties() const { return m_properties; }
     MutableStyleProperties& mutableProperties();
 
-    String cssText() const;
+    std::string cssText() const;
 
 private:
     explicit StyleRuleKeyframe(Ref<StyleProperties>&&);
@@ -76,10 +76,10 @@ class CSSKeyframeRule final : public CSSRule {
 public:
     virtual ~CSSKeyframeRule();
 
-    String cssText() const final { return m_keyframe->cssText(); }
+    std::string cssText() const final { return m_keyframe->cssText(); }
     void reattach(StyleRuleBase&) final;
 
-    String keyText() const { return m_keyframe->keyText(); }
+    std::string keyText() const { return m_keyframe->keyText(); }
     void setKeyText(const String& text) { m_keyframe->setKeyText(text); }
 
     CSSStyleDeclaration& style();

@@ -30,7 +30,7 @@
 #pragma once
 
 #include "CSSParserToken.h"
-#include <wtf/Forward.h>
+
 
 namespace WebCore {
 
@@ -40,7 +40,7 @@ namespace WebCore {
 class CSSParserTokenRange {
 public:
     template<size_t inlineBuffer>
-    CSSParserTokenRange(const Vector<CSSParserToken, inlineBuffer>& vector)
+    CSSParserTokenRange(const std::vector<CSSParserToken, inlineBuffer>& vector)
         : m_first(vector.begin())
         , m_last(vector.end())
     {
@@ -85,7 +85,7 @@ public:
             ++m_first;
     }
 
-    String serialize() const;
+    std::string serialize() const;
 
     const CSSParserToken* begin() const { return m_first; }
 

@@ -27,8 +27,8 @@
 
 #include "CSSImageGeneratorValue.h"
 #include "CanvasBase.h"
-#include "HTMLCanvasElement.h"
-#include "RenderElement.h"
+//#include "HTMLCanvasElement.h"
+//#include "RenderElement.h"
 
 namespace WebCore {
 
@@ -39,13 +39,13 @@ public:
     static Ref<CSSCanvasValue> create(const String& name) { return adoptRef(*new CSSCanvasValue(name)); }
     ~CSSCanvasValue();
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     RefPtr<Image> image(RenderElement*, const FloatSize&);
     bool isFixedSize() const { return true; }
     FloatSize fixedSize(const RenderElement*);
 
-    HTMLCanvasElement* element() const { return m_element; }
+    //HTMLCanvasElement* element() const { return m_element; }
 
     bool isPending() const { return false; }
     void loadSubimages(CachedResourceLoader&, const ResourceLoaderOptions&) { }
@@ -68,18 +68,18 @@ public:
     private:
         void canvasChanged(CanvasBase& canvasBase, const FloatRect& changedRect) final
         {
-            ASSERT(is<HTMLCanvasElement>(canvasBase));
-            m_ownerValue.canvasChanged(downcast<HTMLCanvasElement>(canvasBase), changedRect);
+            //ASSERT(is<HTMLCanvasElement>(canvasBase));
+            //m_ownerValue.canvasChanged(downcast<HTMLCanvasElement>(canvasBase), changedRect);
         }
         void canvasResized(CanvasBase& canvasBase) final
         {
-            ASSERT(is<HTMLCanvasElement>(canvasBase));
-            m_ownerValue.canvasResized(downcast<HTMLCanvasElement>(canvasBase));
+            //ASSERT(is<HTMLCanvasElement>(canvasBase));
+            //m_ownerValue.canvasResized(downcast<HTMLCanvasElement>(canvasBase));
         }
         void canvasDestroyed(CanvasBase& canvasBase) final
         {
-            ASSERT(is<HTMLCanvasElement>(canvasBase));
-            m_ownerValue.canvasDestroyed(downcast<HTMLCanvasElement>(canvasBase));
+            //ASSERT(is<HTMLCanvasElement>(canvasBase));
+            //m_ownerValue.canvasDestroyed(downcast<HTMLCanvasElement>(canvasBase));
         }
 
         CSSCanvasValue& m_ownerValue;
@@ -93,18 +93,18 @@ private:
     {
     }
 
-    void canvasChanged(HTMLCanvasElement&, const FloatRect& changedRect);
-    void canvasResized(HTMLCanvasElement&);
-    void canvasDestroyed(HTMLCanvasElement&);
+    //void canvasChanged(HTMLCanvasElement&, const FloatRect& changedRect);
+    //void canvasResized(HTMLCanvasElement&);
+    //void canvasDestroyed(HTMLCanvasElement&);
 
-    HTMLCanvasElement* element(Document&);
+    //HTMLCanvasElement* element(Document&);
 
     CanvasObserverProxy m_canvasObserver;
 
     // The name of the canvas.
-    String m_name;
+    std::string m_name;
     // The document supplies the element and owns it.
-    HTMLCanvasElement* m_element { nullptr };
+    //HTMLCanvasElement* m_element { nullptr };
 };
 
 } // namespace WebCore

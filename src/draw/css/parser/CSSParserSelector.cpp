@@ -18,7 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "config.h"
 #include "CSSParserSelector.h"
 
 #include "CSSSelector.h"
@@ -113,31 +112,31 @@ CSSParserSelector::~CSSParserSelector()
 {
     if (!m_tagHistory)
         return;
-    Vector<std::unique_ptr<CSSParserSelector>, 16> toDelete;
-    std::unique_ptr<CSSParserSelector> selector = WTFMove(m_tagHistory);
+    std::vector<std::unique_ptr<CSSParserSelector>> toDelete;
+    std::unique_ptr<CSSParserSelector> selector = std::move(m_tagHistory);
     while (true) {
-        std::unique_ptr<CSSParserSelector> next = WTFMove(selector->m_tagHistory);
-        toDelete.append(WTFMove(selector));
+        std::unique_ptr<CSSParserSelector> next = std::move(selector->m_tagHistory);
+        toDelete.push_back(std::move(selector));
         if (!next)
             break;
-        selector = WTFMove(next);
+        selector = std::move(next);
     }
 }
 
-void CSSParserSelector::adoptSelectorVector(Vector<std::unique_ptr<CSSParserSelector>>&& selectorVector)
+void CSSParserSelector::adoptSelectorVector(std::vector<std::unique_ptr<CSSParserSelector>>&& selectorVector)
 {
-    m_selector->setSelectorList(std::make_unique<CSSSelectorList>(WTFMove(selectorVector)));
+    m_selector->setSelectorList(std::make_unique<CSSSelectorList>(std::move(selectorVector)));
 }
 
-void CSSParserSelector::setLangArgumentList(std::unique_ptr<Vector<AtomString>> argumentList)
+void CSSParserSelector::setLangArgumentList(std::unique_ptr<std::vector<AtomString>> argumentList)
 {
     ASSERT_WITH_MESSAGE(!argumentList->isEmpty(), "No CSS Selector takes an empty argument list.");
-    m_selector->setLangArgumentList(WTFMove(argumentList));
+    m_selector->setLangArgumentList(std::move(argumentList));
 }
 
 void CSSParserSelector::setSelectorList(std::unique_ptr<CSSSelectorList> selectorList)
 {
-    m_selector->setSelectorList(WTFMove(selectorList));
+    m_selector->setSelectorList(std::move(selectorList));
 }
 
 static bool selectorListMatchesPseudoElement(const CSSSelectorList* selectorList)
@@ -166,10 +165,10 @@ bool CSSParserSelector::matchesPseudoElement() const
 void CSSParserSelector::insertTagHistory(CSSSelector::RelationType before, std::unique_ptr<CSSParserSelector> selector, CSSSelector::RelationType after)
 {
     if (m_tagHistory)
-        selector->setTagHistory(WTFMove(m_tagHistory));
+        selector->setTagHistory(std::move(m_tagHistory));
     setRelation(before);
     selector->setRelation(after);
-    m_tagHistory = WTFMove(selector);
+    m_tagHistory = std::move(selector);
 }
 
 void CSSParserSelector::appendTagHistory(CSSSelector::RelationType relation, std::unique_ptr<CSSParserSelector> selector)
@@ -179,7 +178,7 @@ void CSSParserSelector::appendTagHistory(CSSSelector::RelationType relation, std
         end = end->tagHistory();
 
     end->setRelation(relation);
-    end->setTagHistory(WTFMove(selector));
+    end->setTagHistory(std::move(selector));
 }
 
 void CSSParserSelector::appendTagHistory(CSSParserSelectorCombinator relation, std::unique_ptr<CSSParserSelector> selector)
@@ -204,15 +203,15 @@ void CSSParserSelector::appendTagHistory(CSSParserSelectorCombinator relation, s
         break;
     }
     end->setRelation(selectorRelation);
-    end->setTagHistory(WTFMove(selector));
+    end->setTagHistory(std::move(selector));
 }
 
 void CSSParserSelector::prependTagSelector(const QualifiedName& tagQName, bool tagIsForNamespaceRule)
 {
     auto second = std::make_unique<CSSParserSelector>();
-    second->m_selector = WTFMove(m_selector);
-    second->m_tagHistory = WTFMove(m_tagHistory);
-    m_tagHistory = WTFMove(second);
+    second->m_selector = std::move(m_selector);
+    second->m_tagHistory = std::move(m_tagHistory);
+    m_tagHistory = std::move(second);
 
     m_selector = std::make_unique<CSSSelector>(tagQName, tagIsForNamespaceRule);
     m_selector->setRelation(CSSSelector::Subselector);
@@ -221,7 +220,7 @@ void CSSParserSelector::prependTagSelector(const QualifiedName& tagQName, bool t
 std::unique_ptr<CSSParserSelector> CSSParserSelector::releaseTagHistory()
 {
     setRelation(CSSSelector::Subselector);
-    return WTFMove(m_tagHistory);
+    return std::move(m_tagHistory);
 }
 
 // FIXME-NEWPARSER: Add support for :host-context

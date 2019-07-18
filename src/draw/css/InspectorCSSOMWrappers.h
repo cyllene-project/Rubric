@@ -22,10 +22,6 @@
 
 #pragma once
 
-#include <wtf/Forward.h>
-#include <wtf/HashMap.h>
-#include <wtf/HashSet.h>
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

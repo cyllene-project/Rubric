@@ -128,7 +128,7 @@ bool StyleSheetContents::isCacheable() const
     return true;
 }
 
-void StyleSheetContents::parserAppendRule(Ref<StyleRuleBase>&& rule)
+void StyleSheetContents::parserAppendRule(StyleRuleBase& rule)
 {
     ASSERT(!rule->isCharsetRule());
 
@@ -321,7 +321,7 @@ void StyleSheetContents::parseAuthorStyleSheet(const CachedCSSStyleSheet* cached
     bool isSameOriginRequest = securityOrigin && securityOrigin->canRequest(baseURL());
     CachedCSSStyleSheet::MIMETypeCheckHint mimeTypeCheckHint = isStrictParserMode(m_parserContext.mode) || !isSameOriginRequest ? CachedCSSStyleSheet::MIMETypeCheckHint::Strict : CachedCSSStyleSheet::MIMETypeCheckHint::Lax;
     bool hasValidMIMEType = true;
-    String sheetText = cachedStyleSheet->sheetText(mimeTypeCheckHint, &hasValidMIMEType);
+    std::string sheetText = cachedStyleSheet->sheetText(mimeTypeCheckHint, &hasValidMIMEType);
 
     if (!hasValidMIMEType) {
         ASSERT(sheetText.isNull());

@@ -32,10 +32,7 @@
 #include "WindRule.h"
 #include <wtf/RefPtr.h>
 #include <wtf/TypeCasts.h>
-#include <wtf/Vector.h>
-#include <wtf/text/WTFString.h>
-
-namespace WebCore {
+#include <vector>namespace WebCore {
 
 class CSSPrimitiveValue;
 class SVGPathByteStream;
@@ -113,7 +110,7 @@ private:
     CSSBasicShapeInset() = default;
 
     Type type() const final { return CSSBasicShapeInsetType; }
-    String cssText() const final;
+    std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
     RefPtr<CSSPrimitiveValue> m_top;
@@ -143,7 +140,7 @@ private:
     CSSBasicShapeCircle() = default;
 
     Type type() const final { return CSSBasicShapeCircleType; }
-    String cssText() const final;
+    std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
     RefPtr<CSSPrimitiveValue> m_centerX;
@@ -169,7 +166,7 @@ private:
     CSSBasicShapeEllipse() = default;
 
     Type type() const final { return CSSBasicShapeEllipseType; }
-    String cssText() const final;
+    std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
     RefPtr<CSSPrimitiveValue> m_centerX;
@@ -200,7 +197,7 @@ private:
     }
 
     Type type() const final { return CSSBasicShapePolygonType; }
-    String cssText() const final;
+    std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
     Vector<Ref<CSSPrimitiveValue>> m_values;
@@ -226,7 +223,7 @@ private:
     CSSBasicShapePath(std::unique_ptr<SVGPathByteStream>&&);
 
     Type type() const final { return CSSBasicShapePathType; }
-    String cssText() const final;
+    std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
     std::unique_ptr<SVGPathByteStream> m_byteStream;

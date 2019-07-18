@@ -31,7 +31,7 @@ namespace WebCore {
 
 class CSSRevertValue final : public CSSValue {
 public:
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSRevertValue&) const { return true; }
 

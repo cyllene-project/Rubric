@@ -36,7 +36,7 @@
 #include "RenderStyle.h"
 #include <wtf/text/AtomStringHash.h>
 #include <wtf/text/StringBuilder.h>
-#include <wtf/text/StringView.h>
+
 
 namespace WebCore {
 
@@ -46,7 +46,7 @@ template<typename CharacterType> void CSSVariableData::updateTokens(const CSSPar
     for (const CSSParserToken& token : range) {
         if (token.hasStringBacking()) {
             unsigned length = token.value().length();
-            StringView string(currentOffset, length);
+            std::string_view string(currentOffset, length);
             m_tokens.append(token.copyWithUpdatedString(string));
             currentOffset += length;
         } else

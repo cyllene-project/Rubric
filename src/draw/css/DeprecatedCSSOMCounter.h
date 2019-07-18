@@ -38,9 +38,9 @@ public:
         return adoptRef(*new DeprecatedCSSOMCounter(counter, owner));
     }
 
-    String identifier() const { return m_identifier->stringValue(); }
-    String listStyle() const { return m_listStyle->stringValue(); }
-    String separator() const { return m_separator->stringValue(); }
+    std::string identifier() const { return m_identifier->stringValue(); }
+    std::string listStyle() const { return m_listStyle->stringValue(); }
+    std::string separator() const { return m_separator->stringValue(); }
     
 private:
     DeprecatedCSSOMCounter(const Counter& counter, CSSStyleDeclaration& owner)

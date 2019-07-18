@@ -62,7 +62,7 @@ static bool resolveVariableReference(CSSParserTokenRange range, Vector<CSSParser
 
     range.consumeWhitespace();
     ASSERT(range.peek().type() == IdentToken);
-    String variableName = range.consumeIncludingWhitespace().value().toString();
+    std::string variableName = range.consumeIncludingWhitespace().value().toString();
     ASSERT(range.atEnd() || (range.peek().type() == CommaToken));
 
     // Apply this variable first, in case it is still unresolved

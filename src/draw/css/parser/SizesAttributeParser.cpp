@@ -27,20 +27,20 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "config.h"
 #include "SizesAttributeParser.h"
 
 #include "CSSPrimitiveValue.h"
 #include "CSSToLengthConversionData.h"
 #include "CSSTokenizer.h"
-#include "FontCascade.h"
+//#include "FontCascade.h"
 #include "MediaList.h"
 #include "MediaQueryEvaluator.h"
 #include "MediaQueryParser.h"
 #include "MediaQueryParserContext.h"
-#include "RenderView.h"
+//#include "RenderView.h"
 #include "SizesCalcParser.h"
 #include "StyleScope.h"
+#include <draw/webkit/FontSelector.h>
 
 namespace WebCore {
 
@@ -59,7 +59,7 @@ float SizesAttributeParser::computeLength(double value, CSSPrimitiveValue::UnitT
     // RenderView, which has its font information hardcoded in resolveForDocument() to be -webkit-standard, whose operations
     // don't require a font selector.
     if (type == CSSPrimitiveValue::CSS_EXS || type == CSSPrimitiveValue::CSS_CHS) {
-        RefPtr<FontSelector> fontSelector = style.fontCascade().fontSelector();
+        std::shared_ptr<FontSelector> fontSelector = style.fontCascade().fontSelector();
         style.fontCascade().update(nullptr);
         float result = CSSPrimitiveValue::computeNonCalcLengthDouble(conversionData, type, value);
         style.fontCascade().update(fontSelector.get());
@@ -69,7 +69,7 @@ float SizesAttributeParser::computeLength(double value, CSSPrimitiveValue::UnitT
     return clampTo<float>(CSSPrimitiveValue::computeNonCalcLengthDouble(conversionData, type, value));
 }
     
-SizesAttributeParser::SizesAttributeParser(const String& attribute, const Document& document)
+SizesAttributeParser::SizesAttributeParser(const std::string& attribute, const Document& document)
     : m_document(document)
     , m_length(0)
     , m_lengthWasSet(false)
@@ -137,7 +137,7 @@ bool SizesAttributeParser::parse(CSSParserTokenRange range)
         float length;
         if (!calculateLengthInPixels(range.makeSubRange(lengthTokenStart, lengthTokenEnd), length))
             continue;
-        RefPtr<MediaQuerySet> mediaCondition = MediaQueryParser::parseMediaCondition(range.makeSubRange(mediaConditionStart, lengthTokenStart), MediaQueryParserContext(m_document));
+        std::shared_ptr<MediaQuerySet> mediaCondition = MediaQueryParser::parseMediaCondition(range.makeSubRange(mediaConditionStart, lengthTokenStart), MediaQueryParserContext(m_document));
         if (!mediaCondition || !mediaConditionMatches(*mediaCondition))
             continue;
         m_length = length;

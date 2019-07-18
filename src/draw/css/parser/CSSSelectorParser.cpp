@@ -55,52 +55,52 @@ CSSSelectorParser::CSSSelectorParser(const CSSParserContext& context, StyleSheet
 
 CSSSelectorList CSSSelectorParser::consumeComplexSelectorList(CSSParserTokenRange& range)
 {
-    Vector<std::unique_ptr<CSSParserSelector>> selectorList;
+    std::vector<std::unique_ptr<CSSParserSelector>> selectorList;
     std::unique_ptr<CSSParserSelector> selector = consumeComplexSelector(range);
     if (!selector)
         return CSSSelectorList();
-    selectorList.append(WTFMove(selector));
+    selectorList.append(std::move(selector));
     while (!range.atEnd() && range.peek().type() == CommaToken) {
         range.consumeIncludingWhitespace();
         selector = consumeComplexSelector(range);
         if (!selector)
             return CSSSelectorList();
-        selectorList.append(WTFMove(selector));
+        selectorList.append(std::move(selector));
     }
 
     if (m_failedParsing)
         return { };
-    return CSSSelectorList { WTFMove(selectorList) };
+    return CSSSelectorList { std::move(selectorList) };
 }
 
 CSSSelectorList CSSSelectorParser::consumeCompoundSelectorList(CSSParserTokenRange& range)
 {
-    Vector<std::unique_ptr<CSSParserSelector>> selectorList;
+    std::vector<std::unique_ptr<CSSParserSelector>> selectorList;
     std::unique_ptr<CSSParserSelector> selector = consumeCompoundSelector(range);
     range.consumeWhitespace();
     if (!selector)
         return CSSSelectorList();
-    selectorList.append(WTFMove(selector));
+    selectorList.append(std::move(selector));
     while (!range.atEnd() && range.peek().type() == CommaToken) {
         range.consumeIncludingWhitespace();
         selector = consumeCompoundSelector(range);
         range.consumeWhitespace();
         if (!selector)
             return CSSSelectorList();
-        selectorList.append(WTFMove(selector));
+        selectorList.append(std::move(selector));
     }
 
     if (m_failedParsing)
         return { };
-    return CSSSelectorList { WTFMove(selectorList) };
+    return CSSSelectorList { std::move(selectorList) };
 }
 
-static bool consumeLangArgumentList(std::unique_ptr<Vector<AtomString>>& argumentList, CSSParserTokenRange& range)
+static bool consumeLangArgumentList(std::unique_ptr<std::vector<AtomString>>& argumentList, CSSParserTokenRange& range)
 {
     const CSSParserToken& ident = range.consumeIncludingWhitespace();
     if (ident.type() != IdentToken && ident.type() != StringToken)
         return false;
-    StringView string = ident.value();
+    std::string_view string = ident.value();
     if (string.startsWith("--"))
         return false;
     argumentList->append(string.toAtomString());
@@ -109,7 +109,7 @@ static bool consumeLangArgumentList(std::unique_ptr<Vector<AtomString>>& argumen
         const CSSParserToken& ident = range.consumeIncludingWhitespace();
         if (ident.type() != IdentToken && ident.type() != StringToken)
             return false;
-        StringView string = ident.value();
+        std::string_view string = ident.value();
         if (string.startsWith("--"))
             return false;
         argumentList->append(string.toAtomString());
@@ -153,25 +153,25 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeComplexSelector(CSS
     unsigned previousCompoundFlags = 0;
 
     for (CSSParserSelector* simple = selector.get(); simple && !previousCompoundFlags; simple = simple->tagHistory())
-        previousCompoundFlags |= extractCompoundFlags(*simple, m_context.mode);
+        previousCompoundFlags |= extractCompoundFlags(*simple, UASheetMode);
 
     while (auto combinator = consumeCombinator(range)) {
         std::unique_ptr<CSSParserSelector> nextSelector = consumeCompoundSelector(range);
         if (!nextSelector)
-            return isDescendantCombinator(combinator) ? WTFMove(selector) : nullptr;
+            return isDescendantCombinator(combinator) ? std::move(selector) : nullptr;
         if (previousCompoundFlags & HasPseudoElementForRightmostCompound)
             return nullptr;
         CSSParserSelector* end = nextSelector.get();
-        unsigned compoundFlags = extractCompoundFlags(*end, m_context.mode);
+        unsigned compoundFlags = extractCompoundFlags(*end, UASheetMode);
         while (end->tagHistory()) {
             end = end->tagHistory();
-            compoundFlags |= extractCompoundFlags(*end, m_context.mode);
+            compoundFlags |= extractCompoundFlags(*end, UASheetMode);
         }
         end->setRelation(combinator);
         previousCompoundFlags = compoundFlags;
-        end->setTagHistory(WTFMove(selector));
+        end->setTagHistory(std::move(selector));
 
-        selector = WTFMove(nextSelector);
+        selector = std::move(nextSelector);
     }
 
     return selector;
@@ -275,7 +275,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeCompoundSelector(CS
         // FIXME: https://bugs.webkit.org/show_bug.cgi?id=161747
         // The UASheetMode check is a work-around to allow this selector in mediaControls(New).css:
         // video::-webkit-media-text-track-region-container.scrolling
-        if (m_context.mode != UASheetMode && !isSimpleSelectorValidAfterPseudoElement(*simpleSelector.get(), compoundPseudoElement)) {
+        if (!isSimpleSelectorValidAfterPseudoElement(*simpleSelector.get(), compoundPseudoElement)) {
             m_failedParsing = true;
             return nullptr;
         }
@@ -283,9 +283,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeCompoundSelector(CS
             compoundPseudoElement = simpleSelector->pseudoElementType();
 
         if (compoundSelector)
-            compoundSelector = addSimpleSelectorToCompound(WTFMove(compoundSelector), WTFMove(simpleSelector));
+            compoundSelector = addSimpleSelectorToCompound(std::move(compoundSelector), std::move(simpleSelector));
         else
-            compoundSelector = WTFMove(simpleSelector);
+            compoundSelector = std::move(simpleSelector);
     }
 
     if (!compoundSelector) {
@@ -302,7 +302,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeCompoundSelector(CS
         return selector;
     }
     prependTypeSelectorIfNeeded(namespacePrefix, elementName, compoundSelector.get());
-    return splitCompoundAtImplicitShadowCrossingCombinator(WTFMove(compoundSelector), m_context);
+    return splitCompoundAtImplicitShadowCrossingCombinator(std::move(compoundSelector), m_context);
 }
 
 std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeSimpleSelector(CSSParserTokenRange& range)
@@ -372,7 +372,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeId(CSSParserTokenRa
     // FIXME-NEWPARSER: Avoid having to do this, but the old parser does and we need
     // to be compatible for now.
     CSSParserToken token = range.consume();
-    selector->setValue(token.value().toAtomString(), m_context.mode == HTMLQuirksMode);
+    selector->setValue(token.value().toAtomString(), false);
     return selector;
 }
 
@@ -389,7 +389,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeClass(CSSParserToke
     // FIXME-NEWPARSER: Avoid having to do this, but the old parser does and we need
     // to be compatible for now.
     CSSParserToken token = range.consume();
-    selector->setValue(token.value().toAtomString(), m_context.mode == HTMLQuirksMode);
+    selector->setValue(token.value().toAtomString(), false);
 
     return selector;
 }
@@ -417,7 +417,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeAttribute(CSSParser
     std::unique_ptr<CSSParserSelector> selector = std::unique_ptr<CSSParserSelector>(new CSSParserSelector());
 
     if (block.atEnd()) {
-        selector->setAttribute(qualifiedName, m_context.isHTMLDocument, CSSSelector::CaseSensitive);
+        selector->setAttribute(qualifiedName, false, CSSSelector::CaseSensitive);
         selector->setMatch(CSSSelector::Set);
         return selector;
     }
@@ -429,7 +429,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumeAttribute(CSSParser
         return nullptr;
     selector->setValue(attributeValue.value().toAtomString());
     
-    selector->setAttribute(qualifiedName, m_context.isHTMLDocument, consumeAttributeFlags(block));
+    selector->setAttribute(qualifiedName, false, consumeAttributeFlags(block));
 
     if (!block.atEnd())
         return nullptr;
@@ -528,7 +528,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumePseudo(CSSParserTok
             *selectorList = consumeComplexSelectorList(block);
             if (!selectorList->first() || !block.atEnd())
                 return nullptr;
-            selector->setSelectorList(WTFMove(selectorList));
+            selector->setSelectorList(std::move(selectorList));
             return selector;
         }
         case CSSSelector::PseudoClassNthChild:
@@ -557,17 +557,17 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumePseudo(CSSParserTok
                 *selectorList = consumeComplexSelectorList(block);
                 if (!selectorList->first() || !block.atEnd())
                     return nullptr;
-                selector->setSelectorList(WTFMove(selectorList));
+                selector->setSelectorList(std::move(selectorList));
             }
             selector->setNth(ab.first, ab.second);
             return selector;
         }
         case CSSSelector::PseudoClassLang: {
             // FIXME: CSS Selectors Level 4 allows :lang(*-foo)
-            auto argumentList = std::make_unique<Vector<AtomString>>();
+            auto argumentList = std::make_unique<std::vector<AtomString>>();
             if (!consumeLangArgumentList(argumentList, block))
                 return nullptr;
-            selector->setLangArgumentList(WTFMove(argumentList));
+            selector->setLangArgumentList(std::move(argumentList));
             return selector;
         }
         case CSSSelector::PseudoClassMatches: {
@@ -575,7 +575,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumePseudo(CSSParserTok
             *selectorList = consumeComplexSelectorList(block);
             if (!selectorList->first() || !block.atEnd())
                 return nullptr;
-            selector->setSelectorList(WTFMove(selectorList));
+            selector->setSelectorList(std::move(selectorList));
             return selector;
         }
         case CSSSelector::PseudoClassAny:
@@ -584,7 +584,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumePseudo(CSSParserTok
             *selectorList = consumeCompoundSelectorList(block);
             if (!selectorList->first() || !block.atEnd())
                 return nullptr;
-            selector->setSelectorList(WTFMove(selectorList));
+            selector->setSelectorList(std::move(selectorList));
             return selector;
         }
 #if ENABLE(CSS_SELECTORS_LEVEL4)
@@ -612,7 +612,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumePseudo(CSSParserTok
             *selectorList = consumeCompoundSelectorList(block);
             if (!selectorList->isValid() || !block.atEnd())
                 return nullptr;
-            selector->setSelectorList(WTFMove(selectorList));
+            selector->setSelectorList(std::move(selectorList));
             return selector;
         }
 #endif
@@ -623,7 +623,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::consumePseudo(CSSParserTok
             block.consumeWhitespace();
             if (!innerSelector || !block.atEnd())
                 return nullptr;
-            selector->adoptSelectorVector(Vector<std::unique_ptr<CSSParserSelector>>::from(WTFMove(innerSelector)));
+            selector->adoptSelectorVector(std::vector<std::unique_ptr<CSSParserSelector>>::from(std::move(innerSelector)));
             return selector;
         }
         default:
@@ -714,7 +714,7 @@ bool CSSSelectorParser::consumeANPlusB(CSSParserTokenRange& range, std::pair<int
 
     // The 'n' will end up as part of an ident or dimension. For a valid <an+b>,
     // this will store a string of the form 'n', 'n-', or 'n-123'.
-    String nString;
+    std::string nString;
 
     if (token.type() == DelimiterToken && token.delimiter() == '+' && range.peek().type() == IdentToken) {
         result.first = 1;
@@ -734,7 +734,7 @@ bool CSSSelectorParser::consumeANPlusB(CSSParserTokenRange& range, std::pair<int
 
     range.consumeWhitespace();
 
-    if (nString.isEmpty() || !isASCIIAlphaCaselessEqual(nString[0], 'n'))
+    if (nString.empty() || !isASCIIAlphaCaselessEqual(nString[0], 'n'))
         return false;
     if (nString.length() > 1 && nString[1] != '-')
         return false;
@@ -783,7 +783,7 @@ const AtomString& CSSSelectorParser::determineNamespace(const AtomString& prefix
 {
     if (prefix.isNull())
         return defaultNamespace();
-    if (prefix.isEmpty())
+    if (prefix.empty())
         return emptyAtom(); // No namespace. If an element/attribute has a namespace, we won't match it.
     if (prefix == starAtom())
         return starAtom(); // We'll match any namespace.
@@ -825,7 +825,7 @@ void CSSSelectorParser::prependTypeSelectorIfNeeded(const AtomString& namespaceP
 
 std::unique_ptr<CSSParserSelector> CSSSelectorParser::addSimpleSelectorToCompound(std::unique_ptr<CSSParserSelector> compoundSelector, std::unique_ptr<CSSParserSelector> simpleSelector)
 {
-    compoundSelector->appendTagHistory(CSSSelector::Subselector, WTFMove(simpleSelector));
+    compoundSelector->appendTagHistory(CSSSelector::Subselector, std::move(simpleSelector));
     return compoundSelector;
 }
 
@@ -854,8 +854,8 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::splitCompoundAtImplicitSha
     // FIXME: https://bugs.webkit.org/show_bug.cgi?id=161747
     // We have to recur, since we have rules in media controls like video::a::b. This should not be allowed, and
     // we should remove this recursion once those rules are gone.
-    std::unique_ptr<CSSParserSelector> secondCompound = context.mode != UASheetMode ? splitAfter->releaseTagHistory() : splitCompoundAtImplicitShadowCrossingCombinator(splitAfter->releaseTagHistory(), context);
-    secondCompound->appendTagHistory(CSSSelector::ShadowDescendant, WTFMove(compoundSelector));
+    std::unique_ptr<CSSParserSelector> secondCompound = splitCompoundAtImplicitShadowCrossingCombinator(splitAfter->releaseTagHistory(), context);
+    secondCompound->appendTagHistory(CSSSelector::ShadowDescendant, std::move(compoundSelector));
     return secondCompound;
 }
 

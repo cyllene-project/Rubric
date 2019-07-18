@@ -21,8 +21,6 @@
 #include "config.h"
 #include "CSSInheritedValue.h"
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 String CSSInheritedValue::customCSSText() const

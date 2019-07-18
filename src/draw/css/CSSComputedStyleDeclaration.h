@@ -26,8 +26,6 @@
 #include "TextFlags.h"
 #include <wtf/IsoMalloc.h>
 #include <wtf/RefPtr.h>
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 class CSSFontStyleValue;
@@ -51,14 +49,14 @@ enum EUpdateLayout { DoNotUpdateLayout = false, UpdateLayout = true };
 enum AdjustPixelValuesForComputedStyle { AdjustPixelValues, DoNotAdjustPixelValues };
 
 class ComputedStyleExtractor {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     ComputedStyleExtractor(Node*, bool allowVisitedStyle = false, PseudoId = PseudoId::None);
     ComputedStyleExtractor(Element*, bool allowVisitedStyle = false, PseudoId = PseudoId::None);
 
     RefPtr<CSSValue> propertyValue(CSSPropertyID, EUpdateLayout = UpdateLayout);
     RefPtr<CSSValue> valueForPropertyInStyle(const RenderStyle&, CSSPropertyID, RenderElement* = nullptr);
-    String customPropertyText(const String& propertyName);
+    std::string customPropertyText(const String& propertyName);
     RefPtr<CSSValue> customPropertyValue(const String& propertyName);
 
     // Helper methods for HTML editing.
@@ -107,13 +105,13 @@ private:
 class CSSComputedStyleDeclaration final : public CSSStyleDeclaration {
     WTF_MAKE_ISO_ALLOCATED_EXPORT(CSSComputedStyleDeclaration, WEBCORE_EXPORT);
 public:
-    WEBCORE_EXPORT static Ref<CSSComputedStyleDeclaration> create(Element&, bool allowVisitedStyle = false, StringView pseudoElementName = StringView { });
+    static Ref<CSSComputedStyleDeclaration> create(Element&, bool allowVisitedStyle = false, StringView pseudoElementName = StringView { });
     virtual ~CSSComputedStyleDeclaration();
 
-    WEBCORE_EXPORT void ref() final;
-    WEBCORE_EXPORT void deref() final;
+    void ref() final;
+    void deref() final;
 
-    String getPropertyValue(CSSPropertyID) const;
+    std::string getPropertyValue(CSSPropertyID) const;
 
 private:
     CSSComputedStyleDeclaration(Element&, bool allowVisitedStyle, StringView);
@@ -121,18 +119,18 @@ private:
     // CSSOM functions. Don't make these public.
     CSSRule* parentRule() const final;
     unsigned length() const final;
-    String item(unsigned index) const final;
+    std::string item(unsigned index) const final;
     RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const String& propertyName) final;
-    String getPropertyValue(const String& propertyName) final;
-    String getPropertyPriority(const String& propertyName) final;
-    String getPropertyShorthand(const String& propertyName) final;
+    std::string getPropertyValue(const String& propertyName) final;
+    std::string getPropertyPriority(const String& propertyName) final;
+    std::string getPropertyShorthand(const String& propertyName) final;
     bool isPropertyImplicit(const String& propertyName) final;
     ExceptionOr<void> setProperty(const String& propertyName, const String& value, const String& priority) final;
     ExceptionOr<String> removeProperty(const String& propertyName) final;
-    String cssText() const final;
+    std::string cssText() const final;
     ExceptionOr<void> setCssText(const String&) final;
     RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) final;
-    String getPropertyValueInternal(CSSPropertyID) final;
+    std::string getPropertyValueInternal(CSSPropertyID) final;
     ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const String& value, bool important) final;
     Ref<MutableStyleProperties> copyProperties() const final;
 

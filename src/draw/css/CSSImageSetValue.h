@@ -26,9 +26,9 @@
 #pragma once
 
 #include "CSSValueList.h"
-#include "CachedResourceHandle.h"
-#include "ResourceLoaderOptions.h"
-#include <wtf/Function.h>
+//#include "CachedResourceHandle.h"
+//#include "ResourceLoaderOptions.h"
+
 
 namespace WebCore {
 
@@ -47,7 +47,7 @@ public:
     std::pair<CachedImage*, float>  loadBestFitImage(CachedResourceLoader&, const ResourceLoaderOptions&);
     CachedImage* cachedImage() const { return m_cachedImage.get(); }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     struct ImageWithScale {
         URL imageURL;

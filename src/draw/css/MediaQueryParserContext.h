@@ -36,7 +36,7 @@ struct MediaQueryParserContext {
 public:
     MediaQueryParserContext() { }
     MediaQueryParserContext(const CSSParserContext&);
-    WEBCORE_EXPORT MediaQueryParserContext(const Document&);
+    MediaQueryParserContext(const Document&);
 
     bool useSystemAppearance { false };
     CSSParserMode mode { HTMLStandardMode };

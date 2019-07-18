@@ -34,8 +34,6 @@
 #include "DOMCSSNamespace.h"
 #include "Document.h"
 #include "StyleBuilderConverter.h"
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 ExceptionOr<void> DOMCSSRegisterCustomProperty::registerProperty(Document& document, const DOMCSSCustomPropertyDescriptor& descriptor)

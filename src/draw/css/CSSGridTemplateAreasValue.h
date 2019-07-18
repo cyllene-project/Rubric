@@ -32,7 +32,7 @@
 #pragma once
 
 #include "CSSValue.h"
-#include "GridArea.h"
+//#include "GridArea.h"
 
 namespace WebCore {
 
@@ -45,7 +45,7 @@ public:
 
     ~CSSGridTemplateAreasValue() = default;
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     const NamedGridAreaMap& gridAreaMap() const { return m_gridAreaMap; }
     size_t rowCount() const { return m_rowCount; }

@@ -44,9 +44,9 @@ public:
 
     virtual ~CSSSupportsRule() = default;
 
-    String cssText() const final;
+    std::string cssText() const final;
 
-    String conditionText() const;
+    std::string conditionText() const;
 
 private:
     CSSSupportsRule(StyleRuleSupports&, CSSStyleSheet*);

@@ -34,15 +34,15 @@ public:
 
     virtual ~CSSImportRule();
 
-    WEBCORE_EXPORT String href() const;
-    WEBCORE_EXPORT MediaList& media() const;
-    WEBCORE_EXPORT CSSStyleSheet* styleSheet() const;
+    std::string href() const;
+    MediaList& media() const;
+    CSSStyleSheet* styleSheet() const;
 
 private:
     CSSImportRule(StyleRuleImport&, CSSStyleSheet*);
 
     CSSRule::Type type() const final { return IMPORT_RULE; }
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
     Ref<StyleRuleImport> m_importRule;

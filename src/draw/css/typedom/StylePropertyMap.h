@@ -29,8 +29,6 @@
 
 #include "StylePropertyMapReadOnly.h"
 #include <wtf/HashMap.h>
-#include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 

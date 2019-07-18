@@ -26,8 +26,7 @@
 #pragma once
 
 #include "CSSParserContext.h"
-#include <wtf/RefCounted.h>
-#include <wtf/WeakPtr.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -39,31 +38,29 @@ class StyleSheetContents;
 
 class CSSDeferredParser : public RefCounted<CSSDeferredParser> {
 public:
-    static Ref<CSSDeferredParser> create(const CSSParserContext& parserContext, const String& sheetText, StyleSheetContents& styleSheet)
+    static Ref<CSSDeferredParser> create(const CSSParserContext& parserContext, const std::string& sheetText, StyleSheetContents& styleSheet)
     {
         return adoptRef(*new CSSDeferredParser(parserContext, sheetText, styleSheet));
     }
-
-    CSSParserMode mode() const { return m_context.mode; }
 
     const CSSParserContext& context() const { return m_context; }
     StyleSheetContents* styleSheet() const;
 
     Ref<ImmutableStyleProperties> parseDeclaration(const CSSParserTokenRange&);
-    void parseRuleList(const CSSParserTokenRange&, Vector<RefPtr<StyleRuleBase>>&);
+    void parseRuleList(const CSSParserTokenRange&, std::vector<std::shared_ptr<StyleRuleBase>>&);
     void parseKeyframeList(const CSSParserTokenRange&, StyleRuleKeyframes&);
 
-    void adoptTokenizerEscapedStrings(Vector<String>&& strings) { m_escapedStrings = WTFMove(strings); }
+    void adoptTokenizerEscapedStrings(std::vector<String>&& strings) { m_escapedStrings = std::move(strings); }
 
 private:
-    CSSDeferredParser(const CSSParserContext&, const String&, StyleSheetContents&);
+    CSSDeferredParser(const CSSParserContext&, const std::string&, StyleSheetContents&);
     
-    Vector<String> m_escapedStrings;
+    std::vector<String> m_escapedStrings;
     CSSParserContext m_context;
     
-    String m_sheetText;
+    std::string m_sheetText;
 
-    WeakPtr<StyleSheetContents> m_styleSheet;
+    std::weak_ptr<StyleSheetContents> m_styleSheet;
 };
 
 } // namespace WebCore

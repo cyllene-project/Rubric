@@ -86,7 +86,7 @@ Ref<CSSValueList> CSSValueList::copy()
 String CSSValueList::customCSSText() const
 {
     StringBuilder result;
-    String separator;
+    std::string separator;
     switch (m_valueListSeparator) {
     case SpaceSeparator:
         separator = " "_s;

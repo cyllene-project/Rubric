@@ -32,7 +32,7 @@
 #include "CSSParserMode.h"
 #include "CSSPropertyNames.h"
 #include "CSSValueKeywords.h"
-#include <wtf/text/WTFString.h>
+
 
 namespace WebCore {
 
@@ -44,13 +44,13 @@ class CSSParserFastPaths {
 public:
     // Parses simple values like '10px' or 'green', but makes no guarantees
     // about handling any property completely.
-    static RefPtr<CSSValue> maybeParseValue(CSSPropertyID, const String&, const CSSParserContext&);
+    static std::shared_ptr<CSSValue> maybeParseValue(CSSPropertyID, const std::string&, const CSSParserContext&);
 
     // Properties handled here shouldn't be explicitly handled in CSSPropertyParser
     static bool isKeywordPropertyID(CSSPropertyID);
     static bool isValidKeywordPropertyAndValue(CSSPropertyID, CSSValueID, const CSSParserContext&);
 
-    static RefPtr<CSSValue> parseColor(const String&, CSSParserMode);
+    static std::shared_ptr<CSSValue> parseColor(const std::string&, CSSParserMode);
 };
 
 } // namespace WebCore

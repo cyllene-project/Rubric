@@ -28,7 +28,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <wtf/text/StringView.h>
 
 namespace WebCore {
 
@@ -49,6 +48,6 @@ enum CSSAtRuleID {
     CSSAtRuleApply = 11,
 };
 
-CSSAtRuleID cssAtRuleID(StringView name);
+CSSAtRuleID cssAtRuleID(std::string_view name);
 
 } // namespace WebCore

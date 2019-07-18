@@ -31,7 +31,7 @@
 
 #include "CSSParserToken.h"
 #include "CSSParserTokenRange.h"
-#include <wtf/text/WTFString.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -69,10 +69,10 @@ private:
     bool calculate();
     void appendNumber(const CSSParserToken&);
     bool appendLength(const CSSParserToken&);
-    bool handleOperator(Vector<CSSParserToken>& stack, const CSSParserToken&);
+    bool handleOperator(std::vector<CSSParserToken>& stack, const CSSParserToken&);
     void appendOperator(const CSSParserToken&);
 
-    Vector<SizesCalcValue> m_valueList;
+    std::vector<SizesCalcValue> m_valueList;
     bool m_isValid;
     float m_result;
     const Document& m_document;

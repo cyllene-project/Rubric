@@ -411,7 +411,7 @@ static bool evaluateResolution(CSSValue* value, Frame& frame, MediaFeaturePrefix
     // this method only got called if this media type matches the one defined
     // in the query. Thus, if if the document's media type is "print", the
     // media type of the query will either be "print" or "all".
-    String mediaType = view->mediaType();
+    std::string mediaType = view->mediaType();
     if (equalLettersIgnoringASCIICase(mediaType, "screen"))
         deviceScaleFactor = frame.page() ? frame.page()->deviceScaleFactor() : 1;
     else if (equalLettersIgnoringASCIICase(mediaType, "print")) {

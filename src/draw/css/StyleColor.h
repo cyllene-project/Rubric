@@ -32,8 +32,7 @@
 #pragma once
 
 #include "CSSValueKeywords.h"
-#include "Color.h"
-#include <wtf/OptionSet.h>
+//#include "Color.h"
 
 namespace WebCore {
 

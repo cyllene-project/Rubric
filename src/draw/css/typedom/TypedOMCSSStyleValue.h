@@ -28,8 +28,6 @@
 #if ENABLE(CSS_TYPED_OM)
 
 #include "ScriptWrappable.h"
-#include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 

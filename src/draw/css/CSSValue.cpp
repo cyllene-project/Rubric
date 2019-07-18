@@ -163,8 +163,7 @@ bool CSSValue::equals(const CSSValue& other) const
             return compareCSSValues<CSSFontFaceSrcValue>(*this, other);
         case FontFeatureClass:
             return compareCSSValues<CSSFontFeatureValue>(*this, other);
-#if ENABLE(VARIATION_FONTS)
-        case FontVariationClass:
+case FontVariationClass:
             return compareCSSValues<CSSFontVariationValue>(*this, other);
 #endif
         case FunctionClass:
@@ -265,8 +264,7 @@ String CSSValue::cssText() const
         return downcast<CSSFontFaceSrcValue>(*this).customCSSText();
     case FontFeatureClass:
         return downcast<CSSFontFeatureValue>(*this).customCSSText();
-#if ENABLE(VARIATION_FONTS)
-    case FontVariationClass:
+case FontVariationClass:
         return downcast<CSSFontVariationValue>(*this).customCSSText();
 #endif
     case FunctionClass:
@@ -366,8 +364,7 @@ void CSSValue::destroy()
     case FontFeatureClass:
         delete downcast<CSSFontFeatureValue>(this);
         return;
-#if ENABLE(VARIATION_FONTS)
-    case FontVariationClass:
+case FontVariationClass:
         delete downcast<CSSFontVariationValue>(this);
         return;
 #endif

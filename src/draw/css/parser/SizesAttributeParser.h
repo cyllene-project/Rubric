@@ -31,7 +31,6 @@
 
 #include "CSSParserTokenRange.h"
 #include "CSSPrimitiveValue.h"
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
@@ -41,7 +40,7 @@ class MediaQuerySet;
     
 class SizesAttributeParser {
 public:
-    SizesAttributeParser(const String&, const Document&);
+    SizesAttributeParser(const std::string&, const Document&);
 
     float length();
 
@@ -56,7 +55,7 @@ private:
     unsigned effectiveSizeDefaultValue();
 
     const Document& m_document;
-    RefPtr<MediaQuerySet> m_mediaCondition;
+    std::shared_ptr<MediaQuerySet> m_mediaCondition;
     float m_length;
     bool m_lengthWasSet;
     bool m_isValid;

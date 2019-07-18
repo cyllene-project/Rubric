@@ -22,22 +22,16 @@
 #pragma once
 
 #include "RuleFeature.h"
-#include "SelectorCompiler.h"
+//#include "SelectorCompiler.h"
 #include "SelectorFilter.h"
 #include "StyleRule.h"
-#include <wtf/Forward.h>
-#include <wtf/HashMap.h>
-#include <wtf/text/AtomString.h>
-#include <wtf/text/AtomStringHash.h>
 
 namespace WebCore {
 
 enum PropertyWhitelistType {
     PropertyWhitelistNone   = 0,
     PropertyWhitelistMarker,
-#if ENABLE(VIDEO_TRACK)
     PropertyWhitelistCue
-#endif
 };
 
 class CSSSelector;
@@ -101,7 +95,8 @@ struct SameSizeAsRuleData {
 COMPILE_ASSERT(sizeof(RuleData) == sizeof(SameSizeAsRuleData), RuleData_should_stay_small);
 
 class RuleSet {
-    WTF_MAKE_NONCOPYABLE(RuleSet); WTF_MAKE_FAST_ALLOCATED;
+    RuleSet(const RuleSet&) = delete;
+        RuleSet& operator=(const RuleSet&) = delete;
 public:
     struct RuleSetSelectorPair {
         RuleSetSelectorPair(const CSSSelector* selector, std::unique_ptr<RuleSet> ruleSet) : selector(selector), ruleSet(WTFMove(ruleSet)) { }
@@ -133,9 +128,7 @@ public:
     const RuleDataVector* tagRules(const AtomString& key, bool isHTMLName) const;
     const RuleDataVector* shadowPseudoElementRules(const AtomString& key) const { return m_shadowPseudoElementRules.get(key); }
     const RuleDataVector* linkPseudoClassRules() const { return &m_linkPseudoClassRules; }
-#if ENABLE(VIDEO_TRACK)
     const RuleDataVector* cuePseudoRules() const { return &m_cuePseudoRules; }
-#endif
     const RuleDataVector& hostPseudoClassRules() const { return m_hostPseudoClassRules; }
     const RuleDataVector& slottedPseudoElementRules() const { return m_slottedPseudoElementRules; }
     const RuleDataVector* focusPseudoClassRules() const { return &m_focusPseudoClassRules; }
@@ -157,9 +150,7 @@ private:
     AtomRuleMap m_tagLowercaseLocalNameRules;
     AtomRuleMap m_shadowPseudoElementRules;
     RuleDataVector m_linkPseudoClassRules;
-#if ENABLE(VIDEO_TRACK)
     RuleDataVector m_cuePseudoRules;
-#endif
     RuleDataVector m_hostPseudoClassRules;
     RuleDataVector m_slottedPseudoElementRules;
     RuleDataVector m_focusPseudoClassRules;

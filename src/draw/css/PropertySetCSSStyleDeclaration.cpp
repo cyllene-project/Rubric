@@ -42,7 +42,8 @@ WTF_MAKE_ISO_ALLOCATED_IMPL(StyleRuleCSSStyleDeclaration);
 WTF_MAKE_ISO_ALLOCATED_IMPL(InlineCSSStyleDeclaration);
 
 class StyleAttributeMutationScope {
-    WTF_MAKE_NONCOPYABLE(StyleAttributeMutationScope);
+    StyleAttributeMutationScope(const StyleAttributeMutationScope&) = delete;
+        StyleAttributeMutationScope& operator=(const StyleAttributeMutationScope&) = delete;
 public:
     StyleAttributeMutationScope(PropertySetCSSStyleDeclaration* decl)
     {
@@ -282,7 +283,7 @@ ExceptionOr<String> PropertySetCSSStyleDeclaration::removeProperty(const String&
     if (!willMutate())
         return String();
 
-    String result;
+    std::string result;
     bool changed = propertyID != CSSPropertyCustom ? m_propertySet->removeProperty(propertyID, &result) : m_propertySet->removeCustomProperty(propertyName, &result);
 
     didMutate(changed ? PropertyChanged : NoChanges);
@@ -299,7 +300,7 @@ RefPtr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValueInternal(CSS
 
 String PropertySetCSSStyleDeclaration::getPropertyValueInternal(CSSPropertyID propertyID)
 {
-    String value = m_propertySet->getPropertyValue(propertyID);
+    std::string value = m_propertySet->getPropertyValue(propertyID);
     if (!value.isEmpty())
         return value;
 

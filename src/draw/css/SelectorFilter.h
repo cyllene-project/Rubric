@@ -28,10 +28,10 @@
 
 #pragma once
 
-#include "Element.h"
+//#include "Element.h"
 #include <memory>
-#include <wtf/BloomFilter.h>
-#include <wtf/Vector.h>
+//#include <wtf/BloomFilter.h>
+#include <vector>
 
 namespace WebCore {
 

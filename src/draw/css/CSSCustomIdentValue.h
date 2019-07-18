@@ -47,11 +47,11 @@ public:
         return adoptRef(*new CSSCustomIdentValue(id));
     }
 
-    String value() const { ASSERT(!isKnownPropertyID()); return m_string; }
+    std::string value() const { ASSERT(!isKnownPropertyID()); return m_string; }
     bool isKnownPropertyID() const { return m_propertyId != CSSPropertyInvalid; }
     CSSPropertyID valueAsPropertyID() const { ASSERT(isKnownPropertyID()); return m_propertyId; }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSCustomIdentValue& other) const
     {
@@ -63,7 +63,7 @@ private:
     CSSCustomIdentValue(CSSPropertyID);
 
     // FIXME: Change this to an AtomString.
-    String m_string;
+    std::string m_string;
     CSSPropertyID m_propertyId;
 };
 

@@ -22,8 +22,7 @@
 #pragma once
 
 #include "CSSPropertyNames.h"
-#include <wtf/FastMalloc.h>
-#include <wtf/Noncopyable.h>
+
 
 namespace WebCore {
 
@@ -37,8 +36,9 @@ class StyleImage;
 class StyleResolver;
 
 class CSSToStyleMap {
-    WTF_MAKE_NONCOPYABLE(CSSToStyleMap);
-    WTF_MAKE_FAST_ALLOCATED;
+    CSSToStyleMap(const CSSToStyleMap&) = delete;
+        CSSToStyleMap& operator=(const CSSToStyleMap&) = delete;
+
 
 public:
     CSSToStyleMap(StyleResolver*);

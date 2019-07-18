@@ -21,7 +21,8 @@
 #pragma once
 
 #include "CSSSelector.h"
-#include <wtf/text/AtomStringHash.h>
+#include <vector>
+
 
 namespace WebCore {
 
@@ -33,7 +34,7 @@ enum class CSSParserSelectorCombinator {
 };
 
 class CSSParserSelector {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     static std::unique_ptr<CSSParserSelector> parsePseudoClassSelector(StringView);
     static std::unique_ptr<CSSParserSelector> parsePseudoElementSelector(StringView);
@@ -43,7 +44,7 @@ public:
     explicit CSSParserSelector(const QualifiedName&);
     ~CSSParserSelector();
 
-    std::unique_ptr<CSSSelector> releaseSelector() { return WTFMove(m_selector); }
+    std::unique_ptr<CSSSelector> releaseSelector() { return std::move(m_selector); }
 
     void setValue(const AtomString& value, bool matchLowerCase = false) { m_selector->setValue(value, matchLowerCase); }
 
@@ -61,8 +62,8 @@ public:
     
     void setPseudoElementType(CSSSelector::PseudoElementType type) { m_selector->setPseudoElementType(type); }
 
-    void adoptSelectorVector(Vector<std::unique_ptr<CSSParserSelector>>&&);
-    void setLangArgumentList(std::unique_ptr<Vector<AtomString>>);
+    void adoptSelectorVector(std::vector<std::unique_ptr<CSSParserSelector>>&&);
+    void setLangArgumentList(std::unique_ptr<std::vector<AtomString>>);
     void setSelectorList(std::unique_ptr<CSSSelectorList>);
 
     CSSSelector::PseudoClassType pseudoClassType() const { return m_selector->pseudoClassType(); }
@@ -82,7 +83,7 @@ public:
     bool needsImplicitShadowCombinatorForMatching() const;
 
     CSSParserSelector* tagHistory() const { return m_tagHistory.get(); }
-    void setTagHistory(std::unique_ptr<CSSParserSelector> selector) { m_tagHistory = WTFMove(selector); }
+    void setTagHistory(std::unique_ptr<CSSParserSelector> selector) { m_tagHistory = std::move(selector); }
     void clearTagHistory() { m_tagHistory.reset(); }
     void insertTagHistory(CSSSelector::RelationType before, std::unique_ptr<CSSParserSelector>, CSSSelector::RelationType after);
     void appendTagHistory(CSSSelector::RelationType, std::unique_ptr<CSSParserSelector>);
@@ -104,19 +105,14 @@ inline bool CSSParserSelector::needsImplicitShadowCombinatorForMatching() const
 {
     return match() == CSSSelector::PseudoElement
         && (pseudoElementType() == CSSSelector::PseudoElementWebKitCustom
-#if ENABLE(VIDEO_TRACK)
             || pseudoElementType() == CSSSelector::PseudoElementCue
-#endif
             || pseudoElementType() == CSSSelector::PseudoElementWebKitCustomLegacyPrefixed);
 }
 
 inline bool CSSParserSelector::isPseudoElementCueFunction() const
 {
-#if ENABLE(VIDEO_TRACK)
     return m_selector->match() == CSSSelector::PseudoElement && m_selector->pseudoElementType() == CSSSelector::PseudoElementCue;
-#else
     return false;
-#endif
 }
 
 }

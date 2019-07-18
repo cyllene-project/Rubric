@@ -28,8 +28,6 @@
 #if ENABLE(CSS_TYPED_OM)
 
 #include "TypedOMCSSStyleValue.h"
-#include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
@@ -41,7 +39,7 @@ public:
         return adoptRef(*new TypedOMCSSUnparsedValue(serializedValue));
     }
 
-    String toString() final { return m_serializedValue; }
+    std::string toString() final { return m_serializedValue; }
 
 private:
     explicit TypedOMCSSUnparsedValue(const String& serializedValue)
@@ -51,7 +49,7 @@ private:
 
     bool isUnparsedValue() final { return true; }
 
-    String m_serializedValue;
+    std::string m_serializedValue;
 };
 
 } // namespace WebCore

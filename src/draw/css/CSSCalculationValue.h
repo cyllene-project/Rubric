@@ -32,7 +32,7 @@
 
 #include "CSSPrimitiveValue.h"
 #include "CSSPropertyNames.h"
-#include "CalculationValue.h"
+//#include "CalculationValue.h"
 
 namespace WebCore {
 
@@ -107,7 +107,7 @@ public:
     void collectDirectComputationalDependencies(HashSet<CSSPropertyID>&) const;
     void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>&) const;
 
-    String customCSSText() const;
+    std::string customCSSText() const;
     bool equals(const CSSCalcValue&) const;
 
 private:

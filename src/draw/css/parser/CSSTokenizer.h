@@ -32,8 +32,8 @@
 #include "CSSParserToken.h"
 #include "CSSTokenizerInputStream.h"
 #include <climits>
-#include <wtf/text/StringView.h>
-#include <wtf/text/WTFString.h>
+#include <vector>
+#include <string>
 
 namespace WebCore {
 
@@ -42,16 +42,17 @@ class CSSParserObserverWrapper;
 class CSSParserTokenRange;
 
 class CSSTokenizer {
-    WTF_MAKE_NONCOPYABLE(CSSTokenizer);
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
-    CSSTokenizer(const String&);
-    CSSTokenizer(const String&, CSSParserObserverWrapper&); // For the inspector
+    explicit CSSTokenizer(const std::string&);
+    CSSTokenizer(const std::string&, CSSParserObserverWrapper&); // For the inspector
+    CSSTokenizer(const CSSTokenizer&) = delete;
+    CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 
     CSSParserTokenRange tokenRange() const;
     unsigned tokenCount();
 
-    Vector<String>&& escapedStringsForAdoption() { return WTFMove(m_stringPool); }
+    std::vector<std::string>&& escapedStringsForAdoption() { return std::move(m_stringPool); }
 
 private:
     CSSParserToken nextToken();
@@ -71,7 +72,7 @@ private:
     void consumeUntilCommentEndFound();
 
     bool consumeIfNext(UChar);
-    StringView consumeName();
+    std::string_view consumeName();
     UChar32 consumeEscape();
 
     bool nextTwoCharsAreValidEscape();
@@ -112,17 +113,18 @@ private:
     CSSParserToken stringStart(UChar);
     CSSParserToken endOfFile(UChar);
 
-    StringView registerString(const String&);
+    std::string_view registerString(const std::string&);
 
     using CodePoint = CSSParserToken (CSSTokenizer::*)(UChar);
     static const CodePoint codePoints[];
 
-    Vector<CSSParserTokenType, 8> m_blockStack;
+    std::vector<CSSParserTokenType> m_blockStack;
+
     CSSTokenizerInputStream m_input;
     
-    Vector<CSSParserToken, 32> m_tokens;
+    std::vector<CSSParserToken> m_tokens;
     // We only allocate strings when escapes are used.
-    Vector<String> m_stringPool;
+    std::vector<std::string> m_stringPool;
 };
 
 } // namespace WebCore

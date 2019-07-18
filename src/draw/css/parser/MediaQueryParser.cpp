@@ -27,27 +27,24 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "config.h"
 #include "MediaQueryParser.h"
-
 #include "CSSTokenizer.h"
 #include "MediaList.h"
 #include "MediaQueryParserContext.h"
-#include <wtf/Vector.h>
 
 namespace WebCore {
 
-RefPtr<MediaQuerySet> MediaQueryParser::parseMediaQuerySet(const String& queryString, MediaQueryParserContext context)
+std::shared_ptr<MediaQuerySet> MediaQueryParser::parseMediaQuerySet(const std::string& queryString, MediaQueryParserContext context)
 {
     return parseMediaQuerySet(CSSTokenizer(queryString).tokenRange(), context);
 }
 
-RefPtr<MediaQuerySet> MediaQueryParser::parseMediaQuerySet(CSSParserTokenRange range, MediaQueryParserContext context)
+std::shared_ptr<MediaQuerySet> MediaQueryParser::parseMediaQuerySet(CSSParserTokenRange range, MediaQueryParserContext context)
 {
     return MediaQueryParser(MediaQuerySetParser, context).parseInternal(range);
 }
 
-RefPtr<MediaQuerySet> MediaQueryParser::parseMediaCondition(CSSParserTokenRange range, MediaQueryParserContext context)
+std::shared_ptr<MediaQuerySet> MediaQueryParser::parseMediaCondition(CSSParserTokenRange range, MediaQueryParserContext context)
 {
     return MediaQueryParser(MediaConditionParser, context).parseInternal(range);
 }
@@ -141,9 +138,9 @@ void MediaQueryParser::commitMediaQuery()
     // FIXME-NEWPARSER: Convoluted and awful, but we can't change the MediaQuerySet yet because of the
     // old parser.
     static const NeverDestroyed<String> defaultMediaType { "all"_s };
-    MediaQuery mediaQuery { m_mediaQueryData.restrictor(), m_mediaQueryData.mediaType().valueOr(defaultMediaType), WTFMove(m_mediaQueryData.expressions()) };
+    MediaQuery mediaQuery { m_mediaQueryData.restrictor(), m_mediaQueryData.mediaType().valueOr(defaultMediaType), std::move(m_mediaQueryData.expressions()) };
     m_mediaQueryData.clear();
-    m_querySet->addMediaQuery(WTFMove(mediaQuery));
+    m_querySet->addMediaQuery(std::move(mediaQuery));
 }
 
 void MediaQueryParser::readAnd(CSSParserTokenType type, const CSSParserToken& token, CSSParserTokenRange& /*range*/)
@@ -221,8 +218,8 @@ void MediaQueryParser::skipUntilComma(CSSParserTokenType type, const CSSParserTo
     if ((type == CommaToken && !m_blockWatcher.blockLevel()) || type == EOFToken) {
         m_state = ReadRestrictor;
         m_mediaQueryData.clear();
-        MediaQuery query = MediaQuery(MediaQuery::Not, "all", Vector<MediaQueryExpression>());
-        m_querySet->addMediaQuery(WTFMove(query));
+        MediaQuery query = MediaQuery(MediaQuery::Not, "all", std::vector<MediaQueryExpression>());
+        m_querySet->addMediaQuery(std::move(query));
     }
 }
 
@@ -257,7 +254,7 @@ void MediaQueryParser::processToken(const CSSParserToken& token, CSSParserTokenR
 }
 
 // The state machine loop
-RefPtr<MediaQuerySet> MediaQueryParser::parseInternal(CSSParserTokenRange range)
+std::shared_ptr<MediaQuerySet> MediaQueryParser::parseInternal(CSSParserTokenRange range)
 {
     while (!range.atEnd())
         processToken(range.peek(), range);
@@ -267,8 +264,8 @@ RefPtr<MediaQuerySet> MediaQueryParser::parseInternal(CSSParserTokenRange range)
         processToken(CSSParserToken(EOFToken), range);
 
     if (m_state != ReadAnd && m_state != ReadRestrictor && m_state != Done && m_state != ReadMediaNot) {
-        MediaQuery query = MediaQuery(MediaQuery::Not, "all", Vector<MediaQueryExpression>());
-        m_querySet->addMediaQuery(WTFMove(query));
+        MediaQuery query = MediaQuery(MediaQuery::Not, "all", std::vector<MediaQueryExpression>());
+        m_querySet->addMediaQuery(std::move(query));
     } else if (m_mediaQueryData.currentMediaQueryChanged())
         commitMediaQuery();
 

@@ -35,8 +35,6 @@
 #include "CSSPropertyParser.h"
 #include "StyleProperties.h"
 #include <wtf/text/StringBuilder.h>
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 static String valueWithoutImportant(const String& value)
@@ -44,7 +42,7 @@ static String valueWithoutImportant(const String& value)
     if (!value.endsWithIgnoringASCIICase("important"))
         return value;
 
-    String newValue = value;
+    std::string newValue = value;
     int bangIndex = newValue.length() - 9 - 1;
     if (newValue[bangIndex] == ' ')
         bangIndex--;
@@ -63,7 +61,7 @@ bool DOMCSSNamespace::supports(Document& document, const String& property, const
     // CSSParser::parseValue() won't work correctly if !important is present,
     // so just get rid of it. It doesn't matter to supports() if it's actually
     // there or not, provided how it's specified in the value is correct.
-    String normalizedValue = value.stripWhiteSpace().simplifyWhiteSpace();
+    std::string normalizedValue = value.stripWhiteSpace().simplifyWhiteSpace();
     normalizedValue = valueWithoutImportant(normalizedValue);
 
     if (normalizedValue.isEmpty())

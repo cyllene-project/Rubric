@@ -32,8 +32,6 @@
 
 #include "CSSMarkup.h"
 #include <wtf/text/StringBuilder.h>
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 CSSCustomIdentValue::CSSCustomIdentValue(const String& str)

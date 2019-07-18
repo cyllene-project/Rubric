@@ -39,7 +39,7 @@ CSSBorderImageSliceValue::CSSBorderImageSliceValue(RefPtr<CSSPrimitiveValue>&& s
 String CSSBorderImageSliceValue::customCSSText() const
 {
     // Dump the slices first.
-    String text = m_slices->cssText();
+    std::string text = m_slices->cssText();
 
     // Now the fill keywords if it is present.
     if (m_fill)

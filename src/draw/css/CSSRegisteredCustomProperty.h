@@ -25,14 +25,11 @@
 
 #pragma once
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 class CSSCustomPropertyValue;
 
 struct CSSRegisteredCustomProperty {
-    WTF_MAKE_STRUCT_FAST_ALLOCATED;
 
     const String name;
     const String syntax;

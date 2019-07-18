@@ -21,9 +21,9 @@
 #pragma once
 
 #include "CSSValue.h"
-#include "IntPoint.h"
-#include "ResourceLoaderOptions.h"
-#include <wtf/HashSet.h>
+//#include "IntPoint.h"
+//#include "ResourceLoaderOptions.h"
+
 
 namespace WebCore {
 
@@ -54,7 +54,7 @@ public:
 
     const URL& imageURL() const { return m_originalURL; }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     std::pair<CachedImage*, float> loadImage(CachedResourceLoader&, const ResourceLoaderOptions&);
 

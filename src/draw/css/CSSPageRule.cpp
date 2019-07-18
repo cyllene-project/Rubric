@@ -58,7 +58,7 @@ String CSSPageRule::selectorText() const
     text.appendLiteral("@page");
     const CSSSelector* selector = m_pageRule->selector();
     if (selector) {
-        String pageSpecification = selector->selectorText();
+        std::string pageSpecification = selector->selectorText();
         if (!pageSpecification.isEmpty() && pageSpecification != starAtom()) {
             text.append(' ');
             text.append(pageSpecification);
@@ -85,7 +85,7 @@ String CSSPageRule::cssText() const
     StringBuilder result;
     result.append(selectorText());
     result.appendLiteral(" { ");
-    String decls = m_pageRule->properties().asText();
+    std::string decls = m_pageRule->properties().asText();
     result.append(decls);
     if (!decls.isEmpty())
         result.append(' ');

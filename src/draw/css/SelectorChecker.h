@@ -28,8 +28,8 @@
 #pragma once
 
 #include "CSSSelector.h"
-#include "Element.h"
-#include "StyleRelations.h"
+//#include "Element.h"
+//#include "StyleRelations.h"
 
 namespace WebCore {
 
@@ -39,7 +39,8 @@ class RenderScrollbar;
 class RenderStyle;
 
 class SelectorChecker {
-    WTF_MAKE_NONCOPYABLE(SelectorChecker);
+    SelectorChecker(const SelectorChecker&) = delete;
+        SelectorChecker& operator=(const SelectorChecker&) = delete;
     enum class Match { SelectorMatches, SelectorFailsLocally, SelectorFailsAllSiblings, SelectorFailsCompletely };
 
     enum class MatchType { VirtualPseudoElementOnly, Element };

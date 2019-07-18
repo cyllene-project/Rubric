@@ -25,10 +25,8 @@
 
 #pragma once
 
-#if ENABLE(VARIATION_FONTS)
-
 #include "CSSValue.h"
-#include "FontTaggedSettings.h"
+//#include "FontTaggedSettings.h"
 
 namespace WebCore {
 
@@ -41,7 +39,7 @@ public:
 
     const FontTag& tag() const { return m_tag; }
     float value() const { return m_value; }
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSFontVariationValue&) const;
 
@@ -56,4 +54,3 @@ private:
 
 SPECIALIZE_TYPE_TRAITS_CSS_VALUE(CSSFontVariationValue, isFontVariationValue())
 
-#endif // ENABLE(VARIATION_FONTS)

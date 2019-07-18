@@ -35,10 +35,10 @@ public:
 
     virtual ~CSSStyleRule();
 
-    WEBCORE_EXPORT String selectorText() const;
-    WEBCORE_EXPORT void setSelectorText(const String&);
+    std::string selectorText() const;
+    void setSelectorText(const String&);
 
-    WEBCORE_EXPORT CSSStyleDeclaration& style();
+    CSSStyleDeclaration& style();
 
     // FIXME: Not CSSOM. Remove.
     StyleRule& styleRule() const { return m_styleRule.get(); }
@@ -47,10 +47,10 @@ private:
     CSSStyleRule(StyleRule&, CSSStyleSheet*);
 
     CSSRule::Type type() const final { return STYLE_RULE; }
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    String generateSelectorText() const;
+    std::string generateSelectorText() const;
 
     Ref<StyleRule> m_styleRule;
     RefPtr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;

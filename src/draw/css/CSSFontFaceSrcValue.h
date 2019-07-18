@@ -28,8 +28,6 @@
 #include "CSSValue.h"
 #include "CachedResourceHandle.h"
 #include "ResourceLoaderOptions.h"
-#include <wtf/Function.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
@@ -64,7 +62,7 @@ public:
     void setSVGFontFaceElement(SVGFontFaceElement* element) { m_svgFontFaceElement = element; }
 #endif
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
 
@@ -84,8 +82,8 @@ private:
     {
     }
 
-    String m_resource;
-    String m_format;
+    std::string m_resource;
+    std::string m_format;
     bool m_isLocal;
     LoadedFromOpaqueSource m_loadedFromOpaqueSource { LoadedFromOpaqueSource::No };
 

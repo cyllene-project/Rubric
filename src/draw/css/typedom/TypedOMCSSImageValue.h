@@ -31,10 +31,8 @@
 #include "ImageBitmap.h"
 #include "RenderElement.h"
 #include "TypedOMCSSStyleValue.h"
-#include <wtf/RefCounted.h>
-#include <wtf/text/StringConcatenateNumbers.h>
-#include <wtf/text/WTFString.h>
 
+#include <wtf/text/StringConcatenateNumbers.h>
 namespace WebCore {
 
 class TypedOMCSSImageValue final : public TypedOMCSSStyleValue {
@@ -45,7 +43,7 @@ public:
         return adoptRef(*new TypedOMCSSImageValue(cssValue, document));
     }
 
-    String toString() final { return m_cssValue->cssText(); }
+    std::string toString() final { return m_cssValue->cssText(); }
 
     CachedImage* image() { return m_cssValue->cachedImage(); }
     Document* document() const { return m_document.get(); }

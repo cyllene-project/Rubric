@@ -24,12 +24,10 @@
 #include "CSSPropertyNames.h"
 #include "CSSValue.h"
 #include "CSSValueKeywords.h"
-#include "Color.h"
-#include "ExceptionOr.h"
-#include "LayoutUnit.h"
+//#include "Color.h"
+//#include "ExceptionOr.h"
+//#include "LayoutUnit.h"
 #include <utility>
-#include <wtf/Forward.h>
-#include <wtf/MathExtras.h>
 
 namespace WebCore {
 
@@ -151,9 +149,6 @@ public:
         UAngle,
         UTime,
         UFrequency,
-#if ENABLE(CSS_IMAGE_RESOLUTION) || ENABLE(RESOLUTION_MEDIA_QUERY)
-        UResolution,
-#endif
         UOther
     };
     static UnitCategory unitCategory(UnitType);
@@ -220,14 +215,14 @@ public:
 
     void cleanup();
 
-    WEBCORE_EXPORT unsigned short primitiveType() const;
-    WEBCORE_EXPORT ExceptionOr<void> setFloatValue(unsigned short unitType, double floatValue);
-    WEBCORE_EXPORT ExceptionOr<float> getFloatValue(unsigned short unitType) const;
-    WEBCORE_EXPORT ExceptionOr<void> setStringValue(unsigned short stringType, const String& stringValue);
-    WEBCORE_EXPORT ExceptionOr<String> getStringValue() const;
-    WEBCORE_EXPORT ExceptionOr<Counter&> getCounterValue() const;
-    WEBCORE_EXPORT ExceptionOr<Rect&> getRectValue() const;
-    WEBCORE_EXPORT ExceptionOr<Ref<RGBColor>> getRGBColorValue() const;
+    unsigned short primitiveType() const;
+    ExceptionOr<void> setFloatValue(unsigned short unitType, double floatValue);
+    ExceptionOr<float> getFloatValue(unsigned short unitType) const;
+    ExceptionOr<void> setStringValue(unsigned short stringType, const String& stringValue);
+    ExceptionOr<String> getStringValue() const;
+    ExceptionOr<Counter&> getCounterValue() const;
+    ExceptionOr<Rect&> getRectValue() const;
+    ExceptionOr<Ref<RGBColor>> getRGBColorValue() const;
 
     double computeDegrees() const;
     
@@ -251,7 +246,7 @@ public:
     int intValue(UnitType type) const { return value<int>(type); }
     int intValue() const { return value<int>(); }
 
-    WEBCORE_EXPORT String stringValue() const;
+    std::string stringValue() const;
 
     const Color& color() const { ASSERT(m_primitiveUnitType == CSS_RGBCOLOR); return *m_value.color; }
     Counter* counterValue() const { return m_primitiveUnitType != CSS_COUNTER ? nullptr : m_value.counter; }
@@ -266,7 +261,7 @@ public:
 
     template<typename T> inline operator T() const; // Defined in CSSPrimitiveValueMappings.h
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     // FIXME-NEWPARSER: Can ditch the boolean and just use the unit type once old parser is gone.
     bool isQuirkValue() const { return m_isQuirkValue || primitiveType() == CSS_QUIRKY_EMS; }

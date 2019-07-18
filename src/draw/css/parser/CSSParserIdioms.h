@@ -32,7 +32,7 @@
 #pragma once
 
 #include "CSSParserContext.h"
-#include <wtf/ASCIICType.h>
+
 
 namespace WebCore {
     
@@ -59,6 +59,6 @@ bool isNameCodePoint(CharacterType c)
 
 bool isValueAllowedInMode(unsigned short, CSSParserMode);
 
-URL completeURL(const CSSParserContext&, const String& url);
+URL completeURL(const CSSParserContext&, const std::string& url);
 
 } // namespace WebCore

@@ -21,7 +21,7 @@
 
 #include "ActiveDOMCallback.h"
 #include "CallbackResult.h"
-#include <wtf/RefCounted.h>
+
 
 namespace WebCore {
 

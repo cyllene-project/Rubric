@@ -36,14 +36,14 @@ public:
 
     virtual ~CSSMediaRule();
 
-    WEBCORE_EXPORT MediaList* media() const;
+    MediaList* media() const;
 
 private:
     CSSMediaRule(StyleRuleMedia&, CSSStyleSheet*);
 
     CSSRule::Type type() const final { return MEDIA_RULE; }
     void reattach(StyleRuleBase&) final;
-    String cssText() const final;
+    std::string cssText() const final;
 
     MediaQuerySet* mediaQueries() const;
     

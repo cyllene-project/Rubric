@@ -111,7 +111,7 @@ String CSSBasicShapeCircle::cssText() const
     Ref<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
     Ref<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
 
-    String radius;
+    std::string radius;
     if (m_radius && m_radius->valueID() != CSSValueClosestSide)
         radius = m_radius->cssText();
 
@@ -168,8 +168,8 @@ String CSSBasicShapeEllipse::cssText() const
     Ref<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
     Ref<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
 
-    String radiusX;
-    String radiusY;
+    std::string radiusX;
+    std::string radiusY;
     if (m_radiusX) {
         bool shouldSerializeRadiusXValue = m_radiusX->valueID() != CSSValueClosestSide;
         bool shouldSerializeRadiusYValue = false;
@@ -225,7 +225,7 @@ static String buildPathString(const WindRule& windRule, const String& path, cons
 
 String CSSBasicShapePath::cssText() const
 {
-    String pathString;
+    std::string pathString;
     buildStringFromByteStream(*m_byteStream, pathString, UnalteredParsing);
 
     return buildPathString(m_windRule, pathString, m_referenceBox ? m_referenceBox->cssText() : String());
@@ -389,14 +389,14 @@ static inline void updateCornerRadiusWidthAndHeight(CSSPrimitiveValue* corner, S
 
 String CSSBasicShapeInset::cssText() const
 {
-    String topLeftRadiusWidth;
-    String topLeftRadiusHeight;
-    String topRightRadiusWidth;
-    String topRightRadiusHeight;
-    String bottomRightRadiusWidth;
-    String bottomRightRadiusHeight;
-    String bottomLeftRadiusWidth;
-    String bottomLeftRadiusHeight;
+    std::string topLeftRadiusWidth;
+    std::string topLeftRadiusHeight;
+    std::string topRightRadiusWidth;
+    std::string topRightRadiusHeight;
+    std::string bottomRightRadiusWidth;
+    std::string bottomRightRadiusHeight;
+    std::string bottomLeftRadiusWidth;
+    std::string bottomLeftRadiusHeight;
 
     updateCornerRadiusWidthAndHeight(topLeftRadius(), topLeftRadiusWidth, topLeftRadiusHeight);
     updateCornerRadiusWidthAndHeight(topRightRadius(), topRightRadiusWidth, topRightRadiusHeight);

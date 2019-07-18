@@ -22,7 +22,6 @@
 
 #include "CSSFontStyleValue.h"
 #include "CSSValue.h"
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
 
@@ -36,7 +35,7 @@ public:
         return adoptRef(*new CSSFontValue);
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSFontValue&) const;
 

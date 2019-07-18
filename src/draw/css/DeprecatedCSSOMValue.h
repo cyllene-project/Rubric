@@ -29,11 +29,9 @@
 #include "CSSValue.h"
 #include "ExceptionOr.h"
 #include <wtf/Ref.h>
-#include <wtf/RefCounted.h>
+
 #include <wtf/TypeCasts.h>
 #include <wtf/WeakPtr.h>
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 class DeprecatedCSSOMValue : public RefCounted<DeprecatedCSSOMValue>, public CanMakeWeakPtr<DeprecatedCSSOMValue> {
@@ -54,9 +52,9 @@ public:
             destroy();
     }
 
-    WEBCORE_EXPORT unsigned cssValueType() const;
+    unsigned cssValueType() const;
 
-    WEBCORE_EXPORT String cssText() const;
+    std::string cssText() const;
     ExceptionOr<void> setCssText(const String&) { return { }; } // Will never implement.
 
     bool isComplexValue() const { return m_classType == DeprecatedComplexValueClass; }
@@ -86,7 +84,7 @@ protected:
     ~DeprecatedCSSOMValue() = default;
 
 private:
-    WEBCORE_EXPORT void destroy();
+    void destroy();
 
 protected:
     unsigned m_valueListSeparator : CSSValue::ValueListSeparatorBits;
@@ -102,7 +100,7 @@ public:
         return adoptRef(*new DeprecatedCSSOMComplexValue(value, owner));
     }
 
-    String cssText() const { return m_value->cssText(); }
+    std::string cssText() const { return m_value->cssText(); }
 
     unsigned cssValueType() const { return m_value->cssValueType(); }
 

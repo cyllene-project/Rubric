@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <wtf/Forward.h>
-#include <wtf/RefCounted.h>
+
+
 #include <wtf/RefPtr.h>
 
 namespace WebCore {
@@ -40,7 +40,7 @@ public:
     static Ref<MediaQueryList> create(MediaQueryMatcher&, Ref<MediaQuerySet>&&, bool);
     ~MediaQueryList();
 
-    String media() const;
+    std::string media() const;
     bool matches();
 
     void addListener(RefPtr<MediaQueryListListener>&&);

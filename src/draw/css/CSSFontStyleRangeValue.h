@@ -42,7 +42,7 @@ public:
         return adoptRef(*new CSSFontStyleRangeValue(WTFMove(fontStyleValue), WTFMove(obliqueValues)));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSFontStyleRangeValue&) const;
 

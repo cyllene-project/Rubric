@@ -26,8 +26,6 @@
 #include "config.h"
 #include "CSSRevertValue.h"
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 String CSSRevertValue::customCSSText() const

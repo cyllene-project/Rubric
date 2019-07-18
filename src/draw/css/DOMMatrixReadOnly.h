@@ -31,12 +31,9 @@
 #include "TransformationMatrix.h"
 #include <JavaScriptCore/Float32Array.h>
 #include <JavaScriptCore/Float64Array.h>
-#include <wtf/RefCounted.h>
-#include <wtf/Variant.h>
-#include <wtf/Vector.h>
-#include <wtf/text/WTFString.h>
 
-namespace WebCore {
+#include <wtf/Variant.h>
+#include <vector>namespace WebCore {
 
 class DOMMatrix;
 class DOMPoint;

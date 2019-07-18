@@ -32,16 +32,15 @@
 #include "CSSParserToken.h"
 #include "CSSParserTokenRange.h"
 #include "CSSRegisteredCustomProperty.h"
-#include <wtf/HashSet.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
 class CSSParserTokenRange;
 
 class CSSVariableData : public RefCounted<CSSVariableData> {
-    WTF_MAKE_NONCOPYABLE(CSSVariableData);
-    WTF_MAKE_FAST_ALLOCATED;
+    CSSVariableData(const CSSVariableData&) = delete;
+        CSSVariableData& operator=(const CSSVariableData&) = delete;
+
 public:
     static Ref<CSSVariableData> create(const CSSParserTokenRange& range)
     {
@@ -58,7 +57,7 @@ private:
     CSSVariableData(const CSSParserTokenRange&);
     template<typename CharacterType> void updateTokens(const CSSParserTokenRange&);
 
-    String m_backingString;
+    std::string m_backingString;
     Vector<CSSParserToken> m_tokens;
 
     // FIXME-NEWPARSER: We want to cache StyleProperties once we support @apply.

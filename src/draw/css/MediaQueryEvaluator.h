@@ -28,7 +28,6 @@
 #pragma once
 
 #include "MediaQueryExpression.h"
-#include <wtf/WeakPtr.h>
 
 namespace WebCore {
 
@@ -57,13 +56,13 @@ public:
     MediaQueryEvaluator(const String& acceptedMediaType, bool mediaFeatureResult = false);
 
     // Creates evaluator which evaluates full media queries.
-    WEBCORE_EXPORT MediaQueryEvaluator(const String& acceptedMediaType, const Document&, const RenderStyle*);
+    MediaQueryEvaluator(const String& acceptedMediaType, const Document&, const RenderStyle*);
 
     bool mediaTypeMatch(const String& mediaTypeToMatch) const;
     bool mediaTypeMatchSpecific(const char* mediaTypeToMatch) const;
 
     // Evaluates a list of media queries.
-    WEBCORE_EXPORT bool evaluate(const MediaQuerySet&, StyleResolver* = nullptr) const;
+    bool evaluate(const MediaQuerySet&, StyleResolver* = nullptr) const;
 
     // Evaluates media query subexpression, ie "and (media-feature: value)" part.
     bool evaluate(const MediaQueryExpression&) const;
@@ -74,7 +73,7 @@ public:
     static bool mediaAttributeMatches(Document&, const String& attributeValue);
 
 private:
-    String m_mediaType;
+    std::string m_mediaType;
     WeakPtr<const Document> m_document;
     const RenderStyle* m_style { nullptr };
     bool m_fallbackResult { false };

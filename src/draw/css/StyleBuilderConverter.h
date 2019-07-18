@@ -43,20 +43,19 @@
 #include "CSSPrimitiveValueMappings.h"
 #include "CSSReflectValue.h"
 #include "FontSelectionValueInlines.h"
-#include "Frame.h"
-#include "GridPositionsResolver.h"
-#include "Length.h"
+//#include "Frame.h"
+//#include "GridPositionsResolver.h"
+//#include "Length.h"
 #include "Pair.h"
-#include "QuotesData.h"
-#include "RuntimeEnabledFeatures.h"
-#include "SVGURIReference.h"
-#include "Settings.h"
+//#include "QuotesData.h"
+//#include "RuntimeEnabledFeatures.h"
+//#include "SVGURIReference.h"
+//#include "Settings.h"
 #include "StyleResolver.h"
-#include "StyleScrollSnapPoints.h"
-#include "TabSize.h"
-#include "TouchAction.h"
+//#include "StyleScrollSnapPoints.h"
+//#include "TabSize.h"
+//#include "TouchAction.h"
 #include "TransformFunctions.h"
-#include <wtf/Optional.h>
 
 namespace WebCore {
 
@@ -81,9 +80,7 @@ public:
     template<CSSPropertyID> static NinePieceImage convertBorderMask(StyleResolver&, CSSValue&);
     template<CSSPropertyID> static RefPtr<StyleImage> convertStyleImage(StyleResolver&, CSSValue&);
     static TransformOperations convertTransform(StyleResolver&, const CSSValue&);
-#if ENABLE(DARK_MODE_CSS)
     static StyleColorScheme convertColorScheme(StyleResolver&, const CSSValue&);
-#endif
     static String convertString(StyleResolver&, const CSSValue&);
     static String convertStringOrAuto(StyleResolver&, const CSSValue&);
     static String convertStringOrNone(StyleResolver&, const CSSValue&);
@@ -103,10 +100,7 @@ public:
     static LineBoxContain convertLineBoxContain(StyleResolver&, const CSSValue&);
     static OptionSet<TextDecorationSkip> convertTextDecorationSkip(StyleResolver&, const CSSValue&);
     static RefPtr<ShapeValue> convertShapeValue(StyleResolver&, CSSValue&);
-#if ENABLE(CSS_SCROLL_SNAP)
-    static ScrollSnapType convertScrollSnapType(StyleResolver&, const CSSValue&);
-    static ScrollSnapAlign convertScrollSnapAlign(StyleResolver&, const CSSValue&);
-#endif
+
     static GridTrackSize convertGridTrackSize(StyleResolver&, const CSSValue&);
     static Vector<GridTrackSize> convertGridTrackSizeList(StyleResolver&, const CSSValue&);
     static Optional<GridPosition> convertGridPosition(StyleResolver&, const CSSValue&);
@@ -115,18 +109,8 @@ public:
     static Optional<float> convertPerspective(StyleResolver&, const CSSValue&);
     static Optional<Length> convertMarqueeIncrement(StyleResolver&, const CSSValue&);
     static Optional<FilterOperations> convertFilterOperations(StyleResolver&, const CSSValue&);
-#if PLATFORM(IOS_FAMILY)
-    static bool convertTouchCallout(StyleResolver&, const CSSValue&);
-#endif
-#if ENABLE(TOUCH_EVENTS)
     static Color convertTapHighlightColor(StyleResolver&, const CSSValue&);
-#endif
-#if ENABLE(POINTER_EVENTS)
     static OptionSet<TouchAction> convertTouchAction(StyleResolver&, const CSSValue&);
-#endif
-#if ENABLE(OVERFLOW_SCROLLING_TOUCH)
-    static bool convertOverflowScrolling(StyleResolver&, const CSSValue&);
-#endif
     static FontFeatureSettings convertFontFeatureSettings(StyleResolver&, const CSSValue&);
     static FontSelectionValue convertFontWeightFromValue(const CSSValue&);
     static FontSelectionValue convertFontStretchFromValue(const CSSValue&);
@@ -134,9 +118,7 @@ public:
     static FontSelectionValue convertFontWeight(StyleResolver&, const CSSValue&);
     static FontSelectionValue convertFontStretch(StyleResolver&, const CSSValue&);
     static FontSelectionValue convertFontStyle(StyleResolver&, const CSSValue&);
-#if ENABLE(VARIATION_FONTS)
     static FontVariationSettings convertFontVariationSettings(StyleResolver&, const CSSValue&);
-#endif
     static SVGLengthValue convertSVGLengthValue(StyleResolver&, const CSSValue&);
     static Vector<SVGLengthValue> convertSVGLengthVector(StyleResolver&, const CSSValue&);
     static Vector<SVGLengthValue> convertStrokeDashArray(StyleResolver&, const CSSValue&);
@@ -171,13 +153,8 @@ private:
     static Length convertToRadiusLength(CSSToLengthConversionData&, const CSSPrimitiveValue&);
     static OptionSet<TextEmphasisPosition> valueToEmphasisPosition(const CSSPrimitiveValue&);
     static OptionSet<TextDecorationSkip> valueToDecorationSkip(const CSSPrimitiveValue&);
-#if ENABLE(CSS_SCROLL_SNAP)
-    static Length parseSnapCoordinate(StyleResolver&, const CSSValue&);
-#endif
 
-#if ENABLE(DARK_MODE_CSS)
     static void updateColorScheme(const CSSPrimitiveValue&, StyleColorScheme&);
-#endif
 
     static Length convertTo100PercentMinusLength(const Length&);
     template<CSSValueID, CSSValueID> static Length convertPositionComponent(StyleResolver&, const CSSPrimitiveValue&);
@@ -210,7 +187,6 @@ inline Length StyleBuilderConverter::convertLength(const StyleResolver& styleRes
     if (primitiveValue.isCalculatedPercentageWithLength())
         return Length(primitiveValue.cssCalcValue()->createCalculationValue(conversionData));
 
-    ASSERT_NOT_REACHED();
     return Length(0, Fixed);
 }
 
@@ -245,7 +221,6 @@ inline Length StyleBuilderConverter::convertLengthSizing(const StyleResolver& st
     case CSSValueAuto:
         return Length(Auto);
     default:
-        ASSERT_NOT_REACHED();
         return Length();
     }
 }
@@ -475,7 +450,7 @@ inline TransformOperations StyleBuilderConverter::convertTransform(StyleResolver
     return operations;
 }
 
-#if ENABLE(DARK_MODE_CSS)
+
 inline void StyleBuilderConverter::updateColorScheme(const CSSPrimitiveValue& primitiveValue, StyleColorScheme& colorScheme)
 {
     ASSERT(primitiveValue.isValueID());
@@ -515,7 +490,6 @@ inline StyleColorScheme StyleBuilderConverter::convertColorScheme(StyleResolver&
 
     return colorScheme;
 }
-#endif
 
 inline String StyleBuilderConverter::convertString(StyleResolver&, const CSSValue& value)
 {
@@ -589,7 +563,7 @@ inline RefPtr<ClipPathOperation> StyleBuilderConverter::convertClipPath(StyleRes
     if (is<CSSPrimitiveValue>(value)) {
         auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
         if (primitiveValue.primitiveType() == CSSPrimitiveValue::CSS_URI) {
-            String cssURLValue = primitiveValue.stringValue();
+            std::string cssURLValue = primitiveValue.stringValue();
             URL url = styleResolver.document().completeURL(cssURLValue);
             // FIXME: It doesn't work with external SVG references (see https://bugs.webkit.org/show_bug.cgi?id=126133)
             return ReferenceClipPathOperation::create(cssURLValue, url.fragmentIdentifier());
@@ -696,8 +670,8 @@ inline Ref<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, cons
         const CSSValue* second = list.item(i + 1);
         if (!second)
             break;
-        String startQuote = downcast<CSSPrimitiveValue>(*first).stringValue();
-        String endQuote = downcast<CSSPrimitiveValue>(*second).stringValue();
+        std::string startQuote = downcast<CSSPrimitiveValue>(*first).stringValue();
+        std::string endQuote = downcast<CSSPrimitiveValue>(*second).stringValue();
         quotes.append(std::make_pair(startQuote, endQuote));
     }
     return QuotesData::create(quotes);
@@ -889,46 +863,7 @@ inline RefPtr<ShapeValue> StyleBuilderConverter::convertShapeValue(StyleResolver
     return nullptr;
 }
 
-#if ENABLE(CSS_SCROLL_SNAP)
 
-inline ScrollSnapType StyleBuilderConverter::convertScrollSnapType(StyleResolver&, const CSSValue& value)
-{
-    ScrollSnapType type;
-    auto& values = downcast<CSSValueList>(value);
-    auto& firstValue = downcast<CSSPrimitiveValue>(*values.item(0));
-    if (values.length() == 2) {
-        type.axis = firstValue;
-        type.strictness = downcast<CSSPrimitiveValue>(*values.item(1));
-        return type;
-    }
-
-    switch (firstValue.valueID()) {
-    case CSSValueNone:
-    case CSSValueMandatory:
-    case CSSValueProximity:
-        type.strictness = firstValue;
-        break;
-    default:
-        type.axis = firstValue;
-        type.strictness = ScrollSnapStrictness::Proximity;
-        break;
-    }
-    return type;
-}
-
-inline ScrollSnapAlign StyleBuilderConverter::convertScrollSnapAlign(StyleResolver&, const CSSValue& value)
-{
-    auto& values = downcast<CSSValueList>(value);
-    ScrollSnapAlign alignment;
-    alignment.x = downcast<CSSPrimitiveValue>(*values.item(0));
-    if (values.length() == 1)
-        alignment.y = alignment.x;
-    else
-        alignment.y = downcast<CSSPrimitiveValue>(*values.item(1));
-    return alignment;
-}
-
-#endif
 
 inline GridLength StyleBuilderConverter::createGridTrackBreadth(const CSSPrimitiveValue& primitiveValue, StyleResolver& styleResolver)
 {
@@ -967,7 +902,7 @@ static void createGridLineNamesList(const CSSValue& value, unsigned currentNamed
     ASSERT(value.isGridLineNamesValue());
 
     for (auto& namedGridLineValue : downcast<CSSGridLineNamesValue>(value)) {
-        String namedGridLine = downcast<CSSPrimitiveValue>(namedGridLineValue.get()).stringValue();
+        std::string namedGridLine = downcast<CSSPrimitiveValue>(namedGridLineValue.get()).stringValue();
         auto result = namedGridLines.add(namedGridLine, Vector<unsigned>());
         result.iterator->value.append(currentNamedGridLine);
         auto orderedResult = orderedNamedGridLines.add(currentNamedGridLine, Vector<String>());
@@ -976,7 +911,8 @@ static void createGridLineNamesList(const CSSValue& value, unsigned currentNamed
 }
 
 struct StyleBuilderConverter::TracksData {
-    WTF_MAKE_NONCOPYABLE(TracksData); WTF_MAKE_FAST_ALLOCATED;
+    TracksData(const TracksData&) = delete;
+        TracksData& operator=(const TracksData&) = delete;
 public:
     TracksData() = default;
 
@@ -1081,7 +1017,7 @@ inline bool StyleBuilderConverter::createGridPosition(const CSSValue& value, Gri
         currentValue = it != values.end() ? &downcast<CSSPrimitiveValue>(it->get()) : nullptr;
     }
 
-    String gridLineName;
+    std::string gridLineName;
     if (currentValue && currentValue->isString()) {
         gridLineName = currentValue->stringValue();
         ++it;
@@ -1344,7 +1280,6 @@ inline FontSelectionValue StyleBuilderConverter::convertFontStretch(StyleResolve
     return convertFontStretchFromValue(value);
 }
 
-#if ENABLE(VARIATION_FONTS)
 inline FontVariationSettings StyleBuilderConverter::convertFontVariationSettings(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
@@ -1359,23 +1294,12 @@ inline FontVariationSettings StyleBuilderConverter::convertFontVariationSettings
     }
     return settings;
 }
-#endif
 
-#if PLATFORM(IOS_FAMILY)
-inline bool StyleBuilderConverter::convertTouchCallout(StyleResolver&, const CSSValue& value)
-{
-    return !equalLettersIgnoringASCIICase(downcast<CSSPrimitiveValue>(value).stringValue(), "none");
-}
-#endif
-
-#if ENABLE(TOUCH_EVENTS)
 inline Color StyleBuilderConverter::convertTapHighlightColor(StyleResolver& styleResolver, const CSSValue& value)
 {
     return styleResolver.colorFromPrimitiveValue(downcast<CSSPrimitiveValue>(value));
 }
-#endif
 
-#if ENABLE(POINTER_EVENTS)
 inline OptionSet<TouchAction> StyleBuilderConverter::convertTouchAction(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value))
@@ -1395,14 +1319,6 @@ inline OptionSet<TouchAction> StyleBuilderConverter::convertTouchAction(StyleRes
 
     return RenderStyle::initialTouchActions();
 }
-#endif
-
-#if ENABLE(OVERFLOW_SCROLLING_TOUCH)
-inline bool StyleBuilderConverter::convertOverflowScrolling(StyleResolver&, const CSSValue& value)
-{
-    return downcast<CSSPrimitiveValue>(value).valueID() == CSSValueTouch;
-}
-#endif
 
 inline SVGLengthValue StyleBuilderConverter::convertSVGLengthValue(StyleResolver&, const CSSValue& value)
 {
@@ -1463,7 +1379,7 @@ inline float StyleBuilderConverter::convertOpacity(StyleResolver&, const CSSValu
 
 inline String StyleBuilderConverter::convertSVGURIReference(StyleResolver& styleResolver, const CSSValue& value)
 {
-    String s;
+    std::string s;
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     if (primitiveValue.isURI())
         s = primitiveValue.stringValue();

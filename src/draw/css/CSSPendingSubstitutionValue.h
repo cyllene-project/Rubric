@@ -53,7 +53,7 @@ public:
     }
 
     bool equals(const CSSPendingSubstitutionValue& other) const { return m_shorthandValue == other.m_shorthandValue; }
-    String customCSSText() const;
+    std::string customCSSText() const;
 
 private:
     CSSPendingSubstitutionValue(CSSPropertyID shorthandPropertyId, Ref<CSSVariableReferenceValue>&& shorthandValue)

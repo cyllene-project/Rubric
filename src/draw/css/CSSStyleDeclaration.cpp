@@ -318,7 +318,7 @@ Vector<AtomString> CSSStyleDeclaration::supportedPropertyNames() const
 {
     static unsigned numNames = 0;
     static const AtomString* const cssPropertyNames = [] {
-        String names[numCSSProperties];
+        std::string names[numCSSProperties];
         for (int i = 0; i < numCSSProperties; ++i) {
             CSSPropertyID id = static_cast<CSSPropertyID>(firstCSSProperty + i);
             if (isEnabledCSSProperty(id))

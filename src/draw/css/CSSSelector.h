@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include "QualifiedName.h"
-#include "RenderStyleConstants.h"
+//#include "QualifiedName.h"
+//#include "RenderStyleConstants.h"
 
 namespace WebCore {
     class CSSSelectorList;
@@ -35,7 +35,7 @@ namespace WebCore {
 
     // this class represents a selector for a StyleRule
     class CSSSelector {
-        WTF_MAKE_FAST_ALLOCATED;
+
     public:
         CSSSelector();
         CSSSelector(const CSSSelector&);
@@ -46,7 +46,7 @@ namespace WebCore {
         /**
          * Re-create selector text from selector's data
          */
-        String selectorText(const String& = emptyString()) const;
+        std::string selectorText(const String& = emptyString()) const;
 
         // checks if the 2 selectors (including sub selectors) agree.
         bool operator==(const CSSSelector&) const;
@@ -143,37 +143,26 @@ namespace WebCore {
             PseudoClassDoubleButton,
             PseudoClassSingleButton,
             PseudoClassNoButton,
-#if ENABLE(FULLSCREEN_API)
             PseudoClassFullScreen,
             PseudoClassFullScreenDocument,
             PseudoClassFullScreenAncestor,
             PseudoClassAnimatingFullScreenTransition,
             PseudoClassFullScreenControlsHidden,
-#endif
             PseudoClassInRange,
             PseudoClassOutOfRange,
-#if ENABLE(VIDEO_TRACK)
             PseudoClassFuture,
             PseudoClassPast,
-#endif
-#if ENABLE(CSS_SELECTORS_LEVEL4)
             PseudoClassDir,
             PseudoClassRole,
-#endif
             PseudoClassHost,
             PseudoClassDefined,
-#if ENABLE(ATTACHMENT_ELEMENT)
-            PseudoClassHasAttachment,
-#endif
         };
 
         enum PseudoElementType {
             PseudoElementUnknown = 0,
             PseudoElementAfter,
             PseudoElementBefore,
-#if ENABLE(VIDEO_TRACK)
             PseudoElementCue,
-#endif
             PseudoElementFirstLetter,
             PseudoElementFirstLine,
             PseudoElementMarker,
@@ -187,11 +176,7 @@ namespace WebCore {
             PseudoElementSelection,
             PseudoElementSlotted,
             PseudoElementWebKitCustom,
-
-            // WebKitCustom that appeared in an old prefixed form
-            // and need special handling.
-            PseudoElementWebKitCustomLegacyPrefixed,
-        };
+            };
 
         enum PagePseudoClassType {
             PagePseudoClassFirst = 1,

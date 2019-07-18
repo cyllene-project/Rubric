@@ -32,8 +32,8 @@
 #include "FontSelector.h"
 #include "Timer.h"
 #include <memory>
-#include <wtf/Forward.h>
-#include <wtf/HashSet.h>
+
+
 #include <wtf/RefPtr.h>
 #include <wtf/text/StringHash.h>
 

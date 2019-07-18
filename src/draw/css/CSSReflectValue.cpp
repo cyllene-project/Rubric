@@ -23,14 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
 #include "CSSReflectValue.h"
-
 #include "CSSPrimitiveValue.h"
 
 namespace WebCore {
 
-String CSSReflectValue::customCSSText() const
+std::string CSSReflectValue::customCSSText() const
 {
     if (m_mask)
         return m_direction->cssText() + ' ' + m_offset->cssText() + ' ' + m_mask->cssText();

@@ -41,7 +41,7 @@ public:
         return adoptRef(*new CSSGridLineNamesValue);
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
 private:
     CSSGridLineNamesValue();

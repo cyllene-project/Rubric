@@ -28,11 +28,8 @@
 #include "CSSRegisteredCustomProperty.h"
 #include "CSSValue.h"
 #include "CSSVariableReferenceValue.h"
-#include "Length.h"
-#include "StyleImage.h"
-#include <wtf/RefPtr.h>
-#include <wtf/Variant.h>
-#include <wtf/text/WTFString.h>
+//#include "Length.h"
+//#include "StyleImage.h"
 
 namespace WebCore {
 
@@ -82,7 +79,7 @@ public:
         return adoptRef(*new CSSCustomPropertyValue(other));
     }
     
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     const AtomString& name() const { return m_name; }
     bool isResolved() const  { return !WTF::holds_alternative<Ref<CSSVariableReferenceValue>>(m_value); }

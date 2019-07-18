@@ -21,12 +21,6 @@
 #pragma once
 
 #include "CSSPropertyNames.h"
-#include <wtf/Function.h>
-#include <wtf/HashMap.h>
-#include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
-#include <wtf/TypeCasts.h>
-#include <wtf/URLHash.h>
 
 namespace WebCore {
 
@@ -59,7 +53,7 @@ public:
     }
 
     Type cssValueType() const;
-    String cssText() const;
+    std::string cssText() const;
 
     bool isPrimitiveValue() const { return m_classType == PrimitiveClass; }
     bool isValueList() const { return m_classType >= ValueListClass; }
@@ -75,9 +69,7 @@ public:
     bool isCustomPropertyValue() const { return m_classType == CustomPropertyClass; }
     bool isFunctionValue() const { return m_classType == FunctionClass; }
     bool isFontFeatureValue() const { return m_classType == FontFeatureClass; }
-#if ENABLE(VARIATION_FONTS)
     bool isFontVariationValue() const { return m_classType == FontVariationClass; }
-#endif
     bool isFontFaceSrcValue() const { return m_classType == FontFaceSrcClass; }
     bool isFontValue() const { return m_classType == FontClass; }
     bool isFontStyleValue() const { return m_classType == FontStyleClass; }
@@ -106,9 +98,9 @@ public:
     bool isLineBoxContainValue() const { return m_classType == LineBoxContainClass; }
     bool isCalcValue() const {return m_classType == CalculationClass; }
     bool isFilterImageValue() const { return m_classType == FilterImageClass; }
-#if ENABLE(CSS_PAINTING_API)
+//#if ENABLE(CSS_PAINTING_API)
     bool isPaintImageValue() const { return m_classType == PaintImageClass; }
-#endif
+//#endif
     bool isContentDistributionValue() const { return m_classType == CSSContentDistributionClass; }
     bool isGridAutoRepeatValue() const { return m_classType == GridAutoRepeatClass; }
     bool isGridIntegerRepeatValue() const { return m_classType == GridIntegerRepeatClass; }
@@ -146,9 +138,9 @@ protected:
 
         // Image generator classes.
         CanvasClass,
-#if ENABLE(CSS_PAINTING_API)
+//#if ENABLE(CSS_PAINTING_API)
         PaintImageClass,
-#endif
+//#endif
         NamedImageClass,
         CrossfadeClass,
         FilterImageClass,
@@ -165,9 +157,7 @@ protected:
         AspectRatioClass,
         BorderImageSliceClass,
         FontFeatureClass,
-#if ENABLE(VARIATION_FONTS)
         FontVariationClass,
-#endif
         FontClass,
         FontStyleClass,
         FontStyleRangeClass,
@@ -231,7 +221,7 @@ protected:
     ~CSSValue() = default;
 
 private:
-    WEBCORE_EXPORT void destroy();
+    void destroy();
 
 protected:
     // The bits in this section are only used by specific subclasses but kept here

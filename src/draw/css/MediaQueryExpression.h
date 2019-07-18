@@ -40,7 +40,7 @@ namespace WebCore {
 struct MediaQueryParserContext;
 
 class MediaQueryExpression {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     explicit MediaQueryExpression(const String& mediaFeature, CSSParserTokenRange&, MediaQueryParserContext&);
 
@@ -49,7 +49,7 @@ public:
 
     bool isValid() const;
 
-    String serialize() const;
+    std::string serialize() const;
 
     bool operator==(const MediaQueryExpression&) const;
 

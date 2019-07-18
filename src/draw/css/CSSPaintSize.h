@@ -27,7 +27,7 @@
 
 #if ENABLE(CSS_PAINTING_API)
 
-#include <wtf/RefCounted.h>
+
 #include <wtf/RefPtr.h>
 
 namespace WebCore {

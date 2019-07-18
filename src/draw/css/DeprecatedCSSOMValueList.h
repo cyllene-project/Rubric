@@ -38,7 +38,7 @@ public:
     }
     
     unsigned cssValueType() const { return CSS_VALUE_LIST; }
-    String cssText() const;
+    std::string cssText() const;
     
     size_t length() const { return m_values.size(); }
     DeprecatedCSSOMValue* item(size_t index) { return index < m_values.size() ? m_values[index].ptr() : nullptr; }

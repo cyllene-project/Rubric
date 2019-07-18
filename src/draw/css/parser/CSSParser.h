@@ -25,8 +25,7 @@
 #include "CSSParserContext.h"
 #include "CSSRegisteredCustomProperty.h"
 #include "CSSValue.h"
-#include "WritingMode.h"
-#include <wtf/text/WTFString.h>
+//#include "WritingMode.h"
 
 namespace WebCore {
 
@@ -50,41 +49,41 @@ public:
         Error
     };
 
-    WEBCORE_EXPORT explicit CSSParser(const CSSParserContext&);
-    WEBCORE_EXPORT ~CSSParser();
+    explicit CSSParser(const CSSParserContext &);
+    ~CSSParser();
 
     enum class RuleParsing { Normal, Deferred };
-    void parseSheet(StyleSheetContents*, const String&, RuleParsing = RuleParsing::Normal);
+    void parseSheet(StyleSheetContents*, const std::string&, RuleParsing = RuleParsing::Normal);
     
-    static RefPtr<StyleRuleBase> parseRule(const CSSParserContext&, StyleSheetContents*, const String&);
+    static std::shared_ptr<StyleRuleBase> parseRule(const CSSParserContext&, StyleSheetContents*, const std::string&);
     
-    RefPtr<StyleRuleKeyframe> parseKeyframeRule(const String&);
-    static std::unique_ptr<Vector<double>> parseKeyframeKeyList(const String&);
+    std::shared_ptr<StyleRuleKeyframe> parseKeyframeRule(const std::string&);
+    static std::unique_ptr<std::vector<double>> parseKeyframeKeyList(const std::string&);
     
-    bool parseSupportsCondition(const String&);
+    bool parseSupportsCondition(const std::string&);
 
-    static void parseSheetForInspector(const CSSParserContext&, StyleSheetContents*, const String&, CSSParserObserver&);
-    static void parseDeclarationForInspector(const CSSParserContext&, const String&, CSSParserObserver&);
+    static void parseSheetForInspector(const CSSParserContext&, StyleSheetContents*, const std::string&, CSSParserObserver&);
+    static void parseDeclarationForInspector(const CSSParserContext&, const std::string&, CSSParserObserver&);
 
-    static ParseResult parseValue(MutableStyleProperties&, CSSPropertyID, const String&, bool important, const CSSParserContext&);
-    static ParseResult parseCustomPropertyValue(MutableStyleProperties&, const AtomString& propertyName, const String&, bool important, const CSSParserContext&);
+    static ParseResult parseValue(MutableStyleProperties&, CSSPropertyID, const std::string&, bool important, const CSSParserContext&);
+    static ParseResult parseCustomPropertyValue(MutableStyleProperties&, const AtomString& propertyName, const std::string&, bool important, const CSSParserContext&);
     
-    static RefPtr<CSSValue> parseFontFaceDescriptor(CSSPropertyID, const String&, const CSSParserContext&);
+    static std::shared_ptr<CSSValue> parseFontFaceDescriptor(CSSPropertyID, const std::string&, const CSSParserContext&);
 
-    static RefPtr<CSSValue> parseSingleValue(CSSPropertyID, const String&, const CSSParserContext& = strictCSSParserContext());
+    static std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, const std::string&, const CSSParserContext& = strictCSSParserContext());
 
-    WEBCORE_EXPORT bool parseDeclaration(MutableStyleProperties&, const String&);
-    static Ref<ImmutableStyleProperties> parseInlineStyleDeclaration(const String&, const Element*);
+    bool parseDeclaration(MutableStyleProperties&, const std::string&);
+    static Ref<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
 
-    void parseSelector(const String&, CSSSelectorList&);
+    void parseSelector(const std::string&, CSSSelectorList&);
 
-    RefPtr<CSSValue> parseValueWithVariableReferences(CSSPropertyID, const CSSValue&, ApplyCascadedPropertyState&);
+    std::shared_ptr<CSSValue> parseValueWithVariableReferences(CSSPropertyID, const CSSValue&, ApplyCascadedPropertyState&);
 
-    static Color parseColor(const String&, bool strict = false);
-    static Color parseSystemColor(const String&, const CSSParserContext*);
+    static Color parseColor(const std::string&, bool strict = false);
+    static Color parseSystemColor(const std::string&, const CSSParserContext*);
 
 private:
-    ParseResult parseValue(MutableStyleProperties&, CSSPropertyID, const String&, bool important);
+    ParseResult parseValue(MutableStyleProperties&, CSSPropertyID, const std::string&, bool important);
 
     CSSParserContext m_context;
 };

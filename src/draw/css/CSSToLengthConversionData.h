@@ -30,8 +30,6 @@
 
 #pragma once
 
-#include <wtf/Assertions.h>
-
 namespace WebCore {
 
 class RenderStyle;

@@ -187,7 +187,7 @@ double CSSCalcValue::computeLengthPx(const CSSToLengthConversionData& conversion
 }
 
 class CSSCalcPrimitiveValue final : public CSSCalcExpressionNode {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     static Ref<CSSCalcPrimitiveValue> create(Ref<CSSPrimitiveValue>&& value, bool isInteger)
     {
@@ -207,7 +207,7 @@ private:
         return !m_value->doubleValue();
     }
 
-    String customCSSText() const final
+    std::string customCSSText() const final
     {
         return m_value->cssText();
     }
@@ -393,7 +393,7 @@ static bool isSamePair(CalculationCategory a, CalculationCategory b, Calculation
 }
 
 class CSSCalcOperation final : public CSSCalcExpressionNode {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     static RefPtr<CSSCalcOperation> create(CalcOperator op, RefPtr<CSSCalcExpressionNode>&& leftSide, RefPtr<CSSCalcExpressionNode>&& rightSide)
     {
@@ -584,7 +584,7 @@ private:
         return result.toString();
     }
 
-    String customCSSText() const final
+    std::string customCSSText() const final
     {
         Vector<String> cssTexts;
         for (auto& child : m_children)

@@ -79,13 +79,12 @@ private:
     static std::unique_ptr<CSSParserSelector> splitCompoundAtImplicitShadowCrossingCombinator(std::unique_ptr<CSSParserSelector> compoundSelector, const CSSParserContext&);
 
     const CSSParserContext& m_context;
-    RefPtr<StyleSheetContents> m_styleSheet; // FIXME: Should be const
+    std::shared_ptr<StyleSheetContents> m_styleSheet; // FIXME: Should be const
 
     bool m_failedParsing = false;
     bool m_disallowPseudoElements = false;
 
     class DisallowPseudoElementsScope {
-        WTF_MAKE_NONCOPYABLE(DisallowPseudoElementsScope);
     public:
         DisallowPseudoElementsScope(CSSSelectorParser* parser)
             : m_parser(parser), m_wasDisallowed(m_parser->m_disallowPseudoElements)
@@ -97,6 +96,9 @@ private:
         {
             m_parser->m_disallowPseudoElements = m_wasDisallowed;
         }
+
+        DisallowPseudoElementsScope(const DisallowPseudoElementsScope&) = delete;
+        DisallowPseudoElementsScope& operator=(const DisallowPseudoElementsScope&) = delete;
 
     private:
         CSSSelectorParser* m_parser;

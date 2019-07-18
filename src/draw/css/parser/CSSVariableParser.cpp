@@ -41,11 +41,11 @@ bool CSSVariableParser::isValidVariableName(const CSSParserToken& token)
     if (token.type() != IdentToken)
         return false;
 
-    StringView value = token.value();
+    std::string_view value = token.value();
     return value.length() >= 2 && value[0] == '-' && value[1] == '-';
 }
 
-bool CSSVariableParser::isValidVariableName(const String& string)
+bool CSSVariableParser::isValidVariableName(const std::string& string)
 {
     return string.length() >= 2 && string[0] == '-' && string[1] == '-';
 }
@@ -177,7 +177,7 @@ bool CSSVariableParser::containsValidVariableReferences(CSSParserTokenRange rang
     return type == CSSValueInternalVariableValue && hasReferences && !hasAtApplyRule;
 }
 
-RefPtr<CSSCustomPropertyValue> CSSVariableParser::parseDeclarationValue(const AtomString& variableName, CSSParserTokenRange range, const CSSParserContext& parserContext)
+std::shared_ptr<CSSCustomPropertyValue> CSSVariableParser::parseDeclarationValue(const AtomString& variableName, CSSParserTokenRange range, const CSSParserContext& parserContext)
 {
     if (range.atEnd())
         return nullptr;

@@ -23,7 +23,7 @@
 
 #include "DocumentRuleSets.h"
 #include "StyleResolver.h"
-#include <wtf/Forward.h>
+
 
 namespace WebCore {
 
@@ -42,7 +42,7 @@ private:
     bool isLeftPage(int pageIndex) const;
     bool isRightPage(int pageIndex) const { return !isLeftPage(pageIndex); }
     bool isFirstPage(int pageIndex) const;
-    String pageName(int pageIndex) const;
+    std::string pageName(int pageIndex) const;
 
     void matchPageRules(RuleSet* rules, bool isLeftPage, bool isFirstPage, const String& pageName);
     void matchPageRulesForList(Vector<StyleRulePage*>& matchedRules, const Vector<StyleRulePage*>& rules, bool isLeftPage, bool isFirstPage, const String& pageName);

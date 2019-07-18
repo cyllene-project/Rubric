@@ -27,17 +27,13 @@
 #include "DocumentRuleSets.h"
 #include "InspectorCSSOMWrappers.h"
 #include "MediaQueryEvaluator.h"
-#include "RenderStyle.h"
+//#include "RenderStyle.h"
 #include "RuleSet.h"
 #include "SelectorChecker.h"
 #include <bitset>
 #include <memory>
-#include <wtf/Bitmap.h>
-#include <wtf/HashMap.h>
-#include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
-#include <wtf/text/AtomStringHash.h>
-#include <wtf/text/StringHash.h>
+//#include <wtf/Bitmap.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -124,7 +120,8 @@ struct ElementStyle {
 
 // This class selects a RenderStyle for a given element based on a collection of stylesheets.
 class StyleResolver {
-    WTF_MAKE_NONCOPYABLE(StyleResolver); WTF_MAKE_FAST_ALLOCATED;
+    StyleResolver(const StyleResolver&) = delete;
+        StyleResolver& operator=(const StyleResolver&) = delete;
 public:
     StyleResolver(Document&);
     ~StyleResolver();
@@ -196,10 +193,6 @@ public:
     bool hasSelectorForId(const AtomString&) const;
     bool hasSelectorForAttribute(const Element&, const AtomString&) const;
 
-#if ENABLE(CSS_DEVICE_ADAPTATION)
-    ViewportStyleResolver* viewportStyleResolver() { return m_viewportStyleResolver.get(); }
-#endif
-
     void addViewportDependentMediaQueryResult(const MediaQueryExpression&, bool result);
     bool hasViewportDependentMediaQueries() const { return !m_viewportDependentMediaQueryResults.isEmpty(); }
     bool hasMediaQueriesAffectedByViewportChange() const;
@@ -266,7 +259,7 @@ public:
     };
     
     class CascadedProperties {
-        WTF_MAKE_FAST_ALLOCATED;
+
     public:
         CascadedProperties(TextDirection, WritingMode);
 
@@ -314,9 +307,7 @@ private:
     // This function fixes up the default font size if it detects that the current generic font family has changed. -dwh
     void checkForGenericFamilyChange(RenderStyle&, const RenderStyle* parentStyle);
     void checkForZoomChange(RenderStyle&, const RenderStyle* parentStyle);
-#if ENABLE(TEXT_AUTOSIZING)
     void checkForTextSizeAdjust(RenderStyle&);
-#endif
 
     void adjustRenderStyle(RenderStyle&, const RenderStyle& parentStyle, const RenderStyle* parentBoxStyle, const Element*);
     void adjustRenderStyleForSiteSpecificQuirks(RenderStyle&, const Element&);
@@ -342,7 +333,7 @@ private:
     bool isLeftPage(int pageIndex) const;
     bool isRightPage(int pageIndex) const { return !isLeftPage(pageIndex); }
     bool isFirstPage(int pageIndex) const;
-    String pageName(int pageIndex) const;
+    std::string pageName(int pageIndex) const;
 
     DocumentRuleSets m_ruleSets;
 
@@ -517,10 +508,6 @@ private:
     Vector<MediaQueryResult> m_viewportDependentMediaQueryResults;
     Vector<MediaQueryResult> m_accessibilitySettingsDependentMediaQueryResults;
     Vector<MediaQueryResult> m_appearanceDependentMediaQueryResults;
-
-#if ENABLE(CSS_DEVICE_ADAPTATION)
-    RefPtr<ViewportStyleResolver> m_viewportStyleResolver;
-#endif
 
     CSSToStyleMap m_styleMap;
     InspectorCSSOMWrappers m_inspectorCSSOMWrappers;

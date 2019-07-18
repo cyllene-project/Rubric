@@ -32,14 +32,11 @@
 #include "CSSDeferredParser.h"
 #include "CSSParser.h"
 #include "CSSParserTokenRange.h"
-
 #include "CSSPropertyNames.h"
-
 #include "StyleRule.h"
 
 #include <memory>
 #include <vector>
-#include <atomic>
 
 namespace WebCore {
 
@@ -61,17 +58,15 @@ class StyleRuleSupports;
 class StyleRuleViewport;
 class StyleSheetContents;
 class ImmutableStyleProperties;
-class Element;
 class MutableStyleProperties;
     
 class CSSParserImpl {
 
 public:
+    CSSParserImpl(const CSSParserContext&, const std::string&, StyleSheetContents* = nullptr, CSSParserObserverWrapper* = nullptr, CSSParser::RuleParsing = CSSParser::RuleParsing::Normal);
 
     CSSParserImpl(const CSSParserImpl&) = delete;
     CSSParserImpl& operator=(const CSSParserImpl&) = delete;
-
-    CSSParserImpl(const CSSParserContext&, const std::string&, StyleSheetContents* = nullptr, CSSParserObserverWrapper* = nullptr, CSSParser::RuleParsing = CSSParser::RuleParsing::Normal);
 
     enum AllowedRulesType {
         // As per css-syntax, css-cascade and css-namespaces, @charset rules
@@ -89,8 +84,8 @@ public:
     };
 
     static CSSParser::ParseResult parseValue(MutableStyleProperties*, CSSPropertyID, const std::string&, bool important, const CSSParserContext&);
-    static CSSParser::ParseResult parseCustomPropertyValue(MutableStyleProperties*, const std::atomic<std::string>& propertyName, const std::string&, bool important, const CSSParserContext&);
-    static Ref<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
+    static CSSParser::ParseResult parseCustomPropertyValue(MutableStyleProperties*, const AtomString& propertyName, const std::string&, bool important, const CSSParserContext&);
+    static std::shared_ptr<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
     static bool parseDeclarationList(MutableStyleProperties*, const std::string&, const CSSParserContext&);
     static std::shared_ptr<StyleRuleBase> parseRule(const std::string&, const CSSParserContext&, StyleSheetContents*, AllowedRulesType);
     static void parseStyleSheet(const std::string&, const CSSParserContext&, StyleSheetContents*, CSSParser::RuleParsing);
@@ -147,7 +142,7 @@ private:
     void consumeDeclarationList(CSSParserTokenRange, StyleRule::Type);
     void consumeDeclaration(CSSParserTokenRange, StyleRule::Type);
     void consumeDeclarationValue(CSSParserTokenRange, CSSPropertyID, bool important, StyleRule::Type);
-    void consumeCustomPropertyValue(CSSParserTokenRange, const std::atomic<std::string>& propertyName, bool important);
+    void consumeCustomPropertyValue(CSSParserTokenRange, const AtomString& propertyName, bool important);
 
     static std::unique_ptr<std::vector<double>> consumeKeyframeKeyList(CSSParserTokenRange);
 

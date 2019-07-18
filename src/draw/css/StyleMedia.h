@@ -27,8 +27,6 @@
 #pragma once
 
 #include "DOMWindowProperty.h"
-#include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
@@ -36,7 +34,7 @@ class StyleMedia final : public RefCounted<StyleMedia>, public DOMWindowProperty
 public:
     static Ref<StyleMedia> create(DOMWindow& window) { return adoptRef(*new StyleMedia(window)); }
 
-    String type() const;
+    std::string type() const;
     bool matchMedium(const String&) const;
 
 private:

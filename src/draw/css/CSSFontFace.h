@@ -31,11 +31,10 @@
 #include "TextFlags.h"
 #include "Timer.h"
 #include <memory>
-#include <wtf/Forward.h>
-#include <wtf/HashSet.h>
-#include <wtf/RefCounted.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
+
+
+
+#include <vector>#include <wtf/WeakPtr.h>
 
 namespace JSC {
 class ExecState;

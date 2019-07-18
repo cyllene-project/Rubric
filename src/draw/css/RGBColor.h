@@ -27,7 +27,7 @@
 #pragma once
 
 #include "Color.h"
-#include <wtf/RefCounted.h>
+
 
 namespace WebCore {
 

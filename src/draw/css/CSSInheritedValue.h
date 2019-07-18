@@ -26,7 +26,7 @@ namespace WebCore {
 
 class CSSInheritedValue final : public CSSValue {
 public:
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSInheritedValue&) const { return true; }
 

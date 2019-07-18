@@ -26,9 +26,7 @@
 #include "StyleResolver.h"
 #include <memory>
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
-
-namespace WebCore {
+#include <vector>namespace WebCore {
 
 class DocumentRuleSets;
 class MatchRequest;

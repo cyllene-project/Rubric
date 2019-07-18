@@ -35,22 +35,18 @@
 #include "CSSReflectionDirection.h"
 #include "CSSToLengthConversionData.h"
 #include "CSSValueKeywords.h"
-#include "GraphicsTypes.h"
-#include "Length.h"
-#include "LineClampValue.h"
-#include "RenderStyleConstants.h"
-#include "SVGRenderStyleDefs.h"
-#include "TextFlags.h"
-#include "ThemeTypes.h"
-#include "TouchAction.h"
-#include "UnicodeBidi.h"
-#include "WritingMode.h"
-#include <wtf/MathExtras.h>
-#include <wtf/OptionSet.h>
+//#include "GraphicsTypes.h"
+//#include "Length.h"
+//#include "LineClampValue.h"
+//#include "RenderStyleConstants.h"
+//#include "SVGRenderStyleDefs.h"
+//#include "TextFlags.h"
+//#include "ThemeTypes.h"
+//#include "TouchAction.h"
+//#include "UnicodeBidi.h"
+//#include "WritingMode.h"
 
-#if ENABLE(CSS_IMAGE_ORIENTATION)
-#include "ImageOrientation.h"
-#endif
+//#include "ImageOrientation.h"
 
 namespace WebCore {
 
@@ -604,34 +600,15 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ControlPart e)
     case CapsLockIndicatorPart:
         m_value.valueID = CSSValueCapsLockIndicator;
         break;
-#if ENABLE(ATTACHMENT_ELEMENT)
-    case AttachmentPart:
-        m_value.valueID = CSSValueAttachment;
-        break;
-    case BorderlessAttachmentPart:
-        m_value.valueID = CSSValueBorderlessAttachment;
-        break;
-#endif
-#if ENABLE(SERVICE_CONTROLS)
     case ImageControlsButtonPart:
         m_value.valueID = CSSValueImageControlsButton;
         break;
-#endif
-#if ENABLE(APPLE_PAY)
-    case ApplePayButtonPart:
-        m_value.valueID = CSSValueApplePayButton;
-        break;
-#endif
-#if ENABLE(INPUT_TYPE_COLOR)
     case ColorWellPart:
         m_value.valueID = CSSValueColorWell;
         break;
-#endif
-#if ENABLE(DATALIST_ELEMENT)
     case ListButtonPart:
         m_value.valueID = CSSValueListButton;
         break;
-#endif
     }
 }
 
@@ -885,38 +862,6 @@ template<> inline CSSPrimitiveValue::operator BoxAlignment() const
     return BoxAlignment::Stretch;
 }
 
-#if ENABLE(CSS_BOX_DECORATION_BREAK)
-template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxDecorationBreak e)
-    : CSSValue(PrimitiveClass)
-{
-    m_primitiveUnitType = CSS_VALUE_ID;
-    switch (e) {
-    case BoxDecorationBreak::Slice:
-        m_value.valueID = CSSValueSlice;
-        break;
-    case BoxDecorationBreak::Clone:
-        m_value.valueID = CSSValueClone;
-        break;
-    }
-}
-
-template<> inline CSSPrimitiveValue::operator BoxDecorationBreak() const
-{
-    ASSERT(isValueID());
-
-    switch (m_value.valueID) {
-    case CSSValueSlice:
-        return BoxDecorationBreak::Slice;
-    case CSSValueClone:
-        return BoxDecorationBreak::Clone;
-    default:
-        break;
-    }
-
-    ASSERT_NOT_REACHED();
-    return BoxDecorationBreak::Slice;
-}
-#endif
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Edge e)
     : CSSValue(PrimitiveClass)
@@ -1304,7 +1249,6 @@ template<> inline CSSPrimitiveValue::operator CursorType() const
     }
 }
 
-#if ENABLE(CURSOR_VISIBILITY)
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CursorVisibility e)
     : CSSValue(PrimitiveClass)
 {
@@ -1331,7 +1275,6 @@ template<> inline CSSPrimitiveValue::operator CursorVisibility() const
     ASSERT_NOT_REACHED();
     return CursorVisibility::Auto;
 }
-#endif
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(DisplayType e)
     : CSSValue(PrimitiveClass)
@@ -2497,7 +2440,6 @@ template<> inline CSSPrimitiveValue::operator TextAlignMode() const
     }
 }
 
-#if ENABLE(CSS3_TEXT)
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextAlignLast e)
     : CSSValue(PrimitiveClass)
 {
@@ -2594,7 +2536,7 @@ template<> inline CSSPrimitiveValue::operator TextJustify() const
     ASSERT_NOT_REACHED();
     return TextJustify::Auto;
 }
-#endif // CSS3_TEXT
+
 
 template<> inline CSSPrimitiveValue::operator OptionSet<TextDecoration>() const
 {
@@ -2611,10 +2553,6 @@ template<> inline CSSPrimitiveValue::operator OptionSet<TextDecoration>() const
         return TextDecoration::LineThrough;
     case CSSValueBlink:
         return TextDecoration::Blink;
-#if ENABLE(LETTERPRESS)
-    case CSSValueWebkitLetterpress:
-        return TextDecoration::Letterpress;
-#endif
     default:
         break;
     }
@@ -4872,7 +4810,6 @@ template<> inline CSSPrimitiveValue::operator MaskType() const
     return MaskType::Luminance;
 }
 
-#if ENABLE(CSS_IMAGE_ORIENTATION)
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ImageOrientationEnum e)
     : CSSValue(PrimitiveClass)
@@ -4918,8 +4855,6 @@ template<> inline CSSPrimitiveValue::operator ImageOrientationEnum() const
     ASSERT_NOT_REACHED();
     return OriginTopLeft;
 }
-
-#endif // ENABLE(CSS_IMAGE_ORIENTATION)
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CSSBoxType cssBox)
     : CSSValue(PrimitiveClass)
@@ -5250,7 +5185,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextZoom textZoom)
     m_value.valueID = CSSValueNormal;
 }
 
-#if ENABLE(POINTER_EVENTS)
+
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TouchAction touchAction)
     : CSSValue(PrimitiveClass)
 {
@@ -5299,9 +5234,6 @@ template<> inline CSSPrimitiveValue::operator OptionSet<TouchAction>() const
     ASSERT_NOT_REACHED();
     return TouchAction::Auto;
 }
-#endif
-
-#if ENABLE(CSS_SCROLL_SNAP)
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ScrollSnapStrictness strictness)
     : CSSValue(PrimitiveClass)
@@ -5416,143 +5348,6 @@ template<> inline CSSPrimitiveValue::operator ScrollSnapAxisAlignType() const
         return ScrollSnapAxisAlignType::None;
     }
 }
-
-#endif
-
-#if ENABLE(CSS_TRAILING_WORD)
-template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TrailingWord e)
-    : CSSValue(PrimitiveClass)
-{
-    m_primitiveUnitType = CSS_VALUE_ID;
-    switch (e) {
-    case TrailingWord::Auto:
-        m_value.valueID = CSSValueAuto;
-        break;
-    case TrailingWord::PartiallyBalanced:
-        m_value.valueID = CSSValueWebkitPartiallyBalanced;
-        break;
-    default:
-        ASSERT_NOT_REACHED();
-        break;
-    }
-}
-
-template<> inline CSSPrimitiveValue::operator TrailingWord() const
-{
-    ASSERT(isValueID());
-    switch (m_value.valueID) {
-    case CSSValueAuto:
-        return TrailingWord::Auto;
-    case CSSValueWebkitPartiallyBalanced:
-        return TrailingWord::PartiallyBalanced;
-    default:
-        break;
-    }
-    ASSERT_NOT_REACHED();
-    return TrailingWord::Auto;
-}
-#endif
-
-#if ENABLE(APPLE_PAY)
-template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ApplePayButtonStyle e)
-    : CSSValue(PrimitiveClass)
-{
-    m_primitiveUnitType = CSS_VALUE_ID;
-    switch (e) {
-    case ApplePayButtonStyle::White:
-        m_value.valueID = CSSValueWhite;
-        break;
-    case ApplePayButtonStyle::WhiteOutline:
-        m_value.valueID = CSSValueWhiteOutline;
-        break;
-    case ApplePayButtonStyle::Black:
-        m_value.valueID = CSSValueBlack;
-        break;
-    default:
-        ASSERT_NOT_REACHED();
-        break;
-    }
-}
-
-template<> inline CSSPrimitiveValue::operator ApplePayButtonStyle() const
-{
-    ASSERT(isValueID());
-    switch (m_value.valueID) {
-    case CSSValueWhite:
-        return ApplePayButtonStyle::White;
-    case CSSValueWhiteOutline:
-        return ApplePayButtonStyle::WhiteOutline;
-    case CSSValueBlack:
-        return ApplePayButtonStyle::Black;
-    default:
-        break;
-    }
-    ASSERT_NOT_REACHED();
-    return ApplePayButtonStyle::Black;
-}
-
-template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ApplePayButtonType e)
-    : CSSValue(PrimitiveClass)
-{
-    m_primitiveUnitType = CSS_VALUE_ID;
-    switch (e) {
-    case ApplePayButtonType::Plain:
-        m_value.valueID = CSSValuePlain;
-        break;
-    case ApplePayButtonType::Buy:
-        m_value.valueID = CSSValueBuy;
-        break;
-    case ApplePayButtonType::SetUp:
-        m_value.valueID = CSSValueSetUp;
-        break;
-    case ApplePayButtonType::Donate:
-        m_value.valueID = CSSValueDonate;
-        break;
-#if ENABLE(APPLE_PAY_SESSION_V4)
-    case ApplePayButtonType::CheckOut:
-        m_value.valueID = CSSValueCheckOut;
-        break;
-    case ApplePayButtonType::Book:
-        m_value.valueID = CSSValueBook;
-        break;
-    case ApplePayButtonType::Subscribe:
-        m_value.valueID = CSSValueSubscribe;
-        break;
-#endif
-
-    default:
-        ASSERT_NOT_REACHED();
-        break;
-    }
-}
-
-template<> inline CSSPrimitiveValue::operator ApplePayButtonType() const
-{
-    ASSERT(isValueID());
-    switch (m_value.valueID) {
-    case CSSValuePlain:
-        return ApplePayButtonType::Plain;
-    case CSSValueBuy:
-        return ApplePayButtonType::Buy;
-    case CSSValueSetUp:
-        return ApplePayButtonType::SetUp;
-    case CSSValueDonate:
-        return ApplePayButtonType::Donate;
-#if ENABLE(APPLE_PAY_SESSION_V4)
-    case CSSValueCheckOut:
-        return ApplePayButtonType::CheckOut;
-    case CSSValueBook:
-        return ApplePayButtonType::Book;
-    case CSSValueSubscribe:
-        return ApplePayButtonType::Subscribe;
-#endif
-    default:
-        break;
-    }
-    ASSERT_NOT_REACHED();
-    return ApplePayButtonType::Plain;
-}
-#endif
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontVariantPosition position)
     : CSSValue(PrimitiveClass)

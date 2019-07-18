@@ -26,9 +26,7 @@
 #include "RuleFeature.h"
 #include "RuleSet.h"
 #include <memory>
-#include <wtf/HashMap.h>
-#include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -43,7 +41,7 @@ struct InvalidationRuleSet {
     std::unique_ptr<RuleSet> ruleSet;
     Vector<const CSSSelector*> invalidationSelectors;
 
-    WTF_MAKE_FAST_ALLOCATED;
+
 };
 
 class DocumentRuleSets {

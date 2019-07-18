@@ -47,7 +47,7 @@ template <typename T> class FontTaggedSettings;
 typedef FontTaggedSettings<int> FontFeatureSettings;
 
 class CSSFontFaceSource final : public CachedFontClient {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     CSSFontFaceSource(CSSFontFace& owner, const String& familyNameOrURI, CachedFont* = nullptr, SVGFontFaceElement* = nullptr, RefPtr<JSC::ArrayBufferView>&& = nullptr);
     virtual ~CSSFontFaceSource();

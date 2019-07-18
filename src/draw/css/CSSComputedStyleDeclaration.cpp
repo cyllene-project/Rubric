@@ -184,8 +184,7 @@ static const CSSPropertyID computedProperties[] = {
     CSSPropertyFloodColor,
     CSSPropertyFloodOpacity,
     CSSPropertyFontFamily,
-#if ENABLE(VARIATION_FONTS)
-    CSSPropertyFontOpticalSizing,
+CSSPropertyFontOpticalSizing,
 #endif
     CSSPropertyFontSize,
     CSSPropertyFontStretch,
@@ -198,8 +197,7 @@ static const CSSPropertyID computedProperties[] = {
     CSSPropertyFontVariantLigatures,
     CSSPropertyFontVariantNumeric,
     CSSPropertyFontVariantPosition,
-#if ENABLE(VARIATION_FONTS)
-    CSSPropertyFontVariationSettings,
+CSSPropertyFontVariationSettings,
 #endif
     CSSPropertyFontWeight,
     CSSPropertyGlyphOrientationHorizontal,
@@ -1122,7 +1120,8 @@ static Ref<CSSValue> specifiedValueForGridTrackSize(const GridTrackSize& trackSi
 }
 
 class OrderedNamedLinesCollector {
-    WTF_MAKE_NONCOPYABLE(OrderedNamedLinesCollector);
+    OrderedNamedLinesCollector(const OrderedNamedLinesCollector&) = delete;
+        OrderedNamedLinesCollector& operator=(const OrderedNamedLinesCollector&) = delete;
 public:
     OrderedNamedLinesCollector(const RenderStyle& style, bool isRowAxis, unsigned autoRepeatTracksCount)
         : m_orderedNamedGridLines(isRowAxis ? style.orderedNamedGridColumnLines() : style.orderedNamedGridRowLines())
@@ -1661,7 +1660,7 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(Element& element, bool 
     : m_element(element)
     , m_allowVisitedStyle(allowVisitedStyle)
 {
-    StringView name = pseudoElementName;
+    std::string_view name = pseudoElementName;
     if (name.startsWith(':'))
         name = name.substring(1);
     if (name.startsWith(':'))
@@ -3127,8 +3126,7 @@ RefPtr<CSSValue> ComputedStyleExtractor::valueForPropertyInStyle(const RenderSty
                 list->append(CSSFontFeatureValue::create(FontTag(feature.tag()), feature.value()));
             return list;
         }
-#if ENABLE(VARIATION_FONTS)
-        case CSSPropertyFontVariationSettings: {
+case CSSPropertyFontVariationSettings: {
             const FontVariationSettings& variationSettings = style.fontDescription().variationSettings();
             if (variationSettings.isEmpty())
                 return cssValuePool.createIdentifierValue(CSSValueNormal);

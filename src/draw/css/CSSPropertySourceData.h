@@ -32,12 +32,9 @@
 
 #include "StyleRule.h"
 #include <utility>
-#include <wtf/Forward.h>
-#include <wtf/RefCounted.h>
-#include <wtf/Vector.h>
-#include <wtf/text/WTFString.h>
 
-namespace WebCore {
+
+#include <vector>namespace WebCore {
 
 class StyleRuleBase;
 
@@ -55,11 +52,11 @@ struct CSSPropertySourceData {
     CSSPropertySourceData(const CSSPropertySourceData& other);
     CSSPropertySourceData();
 
-    String toString() const;
+    std::string toString() const;
     unsigned hash() const;
 
-    String name;
-    String value;
+    std::string name;
+    std::string value;
     bool important;
     bool disabled;
     bool parsedOk;

@@ -35,7 +35,7 @@ class Document;
 class DOMCSSNamespace;
 
 class DOMCSSRegisterCustomProperty final : public Supplement<DOMCSSNamespace> {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     explicit DOMCSSRegisterCustomProperty(DOMCSSNamespace&) { }
 

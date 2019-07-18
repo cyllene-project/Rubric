@@ -23,16 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
 #include "CSSDeferredParser.h"
 
 #include "CSSParserImpl.h"
 #include "StyleSheetContents.h"
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
 
-CSSDeferredParser::CSSDeferredParser(const CSSParserContext& context, const String& sheetText, StyleSheetContents& styleSheet)
+CSSDeferredParser::CSSDeferredParser(const CSSParserContext& context, const std::string& sheetText, StyleSheetContents& styleSheet)
     : m_context(context)
     , m_sheetText(sheetText)
     , m_styleSheet(makeWeakPtr(styleSheet))
@@ -49,7 +47,7 @@ Ref<ImmutableStyleProperties> CSSDeferredParser::parseDeclaration(const CSSParse
     return CSSParserImpl::parseDeferredDeclaration(range, m_context, m_styleSheet.get());
 }
 
-void CSSDeferredParser::parseRuleList(const CSSParserTokenRange& range, Vector<RefPtr<StyleRuleBase>>& childRules)
+void CSSDeferredParser::parseRuleList(const CSSParserTokenRange& range, std::vector<std::shared_ptr<StyleRuleBase>>& childRules)
 {
     CSSParserImpl::parseDeferredRuleList(range, *this, childRules);
 }

@@ -79,7 +79,7 @@ MediaQuery::MediaQuery(Restrictor restrictor, const String& mediaType, Vector<Me
     });
 
     // Remove all duplicated expressions.
-    String key;
+    std::string key;
     for (int i = m_expressions.size() - 1; i >= 0; --i) {
 
         // If any expression is invalid the media query must be ignored.

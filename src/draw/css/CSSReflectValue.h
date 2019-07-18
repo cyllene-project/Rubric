@@ -26,7 +26,6 @@
 #pragma once
 
 #include "CSSValue.h"
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
 
@@ -45,7 +44,7 @@ public:
     const CSSPrimitiveValue& offset() const { return m_offset.get(); }
     CSSValue* mask() const { return m_mask.get(); }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSReflectValue&) const;
 

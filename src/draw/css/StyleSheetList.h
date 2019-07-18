@@ -20,10 +20,9 @@
 
 #pragma once
 
-#include <wtf/Forward.h>
-#include <wtf/RefCounted.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
+
+
+#include <vector>#include <wtf/WeakPtr.h>
 
 namespace WebCore {
 
@@ -38,10 +37,10 @@ class StyleSheetList final : public RefCounted<StyleSheetList> {
 public:
     static Ref<StyleSheetList> create(Document& document) { return adoptRef(*new StyleSheetList(document)); }
     static Ref<StyleSheetList> create(ShadowRoot& shadowRoot) { return adoptRef(*new StyleSheetList(shadowRoot)); }
-    WEBCORE_EXPORT ~StyleSheetList();
+    ~StyleSheetList();
 
-    WEBCORE_EXPORT unsigned length() const;
-    WEBCORE_EXPORT StyleSheet* item(unsigned index);
+    unsigned length() const;
+    StyleSheet* item(unsigned index);
 
     CSSStyleSheet* namedItem(const AtomString&) const;
     Vector<AtomString> supportedPropertyNames();

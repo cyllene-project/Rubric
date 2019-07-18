@@ -28,8 +28,7 @@
 #include "CSSRule.h"
 #include "StyleRule.h"
 #include <memory>
-#include <wtf/Forward.h>
-#include <wtf/text/AtomString.h>
+
 
 namespace WebCore {
 
@@ -81,10 +80,10 @@ public:
     virtual ~CSSKeyframesRule();
 
     CSSRule::Type type() const final { return KEYFRAMES_RULE; }
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    String name() const { return m_keyframesRule->name(); }
+    std::string name() const { return m_keyframesRule->name(); }
     void setName(const String&);
 
     CSSRuleList& cssRules();

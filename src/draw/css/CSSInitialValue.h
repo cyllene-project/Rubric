@@ -35,7 +35,7 @@ public:
         return adoptRef(*new CSSInitialValue(/* implicit */ true));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool isImplicit() const { return m_isImplicit; }
 

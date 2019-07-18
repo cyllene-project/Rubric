@@ -27,10 +27,8 @@
 
 #if ENABLE(CSS_TYPED_OM)
 
-#include <wtf/RefCounted.h>
-#include <wtf/UniqueRef.h>
-#include <wtf/text/WTFString.h>
 
+#include <wtf/UniqueRef.h>
 namespace WebCore {
 class CSSValue;
 class Document;

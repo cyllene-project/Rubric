@@ -27,12 +27,22 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "config.h"
+#include <string_view>
+#include <cctype>
 #include "CSSAtRuleID.h"
 
 namespace WebCore {
 
-CSSAtRuleID cssAtRuleID(StringView name)
+
+static bool equalIgnoringASCIICase(std::string_view a, std::string_view b) {
+    return std::equal(a.begin(), a.end(), b.begin(),
+                      [] (const char& a, const char& b) {
+                          return (std::tolower(a) == std::tolower(b));
+                      });
+};
+
+
+CSSAtRuleID cssAtRuleID(std::string_view name)
 {
     if (equalIgnoringASCIICase(name, "charset"))
         return CSSAtRuleCharset;

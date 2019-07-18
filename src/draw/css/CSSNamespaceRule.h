@@ -44,7 +44,7 @@ private:
     CSSNamespaceRule(StyleRuleNamespace&, CSSStyleSheet*);
 
     CSSRule::Type type() const final { return NAMESPACE_RULE; }
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
     Ref<StyleRuleNamespace> m_namespaceRule;

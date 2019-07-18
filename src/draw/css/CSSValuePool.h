@@ -32,12 +32,8 @@
 #include "CSSRevertValue.h"
 #include "CSSUnsetValue.h"
 #include "CSSValueKeywords.h"
-#include "ColorHash.h"
+//#include "ColorHash.h"
 #include <utility>
-#include <wtf/HashMap.h>
-#include <wtf/NeverDestroyed.h>
-#include <wtf/RefPtr.h>
-#include <wtf/text/AtomStringHash.h>
 
 namespace WebCore {
 
@@ -46,7 +42,7 @@ class CSSValueList;
 enum class FromSystemFontID { No, Yes };
 
 class CSSValuePool {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     static CSSValuePool& singleton();
 

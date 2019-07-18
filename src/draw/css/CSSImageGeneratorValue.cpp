@@ -44,7 +44,7 @@ namespace WebCore {
 static const Seconds timeToKeepCachedGeneratedImages { 3_s };
 
 class CSSImageGeneratorValue::CachedGeneratedImage {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     CachedGeneratedImage(CSSImageGeneratorValue&, FloatSize, GeneratedImage&);
     GeneratedImage& image() const { return m_image; }

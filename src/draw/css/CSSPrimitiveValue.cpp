@@ -991,7 +991,7 @@ ALWAYS_INLINE String CSSPrimitiveValue::formatNumberForCustomCSSText() const
         return "counter(" + String(m_value.string) + ')';
     case CSS_COUNTER: {
         StringBuilder result;
-        String separator = m_value.counter->separator();
+        std::string separator = m_value.counter->separator();
         if (separator.isEmpty())
             result.appendLiteral("counter(");
         else
@@ -1002,7 +1002,7 @@ ALWAYS_INLINE String CSSPrimitiveValue::formatNumberForCustomCSSText() const
             result.appendLiteral(", ");
             serializeString(separator, result);
         }
-        String listStyle = m_value.counter->listStyle();
+        std::string listStyle = m_value.counter->listStyle();
         if (!listStyle.isEmpty()) {
             result.appendLiteral(", ");
             result.append(listStyle);
@@ -1047,7 +1047,7 @@ String CSSPrimitiveValue::customCSSText() const
         return cssTextCache.get(this);
     }
 
-    String text = formatNumberForCustomCSSText();
+    std::string text = formatNumberForCustomCSSText();
 
     ASSERT(!cssTextCache.contains(this));
     m_hasCachedCSSText = true;

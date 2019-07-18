@@ -64,7 +64,7 @@ String CSSImportRule::cssText() const
     result.appendLiteral("\")");
 
     if (m_importRule.get().mediaQueries()) {
-        String mediaText = m_importRule.get().mediaQueries()->mediaText();
+        std::string mediaText = m_importRule.get().mediaQueries()->mediaText();
         if (!mediaText.isEmpty()) {
             result.append(' ');
             result.append(mediaText);

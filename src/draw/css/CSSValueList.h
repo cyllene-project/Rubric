@@ -21,8 +21,8 @@
 #pragma once
 
 #include "CSSValue.h"
-#include <wtf/Function.h>
-#include <wtf/Vector.h>
+
+#include <vector>
 
 namespace WebCore {
 
@@ -65,7 +65,7 @@ public:
     bool hasValue(CSSValue*) const;
     Ref<CSSValueList> copy();
 
-    String customCSSText() const;
+    std::string customCSSText() const;
     bool equals(const CSSValueList&) const;
     bool equals(const CSSValue&) const;
 

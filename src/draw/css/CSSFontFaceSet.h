@@ -27,8 +27,7 @@
 
 #include "CSSFontFace.h"
 #include <wtf/HashMap.h>
-#include <wtf/Vector.h>
-#include <wtf/text/StringHash.h>
+#include <vector>#include <wtf/text/StringHash.h>
 
 namespace WebCore {
 

@@ -26,56 +26,41 @@
 #pragma once
 
 #include "CSSParserMode.h"
-#include "TextEncoding.h"
-#include <wtf/HashFunctions.h>
-#include <wtf/URL.h>
-#include <wtf/URLHash.h>
-#include <wtf/text/StringHash.h>
+#include <core/URL.h>
+#include <string>
+
+//#include "TextEncoding.h"
+//#include <wtf/HashFunctions.h>
+//#include <wtf/URLHash.h>
+//#include <wtf/text/StringHash.h>
+
+using namespace rubric;
 
 namespace WebCore {
 
-class Document;
-
 struct CSSParserContext {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
-    CSSParserContext(CSSParserMode, const URL& baseURL = URL());
-    WEBCORE_EXPORT CSSParserContext(const Document&, const URL& baseURL = URL(), const String& charset = emptyString());
+    CSSParserContext(const URL& baseURL = URL(), const std::string& charset = "");
 
     URL baseURL;
-    String charset;
-    CSSParserMode mode { HTMLStandardMode };
-    bool isHTMLDocument { false };
-#if ENABLE(TEXT_AUTOSIZING)
+    std::string charset;
     bool textAutosizingEnabled { false };
-#endif
-#if ENABLE(OVERFLOW_SCROLLING_TOUCH)
-    bool legacyOverflowScrollingTouchEnabled { false };
-#endif
-    bool enforcesCSSMIMETypeInNoQuirksMode { true };
-    bool useLegacyBackgroundSizeShorthandBehavior { false };
     bool springTimingFunctionEnabled { false };
     bool constantPropertiesEnabled { false };
     bool colorFilterEnabled { false };
-#if ENABLE(ATTACHMENT_ELEMENT)
-    bool attachmentEnabled { false };
-#endif
     bool deferredCSSParserEnabled { false };
-    
-    // This is only needed to support getMatchedCSSRules.
-    bool hasDocumentSecurityOrigin { false };
-    
     bool useSystemAppearance { false };
 
-    URL completeURL(const String& url) const
+    URL completeURL(const std::string& url) const
     {
-        if (url.isNull())
+        if (url.empty())
             return URL();
-        if (charset.isEmpty())
+        if (charset.empty())
             return URL(baseURL, url);
-        TextEncoding encoding(charset);
-        auto& encodingForURLParsing = encoding.encodingForFormSubmissionOrURLParsing();
-        return URL(baseURL, url, encodingForURLParsing == UTF8Encoding() ? nullptr : &encodingForURLParsing);
+        //TextEncoding encoding(charset);
+        //auto& encodingForURLParsing = encoding.encodingForFormSubmissionOrURLParsing();
+        return URL(baseURL, url);
     }
 
     bool isContentOpaque { false };
@@ -84,35 +69,22 @@ public:
 bool operator==(const CSSParserContext&, const CSSParserContext&);
 inline bool operator!=(const CSSParserContext& a, const CSSParserContext& b) { return !(a == b); }
 
-WEBCORE_EXPORT const CSSParserContext& strictCSSParserContext();
+const CSSParserContext& strictCSSParserContext();
 
 struct CSSParserContextHash {
     static unsigned hash(const CSSParserContext& key)
     {
         unsigned hash = 0;
-        if (!key.baseURL.isNull())
+        if (!key.baseURL.empty())
             hash ^= WTF::URLHash::hash(key.baseURL);
-        if (!key.charset.isEmpty())
+        if (!key.charset.empty())
             hash ^= StringHash::hash(key.charset);
-        unsigned bits = key.isHTMLDocument                  << 0
-#if ENABLE(TEXT_AUTOSIZING)
+        unsigned bits = key.springTimingFunctionEnabled << 0
             & key.textAutosizingEnabled                     << 1
-#endif
-#if ENABLE(OVERFLOW_SCROLLING_TOUCH)
-            & key.legacyOverflowScrollingTouchEnabled       << 2
-#endif
-            & key.enforcesCSSMIMETypeInNoQuirksMode         << 3
-            & key.useLegacyBackgroundSizeShorthandBehavior  << 4
-            & key.springTimingFunctionEnabled               << 5
-            & key.constantPropertiesEnabled                 << 6
-            & key.colorFilterEnabled                        << 7
-            & key.deferredCSSParserEnabled                  << 8
-            & key.hasDocumentSecurityOrigin                 << 9
-            & key.useSystemAppearance                       << 10
-#if ENABLE(ATTACHMENT_ELEMENT)
-            & key.attachmentEnabled                         << 11
-#endif
-            & key.mode                                      << 12; // Keep this last.
+            & key.constantPropertiesEnabled                 << 2
+            & key.colorFilterEnabled                        << 3
+            & key.deferredCSSParserEnabled                  << 4
+            & key.useSystemAppearance                       << 5;
         hash ^= WTF::intHash(bits);
         return hash;
     }
@@ -129,7 +101,7 @@ namespace WTF {
 template<> struct HashTraits<WebCore::CSSParserContext> : GenericHashTraits<WebCore::CSSParserContext> {
     static void constructDeletedValue(WebCore::CSSParserContext& slot) { new (NotNull, &slot.baseURL) URL(WTF::HashTableDeletedValue); }
     static bool isDeletedValue(const WebCore::CSSParserContext& value) { return value.baseURL.isHashTableDeletedValue(); }
-    static WebCore::CSSParserContext emptyValue() { return WebCore::CSSParserContext(WebCore::HTMLStandardMode); }
+    static WebCore::CSSParserContext emptyValue() { return WebCore::CSSParserContext(); }
 };
 
 template<> struct DefaultHash<WebCore::CSSParserContext> {

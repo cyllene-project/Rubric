@@ -30,7 +30,7 @@
 #pragma once
 
 #include "CSSPrimitiveValue.h"
-#include <wtf/text/StringView.h>
+
 
 namespace WebCore {
 
@@ -87,7 +87,7 @@ enum HashTokenType {
 };
 
 class CSSParserToken {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     enum BlockType {
         NotBlock,
@@ -114,7 +114,7 @@ public:
     void convertToPercentage();
 
     CSSParserTokenType type() const { return static_cast<CSSParserTokenType>(m_type); }
-    StringView value() const
+    std::string_view value() const
     {
         if (m_valueIs8Bit)
             return StringView(static_cast<const LChar*>(m_valueDataCharRaw), m_valueLength);

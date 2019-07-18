@@ -61,7 +61,7 @@ public:
 
 private:
     CSSParserObserver& m_observer;
-    Vector<unsigned> m_tokenOffsets;
+    std::vector<unsigned> m_tokenOffsets;
     CSSParserToken* m_firstParserToken;
 
     struct CommentPosition {
@@ -70,8 +70,8 @@ private:
         unsigned tokensBefore;
     };
 
-    Vector<CommentPosition> m_commentOffsets;
-    Vector<CommentPosition>::iterator m_commentIterator;
+    std::vector<CommentPosition> m_commentOffsets;
+    std::vector<CommentPosition>::iterator m_commentIterator;
 };
 
 } // namespace WebCore

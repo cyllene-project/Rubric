@@ -37,7 +37,7 @@ public:
         return adoptRef(*new CSSNamedImageValue(name));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool isFixedSize() const { return false; }
     bool isPending() const { return false; }
@@ -53,7 +53,7 @@ private:
     {
     }
 
-    String m_name;
+    std::string m_name;
 };
 
 } // namespace WebCore

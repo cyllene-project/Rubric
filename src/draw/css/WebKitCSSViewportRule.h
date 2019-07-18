@@ -48,7 +48,7 @@ public:
     }
     virtual ~WebKitCSSViewportRule();
 
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
     CSSStyleDeclaration& style();

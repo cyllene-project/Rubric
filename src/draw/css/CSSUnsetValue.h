@@ -31,7 +31,7 @@ namespace WebCore {
 
 class CSSUnsetValue final : public CSSValue {
 public:
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSUnsetValue&) const { return true; }
 

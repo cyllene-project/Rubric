@@ -35,13 +35,13 @@ public:
 
     virtual ~CSSFontFaceRule();
 
-    WEBCORE_EXPORT CSSStyleDeclaration& style();
+    CSSStyleDeclaration& style();
 
 private:
     CSSFontFaceRule(StyleRuleFontFace&, CSSStyleSheet* parent);
 
     CSSRule::Type type() const final { return FONT_FACE_RULE; }
-    String cssText() const final;
+    std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
     Ref<StyleRuleFontFace> m_fontFaceRule;

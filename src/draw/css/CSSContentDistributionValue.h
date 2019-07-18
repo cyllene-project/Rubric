@@ -27,7 +27,7 @@
 
 #include "CSSValue.h"
 #include "CSSValuePool.h"
-#include <wtf/Ref.h>
+
 
 namespace WebCore {
 
@@ -43,7 +43,7 @@ public:
     Ref<CSSPrimitiveValue> position() const { return CSSValuePool::singleton().createIdentifierValue(m_position); }
     Ref<CSSPrimitiveValue> overflow() const { return CSSValuePool::singleton().createIdentifierValue(m_overflow); }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSContentDistributionValue&) const;
 

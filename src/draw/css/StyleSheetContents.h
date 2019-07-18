@@ -21,14 +21,8 @@
 #pragma once
 
 #include "CSSParserContext.h"
-#include "CachePolicy.h"
-#include <wtf/Function.h>
-#include <wtf/HashMap.h>
-#include <wtf/RefCounted.h>
-#include <wtf/URL.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
-#include <wtf/text/AtomStringHash.h>
+//#include "CachePolicy.h"
+#include <vector>
 
 namespace WebCore {
 
@@ -45,7 +39,7 @@ class StyleRuleNamespace;
 
 class StyleSheetContents final : public RefCounted<StyleSheetContents>, public CanMakeWeakPtr<StyleSheetContents> {
 public:
-    static Ref<StyleSheetContents> create(const CSSParserContext& context = CSSParserContext(HTMLStandardMode))
+    static Ref<StyleSheetContents> create(const CSSParserContext& context = CSSParserContext())
     {
         return adoptRef(*new StyleSheetContents(0, String(), context));
     }
@@ -58,7 +52,7 @@ public:
         return adoptRef(*new StyleSheetContents(ownerRule, originalURL, context));
     }
 
-    WEBCORE_EXPORT ~StyleSheetContents();
+    ~StyleSheetContents();
     
     const CSSParserContext& parserContext() const { return m_parserContext; }
     
@@ -66,13 +60,13 @@ public:
     const AtomString& namespaceURIFromPrefix(const AtomString& prefix);
 
     void parseAuthorStyleSheet(const CachedCSSStyleSheet*, const SecurityOrigin*);
-    WEBCORE_EXPORT bool parseString(const String&);
+    bool parseString(const String&);
 
     bool isCacheable() const;
 
     bool isLoading() const;
     bool subresourcesAllowReuse(CachePolicy, FrameLoader&) const;
-    WEBCORE_EXPORT bool isLoadingSubresources() const;
+    bool isLoadingSubresources() const;
 
     void checkLoaded();
     void startLoadingDynamicSheet();
@@ -95,13 +89,13 @@ public:
     bool hasSyntacticallyValidCSSHeader() const { return m_hasSyntacticallyValidCSSHeader; }
 
     void parserAddNamespace(const AtomString& prefix, const AtomString& uri);
-    void parserAppendRule(Ref<StyleRuleBase>&&);
+    void parserAppendRule(StyleRuleBase&);
     void parserSetEncodingFromCharsetRule(const String& encoding); 
     void parserSetUsesStyleBasedEditability() { m_usesStyleBasedEditability = true; }
 
     void clearRules();
 
-    String encodingFromCharsetRule() const { return m_encodingFromCharsetRule; }
+    std::string encodingFromCharsetRule() const { return m_encodingFromCharsetRule; }
     // Rules other than @charset and @import.
     const Vector<RefPtr<StyleRuleBase>>& childRules() const { return m_childRules; }
     const Vector<RefPtr<StyleRuleImport>>& importRules() const { return m_importRules; }
@@ -116,7 +110,7 @@ public:
     // Note that href is the URL that started the redirect chain that led to
     // this style sheet. This property probably isn't useful for much except
     // the JavaScript binding (which needs to use this value for security).
-    String originalURL() const { return m_originalURL; }
+    std::string originalURL() const { return m_originalURL; }
     const URL& baseURL() const { return m_parserContext.baseURL; }
 
     unsigned ruleCount() const;
@@ -148,16 +142,16 @@ public:
     bool isContentOpaque() const { return m_parserContext.isContentOpaque; }
 
 private:
-    WEBCORE_EXPORT StyleSheetContents(StyleRuleImport* ownerRule, const String& originalURL, const CSSParserContext&);
+    StyleSheetContents(StyleRuleImport* ownerRule, const String& originalURL, const CSSParserContext&);
     StyleSheetContents(const StyleSheetContents&);
 
     void clearCharsetRule();
 
     StyleRuleImport* m_ownerRule;
 
-    String m_originalURL;
+    std::string m_originalURL;
 
-    String m_encodingFromCharsetRule;
+    std::string m_encodingFromCharsetRule;
     Vector<RefPtr<StyleRuleImport>> m_importRules;
     Vector<RefPtr<StyleRuleNamespace>> m_namespaceRules;
     Vector<RefPtr<StyleRuleBase>> m_childRules;

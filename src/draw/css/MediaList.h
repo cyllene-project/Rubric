@@ -20,11 +20,11 @@
 
 #pragma once
 
-#include "ExceptionOr.h"
+//#include "ExceptionOr.h"
 #include "MediaQueryParserContext.h"
 #include <memory>
-#include <wtf/Forward.h>
-#include <wtf/Vector.h>
+
+#include <vector>
 
 namespace WTF {
 class TextStream;
@@ -44,9 +44,9 @@ public:
     {
         return adoptRef(*new MediaQuerySet);
     }
-    static WEBCORE_EXPORT Ref<MediaQuerySet> create(const String& mediaString, MediaQueryParserContext = MediaQueryParserContext());
+    static Ref<MediaQuerySet> create(const String& mediaString, MediaQueryParserContext = MediaQueryParserContext());
 
-    WEBCORE_EXPORT ~MediaQuerySet();
+    ~MediaQuerySet();
 
     bool set(const String&);
     bool add(const String&);
@@ -59,7 +59,7 @@ public:
     int lastLine() const { return m_lastLine; }
     void setLastLine(int lastLine) { m_lastLine = lastLine; }
 
-    WEBCORE_EXPORT String mediaText() const;
+    std::string mediaText() const;
 
     Ref<MediaQuerySet> copy() const { return adoptRef(*new MediaQuerySet(*this)); }
 
@@ -67,7 +67,7 @@ public:
 
 private:
     MediaQuerySet();
-    WEBCORE_EXPORT MediaQuerySet(const String& mediaQuery);
+    MediaQuerySet(const String& mediaQuery);
     MediaQuerySet(const MediaQuerySet&);
 
     int m_lastLine { 0 };
@@ -85,15 +85,15 @@ public:
         return adoptRef(*new MediaList(mediaQueries, parentRule));
     }
 
-    WEBCORE_EXPORT ~MediaList();
+    ~MediaList();
 
     unsigned length() const { return m_mediaQueries->queryVector().size(); }
-    WEBCORE_EXPORT String item(unsigned index) const;
-    WEBCORE_EXPORT ExceptionOr<void> deleteMedium(const String& oldMedium);
-    WEBCORE_EXPORT void appendMedium(const String& newMedium);
+    std::string item(unsigned index) const;
+    ExceptionOr<void> deleteMedium(const String& oldMedium);
+    void appendMedium(const String& newMedium);
 
-    String mediaText() const { return m_mediaQueries->mediaText(); }
-    WEBCORE_EXPORT ExceptionOr<void> setMediaText(const String&);
+    std::string mediaText() const { return m_mediaQueries->mediaText(); }
+    ExceptionOr<void> setMediaText(const String&);
 
     CSSRule* parentRule() const { return m_parentRule; }
     CSSStyleSheet* parentStyleSheet() const { return m_parentStyleSheet; }
@@ -113,17 +113,6 @@ private:
     CSSRule* m_parentRule { nullptr };
 };
 
-// Adds message to inspector console whenever dpi or dpcm values are used for "screen" media.
-// FIXME: Seems strange to have this here in this file, and unclear exactly who should call this and when.
-void reportMediaQueryWarningIfNeeded(Document*, const MediaQuerySet*);
-
-#if !ENABLE(RESOLUTION_MEDIA_QUERY)
-
-inline void reportMediaQueryWarningIfNeeded(Document*, const MediaQuerySet*)
-{
-}
-
-#endif
 
 WTF::TextStream& operator<<(WTF::TextStream&, const MediaQuerySet&);
 WTF::TextStream& operator<<(WTF::TextStream&, const MediaList&);

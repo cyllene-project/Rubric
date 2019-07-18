@@ -21,8 +21,6 @@
 #include "config.h"
 #include "CSSInitialValue.h"
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 String CSSInitialValue::customCSSText() const

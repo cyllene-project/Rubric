@@ -26,10 +26,7 @@
 #include "CSSProperty.h"
 #include "CSSValueKeywords.h"
 #include <memory>
-#include <wtf/Function.h>
-#include <wtf/TypeCasts.h>
-#include <wtf/Vector.h>
-#include <wtf/text/WTFString.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -91,8 +88,8 @@ public:
         bool isInherited() const { return m_metadata.m_inherited; }
         bool isImplicit() const { return m_metadata.m_implicit; }
 
-        String cssName() const;
-        String cssText() const;
+        std::string cssName() const;
+        std::string cssText() const;
 
         const CSSValue* value() const { return m_value; }
         // FIXME: We should try to remove this mutable overload.
@@ -110,28 +107,28 @@ public:
     bool isEmpty() const { return !propertyCount(); }
     PropertyReference propertyAt(unsigned) const;
 
-    WEBCORE_EXPORT RefPtr<CSSValue> getPropertyCSSValue(CSSPropertyID) const;
-    WEBCORE_EXPORT String getPropertyValue(CSSPropertyID) const;
+    RefPtr<CSSValue> getPropertyCSSValue(CSSPropertyID) const;
+    std::string getPropertyValue(CSSPropertyID) const;
 
-    WEBCORE_EXPORT Optional<Color> propertyAsColor(CSSPropertyID) const;
-    WEBCORE_EXPORT CSSValueID propertyAsValueID(CSSPropertyID) const;
+    Optional<Color> propertyAsColor(CSSPropertyID) const;
+    CSSValueID propertyAsValueID(CSSPropertyID) const;
 
     bool propertyIsImportant(CSSPropertyID) const;
-    String getPropertyShorthand(CSSPropertyID) const;
+    std::string getPropertyShorthand(CSSPropertyID) const;
     bool isPropertyImplicit(CSSPropertyID) const;
 
     RefPtr<CSSValue> getCustomPropertyCSSValue(const String& propertyName) const;
-    String getCustomPropertyValue(const String& propertyName) const;
+    std::string getCustomPropertyValue(const String& propertyName) const;
     bool customPropertyIsImportant(const String& propertyName) const;
 
     Ref<MutableStyleProperties> copyBlockProperties() const;
 
-    WEBCORE_EXPORT Ref<MutableStyleProperties> mutableCopy() const;
+    Ref<MutableStyleProperties> mutableCopy() const;
     Ref<ImmutableStyleProperties> immutableCopyIfNeeded() const;
 
     Ref<MutableStyleProperties> copyPropertiesInSet(const CSSPropertyID* set, unsigned length) const;
     
-    String asText() const;
+    std::string asText() const;
 
     bool hasCSSOMWrapper() const;
     bool isMutable() const { return type() == MutablePropertiesType; }
@@ -159,16 +156,16 @@ protected:
     int findCustomPropertyIndex(const String& propertyName) const;
 
 private:
-    String getShorthandValue(const StylePropertyShorthand&) const;
-    String getCommonValue(const StylePropertyShorthand&) const;
-    String getAlignmentShorthandValue(const StylePropertyShorthand&) const;
-    String borderPropertyValue(const StylePropertyShorthand&, const StylePropertyShorthand&, const StylePropertyShorthand&) const;
-    String pageBreakPropertyValue(const StylePropertyShorthand&) const;
-    String getLayeredShorthandValue(const StylePropertyShorthand&) const;
-    String get2Values(const StylePropertyShorthand&) const;
-    String get4Values(const StylePropertyShorthand&) const;
-    String borderSpacingValue(const StylePropertyShorthand&) const;
-    String fontValue() const;
+    std::string getShorthandValue(const StylePropertyShorthand&) const;
+    std::string getCommonValue(const StylePropertyShorthand&) const;
+    std::string getAlignmentShorthandValue(const StylePropertyShorthand&) const;
+    std::string borderPropertyValue(const StylePropertyShorthand&, const StylePropertyShorthand&, const StylePropertyShorthand&) const;
+    std::string pageBreakPropertyValue(const StylePropertyShorthand&) const;
+    std::string getLayeredShorthandValue(const StylePropertyShorthand&) const;
+    std::string get2Values(const StylePropertyShorthand&) const;
+    std::string get4Values(const StylePropertyShorthand&) const;
+    std::string borderSpacingValue(const StylePropertyShorthand&) const;
+    std::string fontValue() const;
     void appendFontLonghandValueIfExplicit(CSSPropertyID, StringBuilder& result, String& value) const;
     
     RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) const;
@@ -178,7 +175,7 @@ private:
 
 class ImmutableStyleProperties final : public StyleProperties {
 public:
-    WEBCORE_EXPORT ~ImmutableStyleProperties();
+    ~ImmutableStyleProperties();
     static Ref<ImmutableStyleProperties> create(const CSSProperty* properties, unsigned count, CSSParserMode);
 
     unsigned propertyCount() const { return m_arraySize; }
@@ -208,10 +205,10 @@ inline const StylePropertyMetadata* ImmutableStyleProperties::metadataArray() co
 
 class MutableStyleProperties final : public StyleProperties {
 public:
-    WEBCORE_EXPORT static Ref<MutableStyleProperties> create(CSSParserMode = HTMLQuirksMode);
+    static Ref<MutableStyleProperties> create(CSSParserMode = HTMLQuirksMode);
     static Ref<MutableStyleProperties> create(const CSSProperty* properties, unsigned count);
 
-    WEBCORE_EXPORT ~MutableStyleProperties();
+    ~MutableStyleProperties();
 
     unsigned propertyCount() const { return m_propertyVector.size(); }
     bool isEmpty() const { return !propertyCount(); }
@@ -241,7 +238,7 @@ public:
     void clear();
     bool parseDeclaration(const String& styleDeclaration, CSSParserContext);
 
-    WEBCORE_EXPORT CSSStyleDeclaration& ensureCSSStyleDeclaration();
+    CSSStyleDeclaration& ensureCSSStyleDeclaration();
     CSSStyleDeclaration& ensureInlineCSSStyleDeclaration(StyledElement& parentElement);
 
     int findPropertyIndex(CSSPropertyID) const;
@@ -250,7 +247,7 @@ public:
     Vector<CSSProperty, 4> m_propertyVector;
 
     // Methods for querying and altering CSS custom properties.
-    bool setCustomProperty(const Document*, const String& propertyName, const String& value, bool important, CSSParserContext);
+    //bool setCustomProperty(const Document*, const String& propertyName, const String& value, bool important, CSSParserContext);
     bool removeCustomProperty(const String& propertyName, String* returnText = nullptr);
 
 private:
@@ -268,7 +265,7 @@ private:
 
 class DeferredStyleProperties final : public StylePropertiesBase {
 public:
-    WEBCORE_EXPORT ~DeferredStyleProperties();
+    ~DeferredStyleProperties();
     static Ref<DeferredStyleProperties> create(const CSSParserTokenRange&, CSSDeferredParser&);
 
     Ref<ImmutableStyleProperties> parseDeferredProperties();

@@ -27,7 +27,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "config.h"
 #include "CSSParserIdioms.h"
 #include "CSSValueKeywords.h"
 
@@ -45,7 +44,7 @@ bool isValueAllowedInMode(unsigned short id, CSSParserMode mode)
     }
 }
 
-URL completeURL(const CSSParserContext& context, const String& url)
+URL completeURL(const CSSParserContext& context, const std::string& url)
 {
     return context.completeURL(url);
 }

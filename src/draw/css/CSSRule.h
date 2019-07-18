@@ -22,8 +22,7 @@
 
 #pragma once
 
-#include "ExceptionOr.h"
-#include <wtf/TypeCasts.h>
+//#include "ExceptionOr.h"
 
 namespace WebCore {
 
@@ -51,9 +50,6 @@ public:
         KEYFRAME_RULE,
         NAMESPACE_RULE = 10, // Matches other browsers.
         SUPPORTS_RULE = 12,
-#if ENABLE(CSS_DEVICE_ADAPTATION)
-        WEBKIT_VIEWPORT_RULE = 15,
-#endif
     };
 
     enum DeprecatedType {
@@ -86,7 +82,7 @@ public:
 
     CSSRule* parentRule() const { return m_parentIsRule ? m_parentRule : 0; }
 
-    WEBCORE_EXPORT ExceptionOr<void> setCssText(const String&);
+    ExceptionOr<void> setCssText(const String&);
 
 protected:
     CSSRule(CSSStyleSheet* parent)

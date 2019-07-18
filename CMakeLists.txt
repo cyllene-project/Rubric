@@ -13,6 +13,7 @@ include_directories(${Rubric_SOURCE_DIR}/include)
 include_directories(${Rubric_SOURCE_DIR}/src)
 include_directories(${Rubric_SOURCE_DIR}/src/draw/css)
 include_directories(${Rubric_SOURCE_DIR}/src/draw/css/parser)
+#include_directories(${Rubric_SOURCE_DIR}/src/draw/webkit)
 
 find_package(Wayland REQUIRED)
 find_package(X11_XCB REQUIRED)
@@ -24,6 +25,7 @@ find_package(kiwi REQUIRED)
 
 # Generate CSS Properties
 find_package(Perl REQUIRED)
+find_package(Python REQUIRED)
 
 set(CSS_PROPERTY_NAMES ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/CSSProperties.json)
 set(CSS_VALUE_KEYWORDS ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/CSSValueKeywords.in ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/SVGCSSValueKeywords.in)
@@ -33,13 +35,12 @@ set(CSS_PROPERTY_NAME_FILES
         CSSPropertyNames.h
         StyleBuilder.cpp
         StylePropertyShorthandFunctions.cpp
-        StylePropertyShorthandFunctions.h )
+        StylePropertyShorthandFunctions.h)
 
 add_custom_command(
-        OUTPUT  CSSProperties.json ${CSS_PROPERTY_NAME_FILES}
+        OUTPUT CSSProperties.json ${CSS_PROPERTY_NAME_FILES}
         COMMAND ${PERL_EXECUTABLE} -pe '' ${CSS_PROPERTY_NAMES} > CSSProperties.json
         COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makeprop.pl --defines
-        #DEPENDS someInputFile.cpp.in
 )
 
 set(CSS_VALUE_KEYWORD_FILES
@@ -47,11 +48,37 @@ set(CSS_VALUE_KEYWORD_FILES
         CSSValueKeywords.cpp)
 
 add_custom_command(
-        OUTPUT  CSSValueKeywords.in ${CSS_VALUE_KEYWORD_FILES}
+        OUTPUT CSSValueKeywords.in ${CSS_VALUE_KEYWORD_FILES}
         COMMAND ${PERL_EXECUTABLE} -pe '' ${CSS_VALUE_KEYWORDS} > CSSValueKeywords.in
         COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makevalues.pl --defines
-        #DEPENDS someInputFile.cpp.in
 )
+
+set(CSS_SELECTOR_SCRIPTS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makeSelectorPseudoClassAndCompatibilityElementMap.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/SelectorPseudoClassAndCompatibilityElementMap.in
+        )
+
+add_custom_command(
+        OUTPUT SelectorPseudoClassAndCompatibilityElementMap.cpp
+        COMMAND ${PYTHON_EXECUTABLE} ${CSS_SELECTOR_SCRIPTS} gperf
+)
+
+set(CSS_ELEMENT_SCRIPTS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makeSelectorPseudoElementsMap.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/SelectorPseudoElementTypeMap.in
+        )
+
+add_custom_command(
+        OUTPUT SelectorPseudoElementTypeMap.cpp
+        COMMAND ${PYTHON_EXECUTABLE} ${CSS_ELEMENT_SCRIPTS} gperf
+)
+
+# color names
+add_custom_command(
+        OUTPUT ColorData.cpp
+        COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/make-hash-tools.pl . ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/ColorData.gperf
+)
+
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
@@ -81,7 +108,8 @@ add_library(Rubric SHARED
         include/core/Property.h
         include/core/PropertyDef.h
         src/core/PropertyDef.cpp
-        include/core/PropertySpecializations.h src/core/Event.cpp include/core/Event.h)
+        include/core/PropertySpecializations.h
+        src/core/Event.cpp include/core/Event.h src/core/URL.cpp src/core/URL.h)
 
 add_library(RubricDraw SHARED
         src/draw/DisplayManager.cpp
@@ -129,10 +157,64 @@ add_library(RubricDraw SHARED
         src/draw/blend2d/Blend2DRenderer.cpp
         src/draw/blend2d/Blend2DRenderer.h
         src/draw/X11/X11EventHandler.h
+        src/draw/Image.cpp src/draw/Image.h)
 
-        # css sources
+add_library(RubricCSS SHARED
+        # css parser
         ${CSS_PROPERTY_NAME_FILES}
         ${CSS_VALUE_KEYWORD_FILES}
+        src/draw/css/parser/CSSAtRuleID.cpp
+        src/draw/css/parser/CSSAtRuleID.h
+        src/draw/css/parser/CSSDeferredParser.cpp
+        src/draw/css/parser/CSSDeferredParser.h
+        src/draw/css/parser/CSSParser.cpp
+        src/draw/css/parser/CSSParser.h
+        src/draw/css/parser/CSSParserContext.cpp
+        src/draw/css/parser/CSSParserContext.h
+        src/draw/css/parser/CSSParserFastPaths.cpp
+        src/draw/css/parser/CSSParserFastPaths.h
+        src/draw/css/parser/CSSParserIdioms.cpp
+        src/draw/css/parser/CSSParserIdioms.h
+        src/draw/css/parser/CSSParserImpl.cpp
+        src/draw/css/parser/CSSParserImpl.h
+        src/draw/css/parser/CSSParserMode.h
+        src/draw/css/parser/CSSParserObserver.h
+        src/draw/css/parser/CSSParserObserverWrapper.cpp
+        src/draw/css/parser/CSSParserObserverWrapper.h
+        src/draw/css/parser/CSSParserSelector.cpp
+        src/draw/css/parser/CSSParserSelector.h
+        src/draw/css/parser/CSSParserToken.cpp
+        src/draw/css/parser/CSSParserToken.h
+        src/draw/css/parser/CSSParserTokenRange.cpp
+        src/draw/css/parser/CSSParserTokenRange.h
+        src/draw/css/parser/CSSPropertyParser.cpp
+        src/draw/css/parser/CSSPropertyParser.h
+        src/draw/css/parser/CSSPropertyParserHelpers.cpp
+        src/draw/css/parser/CSSPropertyParserHelpers.h
+        src/draw/css/parser/CSSSelectorParser.cpp
+        src/draw/css/parser/CSSSelectorParser.h
+        src/draw/css/parser/CSSSupportsParser.cpp
+        src/draw/css/parser/CSSSupportsParser.h
+        src/draw/css/parser/CSSTokenizer.cpp
+        src/draw/css/parser/CSSTokenizer.h
+        src/draw/css/parser/CSSTokenizerInputStream.cpp
+        src/draw/css/parser/CSSTokenizerInputStream.h
+        src/draw/css/parser/CSSVariableParser.cpp
+        src/draw/css/parser/CSSVariableParser.h
+        src/draw/css/parser/MediaQueryBlockWatcher.cpp
+        src/draw/css/parser/MediaQueryBlockWatcher.h
+        src/draw/css/parser/MediaQueryParser.cpp
+        src/draw/css/parser/MediaQueryParser.h
+        src/draw/css/parser/SizesAttributeParser.cpp
+        src/draw/css/parser/SizesAttributeParser.h
+        src/draw/css/parser/SizesCalcParser.cpp
+        src/draw/css/parser/SizesCalcParser.h
+
+        #[[
+        # css sources
+        SelectorPseudoClassAndCompatibilityElementMap.cpp
+        SelectorPseudoElementTypeMap.cpp
+        ColorData.cpp
 
         src/draw/css/BasicShapeFunctions.cpp
         src/draw/css/CSSAspectRatioValue.cpp
@@ -254,54 +336,8 @@ add_library(RubricDraw SHARED
         src/draw/css/ViewportStyleResolver.cpp
         src/draw/css/WebKitCSSMatrix.cpp
         src/draw/css/WebKitCSSViewportRule.cpp
-        # css parser
-        src/draw/css/parser/CSSAtRuleID.cpp
-        src/draw/css/parser/CSSAtRuleID.h
-        src/draw/css/parser/CSSDeferredParser.cpp
-        src/draw/css/parser/CSSDeferredParser.h
-        src/draw/css/parser/CSSParser.cpp
-        src/draw/css/parser/CSSParser.h
-        src/draw/css/parser/CSSParserContext.cpp
-        src/draw/css/parser/CSSParserContext.h
-        src/draw/css/parser/CSSParserFastPaths.cpp
-        src/draw/css/parser/CSSParserFastPaths.h
-        src/draw/css/parser/CSSParserIdioms.cpp
-        src/draw/css/parser/CSSParserIdioms.h
-        src/draw/css/parser/CSSParserImpl.cpp
-        src/draw/css/parser/CSSParserImpl.h
-        src/draw/css/parser/CSSParserMode.h
-        src/draw/css/parser/CSSParserObserver.h
-        src/draw/css/parser/CSSParserObserverWrapper.cpp
-        src/draw/css/parser/CSSParserObserverWrapper.h
-        src/draw/css/parser/CSSParserSelector.cpp
-        src/draw/css/parser/CSSParserSelector.h
-        src/draw/css/parser/CSSParserToken.cpp
-        src/draw/css/parser/CSSParserToken.h
-        src/draw/css/parser/CSSParserTokenRange.cpp
-        src/draw/css/parser/CSSParserTokenRange.h
-        src/draw/css/parser/CSSPropertyParser.cpp
-        src/draw/css/parser/CSSPropertyParser.h
-        src/draw/css/parser/CSSPropertyParserHelpers.cpp
-        src/draw/css/parser/CSSPropertyParserHelpers.h
-        src/draw/css/parser/CSSSelectorParser.cpp
-        src/draw/css/parser/CSSSelectorParser.h
-        src/draw/css/parser/CSSSupportsParser.cpp
-        src/draw/css/parser/CSSSupportsParser.h
-        src/draw/css/parser/CSSTokenizer.cpp
-        src/draw/css/parser/CSSTokenizer.h
-        src/draw/css/parser/CSSTokenizerInputStream.cpp
-        src/draw/css/parser/CSSTokenizerInputStream.h
-        src/draw/css/parser/CSSVariableParser.cpp
-        src/draw/css/parser/CSSVariableParser.h
-        src/draw/css/parser/MediaQueryBlockWatcher.cpp
-        src/draw/css/parser/MediaQueryBlockWatcher.h
-        src/draw/css/parser/MediaQueryParser.cpp
-        src/draw/css/parser/MediaQueryParser.h
-        src/draw/css/parser/SizesAttributeParser.cpp
-        src/draw/css/parser/SizesAttributeParser.h
-        src/draw/css/parser/SizesCalcParser.cpp
-        src/draw/css/parser/SizesCalcParser.h
-        src/draw/css/config.h)
+        ]]#
+        )
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp

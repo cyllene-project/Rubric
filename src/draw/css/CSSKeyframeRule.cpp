@@ -85,7 +85,7 @@ String StyleRuleKeyframe::cssText() const
     StringBuilder result;
     result.append(keyText());
     result.appendLiteral(" { ");
-    String decls = m_properties->asText();
+    std::string decls = m_properties->asText();
     result.append(decls);
     if (!decls.isEmpty())
         result.append(' ');

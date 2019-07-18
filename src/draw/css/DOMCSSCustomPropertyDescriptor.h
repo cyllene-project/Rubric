@@ -25,15 +25,13 @@
 
 #pragma once
 
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 struct DOMCSSCustomPropertyDescriptor {
-    String name;
-    String syntax { "*" };
+    std::string name;
+    std::string syntax { "*" };
     bool inherits;
-    String initialValue;
+    std::string initialValue;
 };
 
 }

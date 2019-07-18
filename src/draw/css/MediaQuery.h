@@ -29,12 +29,12 @@
 #pragma once
 
 #include "MediaQueryExpression.h"
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
 class MediaQuery {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     enum Restrictor { Only, Not, None };
 
@@ -52,9 +52,9 @@ public:
     void shrinkToFit() { m_expressions.shrinkToFit(); }
 
 private:
-    String serialize() const;
+    std::string serialize() const;
 
-    String m_mediaType;
+    std::string m_mediaType;
     mutable String m_serializationCache;
     Vector<MediaQueryExpression> m_expressions;
     Restrictor m_restrictor;

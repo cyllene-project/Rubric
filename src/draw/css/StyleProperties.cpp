@@ -324,8 +324,8 @@ String StyleProperties::borderSpacingValue(const StylePropertyShorthand& shortha
     if (!horizontalValue || !verticalValue)
         return String();
 
-    String horizontalValueCSSText = horizontalValue->cssText();
-    String verticalValueCSSText = verticalValue->cssText();
+    std::string horizontalValueCSSText = horizontalValue->cssText();
+    std::string verticalValueCSSText = verticalValue->cssText();
     if (horizontalValueCSSText == verticalValueCSSText)
         return horizontalValueCSSText;
     return horizontalValueCSSText + ' ' + verticalValueCSSText;
@@ -361,7 +361,7 @@ void StyleProperties::appendFontLonghandValueIfExplicit(CSSPropertyID propertyID
 
     if (prefix && !result.isEmpty())
         result.append(prefix);
-    String value = propertyAt(foundPropertyIndex).value()->cssText();
+    std::string value = propertyAt(foundPropertyIndex).value()->cssText();
     result.append(value);
     if (!commonValue.isNull() && commonValue != value)
         commonValue = String();
@@ -379,7 +379,7 @@ String StyleProperties::fontValue() const
     if (fontSizeProperty.isImplicit() || fontFamilyProperty.isImplicit())
         return emptyString();
 
-    String commonValue = fontSizeProperty.value()->cssText();
+    std::string commonValue = fontSizeProperty.value()->cssText();
     StringBuilder result;
     appendFontLonghandValueIfExplicit(CSSPropertyFontStyle, result, commonValue);
     appendFontLonghandValueIfExplicit(CSSPropertyFontVariantCaps, result, commonValue);
@@ -514,7 +514,7 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
             numLayers = std::max<size_t>(1U, numLayers);
     }
 
-    String commonValue;
+    std::string commonValue;
     bool commonValueInitialized = false;
 
     // Now stitch the properties together. Implicit initial values are flagged as such and
@@ -580,7 +580,7 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
                 }
             }
 
-            String valueText;
+            std::string valueText;
             if (value && !value->isImplicitInitialValue()) {
                 if (!layerResult.isEmpty())
                     layerResult.append(' ');
@@ -639,14 +639,14 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
 
 String StyleProperties::getShorthandValue(const StylePropertyShorthand& shorthand) const
 {
-    String commonValue;
+    std::string commonValue;
     StringBuilder result;
     for (unsigned i = 0; i < shorthand.length(); ++i) {
         if (!isPropertyImplicit(shorthand.properties()[i])) {
             RefPtr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[i]);
             if (!value)
                 return String();
-            String valueText = value->cssText();
+            std::string valueText = value->cssText();
             if (!i)
                 commonValue = valueText;
             else if (!commonValue.isNull() && commonValue != valueText)
@@ -669,14 +669,14 @@ String StyleProperties::getShorthandValue(const StylePropertyShorthand& shorthan
 // only returns a non-null value if all properties have the same, non-null value
 String StyleProperties::getCommonValue(const StylePropertyShorthand& shorthand) const
 {
-    String res;
+    std::string res;
     bool lastPropertyWasImportant = false;
     for (unsigned i = 0; i < shorthand.length(); ++i) {
         RefPtr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[i]);
         if (!value)
             return String();
         // FIXME: CSSInitialValue::cssText should generate the right value.
-        String text = value->cssText();
+        std::string text = value->cssText();
         if (text.isNull())
             return String();
         if (res.isNull())
@@ -694,7 +694,7 @@ String StyleProperties::getCommonValue(const StylePropertyShorthand& shorthand) 
 
 String StyleProperties::getAlignmentShorthandValue(const StylePropertyShorthand& shorthand) const
 {
-    String value = getCommonValue(shorthand);
+    std::string value = getCommonValue(shorthand);
     if (value.isNull() || value.isEmpty())
         return getShorthandValue(shorthand);
     return value;
@@ -703,10 +703,10 @@ String StyleProperties::getAlignmentShorthandValue(const StylePropertyShorthand&
 String StyleProperties::borderPropertyValue(const StylePropertyShorthand& width, const StylePropertyShorthand& style, const StylePropertyShorthand& color) const
 {
     const StylePropertyShorthand properties[3] = { width, style, color };
-    String commonValue;
+    std::string commonValue;
     StringBuilder result;
     for (size_t i = 0; i < WTF_ARRAY_LENGTH(properties); ++i) {
-        String value = getCommonValue(properties[i]);
+        std::string value = getCommonValue(properties[i]);
         if (value.isNull())
             return String();
         if (!i)
@@ -892,7 +892,7 @@ bool MutableStyleProperties::setCustomProperty(const Document* document, const S
 
     parserContext.mode = cssParserMode();
 
-    String syntax = "*";
+    std::string syntax = "*";
     auto* registered = document ? document->getCSSRegisteredCustomPropertySet().get(propertyName) : nullptr;
 
     if (registered)
@@ -1013,7 +1013,7 @@ String StyleProperties::asText() const
         CSSPropertyID borderFallbackShorthandProperty = CSSPropertyInvalid;
         CSSPropertyID borderBlockFallbackShorthandProperty = CSSPropertyInvalid;
         CSSPropertyID borderInlineFallbackShorthandProperty = CSSPropertyInvalid;
-        String value;
+        std::string value;
         auto serializeBorderShorthand = [&] (const CSSPropertyID borderProperty, const CSSPropertyID fallbackProperty) {
             // FIXME: Deal with cases where only some of border sides are specified.
             ASSERT(borderProperty - firstCSSProperty < static_cast<CSSPropertyID>(shorthandPropertyAppeared.size()));

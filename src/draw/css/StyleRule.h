@@ -22,11 +22,8 @@
 #pragma once
 
 #include "CSSSelectorList.h"
-#include "CompiledSelector.h"
+//#include "CompiledSelector.h"
 #include "StyleProperties.h"
-#include <wtf/RefPtr.h>
-#include <wtf/TypeCasts.h>
-#include <wtf/UniqueArray.h>
 
 namespace WebCore {
 
@@ -40,7 +37,7 @@ class StyleProperties;
 class StyleRuleKeyframes;
     
 class StyleRuleBase : public WTF::RefCountedBase {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     enum Type {
         Unknown, // Not used.
@@ -54,9 +51,6 @@ public:
         Keyframe, // Not used. These are internally non-rule StyleRuleKeyframe objects.
         Namespace,
         Supports = 12,
-#if ENABLE(CSS_DEVICE_ADAPTATION)
-        Viewport = 15,
-#endif
     };
 
     Type type() const { return static_cast<Type>(m_type); }
@@ -70,9 +64,6 @@ public:
     bool isPageRule() const { return type() == Page; }
     bool isStyleRule() const { return type() == Style; }
     bool isSupportsRule() const { return type() == Supports; }
-#if ENABLE(CSS_DEVICE_ADAPTATION)
-    bool isViewportRule() const { return type() == Viewport; }
-#endif
     bool isImportRule() const { return type() == Import; }
 
     Ref<StyleRuleBase> copy() const;
@@ -106,7 +97,7 @@ protected:
     bool hasDocumentSecurityOrigin() const { return m_hasDocumentSecurityOrigin; }
 
 private:
-    WEBCORE_EXPORT void destroy();
+    void destroy();
     
     Ref<CSSRule> createCSSOMWrapper(CSSStyleSheet* parentSheet, CSSRule* parentRule) const;
 
@@ -116,7 +107,7 @@ private:
 };
 
 class StyleRule final : public StyleRuleBase {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     static Ref<StyleRule> create(Ref<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
     {
@@ -136,16 +127,16 @@ public:
     void wrapperAdoptSelectorList(CSSSelectorList&& selectors)
     {
         m_selectorList = WTFMove(selectors);
-#if ENABLE(CSS_SELECTOR_JIT)
+//#if ENABLE(CSS_SELECTOR_JIT)
         m_compiledSelectors = nullptr;
-#endif
+//#endif
     }
 
     Ref<StyleRule> copy() const { return adoptRef(*new StyleRule(*this)); }
 
     Vector<RefPtr<StyleRule>> splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned) const;
 
-#if ENABLE(CSS_SELECTOR_JIT)
+//#if ENABLE(CSS_SELECTOR_JIT)
     CompiledSelector& compiledSelectorForListIndex(unsigned index)
     {
         if (!m_compiledSelectors)
@@ -156,7 +147,7 @@ public:
     {
         m_compiledSelectors = nullptr;
     }
-#endif
+//#endif
 
     static unsigned averageSizeInBytes();
 
@@ -169,9 +160,9 @@ private:
     mutable Ref<StylePropertiesBase> m_properties;
     CSSSelectorList m_selectorList;
 
-#if ENABLE(CSS_SELECTOR_JIT)
+//#if ENABLE(CSS_SELECTOR_JIT)
     mutable UniqueArray<CompiledSelector> m_compiledSelectors;
-#endif
+//#endif
 };
 
 inline const StyleProperties* StyleRule::propertiesWithoutDeferredParsing() const
@@ -220,7 +211,7 @@ private:
 };
 
 class DeferredStyleGroupRuleList final {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     DeferredStyleGroupRuleList(const CSSParserTokenRange&, CSSDeferredParser&);
     
@@ -293,7 +284,7 @@ public:
         return adoptRef(*new StyleRuleSupports(conditionText, conditionIsSupported, WTFMove(deferredChildRules)));
     }
 
-    String conditionText() const { return m_conditionText; }
+    std::string conditionText() const { return m_conditionText; }
     bool conditionIsSupported() const { return m_conditionIsSupported; }
     Ref<StyleRuleSupports> copy() const { return adoptRef(*new StyleRuleSupports(*this)); }
 
@@ -303,11 +294,11 @@ private:
     
     StyleRuleSupports(const StyleRuleSupports&);
 
-    String m_conditionText;
+    std::string m_conditionText;
     bool m_conditionIsSupported;
 };
 
-#if ENABLE(CSS_DEVICE_ADAPTATION)
+//#if ENABLE(CSS_DEVICE_ADAPTATION)
 class StyleRuleViewport final : public StyleRuleBase {
 public:
     static Ref<StyleRuleViewport> create(Ref<StyleProperties>&& properties) { return adoptRef(*new StyleRuleViewport(WTFMove(properties))); }
@@ -325,7 +316,7 @@ private:
 
     Ref<StyleProperties> m_properties;
 };
-#endif // ENABLE(CSS_DEVICE_ADAPTATION)
+//#endif // ENABLE(CSS_DEVICE_ADAPTATION)
 
 // This is only used by the CSS parser.
 class StyleRuleCharset final : public StyleRuleBase {
@@ -385,11 +376,11 @@ SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::StyleRuleSupports)
     static bool isType(const WebCore::StyleRuleBase& rule) { return rule.isSupportsRule(); }
 SPECIALIZE_TYPE_TRAITS_END()
 
-#if ENABLE(CSS_DEVICE_ADAPTATION)
+//#if ENABLE(CSS_DEVICE_ADAPTATION)
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::StyleRuleViewport)
     static bool isType(const WebCore::StyleRuleBase& rule) { return rule.isViewportRule(); }
 SPECIALIZE_TYPE_TRAITS_END()
-#endif // ENABLE(CSS_DEVICE_ADAPTATION)
+//#endif // ENABLE(CSS_DEVICE_ADAPTATION)
 
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::StyleRuleNamespace)
     static bool isType(const WebCore::StyleRuleBase& rule) { return rule.isNamespaceRule(); }

@@ -28,7 +28,7 @@
 #include "CachedImageClient.h"
 #include "CachedResourceHandle.h"
 #include "CSSImageGeneratorValue.h"
-#include <wtf/Function.h>
+
 
 namespace WebCore {
 
@@ -40,7 +40,7 @@ public:
 
     ~CSSCrossfadeValue();
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     Image* image(RenderElement&, const FloatSize&);
     bool isFixedSize() const { return true; }

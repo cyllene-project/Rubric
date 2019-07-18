@@ -26,7 +26,7 @@
 #pragma once
 
 #include "CSSValue.h"
-#include "FontTaggedSettings.h"
+//#include "FontTaggedSettings.h"
 
 namespace WebCore {
 
@@ -39,7 +39,7 @@ public:
 
     const FontTag& tag() const { return m_tag; }
     int value() const { return m_value; }
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSFontFeatureValue&) const;
 

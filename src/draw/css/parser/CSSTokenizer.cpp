@@ -40,7 +40,7 @@
 
 namespace WebCore {
 
-CSSTokenizer::CSSTokenizer(const String& string)
+CSSTokenizer::CSSTokenizer(const std::string& string)
     : m_input(string)
 {
     // According to the spec, we should perform preprocessing here.
@@ -51,12 +51,12 @@ CSSTokenizer::CSSTokenizer(const String& string)
     // * Do not count white spaces
     // * CSSTokenizerInputStream::nextInputChar() replaces NULLs for replacement characters
 
-    if (string.isEmpty())
+    if (string.empty())
         return;
 
     // To avoid resizing we err on the side of reserving too much space.
     // Most strings we tokenize have about 3.5 to 5 characters per token.
-    m_tokens.reserveInitialCapacity(string.length() / 3);
+    m_tokens.reserve(string.length() / 3);
 
     while (true) {
         CSSParserToken token = nextToken();
@@ -64,14 +64,14 @@ CSSTokenizer::CSSTokenizer(const String& string)
             continue;
         if (token.type() == EOFToken)
             return;
-        m_tokens.append(token);
+        m_tokens.push_back(token);
     }
 }
 
-CSSTokenizer::CSSTokenizer(const String& string, CSSParserObserverWrapper& wrapper)
+CSSTokenizer::CSSTokenizer(const std::string& string, CSSParserObserverWrapper& wrapper)
     : m_input(string)
 {
-    if (string.isEmpty())
+    if (string.empty())
         return;
 
     unsigned offset = 0;
@@ -82,7 +82,7 @@ CSSTokenizer::CSSTokenizer(const String& string, CSSParserObserverWrapper& wrapp
         if (token.type() == CommentToken)
             wrapper.addComment(offset, m_input.offset(), m_tokens.size());
         else {
-            m_tokens.append(token);
+            m_tokens.push_back(token);
             wrapper.addToken(offset);
         }
         offset = m_input.offset();
@@ -134,20 +134,20 @@ CSSParserToken CSSTokenizer::whiteSpace(UChar /*cc*/)
 
 CSSParserToken CSSTokenizer::blockStart(CSSParserTokenType type)
 {
-    m_blockStack.append(type);
+    m_blockStack.push_back(type);
     return CSSParserToken(type, CSSParserToken::BlockStart);
 }
 
 CSSParserToken CSSTokenizer::blockStart(CSSParserTokenType blockType, CSSParserTokenType type, StringView name)
 {
-    m_blockStack.append(blockType);
+    m_blockStack.push_back(blockType);
     return CSSParserToken(type, name, CSSParserToken::BlockStart);
 }
 
 CSSParserToken CSSTokenizer::blockEnd(CSSParserTokenType type, CSSParserTokenType startType)
 {
-    if (!m_blockStack.isEmpty() && m_blockStack.last() == startType) {
-        m_blockStack.removeLast();
+    if (!m_blockStack.empty() && m_blockStack.last() == startType) {
+        m_blockStack.pop_back();
         return CSSParserToken(type, CSSParserToken::BlockEnd);
     }
     return CSSParserToken(type);
@@ -568,7 +568,7 @@ CSSParserToken CSSTokenizer::consumeNumericToken()
 // http://dev.w3.org/csswg/css-syntax/#consume-ident-like-token
 CSSParserToken CSSTokenizer::consumeIdentLikeToken()
 {
-    StringView name = consumeName();
+    std::string_view name = consumeName();
     if (consumeIfNext('(')) {
         if (equalIgnoringASCIICase(name, "url")) {
             // The spec is slightly different so as to avoid dropping whitespace
@@ -617,9 +617,9 @@ CSSParserToken CSSTokenizer::consumeStringTokenUntil(UChar endingCodePoint)
             if (isNewLine(m_input.peekWithoutReplacement(0)))
                 consumeSingleWhitespaceIfNext(); // This handles \r\n for us
             else
-                output.append(consumeEscape());
+                output.push_back(consumeEscape());
         } else
-            output.append(cc);
+            output.push_back(cc);
     }
 }
 
@@ -695,13 +695,13 @@ CSSParserToken CSSTokenizer::consumeUrlToken()
 
         if (cc == '\\') {
             if (twoCharsAreValidEscape(cc, m_input.peekWithoutReplacement(0))) {
-                result.append(consumeEscape());
+                result.push_back(consumeEscape());
                 continue;
             }
             break;
         }
 
-        result.append(cc);
+        result.push_back(cc);
     }
 
     consumeBadUrlRemnants();
@@ -783,11 +783,11 @@ StringView CSSTokenizer::consumeName()
     while (true) {
         UChar cc = consume();
         if (isNameCodePoint(cc)) {
-            result.append(cc);
+            result.push_back(cc);
             continue;
         }
         if (twoCharsAreValidEscape(cc, m_input.peekWithoutReplacement(0))) {
-            result.append(consumeEscape());
+            result.push_back(consumeEscape());
             continue;
         }
         reconsume(cc);
@@ -803,10 +803,10 @@ UChar32 CSSTokenizer::consumeEscape()
     if (isASCIIHexDigit(cc)) {
         unsigned consumedHexDigits = 1;
         StringBuilder hexChars;
-        hexChars.append(cc);
+        hexChars.push_back(cc);
         while (consumedHexDigits < 6 && isASCIIHexDigit(m_input.peekWithoutReplacement(0))) {
             cc = consume();
-            hexChars.append(cc);
+            hexChars.push_back(cc);
             consumedHexDigits++;
         };
         consumeSingleWhitespaceIfNext();
@@ -870,9 +870,9 @@ bool CSSTokenizer::nextCharsAreIdentifier()
     return areIdentifier;
 }
 
-StringView CSSTokenizer::registerString(const String& string)
+StringView CSSTokenizer::registerString(const std::string& string)
 {
-    m_stringPool.append(string);
+    m_stringPool.push_back(string);
     return string;
 }
 

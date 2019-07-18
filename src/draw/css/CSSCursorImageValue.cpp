@@ -31,8 +31,6 @@
 #include "SVGURIReference.h"
 #include <wtf/MathExtras.h>
 #include <wtf/text/StringBuilder.h>
-#include <wtf/text/WTFString.h>
-
 namespace WebCore {
 
 CSSCursorImageValue::CSSCursorImageValue(Ref<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
@@ -54,7 +52,7 @@ CSSCursorImageValue::~CSSCursorImageValue()
 
 String CSSCursorImageValue::customCSSText() const
 {
-    String text = m_imageValue.get().cssText();
+    std::string text = m_imageValue.get().cssText();
     if (!m_hasHotSpot)
         return text;
     return makeString(text, ' ', m_hotSpot.x(), ' ', m_hotSpot.y());

@@ -21,8 +21,6 @@
 #pragma once
 
 #include "CSSPrimitiveValue.h"
-#include <wtf/RefPtr.h>
-#include <wtf/text/StringBuilder.h>
 
 namespace WebCore {
 
@@ -61,7 +59,7 @@ class Rect final : public RectBase, public RefCounted<Rect> {
 public:
     static Ref<Rect> create() { return adoptRef(*new Rect); }
 
-    String cssText() const
+    std::string cssText() const
     {
         return generateCSSString(top()->cssText(), right()->cssText(), bottom()->cssText(), left()->cssText());
     }
@@ -78,7 +76,7 @@ class Quad final : public RectBase, public RefCounted<Quad> {
 public:
     static Ref<Quad> create() { return adoptRef(*new Quad); }
 
-    String cssText() const
+    std::string cssText() const
     {
         return generateCSSString(top()->cssText(), right()->cssText(), bottom()->cssText(), left()->cssText());
     }

@@ -21,10 +21,8 @@
 #pragma once
 
 #include "CSSValue.h"
-#include "CachedResourceHandle.h"
-#include "ResourceLoaderOptions.h"
-#include <wtf/Function.h>
-#include <wtf/Ref.h>
+//#include "CachedResourceHandle.h"
+//#include "ResourceLoaderOptions.h"
 
 namespace WebCore {
 
@@ -46,7 +44,7 @@ public:
 
     const URL& url() const { return m_url; }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     Ref<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
 

@@ -36,7 +36,8 @@ class StyleProperties;
 class StyledElement;
 
 class CSSStyleDeclaration : public ScriptWrappable {
-    WTF_MAKE_NONCOPYABLE(CSSStyleDeclaration);
+    CSSStyleDeclaration(const CSSStyleDeclaration&) = delete;
+        CSSStyleDeclaration& operator=(const CSSStyleDeclaration&) = delete;
     WTF_MAKE_ISO_ALLOCATED(CSSStyleDeclaration);
 public:
     virtual ~CSSStyleDeclaration() = default;
@@ -58,7 +59,7 @@ public:
     virtual ExceptionOr<void> setProperty(const String& propertyName, const String& value, const String& priority) = 0;
     virtual ExceptionOr<String> removeProperty(const String& propertyName) = 0;
 
-    String cssFloat();
+    std::string cssFloat();
     ExceptionOr<void> setCssFloat(const String&);
 
     // CSSPropertyID versions of the CSSOM functions to support bindings and editing.

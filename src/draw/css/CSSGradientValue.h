@@ -27,8 +27,8 @@
 
 #include "CSSImageGeneratorValue.h"
 #include "CSSPrimitiveValue.h"
-#include "Gradient.h"
-#include <wtf/Vector.h>
+//#include "Gradient.h"
+#include <vector>
 
 namespace WebCore {
 
@@ -141,7 +141,7 @@ public:
 
     void setAngle(Ref<CSSPrimitiveValue>&& val) { m_angle = WTFMove(val); }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     // Create the gradient for a given size.
     Ref<Gradient> createGradient(RenderElement&, const FloatSize&);
@@ -180,7 +180,7 @@ public:
         return adoptRef(*new CSSRadialGradientValue(*this));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     void setFirstRadius(RefPtr<CSSPrimitiveValue>&& val) { m_firstRadius = WTFMove(val); }
     void setSecondRadius(RefPtr<CSSPrimitiveValue>&& val) { m_secondRadius = WTFMove(val); }
@@ -240,7 +240,7 @@ public:
         return adoptRef(*new CSSConicGradientValue(*this));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     void setAngle(RefPtr<CSSPrimitiveValue>&& val) { m_angle = WTFMove(val); }
 

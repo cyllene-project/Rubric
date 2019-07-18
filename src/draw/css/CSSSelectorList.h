@@ -27,14 +27,13 @@
 
 #include "CSSSelector.h"
 #include <memory>
-#include <wtf/UniqueArray.h>
 
 namespace WebCore {
 
 class CSSParserSelector;
 
 class CSSSelectorList {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     CSSSelectorList() = default;
     CSSSelectorList(const CSSSelectorList&);
@@ -60,7 +59,7 @@ public:
     bool selectorsNeedNamespaceResolution();
     bool hasInvalidSelector() const;
 
-    String selectorsText() const;
+    std::string selectorsText() const;
     void buildSelectorsText(StringBuilder&) const;
 
     unsigned componentCount() const;

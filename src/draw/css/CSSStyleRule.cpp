@@ -77,7 +77,7 @@ String CSSStyleRule::selectorText() const
     }
 
     ASSERT(!selectorTextCache().contains(this));
-    String text = generateSelectorText();
+    std::string text = generateSelectorText();
     selectorTextCache().set(this, text);
     setHasCachedSelectorText(true);
     return text;
@@ -115,7 +115,7 @@ String CSSStyleRule::cssText() const
     StringBuilder result;
     result.append(selectorText());
     result.appendLiteral(" { ");
-    String decls = m_styleRule->properties().asText();
+    std::string decls = m_styleRule->properties().asText();
     result.append(decls);
     if (!decls.isEmpty())
         result.append(' ');

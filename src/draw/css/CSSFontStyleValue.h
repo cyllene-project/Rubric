@@ -27,7 +27,7 @@
 
 #include "CSSPrimitiveValue.h"
 #include "CSSValue.h"
-#include "FontSelectionAlgorithm.h"
+//#include "FontSelectionAlgorithm.h"
 
 namespace WebCore {
 
@@ -42,7 +42,7 @@ public:
         return adoptRef(*new CSSFontStyleValue(WTFMove(fontStyleValue), WTFMove(obliqueValue)));
     }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSFontStyleValue&) const;
 

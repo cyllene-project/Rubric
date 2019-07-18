@@ -161,7 +161,7 @@ void CSSFontFaceSet::addToFacesLookupTable(CSSFontFace& face)
         return;
 
     for (auto& item : *face.families()) {
-        String familyName = CSSFontFaceSet::familyNameFromPrimitive(downcast<CSSPrimitiveValue>(item.get()));
+        std::string familyName = CSSFontFaceSet::familyNameFromPrimitive(downcast<CSSPrimitiveValue>(item.get()));
         if (familyName.isEmpty())
             continue;
 
@@ -208,7 +208,7 @@ void CSSFontFaceSet::add(CSSFontFace& face)
 void CSSFontFaceSet::removeFromFacesLookupTable(const CSSFontFace& face, const CSSValueList& familiesToSearchFor)
 {
     for (auto& item : familiesToSearchFor) {
-        String familyName = CSSFontFaceSet::familyNameFromPrimitive(downcast<CSSPrimitiveValue>(item.get()));
+        std::string familyName = CSSFontFaceSet::familyNameFromPrimitive(downcast<CSSPrimitiveValue>(item.get()));
         if (familyName.isEmpty())
             continue;
 

@@ -27,11 +27,11 @@
 #pragma once
 
 #include "CSSImageGeneratorValue.h"
-#include "CachedImageClient.h"
+//#include "CachedImageClient.h"
 #include "CachedResourceHandle.h"
 #include "FilterOperations.h"
 #include "Image.h"
-#include <wtf/Function.h>
+
 
 namespace WebCore {
 
@@ -51,7 +51,7 @@ public:
 
     ~CSSFilterImageValue();
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     RefPtr<Image> image(RenderElement*, const FloatSize&);
     bool isFixedSize() const { return true; }

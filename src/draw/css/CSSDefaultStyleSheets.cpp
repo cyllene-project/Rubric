@@ -175,12 +175,12 @@ void CSSDefaultStyleSheets::loadFullDefaultStyle()
     mediaQueryStyleSheet = &StyleSheetContents::create(CSSParserContext(UASheetMode)).leakRef();
 
     // Strict-mode rules.
-    String defaultRules = String(htmlUserAgentStyleSheet, sizeof(htmlUserAgentStyleSheet)) + RenderTheme::singleton().extraDefaultStyleSheet();
+    std::string defaultRules = String(htmlUserAgentStyleSheet, sizeof(htmlUserAgentStyleSheet)) + RenderTheme::singleton().extraDefaultStyleSheet();
     defaultStyleSheet = parseUASheet(defaultRules);
     addToDefaultStyle(*defaultStyleSheet);
 
     // Quirks-mode rules.
-    String quirksRules = String(quirksUserAgentStyleSheet, sizeof(quirksUserAgentStyleSheet)) + RenderTheme::singleton().extraQuirksStyleSheet();
+    std::string quirksRules = String(quirksUserAgentStyleSheet, sizeof(quirksUserAgentStyleSheet)) + RenderTheme::singleton().extraQuirksStyleSheet();
     quirksStyleSheet = parseUASheet(quirksRules);
     defaultQuirksStyle->addRulesFromSheet(*quirksStyleSheet, screenEval());
 }
@@ -211,7 +211,7 @@ void CSSDefaultStyleSheets::ensureDefaultStyleSheetsForElement(const Element& el
     if (is<HTMLElement>(element)) {
         if (is<HTMLObjectElement>(element) || is<HTMLEmbedElement>(element)) {
             if (!plugInsStyleSheet && element.document().page()) {
-                String plugInsRules = RenderTheme::singleton().extraPlugInsStyleSheet() + element.document().page()->chrome().client().plugInExtraStyleSheet();
+                std::string plugInsRules = RenderTheme::singleton().extraPlugInsStyleSheet() + element.document().page()->chrome().client().plugInExtraStyleSheet();
                 if (plugInsRules.isEmpty())
                     plugInsRules = String(plugInsUserAgentStyleSheet, sizeof(plugInsUserAgentStyleSheet));
                 plugInsStyleSheet = parseUASheet(plugInsRules);
@@ -221,7 +221,7 @@ void CSSDefaultStyleSheets::ensureDefaultStyleSheetsForElement(const Element& el
 #if ENABLE(VIDEO)
         else if (is<HTMLMediaElement>(element)) {
             if (!mediaControlsStyleSheet) {
-                String mediaRules = RenderTheme::singleton().mediaControlsStyleSheet();
+                std::string mediaRules = RenderTheme::singleton().mediaControlsStyleSheet();
                 if (mediaRules.isEmpty())
                     mediaRules = String(mediaControlsUserAgentStyleSheet, sizeof(mediaControlsUserAgentStyleSheet)) + RenderTheme::singleton().extraMediaControlsStyleSheet();
                 mediaControlsStyleSheet = parseUASheet(mediaRules);
@@ -233,7 +233,7 @@ void CSSDefaultStyleSheets::ensureDefaultStyleSheetsForElement(const Element& el
 #if ENABLE(SERVICE_CONTROLS)
         else if (is<HTMLDivElement>(element) && element.isImageControlsRootElement()) {
             if (!imageControlsStyleSheet) {
-                String imageControlsRules = RenderTheme::singleton().imageControlsStyleSheet();
+                std::string imageControlsRules = RenderTheme::singleton().imageControlsStyleSheet();
                 imageControlsStyleSheet = parseUASheet(imageControlsRules);
                 addToDefaultStyle(*imageControlsStyleSheet);
             }
@@ -270,7 +270,7 @@ void CSSDefaultStyleSheets::ensureDefaultStyleSheetsForElement(const Element& el
 
 #if ENABLE(FULLSCREEN_API)
     if (!fullscreenStyleSheet && element.document().fullscreenManager().isFullscreen()) {
-        String fullscreenRules = String(fullscreenUserAgentStyleSheet, sizeof(fullscreenUserAgentStyleSheet)) + RenderTheme::singleton().extraFullScreenStyleSheet();
+        std::string fullscreenRules = String(fullscreenUserAgentStyleSheet, sizeof(fullscreenUserAgentStyleSheet)) + RenderTheme::singleton().extraFullScreenStyleSheet();
         fullscreenStyleSheet = parseUASheet(fullscreenRules);
         addToDefaultStyle(*fullscreenStyleSheet);
     }

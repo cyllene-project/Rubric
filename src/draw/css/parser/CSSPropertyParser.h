@@ -24,7 +24,7 @@
 
 #include "CSSParserTokenRange.h"
 #include "StyleRule.h"
-#include <wtf/text/StringView.h>
+
 
 namespace WebCore {
 
@@ -38,30 +38,29 @@ class StyleResolver;
 // Outputs: Vector of CSSProperties
 
 class CSSPropertyParser {
-    WTF_MAKE_NONCOPYABLE(CSSPropertyParser);
+    CSSPropertyParser(const CSSPropertyParser&) = delete;
+        CSSPropertyParser& operator=(const CSSPropertyParser&) = delete;
 public:
     static bool parseValue(CSSPropertyID, bool important,
         const CSSParserTokenRange&, const CSSParserContext&,
-        Vector<CSSProperty, 256>&, StyleRule::Type);
+        std::vector<CSSProperty, 256>&, StyleRule::Type);
 
     // Parses a non-shorthand CSS property
-    static RefPtr<CSSValue> parseSingleValue(CSSPropertyID, const CSSParserTokenRange&, const CSSParserContext&);
-    static bool canParseTypedCustomPropertyValue(const String& syntax, const CSSParserTokenRange&, const CSSParserContext&);
-    static RefPtr<CSSCustomPropertyValue> parseTypedCustomPropertyValue(const String& name, const String& syntax, const CSSParserTokenRange&, const StyleResolver&, const CSSParserContext&);
-    static void collectParsedCustomPropertyValueDependencies(const String& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies, const CSSParserTokenRange&, const CSSParserContext&);
+    static std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, const CSSParserTokenRange&, const CSSParserContext&);
+    static bool canParseTypedCustomPropertyValue(const std::string& syntax, const CSSParserTokenRange&, const CSSParserContext&);
+    static std::shared_ptr<CSSCustomPropertyValue> parseTypedCustomPropertyValue(const std::string& name, const std::string& syntax, const CSSParserTokenRange&, const StyleResolver&, const CSSParserContext&);
+    static void collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies, const CSSParserTokenRange&, const CSSParserContext&);
 
 private:
-    CSSPropertyParser(const CSSParserTokenRange&, const CSSParserContext&, Vector<CSSProperty, 256>*, bool consumeWhitespace = true);
+    CSSPropertyParser(const CSSParserTokenRange&, const CSSParserContext&, std::vector<CSSProperty, 256>*, bool consumeWhitespace = true);
 
     // FIXME: Rename once the CSSParserValue-based parseValue is removed
     bool parseValueStart(CSSPropertyID, bool important);
     bool consumeCSSWideKeyword(CSSPropertyID, bool important);
-    RefPtr<CSSValue> parseSingleValue(CSSPropertyID, CSSPropertyID = CSSPropertyInvalid);
-    bool canParseTypedCustomPropertyValue(const String& syntax);
-    RefPtr<CSSCustomPropertyValue> parseTypedCustomPropertyValue(const String& name, const String& syntax, const StyleResolver&);
-    void collectParsedCustomPropertyValueDependencies(const String& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies);
-
-    bool inQuirksMode() const { return m_context.mode == HTMLQuirksMode; }
+    std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, CSSPropertyID = CSSPropertyInvalid);
+    bool canParseTypedCustomPropertyValue(const std::string& syntax);
+    std::shared_ptr<CSSCustomPropertyValue> parseTypedCustomPropertyValue(const std::string& name, const std::string& syntax, const StyleResolver&);
+    void collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies);
 
     bool parseViewportDescriptor(CSSPropertyID propId, bool important);
     bool parseFontFaceDescriptor(CSSPropertyID);
@@ -69,7 +68,7 @@ private:
     void addProperty(CSSPropertyID, CSSPropertyID, Ref<CSSValue>&&, bool important, bool implicit = false);
     void addExpandedPropertyForValue(CSSPropertyID propId, Ref<CSSValue>&&, bool);
 
-    bool consumeBorder(RefPtr<CSSValue>& width, RefPtr<CSSValue>& style, RefPtr<CSSValue>& color);
+    bool consumeBorder(std::shared_ptr<CSSValue>& width, std::shared_ptr<CSSValue>& style, std::shared_ptr<CSSValue>& color);
 
     bool parseShorthand(CSSPropertyID, bool important);
     bool consumeShorthandGreedily(const StylePropertyShorthand&, bool important);
@@ -114,15 +113,15 @@ private:
     const CSSParserContext& m_context;
 
     // Outputs:
-    Vector<CSSProperty, 256>* m_parsedProperties;
+    std::vector<CSSProperty, 256>* m_parsedProperties;
 };
 
 CSSPropertyID cssPropertyID(StringView);
 CSSValueID cssValueKeywordID(StringView);
-bool isCustomPropertyName(const String&);
+bool isCustomPropertyName(const std::string&);
 
-#if PLATFORM(IOS_FAMILY)
-void cssPropertyNameIOSAliasing(const char* propertyName, const char*& propertyNameAlias, unsigned& newLength);
-#endif
+//#if PLATFORM(IOS_FAMILY)
+//void cssPropertyNameIOSAliasing(const char* propertyName, const char*& propertyNameAlias, unsigned& newLength);
+//#endif
 
 } // namespace WebCore

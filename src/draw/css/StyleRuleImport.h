@@ -21,10 +21,9 @@
 
 #pragma once
 
-#include "CachedResourceHandle.h"
-#include "CachedStyleSheetClient.h"
+//#include "CachedResourceHandle.h"
+//#include "CachedStyleSheetClient.h"
 #include "StyleRule.h"
-#include <wtf/TypeCasts.h>
 
 namespace WebCore {
 
@@ -33,7 +32,7 @@ class MediaQuerySet;
 class StyleSheetContents;
 
 class StyleRuleImport final : public StyleRuleBase {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     static Ref<StyleRuleImport> create(const String& href, Ref<MediaQuerySet>&&);
 
@@ -43,7 +42,7 @@ public:
     void setParentStyleSheet(StyleSheetContents* sheet) { ASSERT(sheet); m_parentStyleSheet = sheet; }
     void clearParentStyleSheet() { m_parentStyleSheet = 0; }
 
-    String href() const { return m_strHref; }
+    std::string href() const { return m_strHref; }
     StyleSheetContents* styleSheet() const { return m_styleSheet.get(); }
 
     bool isLoading() const;
@@ -75,7 +74,7 @@ class ImportedStyleSheetClient final : public CachedStyleSheetClient {
     StyleSheetContents* m_parentStyleSheet;
 
     ImportedStyleSheetClient m_styleSheetClient;
-    String m_strHref;
+    std::string m_strHref;
     RefPtr<MediaQuerySet> m_mediaQueries;
     RefPtr<StyleSheetContents> m_styleSheet;
     CachedResourceHandle<CachedCSSStyleSheet> m_cachedSheet;

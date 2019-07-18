@@ -20,10 +20,9 @@
 #pragma once
 
 #include <memory>
-#include <wtf/Forward.h>
-#include <wtf/RefCounted.h>
-#include <wtf/Vector.h>
-#include <wtf/WeakPtr.h>
+
+
+#include <vector>#include <wtf/WeakPtr.h>
 
 namespace WebCore {
 
@@ -65,7 +64,7 @@ private:
 
     explicit MediaQueryMatcher(Document&);
     std::unique_ptr<RenderStyle> documentElementUserAgentStyle() const;
-    String mediaType() const;
+    std::string mediaType() const;
 
     WeakPtr<Document> m_document;
     Vector<Listener> m_listeners;

@@ -22,15 +22,14 @@
 #pragma once
 
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
-
-namespace WebCore {
+#include <vector>namespace WebCore {
 
 class CSSRule;
 class CSSStyleSheet;
 
 class CSSRuleList {
-    WTF_MAKE_NONCOPYABLE(CSSRuleList); WTF_MAKE_FAST_ALLOCATED;
+    CSSRuleList(const CSSRuleList&) = delete;
+        CSSRuleList& operator=(const CSSRuleList&) = delete;
 public:
     virtual ~CSSRuleList();
 

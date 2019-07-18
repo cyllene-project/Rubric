@@ -39,7 +39,7 @@ public:
     UChar32 from() const { return m_from; }
     UChar32 to() const { return m_to; }
 
-    String customCSSText() const;
+    std::string customCSSText() const;
 
     bool equals(const CSSUnicodeRangeValue&) const;
 

@@ -25,14 +25,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
+//#include "config.h"
 #include "CSSParser.h"
 
 #include "CSSCustomPropertyValue.h"
 #include "CSSKeyframeRule.h"
-
 #include "CSSParserFastPaths.h"
 #include "CSSParserImpl.h"
-
 #include "CSSPendingSubstitutionValue.h"
 #include "CSSPropertyParser.h"
 #include "CSSSelectorParser.h"
@@ -40,19 +39,24 @@
 #include "CSSTokenizer.h"
 #include "CSSVariableData.h"
 #include "CSSVariableReferenceValue.h"
-
+//#include "Document.h"
+//#include "Element.h"
+//#include "Page.h"
+//#include "RenderStyle.h"
+//#include "RenderTheme.h"
+//#include "RuntimeEnabledFeatures.h"
+//#include "Settings.h"
 #include "StyleColor.h"
 #include "StyleResolver.h"
 #include "StyleRule.h"
 #include "StyleSheetContents.h"
-
+//#include <wtf/NeverDestroyed.h>
+//#include <wtf/text/StringBuilder.h>
 
 namespace WebCore {
 
-CSSParser::CSSParser(const CSSParserContext& context)
-    : m_context(context)
-{
-}
+CSSParser::CSSParser(const CSSParserContext & context)
+    : m_context(context) { }
 
 CSSParser::~CSSParser() = default;
 
@@ -134,7 +138,7 @@ CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration
     ASSERT(!string.empty());
     std::shared_ptr<CSSValue> value = CSSParserFastPaths::maybeParseValue(propertyID, string, context.mode);
     if (value)
-        return declaration.addParsedProperty(CSSProperty(propertyID, WTFMove(value), important)) ? CSSParser::ParseResult::Changed : CSSParser::ParseResult::Unchanged;
+        return declaration.addParsedProperty(CSSProperty(propertyID, std::move(value), important)) ? CSSParser::ParseResult::Changed : CSSParser::ParseResult::Unchanged;
 
     CSSParser parser(context);
     return parser.parseValue(declaration, propertyID, string, important);
@@ -190,7 +194,7 @@ std::shared_ptr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropert
         auto resolvedData = shorthandValue->resolveVariableReferences(state);
         if (!resolvedData)
             return nullptr;
-        Vector<CSSParserToken> resolvedTokens = resolvedData->tokens();
+        std::vector<CSSParserToken> resolvedTokens = resolvedData->tokens();
         
         ParsedPropertyVector parsedProperties;
         if (!CSSPropertyParser::parseValue(shorthandID, false, resolvedTokens, m_context, parsedProperties, StyleRule::Style))
@@ -233,7 +237,7 @@ std::shared_ptr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropert
     return CSSPropertyParser::parseTypedCustomPropertyValue(name, syntax, resolvedData->tokens(), *state.styleResolver, m_context);
 }
 
-std::unique_ptr<Vector<double>> CSSParser::parseKeyframeKeyList(const std::string& selector)
+std::unique_ptr<std::vector<double>> CSSParser::parseKeyframeKeyList(const std::string& selector)
 {
     return CSSParserImpl::parseKeyframeKeyList(selector);
 }

@@ -41,13 +41,13 @@ namespace WebCore {
 class FontFace final : public RefCounted<FontFace>, public CanMakeWeakPtr<FontFace>, private CSSFontFace::Client {
 public:
     struct Descriptors {
-        String style;
-        String weight;
-        String stretch;
-        String unicodeRange;
-        String variant;
-        String featureSettings;
-        String display;
+        std::string style;
+        std::string weight;
+        std::string stretch;
+        std::string unicodeRange;
+        std::string variant;
+        std::string featureSettings;
+        std::string display;
     };
     
     using Source = Variant<String, RefPtr<JSC::ArrayBuffer>, RefPtr<JSC::ArrayBufferView>>;
@@ -64,14 +64,14 @@ public:
     ExceptionOr<void> setFeatureSettings(const String&);
     ExceptionOr<void> setDisplay(const String&);
 
-    String family() const;
-    String style() const;
-    String weight() const;
-    String stretch() const;
-    String unicodeRange() const;
-    String variant() const;
-    String featureSettings() const;
-    String display() const;
+    std::string family() const;
+    std::string style() const;
+    std::string weight() const;
+    std::string stretch() const;
+    std::string unicodeRange() const;
+    std::string variant() const;
+    std::string featureSettings() const;
+    std::string display() const;
 
     enum class LoadStatus { Unloaded, Loading, Loaded, Error };
     LoadStatus status() const;

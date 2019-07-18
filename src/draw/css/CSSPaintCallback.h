@@ -31,7 +31,7 @@
 #include "CSSPaintSize.h"
 #include "CallbackResult.h"
 #include "StylePropertyMapReadOnly.h"
-#include <wtf/RefCounted.h>
+
 #include <wtf/WeakPtr.h>
 
 namespace JSC {

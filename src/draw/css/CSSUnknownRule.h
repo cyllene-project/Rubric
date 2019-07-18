@@ -34,7 +34,7 @@ public:
 
     virtual ~CSSUnknownRule() = default;
 
-    String cssText() const final { return String(); }
+    std::string cssText() const final { return String(); }
     void reattach(StyleRuleBase&) final { }
 
 private:

@@ -27,7 +27,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "config.h"
 #include "CSSParserFastPaths.h"
 
 #include "CSSFunctionValue.h"
@@ -37,8 +36,6 @@
 #include "CSSPropertyParser.h"
 #include "CSSValueList.h"
 #include "CSSValuePool.h"
-#include "HTMLParserIdioms.h"
-#include "RuntimeEnabledFeatures.h"
 #include "StyleColor.h"
 #include "StylePropertyShorthand.h"
 
@@ -144,9 +141,9 @@ static inline bool parseSimpleAngle(const CharacterType* characters, unsigned le
     return true;
 }
 
-static RefPtr<CSSValue> parseSimpleLengthValue(CSSPropertyID propertyId, const String& string, CSSParserMode cssParserMode)
+static std::shared_ptr<CSSValue> parseSimpleLengthValue(CSSPropertyID propertyId, const std::string& string, CSSParserMode cssParserMode)
 {
-    ASSERT(!string.isEmpty());
+    ASSERT(!string.empty());
     bool acceptsNegativeNumbers = false;
 
     // In @viewport, width and height are shorthands, not simple length values.
@@ -344,7 +341,7 @@ static bool parseColorIntOrPercentage(const CharacterType*& string, const Charac
         return false;
     // Clamp negative values at zero.
     value = negative ? 0 : static_cast<int>(localValue);
-    string = current;
+    std::string = current;
     return true;
 }
 
@@ -387,7 +384,7 @@ static inline bool parseAlphaValue(const CharacterType*& string, const Character
     if (string[0] != '0' && string[0] != '1' && string[0] != '.') {
         if (checkForValidDouble(string, end, terminator)) {
             value = negative ? 0 : 255;
-            string = end;
+            std::string = end;
             return true;
         }
         return false;
@@ -395,14 +392,14 @@ static inline bool parseAlphaValue(const CharacterType*& string, const Character
 
     if (length == 2 && string[0] != '.') {
         value = !negative && string[0] == '1' ? 255 : 0;
-        string = end;
+        std::string = end;
         return true;
     }
 
     if (isTenthAlpha(string, length - 1)) {
         static const int tenthAlphaValues[] = { 0, 25, 51, 76, 102, 127, 153, 179, 204, 230 };
         value = negative ? 0 : tenthAlphaValues[string[length - 2] - '0'];
-        string = end;
+        std::string = end;
         return true;
     }
 
@@ -410,7 +407,7 @@ static inline bool parseAlphaValue(const CharacterType*& string, const Character
     if (!parseDouble(string, end, terminator, alpha))
         return false;
     value = negative ? 0 : static_cast<int>(alpha * nextafter(256.0, 0.0));
-    string = end;
+    std::string = end;
     return true;
 }
 
@@ -497,9 +494,9 @@ static Color fastParseColorInternal(const CharacterType* characters, unsigned le
     return Color();
 }
 
-RefPtr<CSSValue> CSSParserFastPaths::parseColor(const String& string, CSSParserMode parserMode)
+std::shared_ptr<CSSValue> CSSParserFastPaths::parseColor(const std::string& string, CSSParserMode parserMode)
 {
-    ASSERT(!string.isEmpty());
+    ASSERT(!string.empty());
     CSSValueID valueID = cssValueKeywordID(string);
     if (StyleColor::isColorKeyword(valueID)) {
         if (!isValueAllowedInMode(valueID, parserMode))
@@ -522,11 +519,7 @@ RefPtr<CSSValue> CSSParserFastPaths::parseColor(const String& string, CSSParserM
 
 bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId, CSSValueID valueID, const CSSParserContext& context)
 {
-#if !ENABLE(OVERFLOW_SCROLLING_TOUCH)
-    UNUSED_PARAM(context);
-#endif
-
-    if (valueID == CSSValueInvalid || !isValueAllowedInMode(valueID, context.mode))
+    if (valueID == CSSValueInvalid)
         return false;
 
     switch (propertyId) {
@@ -591,10 +584,8 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
         return valueID == CSSValueLeft || valueID == CSSValueRight || valueID == CSSValueNone;
     case CSSPropertyImageRendering: // auto | optimizeContrast | pixelated | optimizeSpeed | crispEdges | optimizeQuality | webkit-crispEdges
         return valueID == CSSValueAuto || valueID == CSSValueOptimizeSpeed || valueID == CSSValueOptimizeQuality || valueID == CSSValueWebkitCrispEdges || valueID == CSSValueWebkitOptimizeContrast || valueID == CSSValueCrispEdges || valueID == CSSValuePixelated;
-#if ENABLE(CSS_COMPOSITING)
     case CSSPropertyIsolation: // auto | isolate
         return valueID == CSSValueAuto || valueID == CSSValueIsolate;
-#endif
     case CSSPropertyListStylePosition: // inside | outside
         return valueID == CSSValueInside || valueID == CSSValueOutside;
     case CSSPropertyListStyleType:
@@ -648,11 +639,9 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
         return valueID == CSSValueAuto || valueID == CSSValueFixed;
     case CSSPropertyTextAlign:
         return (valueID >= CSSValueWebkitAuto && valueID <= CSSValueWebkitMatchParent) || valueID == CSSValueStart || valueID == CSSValueEnd;
-#if ENABLE(CSS3_TEXT)
     case CSSPropertyWebkitTextAlignLast:
         // auto | start | end | left | right | center | justify
         return (valueID >= CSSValueLeft && valueID <= CSSValueJustify) || valueID == CSSValueStart || valueID == CSSValueEnd || valueID == CSSValueAuto;
-#endif
     case CSSPropertyTextAnchor:
         return valueID == CSSValueStart || valueID == CSSValueMiddle || valueID == CSSValueEnd;
 // FIXME-NEWPARSER: Support
@@ -661,11 +650,9 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
     case CSSPropertyTextDecorationStyle:
         // solid | double | dotted | dashed | wavy
         return valueID == CSSValueSolid || valueID == CSSValueDouble || valueID == CSSValueDotted || valueID == CSSValueDashed || valueID == CSSValueWavy;
-#if ENABLE(CSS3_TEXT)
     case CSSPropertyWebkitTextJustify:
         // auto | none | inter-word | distribute
         return valueID == CSSValueInterWord || valueID == CSSValueDistribute || valueID == CSSValueAuto || valueID == CSSValueNone;
-#endif
     case CSSPropertyWebkitTextOrientation: // mixed | upright | sideways | sideways-right
         return valueID == CSSValueMixed || valueID == CSSValueUpright || valueID == CSSValueSideways || valueID == CSSValueSidewaysRight;
     case CSSPropertyTextOverflow: // clip | ellipsis
@@ -688,31 +675,21 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
         return (valueID >= CSSValueCheckbox && valueID <= CSSValueCapsLockIndicator) || valueID == CSSValueNone;
     case CSSPropertyWebkitBackfaceVisibility:
         return valueID == CSSValueVisible || valueID == CSSValueHidden;
-#if ENABLE(CSS_COMPOSITING)
     case CSSPropertyMixBlendMode:
         return valueID == CSSValueNormal || valueID == CSSValueMultiply || valueID == CSSValueScreen || valueID == CSSValueOverlay
             || valueID == CSSValueDarken || valueID == CSSValueLighten || valueID == CSSValueColorDodge || valueID == CSSValueColorBurn
             || valueID == CSSValueHardLight || valueID == CSSValueSoftLight || valueID == CSSValueDifference || valueID == CSSValueExclusion
             || valueID == CSSValueHue || valueID == CSSValueSaturation || valueID == CSSValueColor || valueID == CSSValueLuminosity || valueID == CSSValuePlusDarker || valueID == CSSValuePlusLighter;
-#endif
     case CSSPropertyWebkitBoxAlign:
         return valueID == CSSValueStretch || valueID == CSSValueStart || valueID == CSSValueEnd || valueID == CSSValueCenter || valueID == CSSValueBaseline;
-#if ENABLE(CSS_BOX_DECORATION_BREAK)
-    case CSSPropertyWebkitBoxDecorationBreak:
-        return valueID == CSSValueClone || valueID == CSSValueSlice;
-    case CSSPropertyWebkitBoxDirection:
-        return valueID == CSSValueNormal || valueID == CSSValueReverse;
-#endif
     case CSSPropertyWebkitBoxLines:
         return valueID == CSSValueSingle || valueID == CSSValueMultiple;
     case CSSPropertyWebkitBoxOrient:
         return valueID == CSSValueHorizontal || valueID == CSSValueVertical || valueID == CSSValueInlineAxis || valueID == CSSValueBlockAxis;
     case CSSPropertyWebkitBoxPack:
         return valueID == CSSValueStart || valueID == CSSValueEnd || valueID == CSSValueCenter || valueID == CSSValueJustify;
-#if ENABLE(CURSOR_VISIBILITY)
     case CSSPropertyWebkitCursorVisibility:
         return valueID == CSSValueAuto || valueID == CSSValueAutoHide;
-#endif
     case CSSPropertyColumnFill:
         return valueID == CSSValueAuto || valueID == CSSValueBalance;
     case CSSPropertyWebkitColumnAxis:
@@ -771,33 +748,10 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
         return valueID == CSSValueNormal || valueID == CSSValueBreakAll || valueID == CSSValueKeepAll || valueID == CSSValueBreakWord;
     case CSSPropertyWebkitBorderFit:
         return valueID == CSSValueBorder || valueID == CSSValueLines;
-#if ENABLE(CSS_TRAILING_WORD)
-    case CSSPropertyAppleTrailingWord: // auto | -apple-partially-balanced
-        return valueID == CSSValueAuto || valueID == CSSValueWebkitPartiallyBalanced;
-#endif
-#if ENABLE(APPLE_PAY)
-    case CSSPropertyApplePayButtonStyle: // white | white-outline | black
-        return valueID == CSSValueWhite || valueID == CSSValueWhiteOutline || valueID == CSSValueBlack;
-    case CSSPropertyApplePayButtonType: // plain | buy | set-up | donate
-        if (valueID == CSSValuePlain || valueID == CSSValueBuy || valueID == CSSValueSetUp || valueID == CSSValueDonate)
-            return true;
-#if ENABLE(APPLE_PAY_SESSION_V4)
-        // check-out | book | subscribe
-        return valueID == CSSValueCheckOut || valueID == CSSValueBook || valueID == CSSValueSubscribe;
-#else
-        return false;
-#endif
-#endif
     case CSSPropertyWebkitNbspMode: // normal | space
         return valueID == CSSValueNormal || valueID == CSSValueSpace;
     case CSSPropertyWebkitTextZoom:
         return valueID == CSSValueNormal || valueID == CSSValueReset;
-#if PLATFORM(IOS_FAMILY)
-    // Apple specific property. These will never be standardized and is purely to
-    // support custom WebKit-based Apple applications.
-    case CSSPropertyWebkitTouchCallout:
-        return valueID == CSSValueDefault || valueID == CSSValueNone;
-#endif
     case CSSPropertyWebkitMarqueeDirection:
         return valueID == CSSValueForwards || valueID == CSSValueBackwards || valueID == CSSValueAhead || valueID == CSSValueReverse || valueID == CSSValueLeft || valueID == CSSValueRight || valueID == CSSValueDown
             || valueID == CSSValueUp || valueID == CSSValueAuto;
@@ -809,16 +763,8 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
         return valueID == CSSValueNormal || valueID == CSSValueSmallCaps || valueID == CSSValueAllSmallCaps || valueID == CSSValuePetiteCaps || valueID == CSSValueAllPetiteCaps || valueID == CSSValueUnicase || valueID == CSSValueTitlingCaps;
     case CSSPropertyFontVariantAlternates: // We only support the normal and historical-forms values.
         return valueID == CSSValueNormal || valueID == CSSValueHistoricalForms;
-#if ENABLE(OVERFLOW_SCROLLING_TOUCH)
-    case CSSPropertyWebkitOverflowScrolling:
-        if (!context.legacyOverflowScrollingTouchEnabled)
-            return false;
-        return valueID == CSSValueAuto || valueID == CSSValueTouch;
-#endif
-#if ENABLE(VARIATION_FONTS)
     case CSSPropertyFontOpticalSizing:
         return valueID == CSSValueAuto || valueID == CSSValueNone;
-#endif
     default:
         ASSERT_NOT_REACHED();
         return false;
@@ -945,45 +891,19 @@ bool CSSParserFastPaths::isKeywordPropertyID(CSSPropertyID propertyId)
     // case CSSPropertyTextJustify:
     // case CSSPropertyTextOrientation:
     // case CSSPropertyUserSelect:
-#if ENABLE(CSS_TRAILING_WORD)
-    case CSSPropertyAppleTrailingWord:
-#endif
-#if ENABLE(CSS_COMPOSITING)
     case CSSPropertyIsolation:
     case CSSPropertyMixBlendMode:
-#endif
-#if ENABLE(CSS_BOX_DECORATION_BREAK)
-    case CSSPropertyWebkitBoxDecorationBreak:
-#endif
-#if ENABLE(CURSOR_VISIBILITY)
     case CSSPropertyWebkitCursorVisibility:
-#endif
-#if ENABLE(OVERFLOW_SCROLLING_TOUCH)
-    case CSSPropertyWebkitOverflowScrolling:
-#endif
-#if ENABLE(CSS3_TEXT)
     case CSSPropertyWebkitTextAlignLast:
     case CSSPropertyWebkitTextJustify:
-#endif
-#if PLATFORM(IOS_FAMILY)
-    // Apple specific property. This will never be standardized and is purely to
-    // support custom WebKit-based Apple applications.
-    case CSSPropertyWebkitTouchCallout:
-#endif
-#if ENABLE(APPLE_PAY)
-    case CSSPropertyApplePayButtonStyle:
-    case CSSPropertyApplePayButtonType:
-#endif
-#if ENABLE(VARIATION_FONTS)
     case CSSPropertyFontOpticalSizing:
-#endif
         return true;
     default:
         return false;
     }
 }
 
-static bool isUniversalKeyword(const String& string)
+static bool isUniversalKeyword(const std::string& string)
 {
     // These keywords can be used for all properties.
     return equalLettersIgnoringASCIICase(string, "initial")
@@ -992,9 +912,9 @@ static bool isUniversalKeyword(const String& string)
     || equalLettersIgnoringASCIICase(string, "revert");
 }
 
-static RefPtr<CSSValue> parseKeywordValue(CSSPropertyID propertyId, const String& string, const CSSParserContext& context)
+static std::shared_ptr<CSSValue> parseKeywordValue(CSSPropertyID propertyId, const std::string& string, const CSSParserContext& context)
 {
-    ASSERT(!string.isEmpty());
+    ASSERT(!string.empty());
 
     if (!CSSParserFastPaths::isKeywordPropertyID(propertyId)) {
         // All properties accept the values of "initial" and "inherit".
@@ -1095,7 +1015,7 @@ static bool parseTransformNumberArguments(CharType*& pos, CharType* end, unsigne
 static const int kShortestValidTransformStringLength = 9; // "rotate(0)"
 
 template <typename CharType>
-static RefPtr<CSSFunctionValue> parseSimpleTransformValue(CharType*& pos, CharType* end)
+static std::shared_ptr<CSSFunctionValue> parseSimpleTransformValue(CharType*& pos, CharType* end)
 {
     if (end - pos < kShortestValidTransformStringLength)
         return nullptr;
@@ -1133,7 +1053,7 @@ static RefPtr<CSSFunctionValue> parseSimpleTransformValue(CharType*& pos, CharTy
             return nullptr;
 
         pos += argumentStart;
-        RefPtr<CSSFunctionValue> transformValue = CSSFunctionValue::create(transformType);
+        std::shared_ptr<CSSFunctionValue> transformValue = CSSFunctionValue::create(transformType);
         if (!parseTransformTranslateArguments(pos, end, expectedArgumentCount, transformValue.get()))
             return nullptr;
         return transformValue;
@@ -1151,7 +1071,7 @@ static RefPtr<CSSFunctionValue> parseSimpleTransformValue(CharType*& pos, CharTy
 
     if (isMatrix3d) {
         pos += 9;
-        RefPtr<CSSFunctionValue> transformValue = CSSFunctionValue::create(CSSValueMatrix3d);
+        std::shared_ptr<CSSFunctionValue> transformValue = CSSFunctionValue::create(CSSValueMatrix3d);
         if (!parseTransformNumberArguments(pos, end, 16, transformValue.get()))
             return nullptr;
         return transformValue;
@@ -1168,7 +1088,7 @@ static RefPtr<CSSFunctionValue> parseSimpleTransformValue(CharType*& pos, CharTy
 
     if (isScale3d) {
         pos += 8;
-        RefPtr<CSSFunctionValue> transformValue = CSSFunctionValue::create(CSSValueScale3d);
+        std::shared_ptr<CSSFunctionValue> transformValue = CSSFunctionValue::create(CSSValueScale3d);
         if (!parseTransformNumberArguments(pos, end, 3, transformValue.get()))
             return nullptr;
         return transformValue;
@@ -1194,7 +1114,7 @@ static RefPtr<CSSFunctionValue> parseSimpleTransformValue(CharType*& pos, CharTy
             return nullptr;
 
         pos += argumentStart;
-        RefPtr<CSSFunctionValue> transformValue = CSSFunctionValue::create(transformType);
+        std::shared_ptr<CSSFunctionValue> transformValue = CSSFunctionValue::create(transformType);
         if (!parseTransformAngleArgument(pos, end, transformValue.get()))
             return nullptr;
         return transformValue;
@@ -1262,19 +1182,19 @@ static bool transformCanLikelyUseFastPath(const CharType* chars, unsigned length
 }
 
 template <typename CharType>
-static RefPtr<CSSValueList> parseSimpleTransformList(const CharType* chars, unsigned length)
+static std::shared_ptr<CSSValueList> parseSimpleTransformList(const CharType* chars, unsigned length)
 {
     if (!transformCanLikelyUseFastPath(chars, length))
         return nullptr;
     const CharType*& pos = chars;
     const CharType* end = chars + length;
-    RefPtr<CSSValueList> transformList;
+    std::shared_ptr<CSSValueList> transformList;
     while (pos < end) {
         while (pos < end && isCSSSpace(*pos))
             ++pos;
         if (pos >= end)
             break;
-        RefPtr<CSSFunctionValue> transformValue = parseSimpleTransformValue(pos, end);
+        std::shared_ptr<CSSFunctionValue> transformValue = parseSimpleTransformValue(pos, end);
         if (!transformValue)
             return nullptr;
         if (!transformList)
@@ -1284,9 +1204,9 @@ static RefPtr<CSSValueList> parseSimpleTransformList(const CharType* chars, unsi
     return transformList;
 }
 
-static RefPtr<CSSValue> parseSimpleTransform(CSSPropertyID propertyID, const String& string)
+static std::shared_ptr<CSSValue> parseSimpleTransform(CSSPropertyID propertyID, const std::string& string)
 {
-    ASSERT(!string.isEmpty());
+    ASSERT(!string.empty());
     if (propertyID != CSSPropertyTransform)
         return nullptr;
     if (string.is8Bit())
@@ -1294,23 +1214,23 @@ static RefPtr<CSSValue> parseSimpleTransform(CSSPropertyID propertyID, const Str
     return parseSimpleTransformList(string.characters16(), string.length());
 }
 
-static RefPtr<CSSValue> parseCaretColor(const String& string, CSSParserMode parserMode)
+static std::shared_ptr<CSSValue> parseCaretColor(const std::string& string, CSSParserMode parserMode)
 {
-    ASSERT(!string.isEmpty());
+    ASSERT(!string.empty());
     CSSValueID valueID = cssValueKeywordID(string);
     if (valueID == CSSValueAuto)
         return CSSValuePool::singleton().createIdentifierValue(valueID);
     return CSSParserFastPaths::parseColor(string, parserMode);
 }
 
-RefPtr<CSSValue> CSSParserFastPaths::maybeParseValue(CSSPropertyID propertyID, const String& string, const CSSParserContext& context)
+std::shared_ptr<CSSValue> CSSParserFastPaths::maybeParseValue(CSSPropertyID propertyID, const std::string& string, const CSSParserContext& context)
 {
-    if (auto result = parseSimpleLengthValue(propertyID, string, context.mode))
+    if (auto result = parseSimpleLengthValue(propertyID, string, UASheetMode))
         return result;
     if (propertyID == CSSPropertyCaretColor)
-        return parseCaretColor(string, context.mode);
+        return parseCaretColor(string, UASheetMode);
     if (isColorPropertyID(propertyID))
-        return parseColor(string, context.mode);
+        return parseColor(string, UASheetMode);
     if (auto result = parseKeywordValue(propertyID, string, context))
         return result;
     return parseSimpleTransform(propertyID, string);

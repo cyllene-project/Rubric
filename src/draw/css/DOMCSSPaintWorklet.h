@@ -29,7 +29,7 @@
 
 #include "Supplementable.h"
 
-#include <wtf/RefCounted.h>
+
 #include <wtf/RefPtr.h>
 
 namespace WebCore {
@@ -39,7 +39,7 @@ class Worklet;
 class DOMCSSNamespace;
 
 class DOMCSSPaintWorklet final : public Supplement<DOMCSSNamespace> {
-    WTF_MAKE_FAST_ALLOCATED;
+
 public:
     explicit DOMCSSPaintWorklet(DOMCSSNamespace&) { }
 

@@ -21,9 +21,12 @@
 #pragma once
 
 #include "CSSPropertyNames.h"
+#include "ref_ptr.h"
 #include <functional>
 #include <unordered_set>
 #include <memory>
+
+using namespace rubric::draw::css;
 
 namespace WebCore {
 
@@ -234,7 +237,7 @@ friend class CSSValueList;
 };
 
 template<typename CSSValueType>
-inline bool compareCSSValueVector(const std::vector<std::reference_wrapper<CSSValueType>>& firstVector, const std::vector<std::reference_wrapper<CSSValueType>>& secondVector)
+inline bool compareCSSValueVector(const std::vector<ref_ptr<CSSValueType>>& firstVector, const std::vector<ref_ptr<CSSValueType>>& secondVector)
 {
     size_t size = firstVector.size();
     if (size != secondVector.size())
@@ -257,7 +260,7 @@ inline bool compareCSSValuePtr(const std::shared_ptr<CSSValueType>& first, const
 }
 
 template<typename CSSValueType>
-inline bool compareCSSValue(const std::reference_wrapper<CSSValueType>& first, const std::reference_wrapper<CSSValueType>& second)
+inline bool compareCSSValue(const ref_ptr<CSSValueType>& first, const ref_ptr<CSSValueType>& second)
 {
     return first.get().equals(second);
 }

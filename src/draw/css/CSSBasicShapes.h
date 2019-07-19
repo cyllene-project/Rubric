@@ -37,7 +37,7 @@
 class CSSPrimitiveValue;
 class SVGPathByteStream;
 
-class CSSBasicShape : public RefCounted<CSSBasicShape> {
+class CSSBasicShape {
 public:
     enum Type {
         CSSBasicShapePolygonType,
@@ -61,7 +61,7 @@ protected:
 
 class CSSBasicShapeInset final : public CSSBasicShape {
 public:
-    static std::reference_wrapper<CSSBasicShapeInset> create() { return adoptRef(*new CSSBasicShapeInset); }
+    static ref_ptr<CSSBasicShapeInset> create() { return adoptRef(*new CSSBasicShapeInset); }
 
     CSSPrimitiveValue* top() const { return m_top.get(); }
     CSSPrimitiveValue* right() const { return m_right.get(); }
@@ -73,12 +73,12 @@ public:
     CSSPrimitiveValue* bottomRightRadius() const { return m_bottomRightRadius.get(); }
     CSSPrimitiveValue* bottomLeftRadius() const { return m_bottomLeftRadius.get(); }
 
-    void setTop(std::reference_wrapper<CSSPrimitiveValue>&& top) { m_top = std::move(top); }
-    void setRight(std::reference_wrapper<CSSPrimitiveValue>&& right) { m_right = std::move(right); }
-    void setBottom(std::reference_wrapper<CSSPrimitiveValue>&& bottom) { m_bottom = std::move(bottom); }
-    void setLeft(std::reference_wrapper<CSSPrimitiveValue>&& left) { m_left = std::move(left); }
+    void setTop(ref_ptr<CSSPrimitiveValue>&& top) { m_top = std::move(top); }
+    void setRight(ref_ptr<CSSPrimitiveValue>&& right) { m_right = std::move(right); }
+    void setBottom(ref_ptr<CSSPrimitiveValue>&& bottom) { m_bottom = std::move(bottom); }
+    void setLeft(ref_ptr<CSSPrimitiveValue>&& left) { m_left = std::move(left); }
 
-    void updateShapeSize4Values(std::reference_wrapper<CSSPrimitiveValue>&& top, std::reference_wrapper<CSSPrimitiveValue>&& right, std::reference_wrapper<CSSPrimitiveValue>&& bottom, std::reference_wrapper<CSSPrimitiveValue>&& left)
+    void updateShapeSize4Values(ref_ptr<CSSPrimitiveValue>&& top, ref_ptr<CSSPrimitiveValue>&& right, ref_ptr<CSSPrimitiveValue>&& bottom, ref_ptr<CSSPrimitiveValue>&& left)
     {
         setTop(std::move(top));
         setRight(std::move(right));
@@ -86,17 +86,17 @@ public:
         setLeft(std::move(left));
     }
 
-    void updateShapeSize1Value(std::reference_wrapper<CSSPrimitiveValue>&& value1)
+    void updateShapeSize1Value(ref_ptr<CSSPrimitiveValue>&& value1)
     {
         updateShapeSize4Values(value1.copyRef(), value1.copyRef(), value1.copyRef(), value1.copyRef());
     }
 
-    void updateShapeSize2Values(std::reference_wrapper<CSSPrimitiveValue>&& value1, std::reference_wrapper<CSSPrimitiveValue>&& value2)
+    void updateShapeSize2Values(ref_ptr<CSSPrimitiveValue>&& value1, ref_ptr<CSSPrimitiveValue>&& value2)
     {
         updateShapeSize4Values(value1.copyRef(), value2.copyRef(), value1.copyRef(), value2.copyRef());
     }
 
-    void updateShapeSize3Values(std::reference_wrapper<CSSPrimitiveValue>&& value1, std::reference_wrapper<CSSPrimitiveValue>&& value2,  std::reference_wrapper<CSSPrimitiveValue>&& value3)
+    void updateShapeSize3Values(ref_ptr<CSSPrimitiveValue>&& value1, ref_ptr<CSSPrimitiveValue>&& value2,  ref_ptr<CSSPrimitiveValue>&& value3)
     {
         updateShapeSize4Values(std::move(value1), value2.copyRef(), std::move(value3), value2.copyRef());
     }
@@ -126,15 +126,15 @@ private:
 
 class CSSBasicShapeCircle final : public CSSBasicShape {
 public:
-    static std::reference_wrapper<CSSBasicShapeCircle> create() { return adoptRef(*new CSSBasicShapeCircle); }
+    static ref_ptr<CSSBasicShapeCircle> create() { return adoptRef(*new CSSBasicShapeCircle); }
 
     CSSPrimitiveValue* centerX() const { return m_centerX.get(); }
     CSSPrimitiveValue* centerY() const { return m_centerY.get(); }
     CSSPrimitiveValue* radius() const { return m_radius.get(); }
 
-    void setCenterX(std::reference_wrapper<CSSPrimitiveValue>&& centerX) { m_centerX = std::move(centerX); }
-    void setCenterY(std::reference_wrapper<CSSPrimitiveValue>&& centerY) { m_centerY = std::move(centerY); }
-    void setRadius(std::reference_wrapper<CSSPrimitiveValue>&& radius) { m_radius = std::move(radius); }
+    void setCenterX(ref_ptr<CSSPrimitiveValue>&& centerX) { m_centerX = std::move(centerX); }
+    void setCenterY(ref_ptr<CSSPrimitiveValue>&& centerY) { m_centerY = std::move(centerY); }
+    void setRadius(ref_ptr<CSSPrimitiveValue>&& radius) { m_radius = std::move(radius); }
 
 private:
     CSSBasicShapeCircle() = default;
@@ -150,17 +150,17 @@ private:
 
 class CSSBasicShapeEllipse final : public CSSBasicShape {
 public:
-    static std::reference_wrapper<CSSBasicShapeEllipse> create() { return adoptRef(*new CSSBasicShapeEllipse); }
+    static ref_ptr<CSSBasicShapeEllipse> create() { return adoptRef(*new CSSBasicShapeEllipse); }
 
     CSSPrimitiveValue* centerX() const { return m_centerX.get(); }
     CSSPrimitiveValue* centerY() const { return m_centerY.get(); }
     CSSPrimitiveValue* radiusX() const { return m_radiusX.get(); }
     CSSPrimitiveValue* radiusY() const { return m_radiusY.get(); }
 
-    void setCenterX(std::reference_wrapper<CSSPrimitiveValue>&& centerX) { m_centerX = std::move(centerX); }
-    void setCenterY(std::reference_wrapper<CSSPrimitiveValue>&& centerY) { m_centerY = std::move(centerY); }
-    void setRadiusX(std::reference_wrapper<CSSPrimitiveValue>&& radiusX) { m_radiusX = std::move(radiusX); }
-    void setRadiusY(std::reference_wrapper<CSSPrimitiveValue>&& radiusY) { m_radiusY = std::move(radiusY); }
+    void setCenterX(ref_ptr<CSSPrimitiveValue>&& centerX) { m_centerX = std::move(centerX); }
+    void setCenterY(ref_ptr<CSSPrimitiveValue>&& centerY) { m_centerY = std::move(centerY); }
+    void setRadiusX(ref_ptr<CSSPrimitiveValue>&& radiusX) { m_radiusX = std::move(radiusX); }
+    void setRadiusY(ref_ptr<CSSPrimitiveValue>&& radiusY) { m_radiusY = std::move(radiusY); }
 
 private:
     CSSBasicShapeEllipse() = default;
@@ -177,15 +177,15 @@ private:
 
 class CSSBasicShapePolygon final : public CSSBasicShape {
 public:
-    static std::reference_wrapper<CSSBasicShapePolygon> create() { return adoptRef(*new CSSBasicShapePolygon); }
+    static ref_ptr<CSSBasicShapePolygon> create() { return adoptRef(*new CSSBasicShapePolygon); }
 
-    void appendPoint(std::reference_wrapper<CSSPrimitiveValue>&& x, std::reference_wrapper<CSSPrimitiveValue>&& y)
+    void appendPoint(ref_ptr<CSSPrimitiveValue>&& x, ref_ptr<CSSPrimitiveValue>&& y)
     {
         m_values.append(std::move(x));
         m_values.append(std::move(y));
     }
 
-    const std::vector<std::reference_wrapper<CSSPrimitiveValue>>& values() const { return m_values; }
+    const std::vector<ref_ptr<CSSPrimitiveValue>>& values() const { return m_values; }
 
     void setWindRule(WindRule rule) { m_windRule = rule; }
     WindRule windRule() const { return m_windRule; }
@@ -200,15 +200,15 @@ private:
     std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
-    std::vector<std::reference_wrapper<CSSPrimitiveValue>> m_values;
+    std::vector<ref_ptr<CSSPrimitiveValue>> m_values;
     WindRule m_windRule;
 };
 
 class CSSBasicShapePath final : public CSSBasicShape {
 public:
-    static std::reference_wrapper<CSSBasicShapePath> create(std::unique_ptr<SVGPathByteStream>&& pathData)
+    static ref_ptr<CSSBasicShapePath> create(std::unique_ptr<SVGPathByteStream>&& pathData)
     {
-        return adoptRef(*new CSSBasicShapePath(std::move(pathData)));
+        return ref_ptr<CSSBasicShapePath>(std::move(pathData));
     }
 
     const SVGPathByteStream& pathData() const

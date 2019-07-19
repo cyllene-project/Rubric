@@ -325,8 +325,8 @@ namespace WebCore {
         // Hide.
         CSSSelector& operator=(const CSSSelector&);
 
-        struct RareData : public RefCounted<RareData> {
-            static std::reference_wrapper<RareData> create(AtomString&& value) { return adoptRef(*new RareData(std::move(value))); }
+        struct RareData {
+            static ref_ptr<RareData> create(AtomString&& value) { return ref_ptr<RareData>(std::move(value)); }
             ~RareData();
 
             bool matchNth(int count);
@@ -350,7 +350,7 @@ namespace WebCore {
         };
         void createRareData();
 
-        struct NameWithCase : public RefCounted<NameWithCase> {
+        struct NameWithCase {
             NameWithCase(const QualifiedName& originalName, const std::atomic<std::string>& lowercaseName)
                 : m_originalName(originalName)
                 , m_lowercaseLocalName(lowercaseName)

@@ -90,7 +90,7 @@ public:
     static Resize convertResize(StyleResolver&, const CSSValue&);
     static int convertMarqueeRepetition(StyleResolver&, const CSSValue&);
     static int convertMarqueeSpeed(StyleResolver&, const CSSValue&);
-    static std::reference_wrapper<QuotesData> convertQuotes(StyleResolver&, const CSSValue&);
+    static ref_ptr<QuotesData> convertQuotes(StyleResolver&, const CSSValue&);
     static TextUnderlinePosition convertTextUnderlinePosition(StyleResolver&, const CSSValue&);
     static TextUnderlineOffset convertTextUnderlineOffset(StyleResolver&, const CSSValue&);
     static TextDecorationThickness convertTextDecorationThickness(StyleResolver&, const CSSValue&);
@@ -103,18 +103,18 @@ public:
 
     static GridTrackSize convertGridTrackSize(StyleResolver&, const CSSValue&);
     static std::vector<GridTrackSize> convertGridTrackSizeList(StyleResolver&, const CSSValue&);
-    static Optional<GridPosition> convertGridPosition(StyleResolver&, const CSSValue&);
+    static std::optional<GridPosition> convertGridPosition(StyleResolver&, const CSSValue&);
     static GridAutoFlow convertGridAutoFlow(StyleResolver&, const CSSValue&);
-    static Optional<Length> convertWordSpacing(StyleResolver&, const CSSValue&);
-    static Optional<float> convertPerspective(StyleResolver&, const CSSValue&);
-    static Optional<Length> convertMarqueeIncrement(StyleResolver&, const CSSValue&);
-    static Optional<FilterOperations> convertFilterOperations(StyleResolver&, const CSSValue&);
+    static std::optional<Length> convertWordSpacing(StyleResolver&, const CSSValue&);
+    static std::optional<float> convertPerspective(StyleResolver&, const CSSValue&);
+    static std::optional<Length> convertMarqueeIncrement(StyleResolver&, const CSSValue&);
+    static std::optional<FilterOperations> convertFilterOperations(StyleResolver&, const CSSValue&);
     static Color convertTapHighlightColor(StyleResolver&, const CSSValue&);
     static OptionSet<TouchAction> convertTouchAction(StyleResolver&, const CSSValue&);
     static FontFeatureSettings convertFontFeatureSettings(StyleResolver&, const CSSValue&);
     static FontSelectionValue convertFontWeightFromValue(const CSSValue&);
     static FontSelectionValue convertFontStretchFromValue(const CSSValue&);
-    static Optional<FontSelectionValue> convertFontStyleFromValue(const CSSValue&);
+    static std::optional<FontSelectionValue> convertFontStyleFromValue(const CSSValue&);
     static FontSelectionValue convertFontWeight(StyleResolver&, const CSSValue&);
     static FontSelectionValue convertFontStretch(StyleResolver&, const CSSValue&);
     static FontSelectionValue convertFontStyle(StyleResolver&, const CSSValue&);
@@ -130,7 +130,7 @@ public:
     static StyleContentAlignmentData convertContentAlignmentData(StyleResolver&, const CSSValue&);
     static GlyphOrientation convertGlyphOrientation(StyleResolver&, const CSSValue&);
     static GlyphOrientation convertGlyphOrientationOrAuto(StyleResolver&, const CSSValue&);
-    static Optional<Length> convertLineHeight(StyleResolver&, const CSSValue&, float multiplier = 1.f);
+    static std::optional<Length> convertLineHeight(StyleResolver&, const CSSValue&, float multiplier = 1.f);
     static FontSynthesis convertFontSynthesis(StyleResolver&, const CSSValue&);
     
     static BreakBetween convertPageBreakBetween(StyleResolver&, const CSSValue&);
@@ -654,7 +654,7 @@ inline int StyleBuilderConverter::convertMarqueeSpeed(StyleResolver&, const CSSV
     return speed;
 }
 
-inline std::reference_wrapper<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, const CSSValue& value)
+inline ref_ptr<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
         assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
@@ -763,7 +763,7 @@ inline float StyleBuilderConverter::convertTextStrokeWidth(StyleResolver& styleR
             result *= 3;
         else if (primitiveValue.valueID() == CSSValueThick)
             result *= 5;
-        std::reference_wrapper<CSSPrimitiveValue> emsValue(CSSPrimitiveValue::create(result, CSSPrimitiveValue::CSS_EMS));
+        ref_ptr<CSSPrimitiveValue> emsValue(CSSPrimitiveValue::create(result, CSSPrimitiveValue::CSS_EMS));
         width = convertComputedLength<float>(styleResolver, emsValue);
         break;
     }
@@ -1069,7 +1069,7 @@ inline GridTrackSize StyleBuilderConverter::convertGridTrackSize(StyleResolver& 
     return createGridTrackSize(value, styleResolver);
 }
 
-inline Optional<GridPosition> StyleBuilderConverter::convertGridPosition(StyleResolver&, const CSSValue& value)
+inline std::optional<GridPosition> StyleBuilderConverter::convertGridPosition(StyleResolver&, const CSSValue& value)
 {
     GridPosition gridPosition;
     if (createGridPosition(value, gridPosition))
@@ -1124,9 +1124,9 @@ inline CSSToLengthConversionData StyleBuilderConverter::csstoLengthConversionDat
     return styleResolver.state().cssToLengthConversionData();
 }
 
-inline Optional<Length> StyleBuilderConverter::convertWordSpacing(StyleResolver& styleResolver, const CSSValue& value)
+inline std::optional<Length> StyleBuilderConverter::convertWordSpacing(StyleResolver& styleResolver, const CSSValue& value)
 {
-    Optional<Length> wordSpacing;
+    std::optional<Length> wordSpacing;
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     if (primitiveValue.valueID() == CSSValueNormal)
         wordSpacing = RenderStyle::initialWordSpacing();
@@ -1140,7 +1140,7 @@ inline Optional<Length> StyleBuilderConverter::convertWordSpacing(StyleResolver&
     return wordSpacing;
 }
 
-inline Optional<float> StyleBuilderConverter::convertPerspective(StyleResolver& styleResolver, const CSSValue& value)
+inline std::optional<float> StyleBuilderConverter::convertPerspective(StyleResolver& styleResolver, const CSSValue& value)
 {
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     if (primitiveValue.valueID() == CSSValueNone)
@@ -1154,12 +1154,12 @@ inline Optional<float> StyleBuilderConverter::convertPerspective(StyleResolver& 
     else
         ASSERT_NOT_REACHED();
 
-    return perspective < 0 ? Optional<float>(WTF::nullopt) : Optional<float>(perspective);
+    return perspective < 0 ? std::optional<float>(WTF::nullopt) : std::optional<float>(perspective);
 }
 
-inline Optional<Length> StyleBuilderConverter::convertMarqueeIncrement(StyleResolver& styleResolver, const CSSValue& value)
+inline std::optional<Length> StyleBuilderConverter::convertMarqueeIncrement(StyleResolver& styleResolver, const CSSValue& value)
 {
-    Optional<Length> marqueeLength;
+    std::optional<Length> marqueeLength;
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     switch (primitiveValue.valueID()) {
     case CSSValueSmall:
@@ -1183,7 +1183,7 @@ inline Optional<Length> StyleBuilderConverter::convertMarqueeIncrement(StyleReso
     return marqueeLength;
 }
 
-inline Optional<FilterOperations> StyleBuilderConverter::convertFilterOperations(StyleResolver& styleResolver, const CSSValue& value)
+inline std::optional<FilterOperations> StyleBuilderConverter::convertFilterOperations(StyleResolver& styleResolver, const CSSValue& value)
 {
     FilterOperations operations;
     if (styleResolver.createFilterOperations(value, operations))
@@ -1245,7 +1245,7 @@ inline FontSelectionValue StyleBuilderConverter::convertFontStretchFromValue(con
 }
 
 // The input value needs to parsed and valid, this function returns WTF::nullopt if the input was "normal".
-inline Optional<FontSelectionValue> StyleBuilderConverter::convertFontStyleFromValue(const CSSValue& value)
+inline std::optional<FontSelectionValue> StyleBuilderConverter::convertFontStyleFromValue(const CSSValue& value)
 {
     assert(is<CSSFontStyleValue>(value));
     const auto& fontStyleValue = downcast<CSSFontStyleValue>(value);
@@ -1447,7 +1447,7 @@ inline GlyphOrientation StyleBuilderConverter::convertGlyphOrientationOrAuto(Sty
     return convertGlyphOrientation(styleResolver, value);
 }
 
-inline Optional<Length> StyleBuilderConverter::convertLineHeight(StyleResolver& styleResolver, const CSSValue& value, float multiplier)
+inline std::optional<Length> StyleBuilderConverter::convertLineHeight(StyleResolver& styleResolver, const CSSValue& value, float multiplier)
 {
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     if (primitiveValue.valueID() == CSSValueNormal)

@@ -33,13 +33,13 @@
 namespace WebCore {
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrixreadonly-dommatrixreadonly
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::create(ScriptExecutionContext& scriptExecutionContext, Optional<Variant<String, std::vector<double>>>&& init)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::create(ScriptExecutionContext& scriptExecutionContext, std::optional<Variant<String, std::vector<double>>>&& init)
 {
     if (!init)
         return adoptRef(*new DOMMatrix);
 
     return WTF::switchOn(init.value(),
-        [&scriptExecutionContext](const std::string& init) -> ExceptionOr<std::reference_wrapper<DOMMatrix>> {
+        [&scriptExecutionContext](const std::string& init) -> ExceptionOr<ref_ptr<DOMMatrix>> {
             if (!scriptExecutionContext.isDocument())
                 return Exception { TypeError };
 
@@ -49,7 +49,7 @@ ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::create(ScriptExecution
             
             return adoptRef(*new DOMMatrix(parseResult.returnValue().matrix, parseResult.returnValue().is2D ? Is2D::Yes : Is2D::No));
         },
-        [](const std::vector<double>& init) -> ExceptionOr<std::reference_wrapper<DOMMatrix>> {
+        [](const std::vector<double>& init) -> ExceptionOr<ref_ptr<DOMMatrix>> {
             if (init.size() == 6) {
                 return adoptRef(*new DOMMatrix(TransformationMatrix {
                     init[0], init[1], init[2], init[3], init[4], init[5]
@@ -79,12 +79,12 @@ DOMMatrix::DOMMatrix(TransformationMatrix&& matrix, Is2D is2D)
 }
 
 // https://drafts.fxtf.org/geometry/#create-a-dommatrix-from-the-dictionary
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::fromMatrix(DOMMatrixInit&& init)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::fromMatrix(DOMMatrixInit&& init)
 {
     return fromMatrixHelper<DOMMatrix>(std::move(init));
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::fromFloat32Array(std::reference_wrapper<Float32Array>&& array32)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::fromFloat32Array(ref_ptr<Float32Array>&& array32)
 {
     if (array32->length() == 6)
         return DOMMatrix::create(TransformationMatrix(array32->item(0), array32->item(1), array32->item(2), array32->item(3), array32->item(4), array32->item(5)), Is2D::Yes);
@@ -101,7 +101,7 @@ ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::fromFloat32Array(std::
     return Exception { TypeError };
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::fromFloat64Array(std::reference_wrapper<Float64Array>&& array64)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::fromFloat64Array(ref_ptr<Float64Array>&& array64)
 {
     if (array64->length() == 6)
         return DOMMatrix::create(TransformationMatrix(array64->item(0), array64->item(1), array64->item(2), array64->item(3), array64->item(4), array64->item(5)), Is2D::Yes);
@@ -119,7 +119,7 @@ ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::fromFloat64Array(std::
 }
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrix-multiplyself
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::multiplySelf(DOMMatrixInit&& other)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::multiplySelf(DOMMatrixInit&& other)
 {
     auto fromMatrixResult = DOMMatrix::fromMatrix(std::move(other));
     if (fromMatrixResult.hasException())
@@ -128,11 +128,11 @@ ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::multiplySelf(DOMMatrix
     m_matrix.multiply(otherObject->m_matrix);
     if (!otherObject->is2D())
         m_is2D = false;
-    return std::reference_wrapper<DOMMatrix> { *this };
+    return ref_ptr<DOMMatrix> { *this };
 }
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrix-premultiplyself
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::preMultiplySelf(DOMMatrixInit&& other)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::preMultiplySelf(DOMMatrixInit&& other)
 {
     auto fromMatrixResult = DOMMatrix::fromMatrix(std::move(other));
     if (fromMatrixResult.hasException())
@@ -141,7 +141,7 @@ ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::preMultiplySelf(DOMMat
     m_matrix = otherObject->m_matrix * m_matrix;
     if (!otherObject->is2D())
         m_is2D = false;
-    return std::reference_wrapper<DOMMatrix> { *this };
+    return ref_ptr<DOMMatrix> { *this };
 }
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrix-translateself
@@ -154,7 +154,7 @@ Ref<DOMMatrix> DOMMatrix::translateSelf(double tx, double ty, double tz)
 }
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrix-scaleself
-Ref<DOMMatrix> DOMMatrix::scaleSelf(double scaleX, Optional<double> scaleY, double scaleZ, double originX, double originY, double originZ)
+Ref<DOMMatrix> DOMMatrix::scaleSelf(double scaleX, std::optional<double> scaleY, double scaleZ, double originX, double originY, double originZ)
 {
     if (!scaleY)
         scaleY = scaleX;
@@ -182,7 +182,7 @@ Ref<DOMMatrix> DOMMatrix::scale3dSelf(double scale, double originX, double origi
 }
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrix-rotateself
-Ref<DOMMatrix> DOMMatrix::rotateSelf(double rotX, Optional<double> rotY, Optional<double> rotZ)
+Ref<DOMMatrix> DOMMatrix::rotateSelf(double rotX, std::optional<double> rotY, std::optional<double> rotZ)
 {
     if (!rotY && !rotZ) {
         rotZ = rotX;
@@ -240,15 +240,15 @@ Ref<DOMMatrix> DOMMatrix::invertSelf()
         );
         m_is2D = false;
     }
-    return std::reference_wrapper<DOMMatrix> { *this };
+    return ref_ptr<DOMMatrix> { *this };
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrix::setMatrixValueForBindings(const std::string& string)
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrix::setMatrixValueForBindings(const std::string& string)
 {
     auto result = setMatrixValue(string);
     if (result.hasException())
         return result.releaseException();
-    return std::reference_wrapper<DOMMatrix> { *this };
+    return ref_ptr<DOMMatrix> { *this };
 }
 
 } // namespace WebCore

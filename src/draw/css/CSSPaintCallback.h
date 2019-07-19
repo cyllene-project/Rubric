@@ -41,7 +41,7 @@ class JSValue;
 namespace WebCore {
 class PaintRenderingContext2D;
 
-class CSSPaintCallback : public RefCounted<CSSPaintCallback>, public CanMakeWeakPtr<CSSPaintCallback>, public ActiveDOMCallback {
+class CSSPaintCallback :  public CanMakeWeakPtr<CSSPaintCallback>, public ActiveDOMCallback {
 public:
     using ActiveDOMCallback::ActiveDOMCallback;
 

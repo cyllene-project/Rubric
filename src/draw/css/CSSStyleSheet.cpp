@@ -69,22 +69,22 @@ static bool isAcceptableCSSStyleSheetParent(Node* parentNode)
 }
 #endif
 
-Ref<CSSStyleSheet> CSSStyleSheet::create(std::reference_wrapper<StyleSheetContents>&& sheet, CSSImportRule* ownerRule)
+Ref<CSSStyleSheet> CSSStyleSheet::create(ref_ptr<StyleSheetContents>&& sheet, CSSImportRule* ownerRule)
 {
-    return adoptRef(*new CSSStyleSheet(std::move(sheet), ownerRule));
+    return ref_ptr<CSSStyleSheet>(std::move(sheet), ownerRule);
 }
 
-Ref<CSSStyleSheet> CSSStyleSheet::create(std::reference_wrapper<StyleSheetContents>&& sheet, Node& ownerNode, const Optional<bool>& isCleanOrigin)
+Ref<CSSStyleSheet> CSSStyleSheet::create(ref_ptr<StyleSheetContents>&& sheet, Node& ownerNode, const std::optional<bool>& isCleanOrigin)
 {
-    return adoptRef(*new CSSStyleSheet(std::move(sheet), ownerNode, TextPosition(), false, isCleanOrigin));
+    return ref_ptr<CSSStyleSheet>(std::move(sheet), ownerNode, TextPosition(), false, isCleanOrigin);
 }
 
-Ref<CSSStyleSheet> CSSStyleSheet::createInline(std::reference_wrapper<StyleSheetContents>&& sheet, Element& owner, const TextPosition& startPosition)
+Ref<CSSStyleSheet> CSSStyleSheet::createInline(ref_ptr<StyleSheetContents>&& sheet, Element& owner, const TextPosition& startPosition)
 {
-    return adoptRef(*new CSSStyleSheet(std::move(sheet), owner, startPosition, true, true));
+    return ref_ptr<CSSStyleSheet>(std::move(sheet), owner, startPosition, true, true);
 }
 
-CSSStyleSheet::CSSStyleSheet(std::reference_wrapper<StyleSheetContents>&& contents, CSSImportRule* ownerRule)
+CSSStyleSheet::CSSStyleSheet(ref_ptr<StyleSheetContents>&& contents, CSSImportRule* ownerRule)
     : m_contents(std::move(contents))
     , m_isInlineStylesheet(false)
     , m_isDisabled(false)
@@ -96,7 +96,7 @@ CSSStyleSheet::CSSStyleSheet(std::reference_wrapper<StyleSheetContents>&& conten
     m_contents->registerClient(this);
 }
 
-CSSStyleSheet::CSSStyleSheet(std::reference_wrapper<StyleSheetContents>&& contents, Node& ownerNode, const TextPosition& startPosition, bool isInlineStylesheet, const Optional<bool>& isOriginClean)
+CSSStyleSheet::CSSStyleSheet(ref_ptr<StyleSheetContents>&& contents, Node& ownerNode, const TextPosition& startPosition, bool isInlineStylesheet, const std::optional<bool>& isOriginClean)
     : m_contents(std::move(contents))
     , m_isInlineStylesheet(isInlineStylesheet)
     , m_isDisabled(false)
@@ -211,7 +211,7 @@ void CSSStyleSheet::setDisabled(bool disabled)
         scope->didChangeActiveStyleSheetCandidates();
 }
 
-void CSSStyleSheet::setMediaQueries(std::reference_wrapper<MediaQuerySet>&& mediaQueries)
+void CSSStyleSheet::setMediaQueries(ref_ptr<MediaQuerySet>&& mediaQueries)
 {
     m_mediaQueries = std::move(mediaQueries);
     if (m_mediaCSSOMWrapper && m_mediaQueries)
@@ -307,7 +307,7 @@ ExceptionOr<void> CSSStyleSheet::deleteRule(unsigned index)
     return { };
 }
 
-ExceptionOr<int> CSSStyleSheet::addRule(const std::string& selector, const std::string& style, Optional<unsigned> index)
+ExceptionOr<int> CSSStyleSheet::addRule(const std::string& selector, const std::string& style, std::optional<unsigned> index)
 {
     StringBuilder text;
     text.append(selector);

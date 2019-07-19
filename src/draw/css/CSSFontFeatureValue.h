@@ -32,9 +32,9 @@ namespace WebCore {
 
 class CSSFontFeatureValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSFontFeatureValue> create(FontTag&& tag, int value)
+    static ref_ptr<CSSFontFeatureValue> create(FontTag&& tag, int value)
     {
-        return adoptRef(*new CSSFontFeatureValue(std::move(tag), value));
+        return ref_ptr<CSSFontFeatureValue>(std::move(tag), value);
     }
 
     const FontTag& tag() const { return m_tag; }

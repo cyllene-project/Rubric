@@ -223,12 +223,12 @@ inline void StyleBuilderCustom::applyValueZoom(StyleResolver& styleResolver, CSS
 }
 inline Length StyleBuilderCustom::mmLength(double mm)
 {
-    std::reference_wrapper<CSSPrimitiveValue> value(CSSPrimitiveValue::create(mm, CSSPrimitiveValue::CSS_MM));
+    ref_ptr<CSSPrimitiveValue> value(CSSPrimitiveValue::create(mm, CSSPrimitiveValue::CSS_MM));
     return value.get().computeLength<Length>(CSSToLengthConversionData());
 }
 inline Length StyleBuilderCustom::inchLength(double inch)
 {
-    std::reference_wrapper<CSSPrimitiveValue> value(CSSPrimitiveValue::create(inch, CSSPrimitiveValue::CSS_IN));
+    ref_ptr<CSSPrimitiveValue> value(CSSPrimitiveValue::create(inch, CSSPrimitiveValue::CSS_IN));
     return value.get().computeLength<Length>(CSSToLengthConversionData());
 }
 bool StyleBuilderCustom::getPageSizeFromName(CSSPrimitiveValue* pageSizeName, CSSPrimitiveValue* pageOrientation, Length& width, Length& height)
@@ -632,7 +632,7 @@ static inline float computeLineHeightMultiplierDueToFontSize(const Document& doc
 
 inline void StyleBuilderCustom::applyValueLineHeight(StyleResolver& styleResolver, CSSValue& value)
 {
-    Optional<Length> lineHeight = StyleBuilderConverter::convertLineHeight(styleResolver, value, 1);
+    std::optional<Length> lineHeight = StyleBuilderConverter::convertLineHeight(styleResolver, value, 1);
     if (!lineHeight)
         return;
 

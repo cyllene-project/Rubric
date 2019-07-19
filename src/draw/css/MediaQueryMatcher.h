@@ -38,14 +38,14 @@ class RenderStyle;
 // whenever it is needed and to call the listeners if the corresponding query has changed.
 // The listeners must be called in the order in which they were added.
 
-class MediaQueryMatcher final : public RefCounted<MediaQueryMatcher> {
+class MediaQueryMatcher final {
 public:
-    static std::reference_wrapper<MediaQueryMatcher> create(Document& document) { return adoptRef(*new MediaQueryMatcher(document)); }
+    static ref_ptr<MediaQueryMatcher> create(Document& document) { return ref_ptr<MediaQueryMatcher>(document); }
     ~MediaQueryMatcher();
 
     void documentDestroyed();
 
-    void addListener(std::reference_wrapper<MediaQueryListListener>&&, MediaQueryList&);
+    void addListener(ref_ptr<MediaQueryListListener>&&, MediaQueryList&);
     void removeListener(MediaQueryListListener&, MediaQueryList&);
 
     std::shared_ptr<MediaQueryList> matchMedia(const std::string&);
@@ -58,8 +58,8 @@ public:
 
 private:
     struct Listener {
-        std::reference_wrapper<MediaQueryListListener> listener;
-        std::reference_wrapper<MediaQueryList> query;
+        ref_ptr<MediaQueryListListener> listener;
+        ref_ptr<MediaQueryList> query;
     };
 
     explicit MediaQueryMatcher(Document&);

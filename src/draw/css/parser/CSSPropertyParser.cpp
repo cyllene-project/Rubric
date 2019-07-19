@@ -230,7 +230,7 @@ CSSPropertyParser::CSSPropertyParser(const CSSParserTokenRange& range, const CSS
         m_range.consumeWhitespace();
 }
 
-void CSSPropertyParser::addProperty(CSSPropertyID property, CSSPropertyID currentShorthand, std::reference_wrapper<CSSValue>&& value, bool important, bool implicit)
+void CSSPropertyParser::addProperty(CSSPropertyID property, CSSPropertyID currentShorthand, ref_ptr<CSSValue>&& value, bool important, bool implicit)
 {
     if (!isEnabledCSSProperty(property))
         return;
@@ -248,7 +248,7 @@ void CSSPropertyParser::addProperty(CSSPropertyID property, CSSPropertyID curren
     m_parsedProperties->append(CSSProperty(property, std::move(value), important, setFromShorthand, shorthandIndex, implicit));
 }
 
-void CSSPropertyParser::addExpandedPropertyForValue(CSSPropertyID property, std::reference_wrapper<CSSValue>&& value, bool important)
+void CSSPropertyParser::addExpandedPropertyForValue(CSSPropertyID property, ref_ptr<CSSValue>&& value, bool important)
 {
     const StylePropertyShorthand& shorthand = shorthandForProperty(property);
     unsigned shorthandLength = shorthand.length();
@@ -1147,7 +1147,7 @@ static std::shared_ptr<CSSPrimitiveValue> consumeLineHeight(CSSParserTokenRange&
 }
 
 template<typename... Args>
-static std::reference_wrapper<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
+static ref_ptr<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
 {
     return CSSValuePool::singleton().createValue(Pair::create(std::forward<Args>(args)...));
 }
@@ -3021,7 +3021,7 @@ static std::shared_ptr<CSSValue> consumeBackgroundComponent(CSSPropertyID proper
     return nullptr;
 }
 
-static void addBackgroundValue(std::shared_ptr<CSSValue>& list, std::reference_wrapper<CSSValue>&& value)
+static void addBackgroundValue(std::shared_ptr<CSSValue>& list, ref_ptr<CSSValue>&& value)
 {
     if (list) {
         if (!list->isBaseValueList()) {
@@ -4466,7 +4466,7 @@ bool CSSPropertyParser::consumeSystemFont(bool important)
     addProperty(CSSPropertyFontStyle, CSSPropertyFont, CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(isItalic(fontDescription.italic()) ? CSSValueItalic : CSSValueNormal)), important);
     addProperty(CSSPropertyFontWeight, CSSPropertyFont, CSSValuePool::singleton().createValue(static_cast<float>(fontDescription.weight())), important);
     addProperty(CSSPropertyFontSize, CSSPropertyFont, CSSValuePool::singleton().createValue(fontDescription.specifiedSize(), CSSPrimitiveValue::CSS_PX), important);
-    std::reference_wrapper<CSSValueList> fontFamilyList = CSSValueList::createCommaSeparated();
+    ref_ptr<CSSValueList> fontFamilyList = CSSValueList::createCommaSeparated();
     fontFamilyList->append(CSSValuePool::singleton().createFontFamilyValue(fontDescription.familyAt(0), FromSystemFontID::Yes));
     addProperty(CSSPropertyFontFamily, CSSPropertyFont, std::move(fontFamilyList), important);
     addProperty(CSSPropertyFontVariantCaps, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(CSSValueNormal), important);
@@ -5371,7 +5371,7 @@ bool CSSPropertyParser::consumeGridTemplateShorthand(CSSPropertyID shorthandId, 
     return consumeGridTemplateRowsAndAreasAndColumns(shorthandId, important);
 }
 
-static std::shared_ptr<CSSValue> consumeImplicitGridAutoFlow(CSSParserTokenRange& range, std::reference_wrapper<CSSPrimitiveValue>&& flowDirection)
+static std::shared_ptr<CSSValue> consumeImplicitGridAutoFlow(CSSParserTokenRange& range, ref_ptr<CSSPrimitiveValue>&& flowDirection)
 {
     // [ auto-flow && dense? ]
     if (range.atEnd())

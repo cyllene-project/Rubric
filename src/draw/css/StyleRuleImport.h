@@ -34,7 +34,7 @@ class StyleSheetContents;
 class StyleRuleImport final : public StyleRuleBase {
 
 public:
-    static std::reference_wrapper<StyleRuleImport> create(const std::string& href, std::reference_wrapper<MediaQuerySet>&&);
+    static ref_ptr<StyleRuleImport> create(const std::string& href, ref_ptr<MediaQuerySet>&&);
 
     ~StyleRuleImport();
     
@@ -69,7 +69,7 @@ class ImportedStyleSheetClient final : public CachedStyleSheetClient {
     void setCSSStyleSheet(const std::string& href, const URL& baseURL, const std::string& charset, const CachedCSSStyleSheet*);
     friend class ImportedStyleSheetClient;
 
-    StyleRuleImport(const std::string& href, std::reference_wrapper<MediaQuerySet>&&);
+    StyleRuleImport(const std::string& href, ref_ptr<MediaQuerySet>&&);
 
     StyleSheetContents* m_parentStyleSheet;
 

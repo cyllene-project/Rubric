@@ -37,19 +37,19 @@ class StyleRuleBase;
 class StyleRuleImport;
 class StyleRuleNamespace;
 
-class StyleSheetContents final : public RefCounted<StyleSheetContents>, public CanMakeWeakPtr<StyleSheetContents> {
+class StyleSheetContents final :  public CanMakeWeakPtr<StyleSheetContents> {
 public:
-    static std::reference_wrapper<StyleSheetContents> create(const CSSParserContext& context = CSSParserContext())
+    static ref_ptr<StyleSheetContents> create(const CSSParserContext& context = CSSParserContext())
     {
-        return adoptRef(*new StyleSheetContents(0, String(), context));
+        return ref_ptr<StyleSheetContents>(0, String(), context);
     }
-    static std::reference_wrapper<StyleSheetContents> create(const std::string& originalURL, const CSSParserContext& context)
+    static ref_ptr<StyleSheetContents> create(const std::string& originalURL, const CSSParserContext& context)
     {
-        return adoptRef(*new StyleSheetContents(0, originalURL, context));
+        return ref_ptr<StyleSheetContents>(0, originalURL, context);
     }
-    static std::reference_wrapper<StyleSheetContents> create(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext& context)
+    static ref_ptr<StyleSheetContents> create(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext& context)
     {
-        return adoptRef(*new StyleSheetContents(ownerRule, originalURL, context));
+        return ref_ptr<StyleSheetContents>(ownerRule, originalURL, context);
     }
 
     ~StyleSheetContents();
@@ -120,10 +120,10 @@ public:
 
     unsigned estimatedSizeInBytes() const;
     
-    bool wrapperInsertRule(std::reference_wrapper<StyleRuleBase>&&, unsigned index);
+    bool wrapperInsertRule(ref_ptr<StyleRuleBase>&&, unsigned index);
     void wrapperDeleteRule(unsigned index);
 
-    std::reference_wrapper<StyleSheetContents> copy() const { return adoptRef(*new StyleSheetContents(*this)); }
+    ref_ptr<StyleSheetContents> copy() const { return ref_ptr<StyleSheetContents>(*this); }
 
     void registerClient(CSSStyleSheet*);
     void unregisterClient(CSSStyleSheet*);

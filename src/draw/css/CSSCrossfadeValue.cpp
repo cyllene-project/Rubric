@@ -66,7 +66,7 @@ void CSSCrossfadeValue::SubimageObserver::imageChanged(CachedImage*, const IntRe
     m_owner.crossfadeChanged();
 }
 
-inline CSSCrossfadeValue::CSSCrossfadeValue(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed)
+inline CSSCrossfadeValue::CSSCrossfadeValue(ref_ptr<CSSValue>&& fromValue, ref_ptr<CSSValue>&& toValue, ref_ptr<CSSPrimitiveValue>&& percentageValue, bool prefixed)
     : CSSImageGeneratorValue(CrossfadeClass)
     , m_fromValue(std::move(fromValue))
     , m_toValue(std::move(toValue))
@@ -76,9 +76,9 @@ inline CSSCrossfadeValue::CSSCrossfadeValue(std::reference_wrapper<CSSValue>&& f
 {
 }
 
-Ref<CSSCrossfadeValue> CSSCrossfadeValue::create(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed)
+Ref<CSSCrossfadeValue> CSSCrossfadeValue::create(ref_ptr<CSSValue>&& fromValue, ref_ptr<CSSValue>&& toValue, ref_ptr<CSSPrimitiveValue>&& percentageValue, bool prefixed)
 {
-    return adoptRef(*new CSSCrossfadeValue(std::move(fromValue), std::move(toValue), std::move(percentageValue), prefixed));
+    return ref_ptr<CSSCrossfadeValue>(std::move(fromValue), std::move(toValue), std::move(percentageValue), prefixed);
 }
 
 CSSCrossfadeValue::~CSSCrossfadeValue()

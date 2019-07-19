@@ -32,7 +32,7 @@ class StyleRuleMedia;
 
 class CSSMediaRule final : public CSSGroupingRule {
 public:
-    static std::reference_wrapper<CSSMediaRule> create(StyleRuleMedia& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSMediaRule(rule, sheet)); }
+    static ref_ptr<CSSMediaRule> create(StyleRuleMedia& rule, CSSStyleSheet* sheet) { return ref_ptr<CSSMediaRule>(rule, sheet); }
 
     virtual ~CSSMediaRule();
 

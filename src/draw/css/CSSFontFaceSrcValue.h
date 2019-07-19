@@ -37,13 +37,13 @@ class SVGFontFaceElement;
 
 class CSSFontFaceSrcValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSFontFaceSrcValue> create(const std::string& resource, LoadedFromOpaqueSource loadedFromOpaqueSource)
+    static ref_ptr<CSSFontFaceSrcValue> create(const std::string& resource, LoadedFromOpaqueSource loadedFromOpaqueSource)
     {
-        return adoptRef(*new CSSFontFaceSrcValue(resource, false, loadedFromOpaqueSource));
+        return ref_ptr<CSSFontFaceSrcValue>(resource, false, loadedFromOpaqueSource);
     }
-    static std::reference_wrapper<CSSFontFaceSrcValue> createLocal(const std::string& resource)
+    static ref_ptr<CSSFontFaceSrcValue> createLocal(const std::string& resource)
     {
-        return adoptRef(*new CSSFontFaceSrcValue(resource, true, LoadedFromOpaqueSource::No));
+        return ref_ptr<CSSFontFaceSrcValue>(resource, true, LoadedFromOpaqueSource::No);
     }
 
     const std::string& resource() const { return m_resource; }

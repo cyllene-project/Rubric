@@ -55,7 +55,7 @@ private:
 
     CSSImageGeneratorValue& m_owner;
     const FloatSize m_size;
-    const std::reference_wrapper<GeneratedImage> m_image;
+    const ref_ptr<GeneratedImage> m_image;
     DeferrableOneShotTimer m_evictionTimer;
 };
 

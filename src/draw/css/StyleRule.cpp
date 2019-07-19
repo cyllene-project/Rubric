@@ -183,7 +183,7 @@ unsigned StyleRule::averageSizeInBytes()
     return sizeof(StyleRule) + sizeof(CSSSelector) + StyleProperties::averageSizeInBytes();
 }
 
-StyleRule::StyleRule(std::reference_wrapper<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
+StyleRule::StyleRule(ref_ptr<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
     : StyleRuleBase(Style, hasDocumentSecurityOrigin)
     , m_properties(std::move(properties))
     , m_selectorList(std::move(selectors))
@@ -213,7 +213,7 @@ MutableStyleProperties& StyleRule::mutableProperties()
     return downcast<MutableStyleProperties>(m_properties.get());
 }
 
-Ref<StyleRule> StyleRule::createForSplitting(const std::vector<const CSSSelector*>& selectors, std::reference_wrapper<StyleProperties>&& properties, bool hasDocumentSecurityOrigin)
+Ref<StyleRule> StyleRule::createForSplitting(const std::vector<const CSSSelector*>& selectors, ref_ptr<StyleProperties>&& properties, bool hasDocumentSecurityOrigin)
 {
     ASSERT_WITH_SECURITY_IMPLICATION(!selectors.isEmpty());
     auto selectorListArray = makeUniqueArray<CSSSelector>(selectors.size());
@@ -249,7 +249,7 @@ std::vector<std::shared_ptr<StyleRule>> StyleRule::splitIntoMultipleRulesWithMax
     return rules;
 }
 
-StyleRulePage::StyleRulePage(std::reference_wrapper<StyleProperties>&& properties, CSSSelectorList&& selectors)
+StyleRulePage::StyleRulePage(ref_ptr<StyleProperties>&& properties, CSSSelectorList&& selectors)
     : StyleRuleBase(Page)
     , m_properties(std::move(properties))
     , m_selectorList(std::move(selectors))
@@ -272,7 +272,7 @@ MutableStyleProperties& StyleRulePage::mutableProperties()
     return downcast<MutableStyleProperties>(m_properties.get());
 }
 
-StyleRuleFontFace::StyleRuleFontFace(std::reference_wrapper<StyleProperties>&& properties)
+StyleRuleFontFace::StyleRuleFontFace(ref_ptr<StyleProperties>&& properties)
     : StyleRuleBase(FontFace)
     , m_properties(std::move(properties))
 {
@@ -337,7 +337,7 @@ const std::vector<std::shared_ptr<StyleRuleBase>>& StyleRuleGroup::childRules() 
     return m_childRules;
 }
 
-void StyleRuleGroup::wrapperInsertRule(unsigned index, std::reference_wrapper<StyleRuleBase>&& rule)
+void StyleRuleGroup::wrapperInsertRule(unsigned index, ref_ptr<StyleRuleBase>&& rule)
 {
     parseDeferredRulesIfNeeded();
     m_childRules.insert(index, std::move(rule));
@@ -358,13 +358,13 @@ void StyleRuleGroup::parseDeferredRulesIfNeeded() const
     m_deferredRules = nullptr;
 }
     
-StyleRuleMedia::StyleRuleMedia(std::reference_wrapper<MediaQuerySet>&& media, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
+StyleRuleMedia::StyleRuleMedia(ref_ptr<MediaQuerySet>&& media, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
     : StyleRuleGroup(Media, adoptRules)
     , m_mediaQueries(std::move(media))
 {
 }
 
-StyleRuleMedia::StyleRuleMedia(std::reference_wrapper<MediaQuerySet>&& media, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
+StyleRuleMedia::StyleRuleMedia(ref_ptr<MediaQuerySet>&& media, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
     : StyleRuleGroup(Media, std::move(deferredRules))
     , m_mediaQueries(std::move(media))
 {
@@ -400,7 +400,7 @@ StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& o)
 }
 
 #if ENABLE(CSS_DEVICE_ADAPTATION)
-StyleRuleViewport::StyleRuleViewport(std::reference_wrapper<StyleProperties>&& properties)
+StyleRuleViewport::StyleRuleViewport(ref_ptr<StyleProperties>&& properties)
     : StyleRuleBase(Viewport)
     , m_properties(std::move(properties))
 {

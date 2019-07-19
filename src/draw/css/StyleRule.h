@@ -66,7 +66,7 @@ public:
     bool isSupportsRule() const { return type() == Supports; }
     bool isImportRule() const { return type() == Import; }
 
-    std::reference_wrapper<StyleRuleBase> copy() const;
+    ref_ptr<StyleRuleBase> copy() const;
 
     void deref()
     {
@@ -75,8 +75,8 @@ public:
     }
 
     // FIXME: There shouldn't be any need for the null parent version.
-    std::reference_wrapper<CSSRule> createCSSOMWrapper(CSSStyleSheet* parentSheet = nullptr) const;
-    std::reference_wrapper<CSSRule> createCSSOMWrapper(CSSRule* parentRule) const;
+    ref_ptr<CSSRule> createCSSOMWrapper(CSSStyleSheet* parentSheet = nullptr) const;
+    ref_ptr<CSSRule> createCSSOMWrapper(CSSRule* parentRule) const;
 
 protected:
     StyleRuleBase(Type type, bool hasDocumentSecurityOrigin = false)
@@ -99,7 +99,7 @@ protected:
 private:
     void destroy();
     
-    std::reference_wrapper<CSSRule> createCSSOMWrapper(CSSStyleSheet* parentSheet, CSSRule* parentRule) const;
+    ref_ptr<CSSRule> createCSSOMWrapper(CSSStyleSheet* parentSheet, CSSRule* parentRule) const;
 
     unsigned m_type : 5;
     // This is only needed to support getMatchedCSSRules.
@@ -109,9 +109,9 @@ private:
 class StyleRule final : public StyleRuleBase {
 
 public:
-    static std::reference_wrapper<StyleRule> create(std::reference_wrapper<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
+    static ref_ptr<StyleRule> create(ref_ptr<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
     {
-        return adoptRef(*new StyleRule(std::move(properties), hasDocumentSecurityOrigin, std::move(selectors)));
+        return ref_ptr<StyleRule>(std::move(properties), hasDocumentSecurityOrigin, std::move(selectors));
     }
     
     ~StyleRule();
@@ -132,7 +132,7 @@ public:
 //#endif
     }
 
-    std::reference_wrapper<StyleRule> copy() const { return adoptRef(*new StyleRule(*this)); }
+    ref_ptr<StyleRule> copy() const { return ref_ptr<StyleRule>(*this); }
 
     std::vector<std::shared_ptr<StyleRule>> splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned) const;
 
@@ -152,12 +152,12 @@ public:
     static unsigned averageSizeInBytes();
 
 private:
-    StyleRule(std::reference_wrapper<StylePropertiesBase>&&, bool hasDocumentSecurityOrigin, CSSSelectorList&&);
+    StyleRule(ref_ptr<StylePropertiesBase>&&, bool hasDocumentSecurityOrigin, CSSSelectorList&&);
     StyleRule(const StyleRule&);
 
-    static std::reference_wrapper<StyleRule> createForSplitting(const std::vector<const CSSSelector*>&, std::reference_wrapper<StyleProperties>&&, bool hasDocumentSecurityOrigin);
+    static ref_ptr<StyleRule> createForSplitting(const std::vector<const CSSSelector*>&, ref_ptr<StyleProperties>&&, bool hasDocumentSecurityOrigin);
 
-    mutable std::reference_wrapper<StylePropertiesBase> m_properties;
+    mutable ref_ptr<StylePropertiesBase> m_properties;
     CSSSelectorList m_selectorList;
 
 //#if ENABLE(CSS_SELECTOR_JIT)
@@ -172,25 +172,25 @@ inline const StyleProperties* StyleRule::propertiesWithoutDeferredParsing() cons
 
 class StyleRuleFontFace final : public StyleRuleBase {
 public:
-    static std::reference_wrapper<StyleRuleFontFace> create(std::reference_wrapper<StyleProperties>&& properties) { return adoptRef(*new StyleRuleFontFace(std::move(properties))); }
+    static ref_ptr<StyleRuleFontFace> create(ref_ptr<StyleProperties>&& properties) { return ref_ptr<StyleRuleFontFace>(std::move(properties)); }
     
     ~StyleRuleFontFace();
 
     const StyleProperties& properties() const { return m_properties; }
     MutableStyleProperties& mutableProperties();
 
-    std::reference_wrapper<StyleRuleFontFace> copy() const { return adoptRef(*new StyleRuleFontFace(*this)); }
+    ref_ptr<StyleRuleFontFace> copy() const { return ref_ptr<StyleRuleFontFace>(*this); }
 
 private:
-    explicit StyleRuleFontFace(std::reference_wrapper<StyleProperties>&&);
+    explicit StyleRuleFontFace(ref_ptr<StyleProperties>&&);
     StyleRuleFontFace(const StyleRuleFontFace&);
 
-    std::reference_wrapper<StyleProperties> m_properties;
+    ref_ptr<StyleProperties> m_properties;
 };
 
 class StyleRulePage final : public StyleRuleBase {
 public:
-    static std::reference_wrapper<StyleRulePage> create(std::reference_wrapper<StyleProperties>&& properties, CSSSelectorList&& selectors) { return adoptRef(*new StyleRulePage(std::move(properties), std::move(selectors))); }
+    static ref_ptr<StyleRulePage> create(ref_ptr<StyleProperties>&& properties, CSSSelectorList&& selectors) { return ref_ptr<StyleRulePage>(std::move(properties), std::move(selectors)); }
 
     ~StyleRulePage();
 
@@ -200,13 +200,13 @@ public:
 
     void wrapperAdoptSelectorList(CSSSelectorList&& selectors) { m_selectorList = std::move(selectors); }
 
-    std::reference_wrapper<StyleRulePage> copy() const { return adoptRef(*new StyleRulePage(*this)); }
+    ref_ptr<StyleRulePage> copy() const { return ref_ptr<StyleRulePage>(*this); }
 
 private:
-    explicit StyleRulePage(std::reference_wrapper<StyleProperties>&&, CSSSelectorList&&);
+    explicit StyleRulePage(ref_ptr<StyleProperties>&&, CSSSelectorList&&);
     StyleRulePage(const StyleRulePage&);
     
-    std::reference_wrapper<StyleProperties> m_properties;
+    ref_ptr<StyleProperties> m_properties;
     CSSSelectorList m_selectorList;
 };
 
@@ -220,7 +220,7 @@ public:
 
 private:
     std::vector<CSSParserToken> m_tokens;
-    std::reference_wrapper<CSSDeferredParser> m_parser;
+    ref_ptr<CSSDeferredParser> m_parser;
 };
     
 class StyleRuleGroup : public StyleRuleBase {
@@ -228,7 +228,7 @@ public:
     const std::vector<std::shared_ptr<StyleRuleBase>>& childRules() const;
     const std::vector<std::shared_ptr<StyleRuleBase>>* childRulesWithoutDeferredParsing() const;
 
-    void wrapperInsertRule(unsigned, std::reference_wrapper<StyleRuleBase>&&);
+    void wrapperInsertRule(unsigned, ref_ptr<StyleRuleBase>&&);
     void wrapperRemoveRule(unsigned);
     
 protected:
@@ -250,23 +250,23 @@ inline const std::vector<std::shared_ptr<StyleRuleBase>>* StyleRuleGroup::childR
 
 class StyleRuleMedia final : public StyleRuleGroup {
 public:
-    static std::reference_wrapper<StyleRuleMedia> create(std::reference_wrapper<MediaQuerySet>&& media, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
+    static ref_ptr<StyleRuleMedia> create(ref_ptr<MediaQuerySet>&& media, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
     {
-        return adoptRef(*new StyleRuleMedia(std::move(media), adoptRules));
+        return ref_ptr<StyleRuleMedia>(std::move(media), adoptRules);
     }
 
-    static std::reference_wrapper<StyleRuleMedia> create(std::reference_wrapper<MediaQuerySet>&& media, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredChildRules)
+    static ref_ptr<StyleRuleMedia> create(ref_ptr<MediaQuerySet>&& media, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredChildRules)
     {
-        return adoptRef(*new StyleRuleMedia(std::move(media), std::move(deferredChildRules)));
+        return ref_ptr<StyleRuleMedia>(std::move(media), std::move(deferredChildRules));
     }
 
     MediaQuerySet* mediaQueries() const { return m_mediaQueries.get(); }
 
-    std::reference_wrapper<StyleRuleMedia> copy() const { return adoptRef(*new StyleRuleMedia(*this)); }
+    ref_ptr<StyleRuleMedia> copy() const { return ref_ptr<StyleRuleMedia>(*this); }
 
 private:
-    StyleRuleMedia(std::reference_wrapper<MediaQuerySet>&&, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules);
-    StyleRuleMedia(std::reference_wrapper<MediaQuerySet>&&, std::unique_ptr<DeferredStyleGroupRuleList>&&);
+    StyleRuleMedia(ref_ptr<MediaQuerySet>&&, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules);
+    StyleRuleMedia(ref_ptr<MediaQuerySet>&&, std::unique_ptr<DeferredStyleGroupRuleList>&&);
     StyleRuleMedia(const StyleRuleMedia&);
 
     std::shared_ptr<MediaQuerySet> m_mediaQueries;
@@ -274,19 +274,19 @@ private:
 
 class StyleRuleSupports final : public StyleRuleGroup {
 public:
-    static std::reference_wrapper<StyleRuleSupports> create(const std::string& conditionText, bool conditionIsSupported, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
+    static ref_ptr<StyleRuleSupports> create(const std::string& conditionText, bool conditionIsSupported, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
     {
-        return adoptRef(*new StyleRuleSupports(conditionText, conditionIsSupported, adoptRules));
+        return ref_ptr<StyleRuleSupports>(conditionText, conditionIsSupported, adoptRules);
     }
     
-    static std::reference_wrapper<StyleRuleSupports> create(const std::string& conditionText, bool conditionIsSupported, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredChildRules)
+    static ref_ptr<StyleRuleSupports> create(const std::string& conditionText, bool conditionIsSupported, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredChildRules)
     {
-        return adoptRef(*new StyleRuleSupports(conditionText, conditionIsSupported, std::move(deferredChildRules)));
+        return ref_ptr<StyleRuleSupports>(conditionText, conditionIsSupported, std::move(deferredChildRules));
     }
 
     std::string conditionText() const { return m_conditionText; }
     bool conditionIsSupported() const { return m_conditionIsSupported; }
-    std::reference_wrapper<StyleRuleSupports> copy() const { return adoptRef(*new StyleRuleSupports(*this)); }
+    ref_ptr<StyleRuleSupports> copy() const { return ref_ptr<StyleRuleSupports>(*this); }
 
 private:
     StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules);
@@ -301,31 +301,31 @@ private:
 //#if ENABLE(CSS_DEVICE_ADAPTATION)
 class StyleRuleViewport final : public StyleRuleBase {
 public:
-    static std::reference_wrapper<StyleRuleViewport> create(std::reference_wrapper<StyleProperties>&& properties) { return adoptRef(*new StyleRuleViewport(std::move(properties))); }
+    static ref_ptr<StyleRuleViewport> create(ref_ptr<StyleProperties>&& properties) { return ref_ptr<StyleRuleViewport>(std::move(properties)); }
 
     ~StyleRuleViewport();
 
     const StyleProperties& properties() const { return m_properties.get(); }
     MutableStyleProperties& mutableProperties();
 
-    std::reference_wrapper<StyleRuleViewport> copy() const { return adoptRef(*new StyleRuleViewport(*this)); }
+    ref_ptr<StyleRuleViewport> copy() const { return ref_ptr<StyleRuleViewport>(*this); }
 
 private:
-    explicit StyleRuleViewport(std::reference_wrapper<StyleProperties>&&);
+    explicit StyleRuleViewport(ref_ptr<StyleProperties>&&);
     StyleRuleViewport(const StyleRuleViewport&);
 
-    std::reference_wrapper<StyleProperties> m_properties;
+    ref_ptr<StyleProperties> m_properties;
 };
 //#endif // ENABLE(CSS_DEVICE_ADAPTATION)
 
 // This is only used by the CSS parser.
 class StyleRuleCharset final : public StyleRuleBase {
 public:
-    static std::reference_wrapper<StyleRuleCharset> create() { return adoptRef(*new StyleRuleCharset()); }
+    static ref_ptr<StyleRuleCharset> create() { return ref_ptr<StyleRuleCharset>(); }
     
     ~StyleRuleCharset();
     
-    std::reference_wrapper<StyleRuleCharset> copy() const { return adoptRef(*new StyleRuleCharset(*this)); }
+    ref_ptr<StyleRuleCharset> copy() const { return ref_ptr<StyleRuleCharset>(*this); }
 
 private:
     explicit StyleRuleCharset();
@@ -334,14 +334,14 @@ private:
 
 class StyleRuleNamespace final : public StyleRuleBase {
 public:
-    static std::reference_wrapper<StyleRuleNamespace> create(AtomString prefix, AtomString uri)
+    static ref_ptr<StyleRuleNamespace> create(AtomString prefix, AtomString uri)
     {
-        return adoptRef(*new StyleRuleNamespace(prefix, uri));
+        return ref_ptr<StyleRuleNamespace>(prefix, uri);
     }
     
     ~StyleRuleNamespace();
 
-    std::reference_wrapper<StyleRuleNamespace> copy() const { return adoptRef(*new StyleRuleNamespace(*this)); }
+    ref_ptr<StyleRuleNamespace> copy() const { return ref_ptr<StyleRuleNamespace>(*this); }
     
     AtomString prefix() const { return m_prefix; }
     AtomString uri() const { return m_uri; }

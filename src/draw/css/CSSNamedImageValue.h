@@ -32,9 +32,9 @@ namespace WebCore {
 
 class CSSNamedImageValue final : public CSSImageGeneratorValue {
 public:
-    static std::reference_wrapper<CSSNamedImageValue> create(const std::string& name)
+    static ref_ptr<CSSNamedImageValue> create(const std::string& name)
     {
-        return adoptRef(*new CSSNamedImageValue(name));
+        return ref_ptr<CSSNamedImageValue>(name);
     }
 
     std::string customCSSText() const;

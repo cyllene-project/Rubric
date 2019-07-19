@@ -29,14 +29,14 @@ class CSSPrimitiveValue;
 // Used for text-shadow and box-shadow
 class CSSShadowValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSShadowValue> create(std::shared_ptr<CSSPrimitiveValue>&& x,
+    static ref_ptr<CSSShadowValue> create(std::shared_ptr<CSSPrimitiveValue>&& x,
         std::shared_ptr<CSSPrimitiveValue>&& y,
         std::shared_ptr<CSSPrimitiveValue>&& blur,
         std::shared_ptr<CSSPrimitiveValue>&& spread,
         std::shared_ptr<CSSPrimitiveValue>&& style,
         std::shared_ptr<CSSPrimitiveValue>&& color)
     {
-        return adoptRef(*new CSSShadowValue(std::move(x), std::move(y), std::move(blur), std::move(spread), std::move(style), std::move(color)));
+        return ref_ptr<CSSShadowValue>(std::move(x), std::move(y), std::move(blur), std::move(spread), std::move(style), std::move(color));
     }
 
     std::string customCSSText() const;

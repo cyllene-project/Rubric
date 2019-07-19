@@ -31,7 +31,7 @@
 
 namespace WebCore {
 
-class TypedOMCSSStyleValue : public RefCounted<TypedOMCSSStyleValue>, public ScriptWrappable {
+class TypedOMCSSStyleValue :  public ScriptWrappable {
     WTF_MAKE_ISO_ALLOCATED(TypedOMCSSStyleValue);
 public:
     virtual ~TypedOMCSSStyleValue() = default;

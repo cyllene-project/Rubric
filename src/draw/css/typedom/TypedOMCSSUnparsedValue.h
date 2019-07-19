@@ -34,9 +34,9 @@ namespace WebCore {
 class TypedOMCSSUnparsedValue final : public TypedOMCSSStyleValue {
     WTF_MAKE_ISO_ALLOCATED(TypedOMCSSUnparsedValue);
 public:
-    static std::reference_wrapper<TypedOMCSSUnparsedValue> create(const std::string& serializedValue)
+    static ref_ptr<TypedOMCSSUnparsedValue> create(const std::string& serializedValue)
     {
-        return adoptRef(*new TypedOMCSSUnparsedValue(serializedValue));
+        return ref_ptr<TypedOMCSSUnparsedValue>(serializedValue);
     }
 
     std::string toString() final { return m_serializedValue; }

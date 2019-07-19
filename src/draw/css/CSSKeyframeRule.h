@@ -37,14 +37,14 @@ class CSSKeyframesRule;
 
 class StyleRuleKeyframe final : public StyleRuleBase {
 public:
-    static std::reference_wrapper<StyleRuleKeyframe> create(std::reference_wrapper<StyleProperties>&& properties)
+    static ref_ptr<StyleRuleKeyframe> create(ref_ptr<StyleProperties>&& properties)
     {
-        return adoptRef(*new StyleRuleKeyframe(std::move(properties)));
+        return ref_ptr<StyleRuleKeyframe>(std::move(properties));
     }
 
-    static std::reference_wrapper<StyleRuleKeyframe> create(std::unique_ptr<std::vector<double>> keys, std::reference_wrapper<StyleProperties>&& properties)
+    static ref_ptr<StyleRuleKeyframe> create(std::unique_ptr<std::vector<double>> keys, ref_ptr<StyleProperties>&& properties)
     {
-        return adoptRef(*new StyleRuleKeyframe(std::move(keys), std::move(properties)));
+        return ref_ptr<StyleRuleKeyframe>(std::move(keys), std::move(properties));
     }
     ~StyleRuleKeyframe();
 
@@ -65,10 +65,10 @@ public:
     std::string cssText() const;
 
 private:
-    explicit StyleRuleKeyframe(std::reference_wrapper<StyleProperties>&&);
-    StyleRuleKeyframe(std::unique_ptr<std::vector<double>>, std::reference_wrapper<StyleProperties>&&);
+    explicit StyleRuleKeyframe(ref_ptr<StyleProperties>&&);
+    StyleRuleKeyframe(std::unique_ptr<std::vector<double>>, ref_ptr<StyleProperties>&&);
 
-    std::reference_wrapper<StyleProperties> m_properties;
+    ref_ptr<StyleProperties> m_properties;
     std::vector<double> m_keys;
 };
 
@@ -89,7 +89,7 @@ private:
 
     CSSRule::Type type() const final { return KEYFRAME_RULE; }
 
-    std::reference_wrapper<StyleRuleKeyframe> m_keyframe;
+    ref_ptr<StyleRuleKeyframe> m_keyframe;
     mutable std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
     
     friend class CSSKeyframesRule;

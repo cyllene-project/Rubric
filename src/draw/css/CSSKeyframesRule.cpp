@@ -70,7 +70,7 @@ void StyleRuleKeyframes::parseDeferredRulesIfNeeded() const
     m_deferredRules = nullptr;
 }
 
-const std::vector<std::reference_wrapper<StyleRuleKeyframe>>& StyleRuleKeyframes::keyframes() const
+const std::vector<ref_ptr<StyleRuleKeyframe>>& StyleRuleKeyframes::keyframes() const
 {
     parseDeferredRulesIfNeeded();
     return m_keyframes;
@@ -83,7 +83,7 @@ void StyleRuleKeyframes::parserAppendKeyframe(std::shared_ptr<StyleRuleKeyframe>
     m_keyframes.append(keyframe.releaseNonNull());
 }
 
-void StyleRuleKeyframes::wrapperAppendKeyframe(std::reference_wrapper<StyleRuleKeyframe>&& keyframe)
+void StyleRuleKeyframes::wrapperAppendKeyframe(ref_ptr<StyleRuleKeyframe>&& keyframe)
 {
     parseDeferredRulesIfNeeded();
     m_keyframes.append(std::move(keyframe));

@@ -29,6 +29,9 @@
 #include <vector>
 #include <memory>
 
+#include "ref_ptr.h"
+using namespace rubric::draw::css;
+
 namespace WebCore {
 
 class CSSParserTokenRange;
@@ -39,15 +42,15 @@ class StyleSheetContents;
 
 class CSSDeferredParser {
 public:
-    static std::reference_wrapper<CSSDeferredParser> create(const CSSParserContext& parserContext, const std::string& sheetText, StyleSheetContents& styleSheet)
+    static ref_ptr<CSSDeferredParser> create(const CSSParserContext& parserContext, const std::string& sheetText, StyleSheetContents& styleSheet)
     {
-        return *new CSSDeferredParser(parserContext, sheetText, styleSheet);
+        return ref_ptr<CSSDeferredParser>(parserContext, sheetText, styleSheet);
     }
 
     const CSSParserContext& context() const { return m_context; }
     StyleSheetContents* styleSheet() const;
 
-    std::reference_wrapper<ImmutableStyleProperties> parseDeclaration(const CSSParserTokenRange&);
+    ref_ptr<ImmutableStyleProperties> parseDeclaration(const CSSParserTokenRange&);
     void parseRuleList(const CSSParserTokenRange&, std::vector<std::shared_ptr<StyleRuleBase>>&);
     void parseKeyframeList(const CSSParserTokenRange&, StyleRuleKeyframes&);
 

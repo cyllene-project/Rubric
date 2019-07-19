@@ -215,7 +215,7 @@ void StyleSheetContents::parserSetEncodingFromCharsetRule(const std::string& enc
     m_encodingFromCharsetRule = encoding; 
 }
 
-bool StyleSheetContents::wrapperInsertRule(std::reference_wrapper<StyleRuleBase>&& rule, unsigned index)
+bool StyleSheetContents::wrapperInsertRule(ref_ptr<StyleRuleBase>&& rule, unsigned index)
 {
     assert(m_isMutable);
     ASSERT_WITH_SECURITY_IMPLICATION(index <= ruleCount());
@@ -362,7 +362,7 @@ void StyleSheetContents::checkLoaded()
     if (isLoading())
         return;
 
-    std::reference_wrapper<StyleSheetContents> protectedThis(*this);
+    ref_ptr<StyleSheetContents> protectedThis(*this);
     StyleSheetContents* parentSheet = parentStyleSheet();
     if (parentSheet) {
         parentSheet->checkLoaded();

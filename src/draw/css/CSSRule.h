@@ -31,7 +31,7 @@ class StyleRuleBase;
 
 struct CSSParserContext;
 
-class CSSRule : public RefCounted<CSSRule> {
+class CSSRule {
 public:
     virtual ~CSSRule() = default;
 

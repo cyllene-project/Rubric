@@ -178,7 +178,7 @@ void CSSFontSelector::addFontFaceRule(StyleRuleFontFace& fontFaceRule, bool isIn
         return;
 
     SetForScope<bool> creatingFont(m_creatingFont, true);
-    std::reference_wrapper<CSSFontFace> fontFace = CSSFontFace::create(this, &fontFaceRule);
+    ref_ptr<CSSFontFace> fontFace = CSSFontFace::create(this, &fontFaceRule);
 
     if (!fontFace->setFamilies(*fontFamily))
         return;
@@ -374,7 +374,7 @@ void CSSFontSelector::beginLoadTimerFired()
     fontsToBeginLoading.swap(m_fontsToBeginLoading);
 
     // CSSFontSelector could get deleted via beginLoadIfNeeded() or loadDone() unless protected.
-    std::reference_wrapper<CSSFontSelector> protectedThis(*this);
+    ref_ptr<CSSFontSelector> protectedThis(*this);
 
     CachedResourceLoader& cachedResourceLoader = m_document->cachedResourceLoader();
     for (auto& fontHandle : fontsToBeginLoading) {

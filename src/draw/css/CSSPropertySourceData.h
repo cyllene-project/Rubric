@@ -63,8 +63,8 @@ struct CSSPropertySourceData {
     SourceRange range;
 };
 
-struct CSSStyleSourceData : public RefCounted<CSSStyleSourceData> {
-    static std::reference_wrapper<CSSStyleSourceData> create()
+struct CSSStyleSourceData {
+    static ref_ptr<CSSStyleSourceData> create()
     {
         return adoptRef(*new CSSStyleSourceData);
     }
@@ -73,18 +73,18 @@ struct CSSStyleSourceData : public RefCounted<CSSStyleSourceData> {
 };
 
 struct CSSRuleSourceData;
-typedef std::vector<std::reference_wrapper<CSSRuleSourceData>> RuleSourceDataList;
+typedef std::vector<ref_ptr<CSSRuleSourceData>> RuleSourceDataList;
 typedef std::vector<SourceRange> SelectorRangeList;
 
-struct CSSRuleSourceData : public RefCounted<CSSRuleSourceData> {
-    static std::reference_wrapper<CSSRuleSourceData> create(StyleRule::Type type)
+struct CSSRuleSourceData {
+    static ref_ptr<CSSRuleSourceData> create(StyleRule::Type type)
     {
-        return adoptRef(*new CSSRuleSourceData(type));
+        return ref_ptr<CSSRuleSourceData>(type);
     }
 
-    static std::reference_wrapper<CSSRuleSourceData> createUnknown()
+    static ref_ptr<CSSRuleSourceData> createUnknown()
     {
-        return adoptRef(*new CSSRuleSourceData(StyleRule::Unknown));
+        return ref_ptr<CSSRuleSourceData>(StyleRule::Unknown);
     }
 
     CSSRuleSourceData(StyleRule::Type type)

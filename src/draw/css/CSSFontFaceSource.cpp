@@ -127,7 +127,7 @@ void CSSFontFaceSource::fontLoaded(CachedFont& loadedFont)
     if (shouldIgnoreFontLoadCompletions())
         return;
 
-    std::reference_wrapper<CSSFontFace> protectedFace(m_face);
+    ref_ptr<CSSFontFace> protectedFace(m_face);
 
     // If the font is in the cache, this will be synchronously called from CachedFont::addClient().
     if (m_status == Status::Pending)

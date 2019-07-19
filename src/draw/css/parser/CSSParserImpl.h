@@ -98,7 +98,7 @@ public:
     static void parseDeclarationListForInspector(const std::string&, const CSSParserContext&, CSSParserObserver&);
     static void parseStyleSheetForInspector(const std::string&, const CSSParserContext&, StyleSheetContents*, CSSParserObserver&);
 
-    static std::reference_wrapper<ImmutableStyleProperties> parseDeferredDeclaration(CSSParserTokenRange, const CSSParserContext&, StyleSheetContents*);
+    static ref_ptr<ImmutableStyleProperties> parseDeferredDeclaration(CSSParserTokenRange, const CSSParserContext&, StyleSheetContents*);
     static void parseDeferredRuleList(CSSParserTokenRange, CSSDeferredParser&, std::vector<std::shared_ptr<StyleRuleBase>>&);
     static void parseDeferredKeyframeList(CSSParserTokenRange, CSSDeferredParser&, StyleRuleKeyframes&);
 
@@ -146,7 +146,7 @@ private:
 
     static std::unique_ptr<std::vector<double>> consumeKeyframeKeyList(CSSParserTokenRange);
 
-    std::reference_wrapper<DeferredStyleProperties> createDeferredStyleProperties(const CSSParserTokenRange& propertyRange);
+    ref_ptr<DeferredStyleProperties> createDeferredStyleProperties(const CSSParserTokenRange& propertyRange);
     
     void adoptTokenizerEscapedStrings();
 

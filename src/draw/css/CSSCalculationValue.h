@@ -52,7 +52,7 @@ enum class CalculationCategory : uint8_t {
     Other
 };
 
-class CSSCalcExpressionNode : public RefCounted<CSSCalcExpressionNode> {
+class CSSCalcExpressionNode {
 public:
     enum Type {
         CssCalcPrimitiveValue = 1,
@@ -101,7 +101,7 @@ public:
     double computeLengthPx(const CSSToLengthConversionData&) const;
     unsigned short primitiveType() const { return m_expression->primitiveType(); }
 
-    std::reference_wrapper<CalculationValue> createCalculationValue(const CSSToLengthConversionData&) const;
+    ref_ptr<CalculationValue> createCalculationValue(const CSSToLengthConversionData&) const;
     void setPermittedValueRange(ValueRange);
 
     void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
@@ -111,22 +111,22 @@ public:
     bool equals(const CSSCalcValue&) const;
 
 private:
-    CSSCalcValue(std::reference_wrapper<CSSCalcExpressionNode>&&, bool shouldClampToNonNegative);
+    CSSCalcValue(ref_ptr<CSSCalcExpressionNode>&&, bool shouldClampToNonNegative);
 
     double clampToPermittedRange(double) const;
 
-    const std::reference_wrapper<CSSCalcExpressionNode> m_expression;
+    const ref_ptr<CSSCalcExpressionNode> m_expression;
     bool m_shouldClampToNonNegative;
 };
 
-inline CSSCalcValue::CSSCalcValue(std::reference_wrapper<CSSCalcExpressionNode>&& expression, bool shouldClampToNonNegative)
+inline CSSCalcValue::CSSCalcValue(ref_ptr<CSSCalcExpressionNode>&& expression, bool shouldClampToNonNegative)
     : CSSValue(CalculationClass)
     , m_expression(std::move(expression))
     , m_shouldClampToNonNegative(shouldClampToNonNegative)
 {
 }
 
-inline std::reference_wrapper<CalculationValue> CSSCalcValue::createCalculationValue(const CSSToLengthConversionData& conversionData) const
+inline ref_ptr<CalculationValue> CSSCalcValue::createCalculationValue(const CSSToLengthConversionData& conversionData) const
 {
     return CalculationValue::create(m_expression->createCalcExpression(conversionData),
         m_shouldClampToNonNegative ? ValueRangeNonNegative : ValueRangeAll);

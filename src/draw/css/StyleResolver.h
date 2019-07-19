@@ -205,7 +205,7 @@ public:
     bool hasAppearanceDependentMediaQueries() const { return !m_appearanceDependentMediaQueryResults.isEmpty(); }
     bool hasMediaQueriesAffectedByAppearanceChange() const;
 
-    void addKeyframeStyle(std::reference_wrapper<StyleRuleKeyframes>&&);
+    void addKeyframeStyle(ref_ptr<StyleRuleKeyframes>&&);
 
     bool usesFirstLineRules() const { return m_ruleSets.features().usesFirstLineRules; }
     bool usesFirstLetterRules() const { return m_ruleSets.features().usesFirstLetterRules; }

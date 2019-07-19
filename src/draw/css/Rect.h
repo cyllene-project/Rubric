@@ -57,7 +57,7 @@ private:
 
 class Rect final : public RectBase, public RefCounted<Rect> {
 public:
-    static std::reference_wrapper<Rect> create() { return adoptRef(*new Rect); }
+    static ref_ptr<Rect> create() { return adoptRef(*new Rect); }
 
     std::string cssText() const
     {
@@ -74,7 +74,7 @@ private:
 
 class Quad final : public RectBase, public RefCounted<Quad> {
 public:
-    static std::reference_wrapper<Quad> create() { return adoptRef(*new Quad); }
+    static ref_ptr<Quad> create() { return adoptRef(*new Quad); }
 
     std::string cssText() const
     {

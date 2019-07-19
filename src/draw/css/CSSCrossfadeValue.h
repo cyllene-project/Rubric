@@ -36,7 +36,7 @@ class CSSPrimitiveValue;
 
 class CSSCrossfadeValue final : public CSSImageGeneratorValue {
 public:
-    static std::reference_wrapper<CSSCrossfadeValue> create(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed = false);
+    static ref_ptr<CSSCrossfadeValue> create(ref_ptr<CSSValue>&& fromValue, ref_ptr<CSSValue>&& toValue, ref_ptr<CSSPrimitiveValue>&& percentageValue, bool prefixed = false);
 
     ~CSSCrossfadeValue();
 
@@ -60,7 +60,7 @@ public:
     bool equalInputImages(const CSSCrossfadeValue&) const;
 
 private:
-    CSSCrossfadeValue(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed);
+    CSSCrossfadeValue(ref_ptr<CSSValue>&& fromValue, ref_ptr<CSSValue>&& toValue, ref_ptr<CSSPrimitiveValue>&& percentageValue, bool prefixed);
 
     class SubimageObserver final : public CachedImageClient {
     public:
@@ -72,9 +72,9 @@ private:
 
     void crossfadeChanged();
 
-    std::reference_wrapper<CSSValue> m_fromValue;
-    std::reference_wrapper<CSSValue> m_toValue;
-    std::reference_wrapper<CSSPrimitiveValue> m_percentageValue;
+    ref_ptr<CSSValue> m_fromValue;
+    ref_ptr<CSSValue> m_toValue;
+    ref_ptr<CSSPrimitiveValue> m_percentageValue;
 
     CachedResourceHandle<CachedImage> m_cachedFromImage;
     CachedResourceHandle<CachedImage> m_cachedToImage;

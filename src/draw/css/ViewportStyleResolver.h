@@ -42,11 +42,11 @@ class Document;
 class MutableStyleProperties;
 class StyleRuleViewport;
 
-class ViewportStyleResolver final : public RefCounted<ViewportStyleResolver> {
+class ViewportStyleResolver final {
 public:
-    static std::reference_wrapper<ViewportStyleResolver> create(Document* document)
+    static ref_ptr<ViewportStyleResolver> create(Document* document)
     {
-        return adoptRef(*new ViewportStyleResolver(document));
+        return ref_ptr<ViewportStyleResolver>(document);
     }
 
     ~ViewportStyleResolver();

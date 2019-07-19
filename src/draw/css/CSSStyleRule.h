@@ -31,7 +31,7 @@ class StyleRule;
 
 class CSSStyleRule final : public CSSRule {
 public:
-    static std::reference_wrapper<CSSStyleRule> create(StyleRule& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSStyleRule(rule, sheet)); }
+    static ref_ptr<CSSStyleRule> create(StyleRule& rule, CSSStyleSheet* sheet) { return ref_ptr<CSSStyleRule>(rule, sheet); }
 
     virtual ~CSSStyleRule();
 
@@ -52,7 +52,7 @@ private:
 
     std::string generateSelectorText() const;
 
-    std::reference_wrapper<StyleRule> m_styleRule;
+    ref_ptr<StyleRule> m_styleRule;
     std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
 };
 

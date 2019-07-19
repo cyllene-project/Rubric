@@ -44,9 +44,9 @@ class Scope;
 
 class CSSStyleSheet final : public StyleSheet {
 public:
-    static std::reference_wrapper<CSSStyleSheet> create(std::reference_wrapper<StyleSheetContents>&&, CSSImportRule* ownerRule = 0);
-    static std::reference_wrapper<CSSStyleSheet> create(std::reference_wrapper<StyleSheetContents>&&, Node& ownerNode, const Optional<bool>& isOriginClean = WTF::nullopt);
-    static std::reference_wrapper<CSSStyleSheet> createInline(std::reference_wrapper<StyleSheetContents>&&, Element& owner, const TextPosition& startPosition);
+    static ref_ptr<CSSStyleSheet> create(ref_ptr<StyleSheetContents>&&, CSSImportRule* ownerRule = 0);
+    static ref_ptr<CSSStyleSheet> create(ref_ptr<StyleSheetContents>&&, Node& ownerNode, const std::optional<bool>& isOriginClean = WTF::nullopt);
+    static ref_ptr<CSSStyleSheet> createInline(ref_ptr<StyleSheetContents>&&, Element& owner, const TextPosition& startPosition);
 
     virtual ~CSSStyleSheet();
 
@@ -63,7 +63,7 @@ public:
     ExceptionOr<void> deleteRule(unsigned index);
     
     std::shared_ptr<CSSRuleList> rules();
-    ExceptionOr<int> addRule(const std::string& selector, const std::string& style, Optional<unsigned> index);
+    ExceptionOr<int> addRule(const std::string& selector, const std::string& style, std::optional<unsigned> index);
     ExceptionOr<void> removeRule(unsigned index) { return deleteRule(index); }
     
     // For CSSRuleList.
@@ -83,7 +83,7 @@ public:
     Style::Scope* styleScope();
 
     MediaQuerySet* mediaQueries() const { return m_mediaQueries.get(); }
-    void setMediaQueries(std::reference_wrapper<MediaQuerySet>&&);
+    void setMediaQueries(ref_ptr<MediaQuerySet>&&);
     void setTitle(const std::string& title) { m_title = title; }
 
     bool hadRulesMutation() const { return m_mutatedRules; }
@@ -125,18 +125,18 @@ public:
     bool canAccessRules() const;
 
 private:
-    CSSStyleSheet(std::reference_wrapper<StyleSheetContents>&&, CSSImportRule* ownerRule);
-    CSSStyleSheet(std::reference_wrapper<StyleSheetContents>&&, Node* ownerNode, const TextPosition& startPosition, bool isInlineStylesheet);
-    CSSStyleSheet(std::reference_wrapper<StyleSheetContents>&&, Node& ownerNode, const TextPosition& startPosition, bool isInlineStylesheet, const Optional<bool>&);
+    CSSStyleSheet(ref_ptr<StyleSheetContents>&&, CSSImportRule* ownerRule);
+    CSSStyleSheet(ref_ptr<StyleSheetContents>&&, Node* ownerNode, const TextPosition& startPosition, bool isInlineStylesheet);
+    CSSStyleSheet(ref_ptr<StyleSheetContents>&&, Node& ownerNode, const TextPosition& startPosition, bool isInlineStylesheet, const std::optional<bool>&);
 
     bool isCSSStyleSheet() const final { return true; }
     std::string type() const final { return "text/css"_s; }
 
-    std::reference_wrapper<StyleSheetContents> m_contents;
+    ref_ptr<StyleSheetContents> m_contents;
     bool m_isInlineStylesheet;
     bool m_isDisabled;
     bool m_mutatedRules;
-    Optional<bool> m_isOriginClean;
+    std::optional<bool> m_isOriginClean;
     std::string m_title;
     std::shared_ptr<MediaQuerySet> m_mediaQueries;
 

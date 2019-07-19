@@ -36,9 +36,9 @@ class SVGElement;
 
 class CSSCursorImageValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSCursorImageValue> create(std::reference_wrapper<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
+    static ref_ptr<CSSCursorImageValue> create(ref_ptr<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
     {
-        return adoptRef(*new CSSCursorImageValue(std::move(imageValue), hasHotSpot, hotSpot, loadedFromOpaqueSource));
+        return ref_ptr<CSSCursorImageValue>(std::move(imageValue), hasHotSpot, hotSpot, loadedFromOpaqueSource);
     }
 
     ~CSSCursorImageValue();
@@ -66,12 +66,12 @@ public:
     void cursorElementChanged(SVGCursorElement&);
 
 private:
-    CSSCursorImageValue(std::reference_wrapper<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource);
+    CSSCursorImageValue(ref_ptr<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource);
 
     SVGCursorElement* updateCursorElement(const Document&);
 
     URL m_originalURL;
-    std::reference_wrapper<CSSValue> m_imageValue;
+    ref_ptr<CSSValue> m_imageValue;
 
     bool m_hasHotSpot;
     IntPoint m_hotSpot;

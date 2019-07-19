@@ -34,13 +34,13 @@
 
 namespace WebCore {
 
-StyleRuleKeyframe::StyleRuleKeyframe(std::reference_wrapper<StyleProperties>&& properties)
+StyleRuleKeyframe::StyleRuleKeyframe(ref_ptr<StyleProperties>&& properties)
     : StyleRuleBase(Keyframe)
     , m_properties(std::move(properties))
 {
 }
 
-StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<std::vector<double>> keys, std::reference_wrapper<StyleProperties>&& properties)
+StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<std::vector<double>> keys, ref_ptr<StyleProperties>&& properties)
     : StyleRuleBase(Keyframe)
     , m_properties(std::move(properties))
     , m_keys(*keys)

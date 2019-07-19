@@ -37,14 +37,14 @@ namespace WebCore {
 
 class CSSParserTokenRange;
 
-class CSSVariableData : public RefCounted<CSSVariableData> {
+class CSSVariableData {
     CSSVariableData(const CSSVariableData&) = delete;
         CSSVariableData& operator=(const CSSVariableData&) = delete;
 
 public:
-    static std::reference_wrapper<CSSVariableData> create(const CSSParserTokenRange& range)
+    static ref_ptr<CSSVariableData> create(const CSSParserTokenRange& range)
     {
-        return adoptRef(*new CSSVariableData(range));
+        return ref_ptr<CSSVariableData>(range);
     }
 
     CSSParserTokenRange tokenRange() { return m_tokens; }

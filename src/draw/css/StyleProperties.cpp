@@ -62,7 +62,7 @@ static bool isInitialOrInherit(const std::string& value)
 Ref<ImmutableStyleProperties> ImmutableStyleProperties::create(const CSSProperty* properties, unsigned count, CSSParserMode cssParserMode)
 {
     void* slot = WTF::fastMalloc(sizeForImmutableStylePropertiesWithPropertyCount(count));
-    return adoptRef(*new (NotNull, slot) ImmutableStyleProperties(properties, count, cssParserMode));
+    return ref_ptr<>(NotNull, slot) ImmutableStyleProperties(properties, count, cssParserMode);
 }
 
 Ref<ImmutableStyleProperties> StyleProperties::immutableCopyIfNeeded() const
@@ -289,7 +289,7 @@ String StyleProperties::getPropertyValue(CSSPropertyID propertyID) const
     }
 }
 
-Optional<Color> StyleProperties::propertyAsColor(CSSPropertyID property) const
+std::optional<Color> StyleProperties::propertyAsColor(CSSPropertyID property) const
 {
     auto colorValue = getPropertyCSSValue(property);
     if (!is<CSSPrimitiveValue>(colorValue))
@@ -1504,7 +1504,7 @@ bool StyleProperties::propertyMatches(CSSPropertyID propertyID, const CSSValue* 
 
 Ref<MutableStyleProperties> StyleProperties::mutableCopy() const
 {
-    return adoptRef(*new MutableStyleProperties(*this));
+    return ref_ptr<MutableStyleProperties>(*this);
 }
 
 Ref<MutableStyleProperties> StyleProperties::copyPropertiesInSet(const CSSPropertyID* set, unsigned length) const
@@ -1551,7 +1551,7 @@ unsigned StyleProperties::averageSizeInBytes()
 }
 
 // See the function above if you need to update this.
-struct SameSizeAsStyleProperties : public RefCounted<SameSizeAsStyleProperties> {
+struct SameSizeAsStyleProperties {
     unsigned bitfield;
 };
 COMPILE_ASSERT(sizeof(StyleProperties) == sizeof(SameSizeAsStyleProperties), style_property_set_should_stay_small);
@@ -1565,12 +1565,12 @@ void StyleProperties::showStyle()
 
 Ref<MutableStyleProperties> MutableStyleProperties::create(CSSParserMode cssParserMode)
 {
-    return adoptRef(*new MutableStyleProperties(cssParserMode));
+    return ref_ptr<MutableStyleProperties>(cssParserMode);
 }
 
 Ref<MutableStyleProperties> MutableStyleProperties::create(const CSSProperty* properties, unsigned count)
 {
-    return adoptRef(*new MutableStyleProperties(properties, count));
+    return ref_ptr<MutableStyleProperties>(properties, count);
 }
 
 String StyleProperties::PropertyReference::cssName() const
@@ -1594,7 +1594,7 @@ String StyleProperties::PropertyReference::cssText() const
     
 Ref<DeferredStyleProperties> DeferredStyleProperties::create(const CSSParserTokenRange& tokenRange, CSSDeferredParser& parser)
 {
-    return adoptRef(*new DeferredStyleProperties(tokenRange, parser));
+    return ref_ptr<DeferredStyleProperties>(tokenRange, parser);
 }
 
 DeferredStyleProperties::DeferredStyleProperties(const CSSParserTokenRange& range, CSSDeferredParser& parser)

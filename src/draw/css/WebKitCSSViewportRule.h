@@ -42,9 +42,9 @@ class StyleRuleCSSStyleDeclaration;
 
 class WebKitCSSViewportRule final : public CSSRule {
 public:
-    static std::reference_wrapper<WebKitCSSViewportRule> create(StyleRuleViewport& viewportRule, CSSStyleSheet* sheet)
+    static ref_ptr<WebKitCSSViewportRule> create(StyleRuleViewport& viewportRule, CSSStyleSheet* sheet)
     {
-        return adoptRef(*new WebKitCSSViewportRule(viewportRule, sheet));
+        return ref_ptr<WebKitCSSViewportRule>(viewportRule, sheet);
     }
     virtual ~WebKitCSSViewportRule();
 
@@ -58,7 +58,7 @@ private:
 
     CSSRule::Type type() const final { return WEBKIT_VIEWPORT_RULE; }
 
-    std::reference_wrapper<StyleRuleViewport> m_viewportRule;
+    ref_ptr<StyleRuleViewport> m_viewportRule;
     mutable std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
 };
 

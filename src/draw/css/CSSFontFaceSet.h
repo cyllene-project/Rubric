@@ -43,11 +43,11 @@ public:
     virtual void completedLoading() { };
 };
 
-class CSSFontFaceSet final : public RefCounted<CSSFontFaceSet>, public CSSFontFace::Client {
+class CSSFontFaceSet final :  public CSSFontFace::Client {
 public:
-    static std::reference_wrapper<CSSFontFaceSet> create(CSSFontSelector* owningFontSelector = nullptr)
+    static ref_ptr<CSSFontFaceSet> create(CSSFontSelector* owningFontSelector = nullptr)
     {
-        return adoptRef(*new CSSFontFaceSet(owningFontSelector));
+        return ref_ptr<CSSFontFaceSet>(owningFontSelector);
     }
     ~CSSFontFaceSet();
 
@@ -74,7 +74,7 @@ public:
 
     bool hasActiveFontFaces() { return status() == Status::Loading; }
 
-    ExceptionOr<std::vector<std::reference_wrapper<CSSFontFace>>> matchingFacesExcludingPreinstalledFonts(const std::string& font, const std::string& text);
+    ExceptionOr<std::vector<ref_ptr<CSSFontFace>>> matchingFacesExcludingPreinstalledFonts(const std::string& font, const std::string& text);
 
     // CSSFontFace::Client needs to be able to be held in a RefPtr.
     void ref() final { RefCounted::ref(); }
@@ -96,7 +96,7 @@ private:
 
     static String familyNameFromPrimitive(const CSSPrimitiveValue&);
 
-    using FontSelectionKey = Optional<FontSelectionRequest>;
+    using FontSelectionKey = std::optional<FontSelectionRequest>;
     struct FontSelectionKeyHash {
         static unsigned hash(const FontSelectionKey& key) { return computeHash(key); }
         static bool equal(const FontSelectionKey& a, const FontSelectionKey& b) { return a == b; }
@@ -111,9 +111,9 @@ private:
     using FontSelectionHashMap = std::unordered_map<FontSelectionKey, std::shared_ptr<CSSSegmentedFontFace>, FontSelectionKeyHash, FontSelectionKeyHashTraits>;
 
     // m_faces should hold all the same fonts as the ones inside inside m_facesLookupTable.
-    std::vector<std::reference_wrapper<CSSFontFace>> m_faces; // We should investigate moving m_faces to FontFaceSet and making it reference FontFaces. This may clean up the font loading design.
-    std::unordered_map<String, std::vector<std::reference_wrapper<CSSFontFace>>, ASCIICaseInsensitiveHash> m_facesLookupTable;
-    std::unordered_map<String, std::vector<std::reference_wrapper<CSSFontFace>>, ASCIICaseInsensitiveHash> m_locallyInstalledFacesLookupTable;
+    std::vector<ref_ptr<CSSFontFace>> m_faces; // We should investigate moving m_faces to FontFaceSet and making it reference FontFaces. This may clean up the font loading design.
+    std::unordered_map<String, std::vector<ref_ptr<CSSFontFace>>, ASCIICaseInsensitiveHash> m_facesLookupTable;
+    std::unordered_map<String, std::vector<ref_ptr<CSSFontFace>>, ASCIICaseInsensitiveHash> m_locallyInstalledFacesLookupTable;
     std::unordered_map<String, FontSelectionHashMap, ASCIICaseInsensitiveHash> m_cache;
     std::unordered_map<StyleRuleFontFace*, CSSFontFace*> m_constituentCSSConnections;
     size_t m_facesPartitionIndex { 0 }; // All entries in m_faces before this index are CSS-connected.

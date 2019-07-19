@@ -33,9 +33,9 @@ class CSSPrimitiveValue;
 
 class CSSReflectValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSReflectValue> create(std::reference_wrapper<CSSPrimitiveValue>&& direction, std::reference_wrapper<CSSPrimitiveValue>&& offset, std::shared_ptr<CSSValue>&& mask)
+    static ref_ptr<CSSReflectValue> create(ref_ptr<CSSPrimitiveValue>&& direction, ref_ptr<CSSPrimitiveValue>&& offset, std::shared_ptr<CSSValue>&& mask)
     {
-        return adoptRef(*new CSSReflectValue(std::move(direction), std::move(offset), std::move(mask)));
+        return ref_ptr<CSSReflectValue>(std::move(direction), std::move(offset), std::move(mask));
     }
 
     CSSPrimitiveValue& direction() { return m_direction.get(); }
@@ -49,7 +49,7 @@ public:
     bool equals(const CSSReflectValue&) const;
 
 private:
-    CSSReflectValue(std::reference_wrapper<CSSPrimitiveValue>&& direction, std::reference_wrapper<CSSPrimitiveValue>&& offset, std::shared_ptr<CSSValue>&& mask)
+    CSSReflectValue(ref_ptr<CSSPrimitiveValue>&& direction, ref_ptr<CSSPrimitiveValue>&& offset, std::shared_ptr<CSSValue>&& mask)
         : CSSValue(ReflectClass)
         , m_direction(std::move(direction))
         , m_offset(std::move(offset))
@@ -57,8 +57,8 @@ private:
     {
     }
 
-    std::reference_wrapper<CSSPrimitiveValue> m_direction;
-    std::reference_wrapper<CSSPrimitiveValue> m_offset;
+    ref_ptr<CSSPrimitiveValue> m_direction;
+    ref_ptr<CSSPrimitiveValue> m_offset;
     std::shared_ptr<CSSValue> m_mask;
 };
 

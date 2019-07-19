@@ -33,10 +33,10 @@ class ShadowRoot;
 class StyleSheet;
 class CSSStyleSheet;
 
-class StyleSheetList final : public RefCounted<StyleSheetList> {
+class StyleSheetList final {
 public:
-    static std::reference_wrapper<StyleSheetList> create(Document& document) { return adoptRef(*new StyleSheetList(document)); }
-    static std::reference_wrapper<StyleSheetList> create(ShadowRoot& shadowRoot) { return adoptRef(*new StyleSheetList(shadowRoot)); }
+    static ref_ptr<StyleSheetList> create(Document& document) { return ref_ptr<StyleSheetList>(document); }
+    static ref_ptr<StyleSheetList> create(ShadowRoot& shadowRoot) { return ref_ptr<StyleSheetList>(shadowRoot); }
     ~StyleSheetList();
 
     unsigned length() const;

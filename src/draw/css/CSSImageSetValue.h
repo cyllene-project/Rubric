@@ -38,9 +38,9 @@ class Document;
 
 class CSSImageSetValue final : public CSSValueList {
 public:
-    static std::reference_wrapper<CSSImageSetValue> create(LoadedFromOpaqueSource loadedFromOpaqueSource)
+    static ref_ptr<CSSImageSetValue> create(LoadedFromOpaqueSource loadedFromOpaqueSource)
     {
-        return adoptRef(*new CSSImageSetValue(loadedFromOpaqueSource));
+        return ref_ptr<CSSImageSetValue>(loadedFromOpaqueSource);
     }
     ~CSSImageSetValue();
 

@@ -31,9 +31,9 @@ namespace WebCore {
 
 class CSSCubicBezierTimingFunctionValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSCubicBezierTimingFunctionValue> create(double x1, double y1, double x2, double y2)
+    static ref_ptr<CSSCubicBezierTimingFunctionValue> create(double x1, double y1, double x2, double y2)
     {
-        return adoptRef(*new CSSCubicBezierTimingFunctionValue(x1, y1, x2, y2));
+        return ref_ptr<CSSCubicBezierTimingFunctionValue>(x1, y1, x2, y2);
     }
 
     std::string customCSSText() const;
@@ -63,9 +63,9 @@ private:
 
 class CSSStepsTimingFunctionValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSStepsTimingFunctionValue> create(int steps, bool stepAtStart)
+    static ref_ptr<CSSStepsTimingFunctionValue> create(int steps, bool stepAtStart)
     {
-        return adoptRef(*new CSSStepsTimingFunctionValue(steps, stepAtStart));
+        return ref_ptr<CSSStepsTimingFunctionValue>(steps, stepAtStart);
     }
 
     int numberOfSteps() const { return m_steps; }
@@ -89,9 +89,9 @@ private:
 
 class CSSSpringTimingFunctionValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSSpringTimingFunctionValue> create(double mass, double stiffness, double damping, double initialVelocity)
+    static ref_ptr<CSSSpringTimingFunctionValue> create(double mass, double stiffness, double damping, double initialVelocity)
     {
-        return adoptRef(*new CSSSpringTimingFunctionValue(mass, stiffness, damping, initialVelocity));
+        return ref_ptr<CSSSpringTimingFunctionValue>(mass, stiffness, damping, initialVelocity);
     }
 
     double mass() const { return m_mass; }

@@ -30,20 +30,20 @@ class CSSPrimitiveValue;
 // and border-spacing (all of which are space-separated sets of two values).  At the moment we are only using it for
 // border-radius and background-size, but (FIXME) border-spacing and background-position could be converted over to use
 // it (eliminating some extra -webkit- internal properties).
-class Pair : public RefCounted<Pair> {
+class Pair {
 public:
     enum class IdenticalValueEncoding : uint8_t {
         DoNotCoalesce,
         Coalesce
     };
 
-    static std::reference_wrapper<Pair> create(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second)
+    static ref_ptr<Pair> create(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second)
     {
-        return adoptRef(*new Pair(std::move(first), std::move(second)));
+        return ref_ptr<Pair>(std::move(first), std::move(second));
     }
-    static std::reference_wrapper<Pair> create(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second, IdenticalValueEncoding encoding)
+    static ref_ptr<Pair> create(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second, IdenticalValueEncoding encoding)
     {
-        return adoptRef(*new Pair(std::move(first), std::move(second), encoding));
+        return ref_ptr<Pair>(std::move(first), std::move(second), encoding);
     }
     CSSPrimitiveValue* first() const { return m_first.get(); }
     CSSPrimitiveValue* second() const { return m_second.get(); }

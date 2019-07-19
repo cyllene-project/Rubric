@@ -36,7 +36,7 @@ class Document;
 
 class CSSCanvasValue final : public CSSImageGeneratorValue {
 public:
-    static std::reference_wrapper<CSSCanvasValue> create(const std::string& name) { return adoptRef(*new CSSCanvasValue(name)); }
+    static ref_ptr<CSSCanvasValue> create(const std::string& name) { return ref_ptr<CSSCanvasValue>(name); }
     ~CSSCanvasValue();
 
     std::string customCSSText() const;

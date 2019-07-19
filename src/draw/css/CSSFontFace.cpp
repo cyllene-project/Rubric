@@ -50,7 +50,7 @@ namespace WebCore {
 
 template<typename T> void iterateClients(std::unordered_set<CSSFontFace::Client*>& clients, T callback)
 {
-    std::vector<std::reference_wrapper<CSSFontFace::Client>> clientsCopy;
+    std::vector<ref_ptr<CSSFontFace::Client>> clientsCopy;
     clientsCopy.reserveInitialCapacity(clients.size());
     for (auto* client : clients)
         clientsCopy.uncheckedAppend(*client);
@@ -494,7 +494,7 @@ void CSSFontFace::fontLoadEventOccurred()
 
 void CSSFontFace::timeoutFired()
 {
-    std::reference_wrapper<CSSFontFace> protectedThis(*this);
+    ref_ptr<CSSFontFace> protectedThis(*this);
     
     switch (status()) {
     case Status::Loading:
@@ -696,7 +696,7 @@ void CSSFontFace::setStatus(Status newStatus)
 
 void CSSFontFace::fontLoaded(CSSFontFaceSource&)
 {
-    std::reference_wrapper<CSSFontFace> protectedThis(*this);
+    ref_ptr<CSSFontFace> protectedThis(*this);
     
     fontLoadEventOccurred();
 }
@@ -797,7 +797,7 @@ std::shared_ptr<Font> CSSFontFace::font(const FontDescription& fontDescription, 
     if (computeFailureState())
         return nullptr;
 
-    std::reference_wrapper<CSSFontFace> protectedThis(*this);
+    ref_ptr<CSSFontFace> protectedThis(*this);
     
     // Our status is derived from the first non-failed source. However, this source may
     // return null from font(), which means we need to continue looping through the remainder

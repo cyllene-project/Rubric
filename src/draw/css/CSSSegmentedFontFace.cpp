@@ -44,7 +44,7 @@ CSSSegmentedFontFace::~CSSSegmentedFontFace()
         face->removeClient(*this);
 }
 
-void CSSSegmentedFontFace::appendFontFace(std::reference_wrapper<CSSFontFace>&& fontFace)
+void CSSSegmentedFontFace::appendFontFace(ref_ptr<CSSFontFace>&& fontFace)
 {
     m_cache.clear();
     fontFace->addClient(*this);
@@ -58,9 +58,9 @@ void CSSSegmentedFontFace::fontLoaded(CSSFontFace&)
 
 class CSSFontAccessor final : public FontAccessor {
 public:
-    static std::reference_wrapper<CSSFontAccessor> create(CSSFontFace& fontFace, const FontDescription& fontDescription, bool syntheticBold, bool syntheticItalic)
+    static ref_ptr<CSSFontAccessor> create(CSSFontFace& fontFace, const FontDescription& fontDescription, bool syntheticBold, bool syntheticItalic)
     {
-        return adoptRef(*new CSSFontAccessor(fontFace, fontDescription, syntheticBold, syntheticItalic));
+        return ref_ptr<CSSFontAccessor>(fontFace, fontDescription, syntheticBold, syntheticItalic);
     }
 
     const Font* font(ExternalResourceDownloadPolicy policy) const final
@@ -88,14 +88,14 @@ private:
         return m_result && m_result.value() && m_result.value()->isInterstitial();
     }
 
-    mutable Optional<std::shared_ptr<Font>> m_result; // Caches nullptr too
-    mutable std::reference_wrapper<CSSFontFace> m_fontFace;
+    mutable std::optional<std::shared_ptr<Font>> m_result; // Caches nullptr too
+    mutable ref_ptr<CSSFontFace> m_fontFace;
     FontDescription m_fontDescription;
     bool m_syntheticBold;
     bool m_syntheticItalic;
 };
 
-static void appendFont(FontRanges& ranges, std::reference_wrapper<FontAccessor>&& fontAccessor, const std::vector<CSSFontFace::UnicodeRange>& unicodeRanges)
+static void appendFont(FontRanges& ranges, ref_ptr<FontAccessor>&& fontAccessor, const std::vector<CSSFontFace::UnicodeRange>& unicodeRanges)
 {
     if (unicodeRanges.isEmpty()) {
         ranges.appendRange({ 0, 0x7FFFFFFF, std::move(fontAccessor) });

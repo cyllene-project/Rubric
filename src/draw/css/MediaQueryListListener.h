@@ -27,7 +27,7 @@ namespace WebCore {
 
 class MediaQueryList;
 
-class MediaQueryListListener : public RefCounted<MediaQueryListListener>, public ActiveDOMCallback {
+class MediaQueryListListener :  public ActiveDOMCallback {
 public:
     enum Type {
         JSMediaQueryListListenerType

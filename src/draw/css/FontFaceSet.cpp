@@ -39,14 +39,14 @@ WTF_MAKE_ISO_ALLOCATED_IMPL(FontFaceSet);
 
 Ref<FontFaceSet> FontFaceSet::create(Document& document, const std::vector<std::shared_ptr<FontFace>>& initialFaces)
 {
-    std::reference_wrapper<FontFaceSet> result = adoptRef(*new FontFaceSet(document, initialFaces));
+    ref_ptr<FontFaceSet> result = ref_ptr<FontFaceSet>(document, initialFaces);
     result->suspendIfNeeded();
     return result;
 }
 
 Ref<FontFaceSet> FontFaceSet::create(Document& document, CSSFontFaceSet& backing)
 {
-    std::reference_wrapper<FontFaceSet> result = adoptRef(*new FontFaceSet(document, backing));
+    ref_ptr<FontFaceSet> result = ref_ptr<FontFaceSet>(document, backing);
     result->suspendIfNeeded();
     return result;
 }
@@ -159,7 +159,7 @@ void FontFaceSet::load(const std::string& font, const std::string& text, LoadPro
             continue;
         waiting = true;
         assert(face.get().existingWrapper());
-        m_pendingPromises.add(face.get().existingWrapper(), std::vector<std::reference_wrapper<PendingPromise>>()).iterator->value.append(pendingPromise.copyRef());
+        m_pendingPromises.add(face.get().existingWrapper(), std::vector<ref_ptr<PendingPromise>>()).iterator->value.append(pendingPromise.copyRef());
     }
 
     if (!waiting)

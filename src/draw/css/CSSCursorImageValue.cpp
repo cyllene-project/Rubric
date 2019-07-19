@@ -33,7 +33,7 @@
 #include <wtf/text/StringBuilder.h>
 namespace WebCore {
 
-CSSCursorImageValue::CSSCursorImageValue(std::reference_wrapper<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
+CSSCursorImageValue::CSSCursorImageValue(ref_ptr<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
     : CSSValue(CursorImageClass)
     , m_imageValue(std::move(imageValue))
     , m_hasHotSpot(hasHotSpot)

@@ -48,9 +48,9 @@ namespace WebCore {
 // allows us to keep the parsing algorithm almost intact.
 class CSSGridAutoRepeatValue final : public CSSValueList {
 public:
-    static std::reference_wrapper<CSSGridAutoRepeatValue> create(CSSValueID id)
+    static ref_ptr<CSSGridAutoRepeatValue> create(CSSValueID id)
     {
-        return adoptRef(*new CSSGridAutoRepeatValue(id));
+        return ref_ptr<CSSGridAutoRepeatValue>(id);
     }
 
     std::string customCSSText() const;

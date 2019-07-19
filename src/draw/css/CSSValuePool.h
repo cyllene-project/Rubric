@@ -47,20 +47,20 @@ public:
     static CSSValuePool& singleton();
 
     std::shared_ptr<CSSValueList> createFontFaceValue(const std::atomic<std::string>&);
-    std::reference_wrapper<CSSPrimitiveValue> createFontFamilyValue(const std::string&, FromSystemFontID = FromSystemFontID::No);
-    std::reference_wrapper<CSSInheritedValue> createInheritedValue() { return m_inheritedValue.get(); }
-    std::reference_wrapper<CSSInitialValue> createImplicitInitialValue() { return m_implicitInitialValue.get(); }
-    std::reference_wrapper<CSSInitialValue> createExplicitInitialValue() { return m_explicitInitialValue.get(); }
-    std::reference_wrapper<CSSUnsetValue> createUnsetValue() { return m_unsetValue.get(); }
-    std::reference_wrapper<CSSRevertValue> createRevertValue() { return m_revertValue.get(); }
-    std::reference_wrapper<CSSPrimitiveValue> createIdentifierValue(CSSValueID identifier);
-    std::reference_wrapper<CSSPrimitiveValue> createIdentifierValue(CSSPropertyID identifier);
-    std::reference_wrapper<CSSPrimitiveValue> createColorValue(const Color&);
-    std::reference_wrapper<CSSPrimitiveValue> createValue(double value, CSSPrimitiveValue::UnitType);
-    std::reference_wrapper<CSSPrimitiveValue> createValue(const std::string& value, CSSPrimitiveValue::UnitType type) { return CSSPrimitiveValue::create(value, type); }
-    std::reference_wrapper<CSSPrimitiveValue> createValue(const Length& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
-    std::reference_wrapper<CSSPrimitiveValue> createValue(const LengthSize& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
-    template<typename T> static std::reference_wrapper<CSSPrimitiveValue> createValue(T&& value) { return CSSPrimitiveValue::create(std::forward<T>(value)); }
+    ref_ptr<CSSPrimitiveValue> createFontFamilyValue(const std::string&, FromSystemFontID = FromSystemFontID::No);
+    ref_ptr<CSSInheritedValue> createInheritedValue() { return m_inheritedValue.get(); }
+    ref_ptr<CSSInitialValue> createImplicitInitialValue() { return m_implicitInitialValue.get(); }
+    ref_ptr<CSSInitialValue> createExplicitInitialValue() { return m_explicitInitialValue.get(); }
+    ref_ptr<CSSUnsetValue> createUnsetValue() { return m_unsetValue.get(); }
+    ref_ptr<CSSRevertValue> createRevertValue() { return m_revertValue.get(); }
+    ref_ptr<CSSPrimitiveValue> createIdentifierValue(CSSValueID identifier);
+    ref_ptr<CSSPrimitiveValue> createIdentifierValue(CSSPropertyID identifier);
+    ref_ptr<CSSPrimitiveValue> createColorValue(const Color&);
+    ref_ptr<CSSPrimitiveValue> createValue(double value, CSSPrimitiveValue::UnitType);
+    ref_ptr<CSSPrimitiveValue> createValue(const std::string& value, CSSPrimitiveValue::UnitType type) { return CSSPrimitiveValue::create(value, type); }
+    ref_ptr<CSSPrimitiveValue> createValue(const Length& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
+    ref_ptr<CSSPrimitiveValue> createValue(const LengthSize& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
+    template<typename T> static ref_ptr<CSSPrimitiveValue> createValue(T&& value) { return CSSPrimitiveValue::create(std::forward<T>(value)); }
 
     void drain();
 

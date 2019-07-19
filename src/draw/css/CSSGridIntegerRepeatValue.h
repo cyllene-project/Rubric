@@ -45,9 +45,9 @@ namespace WebCore {
 //                          [ <line-names>? <fixed-size> ]+ <line-names>? )
 class CSSGridIntegerRepeatValue final : public CSSValueList {
 public:
-    static std::reference_wrapper<CSSGridIntegerRepeatValue> create(size_t repetitions)
+    static ref_ptr<CSSGridIntegerRepeatValue> create(size_t repetitions)
     {
-        return adoptRef(*new CSSGridIntegerRepeatValue(repetitions));
+        return ref_ptr<CSSGridIntegerRepeatValue>(repetitions);
     }
 
     std::string customCSSText() const;

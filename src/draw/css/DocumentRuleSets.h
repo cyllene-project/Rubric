@@ -90,7 +90,7 @@ private:
     mutable std::unordered_map<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>> m_classInvalidationRuleSets;
     mutable std::unordered_map<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>> m_attributeInvalidationRuleSets;
 
-    mutable Optional<bool> m_cachedHasComplexSelectorsForStyleAttribute;
+    mutable std::optional<bool> m_cachedHasComplexSelectorsForStyleAttribute;
 
     mutable unsigned m_defaultStyleVersionOnFeatureCollection { 0 };
     mutable unsigned m_userAgentMediaQueryRuleCountOnUpdate { 0 };

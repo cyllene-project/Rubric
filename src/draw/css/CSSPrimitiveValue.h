@@ -201,21 +201,21 @@ public:
     bool isValueID() const { return m_primitiveUnitType == CSS_VALUE_ID; }
     bool isFlex() const { return primitiveType() == CSS_FR; }
 
-    static std::reference_wrapper<CSSPrimitiveValue> createIdentifier(CSSValueID valueID) { return adoptRef(*new CSSPrimitiveValue(valueID)); }
-    static std::reference_wrapper<CSSPrimitiveValue> createIdentifier(CSSPropertyID propertyID) { return adoptRef(*new CSSPrimitiveValue(propertyID)); }
+    static ref_ptr<CSSPrimitiveValue> createIdentifier(CSSValueID valueID) { return ref_ptr<CSSPrimitiveValue>(valueID); }
+    static ref_ptr<CSSPrimitiveValue> createIdentifier(CSSPropertyID propertyID) { return ref_ptr<CSSPrimitiveValue>(propertyID); }
 
-    static std::reference_wrapper<CSSPrimitiveValue> create(double value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
-    static std::reference_wrapper<CSSPrimitiveValue> create(const std::string& value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
-    static std::reference_wrapper<CSSPrimitiveValue> create(const Length& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
-    static std::reference_wrapper<CSSPrimitiveValue> create(const LengthSize& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
+    static ref_ptr<CSSPrimitiveValue> create(double value, UnitType type) { return ref_ptr<CSSPrimitiveValue>(value, type); }
+    static ref_ptr<CSSPrimitiveValue> create(const std::string& value, UnitType type) { return ref_ptr<CSSPrimitiveValue>(value, type); }
+    static ref_ptr<CSSPrimitiveValue> create(const Length& value, const RenderStyle& style) { return ref_ptr<CSSPrimitiveValue>(value, style); }
+    static ref_ptr<CSSPrimitiveValue> create(const LengthSize& value, const RenderStyle& style) { return ref_ptr<CSSPrimitiveValue>(value, style); }
 
-    template<typename T> static std::reference_wrapper<CSSPrimitiveValue> create(T&&);
+    template<typename T> static ref_ptr<CSSPrimitiveValue> create(T&&);
 
     // This value is used to handle quirky margins in reflow roots (body, td, and th) like WinIE.
     // The basic idea is that a stylesheet can use the value __qem (for quirky em) instead of em.
     // When the quirky value is used, if you're in quirks mode, the margin will collapse away
     // inside a table cell.
-    static std::reference_wrapper<CSSPrimitiveValue> createAllowingMarginQuirk(double value, UnitType);
+    static ref_ptr<CSSPrimitiveValue> createAllowingMarginQuirk(double value, UnitType);
 
     ~CSSPrimitiveValue();
 
@@ -228,7 +228,7 @@ public:
     ExceptionOr<std::string> getStringValue() const;
     ExceptionOr<Counter&> getCounterValue() const;
     ExceptionOr<Rect&> getRectValue() const;
-    ExceptionOr<std::reference_wrapper<RGBColor>> getRGBColorValue() const;
+    ExceptionOr<ref_ptr<RGBColor>> getRGBColorValue() const;
 
     double computeDegrees() const;
     
@@ -243,7 +243,7 @@ public:
     double doubleValue(UnitType) const;
     double doubleValue() const;
 
-    template<typename T> inline T value(UnitType type) const { return clampTo<T>(doubleValue(type)); }
+    template<typename T> inline T value(UnitType type) const { return std::clampTo<T>(doubleValue(type)); }
     template<typename T> inline T value() const { return clampTo<T>(doubleValue()); }
 
     float floatValue(UnitType type) const { return value<float>(type); }
@@ -279,7 +279,7 @@ public:
 
     static double computeNonCalcLengthDouble(const CSSToLengthConversionData&, UnitType, double value);
 
-    std::reference_wrapper<DeprecatedCSSOMPrimitiveValue> createDeprecatedCSSOMPrimitiveWrapper(CSSStyleDeclaration&) const;
+    ref_ptr<DeprecatedCSSOMPrimitiveValue> createDeprecatedCSSOMPrimitiveWrapper(CSSStyleDeclaration&) const;
 
     void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
     void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
@@ -299,7 +299,7 @@ private:
 
     template<typename T> CSSPrimitiveValue(T); // Defined in CSSPrimitiveValueMappings.h
     template<typename T> CSSPrimitiveValue(std::shared_ptr<T>&&);
-    template<typename T> CSSPrimitiveValue(std::reference_wrapper<T>&&);
+    template<typename T> CSSPrimitiveValue(ref_ptr<T>&&);
 
     static void create(int); // compile-time guard
     static void create(unsigned); // compile-time guard
@@ -307,14 +307,14 @@ private:
 
     void init(const Length&);
     void init(const LengthSize&, const RenderStyle&);
-    void init(std::reference_wrapper<CSSBasicShape>&&);
+    void init(ref_ptr<CSSBasicShape>&&);
     void init(std::shared_ptr<CSSCalcValue>&&);
-    void init(std::reference_wrapper<Counter>&&);
-    void init(std::reference_wrapper<Pair>&&);
-    void init(std::reference_wrapper<Quad>&&);
-    void init(std::reference_wrapper<Rect>&&);
+    void init(ref_ptr<Counter>&&);
+    void init(ref_ptr<Pair>&&);
+    void init(ref_ptr<Quad>&&);
+    void init(ref_ptr<Rect>&&);
 
-    Optional<double> doubleValueInternal(UnitType targetUnitType) const;
+    std::optional<double> doubleValueInternal(UnitType targetUnitType) const;
 
     double computeLengthDouble(const CSSToLengthConversionData&) const;
 
@@ -369,16 +369,16 @@ inline bool CSSPrimitiveValue::isResolution(UnitType type)
     return type >= CSS_DPPX && type <= CSS_DPCM;
 }
 
-template<typename T> inline std::reference_wrapper<CSSPrimitiveValue> CSSPrimitiveValue::create(T&& value)
+template<typename T> inline ref_ptr<CSSPrimitiveValue> CSSPrimitiveValue::create(T&& value)
 {
-    return adoptRef(*new CSSPrimitiveValue(std::forward<T>(value)));
+    return ref_ptr<CSSPrimitiveValue>(std::forward<T>(value));
 }
 
-inline std::reference_wrapper<CSSPrimitiveValue> CSSPrimitiveValue::createAllowingMarginQuirk(double value, UnitType type)
+inline ref_ptr<CSSPrimitiveValue> CSSPrimitiveValue::createAllowingMarginQuirk(double value, UnitType type)
 {
     auto* result = new CSSPrimitiveValue(value, type);
     result->m_isQuirkValue = true;
-    return std::reference_wrapper(*result);
+    return ref_ptr<CSSPrimitiveValue>(*result);
 }
 
 template<typename T, CSSPrimitiveValue::TimeUnit timeUnit> inline T CSSPrimitiveValue::computeTime() const
@@ -400,7 +400,7 @@ template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(std::shared_ptr
     init(std::move(value));
 }
 
-template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(std::reference_wrapper<T>&& value)
+template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(ref_ptr<T>&& value)
     : CSSValue(PrimitiveClass)
 {
     init(std::move(value));

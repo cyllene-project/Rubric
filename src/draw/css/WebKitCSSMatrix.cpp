@@ -48,10 +48,10 @@ inline WebKitCSSMatrix::WebKitCSSMatrix(const TransformationMatrix& matrix)
 
 Ref<WebKitCSSMatrix> WebKitCSSMatrix::create(const TransformationMatrix& matrix)
 {
-    return adoptRef(*new WebKitCSSMatrix(matrix));
+    return ref_ptr<WebKitCSSMatrix>(matrix);
 }
 
-ExceptionOr<std::reference_wrapper<WebKitCSSMatrix>> WebKitCSSMatrix::create(const std::string& string)
+ExceptionOr<ref_ptr<WebKitCSSMatrix>> WebKitCSSMatrix::create(const std::string& string)
 {
     auto result = adoptRef(*new WebKitCSSMatrix);
     auto setMatrixValueResult = result->setMatrixValue(string);
@@ -103,7 +103,7 @@ std::shared_ptr<WebKitCSSMatrix> WebKitCSSMatrix::multiply(WebKitCSSMatrix* seco
     return matrix;
 }
 
-ExceptionOr<std::reference_wrapper<WebKitCSSMatrix>> WebKitCSSMatrix::inverse() const
+ExceptionOr<ref_ptr<WebKitCSSMatrix>> WebKitCSSMatrix::inverse() const
 {
     auto inverse = m_matrix.inverse();
     if (!inverse)

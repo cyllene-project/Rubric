@@ -33,7 +33,7 @@ class StyleRuleNamespace;
 
 class CSSNamespaceRule final : public CSSRule {
 public:
-    static std::reference_wrapper<CSSNamespaceRule> create(StyleRuleNamespace& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSNamespaceRule(rule, sheet)); }
+    static ref_ptr<CSSNamespaceRule> create(StyleRuleNamespace& rule, CSSStyleSheet* sheet) { return ref_ptr<CSSNamespaceRule>(rule, sheet); }
 
     virtual ~CSSNamespaceRule();
 
@@ -47,7 +47,7 @@ private:
     std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    std::reference_wrapper<StyleRuleNamespace> m_namespaceRule;
+    ref_ptr<StyleRuleNamespace> m_namespaceRule;
 };
 
 } // namespace WebCore

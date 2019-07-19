@@ -86,7 +86,7 @@ public:
     bool knownToBeOpaque(const RenderElement&) const;
 
     void loadSubimages(CachedResourceLoader&, const ResourceLoaderOptions&) { }
-    std::reference_wrapper<CSSGradientValue> gradientWithStylesResolved(const StyleResolver&);
+    ref_ptr<CSSGradientValue> gradientWithStylesResolved(const StyleResolver&);
 
 protected:
     CSSGradientValue(ClassType classType, CSSGradientRepeat repeat, CSSGradientType gradientType)
@@ -134,21 +134,21 @@ protected:
 
 class CSSLinearGradientValue final : public CSSGradientValue {
 public:
-    static std::reference_wrapper<CSSLinearGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSLinearGradient)
+    static ref_ptr<CSSLinearGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSLinearGradient)
     {
-        return adoptRef(*new CSSLinearGradientValue(repeat, gradientType));
+        return ref_ptr<CSSLinearGradientValue>(repeat, gradientType);
     }
 
-    void setAngle(std::reference_wrapper<CSSPrimitiveValue>&& val) { m_angle = std::move(val); }
+    void setAngle(ref_ptr<CSSPrimitiveValue>&& val) { m_angle = std::move(val); }
 
     std::string customCSSText() const;
 
     // Create the gradient for a given size.
-    std::reference_wrapper<Gradient> createGradient(RenderElement&, const FloatSize&);
+    ref_ptr<Gradient> createGradient(RenderElement&, const FloatSize&);
 
-    std::reference_wrapper<CSSLinearGradientValue> clone() const
+    ref_ptr<CSSLinearGradientValue> clone() const
     {
-        return adoptRef(*new CSSLinearGradientValue(*this));
+        return ref_ptr<CSSLinearGradientValue>(*this);
     }
 
     bool equals(const CSSLinearGradientValue&) const;
@@ -170,14 +170,14 @@ private:
 
 class CSSRadialGradientValue final : public CSSGradientValue {
 public:
-    static std::reference_wrapper<CSSRadialGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSRadialGradient)
+    static ref_ptr<CSSRadialGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSRadialGradient)
     {
-        return adoptRef(*new CSSRadialGradientValue(repeat, gradientType));
+        return ref_ptr<CSSRadialGradientValue>(repeat, gradientType);
     }
 
-    std::reference_wrapper<CSSRadialGradientValue> clone() const
+    ref_ptr<CSSRadialGradientValue> clone() const
     {
-        return adoptRef(*new CSSRadialGradientValue(*this));
+        return ref_ptr<CSSRadialGradientValue>(*this);
     }
 
     std::string customCSSText() const;
@@ -192,7 +192,7 @@ public:
     void setEndVerticalSize(std::shared_ptr<CSSPrimitiveValue>&& val) { m_endVerticalSize = std::move(val); }
 
     // Create the gradient for a given size.
-    std::reference_wrapper<Gradient> createGradient(RenderElement&, const FloatSize&);
+    ref_ptr<Gradient> createGradient(RenderElement&, const FloatSize&);
 
     bool equals(const CSSRadialGradientValue&) const;
 
@@ -230,14 +230,14 @@ private:
 
 class CSSConicGradientValue final : public CSSGradientValue {
 public:
-    static std::reference_wrapper<CSSConicGradientValue> create(CSSGradientRepeat repeat)
+    static ref_ptr<CSSConicGradientValue> create(CSSGradientRepeat repeat)
     {
-        return adoptRef(*new CSSConicGradientValue(repeat));
+        return ref_ptr<CSSConicGradientValue>(repeat);
     }
 
-    std::reference_wrapper<CSSConicGradientValue> clone() const
+    ref_ptr<CSSConicGradientValue> clone() const
     {
-        return adoptRef(*new CSSConicGradientValue(*this));
+        return ref_ptr<CSSConicGradientValue>(*this);
     }
 
     std::string customCSSText() const;
@@ -245,7 +245,7 @@ public:
     void setAngle(std::shared_ptr<CSSPrimitiveValue>&& val) { m_angle = std::move(val); }
 
     // Create the gradient for a given size.
-    std::reference_wrapper<Gradient> createGradient(RenderElement&, const FloatSize&);
+    ref_ptr<Gradient> createGradient(RenderElement&, const FloatSize&);
 
     bool equals(const CSSConicGradientValue&) const;
 

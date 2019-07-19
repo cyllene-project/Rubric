@@ -30,7 +30,7 @@ class CSSValueList;
 
 class CSSFontValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSFontValue> create()
+    static ref_ptr<CSSFontValue> create()
     {
         return adoptRef(*new CSSFontValue);
     }

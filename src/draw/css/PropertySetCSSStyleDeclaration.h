@@ -81,7 +81,7 @@ private:
     std::string getPropertyValueInternal(CSSPropertyID) final;
     ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) final;
     
-    std::reference_wrapper<MutableStyleProperties> copyProperties() const final;
+    ref_ptr<MutableStyleProperties> copyProperties() const final;
 
     std::shared_ptr<DeprecatedCSSOMValue> wrapForDeprecatedCSSOM(CSSValue*);
     
@@ -92,9 +92,9 @@ private:
 class StyleRuleCSSStyleDeclaration final : public PropertySetCSSStyleDeclaration {
     WTF_MAKE_ISO_ALLOCATED(StyleRuleCSSStyleDeclaration);
 public:
-    static std::reference_wrapper<StyleRuleCSSStyleDeclaration> create(MutableStyleProperties& propertySet, CSSRule& parentRule)
+    static ref_ptr<StyleRuleCSSStyleDeclaration> create(MutableStyleProperties& propertySet, CSSRule& parentRule)
     {
-        return adoptRef(*new StyleRuleCSSStyleDeclaration(propertySet, parentRule));
+        return ref_ptr<StyleRuleCSSStyleDeclaration>(propertySet, parentRule);
     }
     virtual ~StyleRuleCSSStyleDeclaration();
 

@@ -263,7 +263,7 @@ CSSPropertyID CSSStyleDeclaration::getCSSPropertyIDFromJavaScriptPropertyName(co
     return parseJavaScriptCSSPropertyName(propertyName).propertyID;
 }
 
-Optional<Variant<String, double>> CSSStyleDeclaration::namedItem(const std::atomic<std::string>& propertyName)
+std::optional<Variant<String, double>> CSSStyleDeclaration::namedItem(const std::atomic<std::string>& propertyName)
 {
     auto propertyInfo = parseJavaScriptCSSPropertyName(propertyName);
     if (!propertyInfo.propertyID)

@@ -42,9 +42,9 @@ class CSSParserTokenRange;
 
 class CSSVariableReferenceValue : public CSSValue {
 public:
-    static std::reference_wrapper<CSSVariableReferenceValue> create(const CSSParserTokenRange& range)
+    static ref_ptr<CSSVariableReferenceValue> create(const CSSParserTokenRange& range)
     {
-        return adoptRef(*new CSSVariableReferenceValue(CSSVariableData::create(range)));
+        return ref_ptr<CSSVariableReferenceValue>(CSSVariableData::create(range));
     }
 
     bool equals(const CSSVariableReferenceValue& other) const { return m_data.get() == other.m_data.get(); }
@@ -53,13 +53,13 @@ public:
     std::shared_ptr<CSSVariableData> resolveVariableReferences(ApplyCascadedPropertyState&) const;
 
 private:
-    CSSVariableReferenceValue(std::reference_wrapper<CSSVariableData>&& data)
+    CSSVariableReferenceValue(ref_ptr<CSSVariableData>&& data)
         : CSSValue(VariableReferenceClass)
         , m_data(std::move(data))
     {
     }
 
-    std::reference_wrapper<CSSVariableData> m_data;
+    ref_ptr<CSSVariableData> m_data;
     mutable String m_stringValue;
     mutable bool m_serialized { false };
 };

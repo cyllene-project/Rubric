@@ -69,12 +69,12 @@ public:
     virtual String getPropertyValueInternal(CSSPropertyID) = 0;
     virtual ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) = 0;
 
-    virtual std::reference_wrapper<MutableStyleProperties> copyProperties() const = 0;
+    virtual ref_ptr<MutableStyleProperties> copyProperties() const = 0;
 
     virtual CSSStyleSheet* parentStyleSheet() const { return nullptr; }
 
     // Bindings support.
-    Optional<Variant<String, double>> namedItem(const std::atomic<std::string>&);
+    std::optional<Variant<String, double>> namedItem(const std::atomic<std::string>&);
     ExceptionOr<void> setNamedItem(const std::atomic<std::string>& name, String value, bool& propertySupported);
     std::vector<AtomString> supportedPropertyNames() const;
 

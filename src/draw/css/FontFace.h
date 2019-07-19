@@ -38,7 +38,7 @@ class ArrayBufferView;
 
 namespace WebCore {
 
-class FontFace final : public RefCounted<FontFace>, public CanMakeWeakPtr<FontFace>, private CSSFontFace::Client {
+class FontFace final :  public CanMakeWeakPtr<FontFace>, private CSSFontFace::Client {
 public:
     struct Descriptors {
         std::string style;
@@ -51,8 +51,8 @@ public:
     };
     
     using Source = Variant<String, std::shared_ptr<JSC::ArrayBuffer>, std::shared_ptr<JSC::ArrayBufferView>>;
-    static ExceptionOr<std::reference_wrapper<FontFace>> create(Document&, const std::string& family, Source&&, const Descriptors&);
-    static std::reference_wrapper<FontFace> create(CSSFontFace&);
+    static ExceptionOr<ref_ptr<FontFace>> create(Document&, const std::string& family, Source&&, const Descriptors&);
+    static ref_ptr<FontFace> create(CSSFontFace&);
     virtual ~FontFace();
 
     ExceptionOr<void> setFamily(const std::string&);
@@ -98,7 +98,7 @@ private:
     // Callback for LoadedPromise.
     FontFace& loadedPromiseResolve();
 
-    std::reference_wrapper<CSSFontFace> m_backing;
+    ref_ptr<CSSFontFace> m_backing;
     LoadedPromise m_loadedPromise;
 };
 

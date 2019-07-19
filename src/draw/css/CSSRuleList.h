@@ -47,7 +47,7 @@ protected:
 
 class StaticCSSRuleList final : public CSSRuleList {
 public:
-    static std::reference_wrapper<StaticCSSRuleList> create() { return adoptRef(*new StaticCSSRuleList); }
+    static ref_ptr<StaticCSSRuleList> create() { return adoptRef(*new StaticCSSRuleList); }
 
     void ref() final { ++m_refCount; }
     void deref() final;

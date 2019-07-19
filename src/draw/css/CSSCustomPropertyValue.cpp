@@ -33,16 +33,16 @@ bool CSSCustomPropertyValue::equals(const CSSCustomPropertyValue& other) const
 {
     if (m_name != other.m_name || m_value.index() != other.m_value.index())
         return false;
-    return WTF::switchOn(m_value, [&](const std::reference_wrapper<CSSVariableReferenceValue>& value) {
-        return value.get() == WTF::get<std::reference_wrapper<CSSVariableReferenceValue>>(other.m_value).get();
+    return WTF::switchOn(m_value, [&](const ref_ptr<CSSVariableReferenceValue>& value) {
+        return value.get() == WTF::get<ref_ptr<CSSVariableReferenceValue>>(other.m_value).get();
     }, [&](const CSSValueID& value) {
         return value == WTF::get<CSSValueID>(other.m_value);
-    }, [&](const std::reference_wrapper<CSSVariableData>& value) {
-        return value.get() == WTF::get<std::reference_wrapper<CSSVariableData>>(other.m_value).get();
+    }, [&](const ref_ptr<CSSVariableData>& value) {
+        return value.get() == WTF::get<ref_ptr<CSSVariableData>>(other.m_value).get();
     }, [&](const Length& value) {
         return value == WTF::get<Length>(other.m_value);
-    }, [&](const std::reference_wrapper<StyleImage>& value) {
-        return value.get() == WTF::get<std::reference_wrapper<StyleImage>>(other.m_value).get();
+    }, [&](const ref_ptr<StyleImage>& value) {
+        return value.get() == WTF::get<ref_ptr<StyleImage>>(other.m_value).get();
     });
 }
 
@@ -51,15 +51,15 @@ String CSSCustomPropertyValue::customCSSText() const
     if (!m_serialized) {
         m_serialized = true;
 
-        WTF::switchOn(m_value, [&](const std::reference_wrapper<CSSVariableReferenceValue>& value) {
+        WTF::switchOn(m_value, [&](const ref_ptr<CSSVariableReferenceValue>& value) {
             m_stringValue = value->cssText();
         }, [&](const CSSValueID& value) {
             m_stringValue = getValueName(value);
-        }, [&](const std::reference_wrapper<CSSVariableData>& value) {
+        }, [&](const ref_ptr<CSSVariableData>& value) {
             m_stringValue = value->tokenRange().serialize();
         }, [&](const Length& value) {
             m_stringValue = CSSPrimitiveValue::create(value.value(), CSSPrimitiveValue::CSS_PX)->cssText();
-        }, [&](const std::reference_wrapper<StyleImage>& value) {
+        }, [&](const ref_ptr<StyleImage>& value) {
             m_stringValue = value->cssValue()->cssText();
         });
     }
@@ -70,11 +70,11 @@ std::vector<CSSParserToken> CSSCustomPropertyValue::tokens() const
 {
     std::vector<CSSParserToken> result;
 
-    WTF::switchOn(m_value, [&](const std::reference_wrapper<CSSVariableReferenceValue>&) {
+    WTF::switchOn(m_value, [&](const ref_ptr<CSSVariableReferenceValue>&) {
         ASSERT_NOT_REACHED();
     }, [&](const CSSValueID&) {
         // Do nothing
-    }, [&](const std::reference_wrapper<CSSVariableData>& value) {
+    }, [&](const ref_ptr<CSSVariableData>& value) {
         result.appendVector(value->tokens());
     }, [&](const Length&) {
         CSSTokenizer tokenizer(cssText());
@@ -82,7 +82,7 @@ std::vector<CSSParserToken> CSSCustomPropertyValue::tokens() const
         auto tokenizerRange = tokenizer.tokenRange();
         while (!tokenizerRange.atEnd())
             result.append(tokenizerRange.consume());
-    }, [&](const std::reference_wrapper<StyleImage>&) {
+    }, [&](const ref_ptr<StyleImage>&) {
         CSSTokenizer tokenizer(cssText());
 
         auto tokenizerRange = tokenizer.tokenRange();

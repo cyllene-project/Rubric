@@ -53,11 +53,11 @@ class Font;
 class FontFace;
 enum class ExternalResourceDownloadPolicy;
 
-class CSSFontFace final : public RefCounted<CSSFontFace> {
+class CSSFontFace final {
 public:
-    static std::reference_wrapper<CSSFontFace> create(CSSFontSelector* fontSelector, StyleRuleFontFace* cssConnection = nullptr, FontFace* wrapper = nullptr, bool isLocalFallback = false)
+    static ref_ptr<CSSFontFace> create(CSSFontSelector* fontSelector, StyleRuleFontFace* cssConnection = nullptr, FontFace* wrapper = nullptr, bool isLocalFallback = false)
     {
-        return adoptRef(*new CSSFontFace(fontSelector, cssConnection, wrapper, isLocalFallback));
+        return ref_ptr<CSSFontFace>(fontSelector, cssConnection, wrapper, isLocalFallback);
     }
     virtual ~CSSFontFace();
 
@@ -147,7 +147,7 @@ public:
     bool rangesMatchCodePoint(UChar32) const;
 
     // We don't guarantee that the FontFace wrapper will be the same every time you ask for it.
-    std::reference_wrapper<FontFace> wrapper();
+    ref_ptr<FontFace> wrapper();
     void setWrapper(FontFace&);
     FontFace* existingWrapper();
 

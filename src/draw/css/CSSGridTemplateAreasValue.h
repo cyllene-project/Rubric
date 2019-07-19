@@ -38,9 +38,9 @@ namespace WebCore {
 
 class CSSGridTemplateAreasValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSGridTemplateAreasValue> create(const NamedGridAreaMap& gridAreaMap, size_t rowCount, size_t columnCount)
+    static ref_ptr<CSSGridTemplateAreasValue> create(const NamedGridAreaMap& gridAreaMap, size_t rowCount, size_t columnCount)
     {
-        return adoptRef(*new CSSGridTemplateAreasValue(gridAreaMap, rowCount, columnCount));
+        return ref_ptr<CSSGridTemplateAreasValue>(gridAreaMap, rowCount, columnCount);
     }
 
     ~CSSGridTemplateAreasValue() = default;

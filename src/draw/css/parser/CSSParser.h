@@ -73,7 +73,7 @@ public:
     static std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, const std::string&, const CSSParserContext& = strictCSSParserContext());
 
     bool parseDeclaration(MutableStyleProperties&, const std::string&);
-    static std::reference_wrapper<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
+    static ref_ptr<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
 
     void parseSelector(const std::string&, CSSSelectorList&);
 

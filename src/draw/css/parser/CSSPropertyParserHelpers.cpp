@@ -827,7 +827,7 @@ static bool positionFromTwoValues(CSSPrimitiveValue& value1, CSSPrimitiveValue& 
 
 namespace CSSPropertyParserHelpersInternal {
 template<typename... Args>
-static std::reference_wrapper<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
+static ref_ptr<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
 {
     return CSSValuePool::singleton().createValue(Pair::create(std::forward<Args>(args)...));
 }

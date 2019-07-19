@@ -135,7 +135,7 @@ Ref<DeferredStyleProperties> CSSParserImpl::createDeferredStyleProperties(const 
     return DeferredStyleProperties::create(propertyRange, *m_deferredParser);
 }
 
-static std::reference_wrapper<ImmutableStyleProperties> createStyleProperties(ParsedPropertyVector& parsedProperties, CSSParserMode mode)
+static ref_ptr<ImmutableStyleProperties> createStyleProperties(ParsedPropertyVector& parsedProperties, CSSParserMode mode)
 {
     std::bitset<numCSSProperties> seenProperties;
     size_t unusedEntries = parsedProperties.size();
@@ -145,7 +145,7 @@ static std::reference_wrapper<ImmutableStyleProperties> createStyleProperties(Pa
     filterProperties(true, parsedProperties, results, unusedEntries, seenProperties, seenCustomProperties);
     filterProperties(false, parsedProperties, results, unusedEntries, seenProperties, seenCustomProperties);
 
-    std::reference_wrapper<ImmutableStyleProperties> result = ImmutableStyleProperties::create(results.data() + unusedEntries, results.size() - unusedEntries, mode);
+    ref_ptr<ImmutableStyleProperties> result = ImmutableStyleProperties::create(results.data() + unusedEntries, results.size() - unusedEntries, mode);
     parsedProperties.clear();
     return result;
 }

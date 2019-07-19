@@ -44,9 +44,9 @@ class StyleResolver;
 class CSSFilterImageValue final : public CSSImageGeneratorValue {
     friend class FilterSubimageObserverProxy;
 public:
-    static std::reference_wrapper<CSSFilterImageValue> create(std::reference_wrapper<CSSValue>&& imageValue, std::reference_wrapper<CSSValue>&& filterValue)
+    static ref_ptr<CSSFilterImageValue> create(ref_ptr<CSSValue>&& imageValue, ref_ptr<CSSValue>&& filterValue)
     {
-        return adoptRef(*new CSSFilterImageValue(std::move(imageValue), std::move(filterValue)));
+        return ref_ptr<CSSFilterImageValue>(std::move(imageValue), std::move(filterValue));
     }
 
     ~CSSFilterImageValue();
@@ -78,7 +78,7 @@ public:
     CachedImage* cachedImage() const { return m_cachedImage.get(); }
 
 private:
-    CSSFilterImageValue(std::reference_wrapper<CSSValue>&& imageValue, std::reference_wrapper<CSSValue>&& filterValue)
+    CSSFilterImageValue(ref_ptr<CSSValue>&& imageValue, ref_ptr<CSSValue>&& filterValue)
         : CSSImageGeneratorValue(FilterImageClass)
         , m_imageValue(std::move(imageValue))
         , m_filterValue(std::move(filterValue))
@@ -104,8 +104,8 @@ private:
 
     void filterImageChanged(const IntRect&);
 
-    std::reference_wrapper<CSSValue> m_imageValue;
-    std::reference_wrapper<CSSValue> m_filterValue;
+    ref_ptr<CSSValue> m_imageValue;
+    ref_ptr<CSSValue> m_filterValue;
 
     FilterOperations m_filterOperations;
 

@@ -252,7 +252,7 @@ void StyleResolver::appendAuthorStyleSheets(const std::vector<std::shared_ptr<CS
 }
 
 // This is a simplified style setting function for keyframe styles
-void StyleResolver::addKeyframeStyle(std::reference_wrapper<StyleRuleKeyframes>&& rule)
+void StyleResolver::addKeyframeStyle(ref_ptr<StyleRuleKeyframes>&& rule)
 {
     AtomString s(rule->name());
     m_keyframesRuleMap.set(s.impl(), std::move(rule));
@@ -478,7 +478,7 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
     const StyleRuleKeyframes* keyframesRule = it->value.get();
 
     auto* keyframes = &keyframesRule->keyframes();
-    std::vector<std::reference_wrapper<StyleRuleKeyframe>> newKeyframesIfNecessary;
+    std::vector<ref_ptr<StyleRuleKeyframe>> newKeyframesIfNecessary;
 
     bool hasDuplicateKeys = false;
     std::unordered_set<double> keyframeKeys;
@@ -493,7 +493,7 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
             break;
     }
 
-    // FIXME: If HashMaps could have std::reference_wrapper<> as value types, we wouldn't need
+    // FIXME: If HashMaps could have ref_ptr<> as value types, we wouldn't need
     // to copy the HashMap into a Vector.
     if (hasDuplicateKeys) {
         // Merge duplicate key times.
@@ -2433,7 +2433,7 @@ void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCa
         if (index != SelectorChecker::MatchDefault && this->state().style()->insideLink() == InsideLink::NotInside)
             continue;
 
-        std::reference_wrapper<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
+        ref_ptr<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
 
         if (inCycle) {
             state.appliedCustomProperties.add(name); // Make sure we do not try to apply this property again while resolving it.
@@ -2442,7 +2442,7 @@ void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCa
 
         state.inProgressPropertiesCustom.add(name);
 
-        if (WTF::holds_alternative<std::reference_wrapper<CSSVariableReferenceValue>>(valueToApply->value())) {
+        if (WTF::holds_alternative<ref_ptr<CSSVariableReferenceValue>>(valueToApply->value())) {
             std::shared_ptr<CSSValue> parsedValue = resolvedVariableValue(CSSPropertyCustom, valueToApply.get(), state);
 
             if (state.appliedCustomProperties.contains(name))
@@ -2482,9 +2482,9 @@ void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCa
         if (index != SelectorChecker::MatchDefault && this->state().style()->insideLink() == InsideLink::NotInside)
             continue;
 
-        std::reference_wrapper<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
+        ref_ptr<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
 
-        if (inCycle && WTF::holds_alternative<std::reference_wrapper<CSSVariableReferenceValue>>(valueToApply->value())) {
+        if (inCycle && WTF::holds_alternative<ref_ptr<CSSVariableReferenceValue>>(valueToApply->value())) {
             // Resolve this value so that we reset its dependencies.
             resolvedVariableValue(CSSPropertyCustom, valueToApply.get(), state);
         }

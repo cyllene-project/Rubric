@@ -44,13 +44,13 @@ namespace WebCore {
 WTF_MAKE_ISO_ALLOCATED_IMPL(DOMMatrixReadOnly);
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrixreadonly-dommatrixreadonly
-ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> DOMMatrixReadOnly::create(ScriptExecutionContext& scriptExecutionContext, Optional<Variant<String, std::vector<double>>>&& init)
+ExceptionOr<ref_ptr<DOMMatrixReadOnly>> DOMMatrixReadOnly::create(ScriptExecutionContext& scriptExecutionContext, std::optional<Variant<String, std::vector<double>>>&& init)
 {
     if (!init)
         return adoptRef(*new DOMMatrixReadOnly);
 
     return WTF::switchOn(init.value(),
-        [&scriptExecutionContext](const std::string& init) -> ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> {
+        [&scriptExecutionContext](const std::string& init) -> ExceptionOr<ref_ptr<DOMMatrixReadOnly>> {
             if (!scriptExecutionContext.isDocument())
                 return Exception { TypeError };
 
@@ -60,7 +60,7 @@ ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> DOMMatrixReadOnly::create
             
             return adoptRef(*new DOMMatrixReadOnly(parseResult.returnValue().matrix, parseResult.returnValue().is2D ? Is2D::Yes : Is2D::No));
         },
-        [](const std::vector<double>& init) -> ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> {
+        [](const std::vector<double>& init) -> ExceptionOr<ref_ptr<DOMMatrixReadOnly>> {
             if (init.size() == 6) {
                 return adoptRef(*new DOMMatrixReadOnly(TransformationMatrix {
                     init[0], init[1], init[2], init[3], init[4], init[5]
@@ -93,7 +93,7 @@ DOMMatrixReadOnly::DOMMatrixReadOnly(TransformationMatrix&& matrix, Is2D is2D)
     assert(!m_is2D || m_matrix.isAffine());
 }
 
-inline std::reference_wrapper<DOMMatrix> DOMMatrixReadOnly::cloneAsDOMMatrix() const
+inline ref_ptr<DOMMatrix> DOMMatrixReadOnly::cloneAsDOMMatrix() const
 {
     return DOMMatrix::create(m_matrix, m_is2D ? Is2D::Yes : Is2D::No);
 }
@@ -176,12 +176,12 @@ ExceptionOr<void> DOMMatrixReadOnly::validateAndFixup(DOMMatrixInit& init)
     return { };
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromMatrix(DOMMatrixInit&& init)
+ExceptionOr<ref_ptr<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromMatrix(DOMMatrixInit&& init)
 {
     return fromMatrixHelper<DOMMatrixReadOnly>(std::move(init));
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromFloat32Array(std::reference_wrapper<Float32Array>&& array32)
+ExceptionOr<ref_ptr<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromFloat32Array(ref_ptr<Float32Array>&& array32)
 {
     if (array32->length() == 6)
         return DOMMatrixReadOnly::create(TransformationMatrix(array32->item(0), array32->item(1), array32->item(2), array32->item(3), array32->item(4), array32->item(5)), Is2D::Yes);
@@ -198,7 +198,7 @@ ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromFl
     return Exception { TypeError };
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromFloat64Array(std::reference_wrapper<Float64Array>&& array64)
+ExceptionOr<ref_ptr<DOMMatrixReadOnly>> DOMMatrixReadOnly::fromFloat64Array(ref_ptr<Float64Array>&& array64)
 {
     if (array64->length() == 6)
         return DOMMatrixReadOnly::create(TransformationMatrix(array64->item(0), array64->item(1), array64->item(2), array64->item(3), array64->item(4), array64->item(5)), Is2D::Yes);
@@ -285,13 +285,13 @@ Ref<DOMMatrix> DOMMatrixReadOnly::flipY()
     return matrix;
 }
 
-ExceptionOr<std::reference_wrapper<DOMMatrix>> DOMMatrixReadOnly::multiply(DOMMatrixInit&& other) const
+ExceptionOr<ref_ptr<DOMMatrix>> DOMMatrixReadOnly::multiply(DOMMatrixInit&& other) const
 {
     auto matrix = cloneAsDOMMatrix();
     return matrix->multiplySelf(std::move(other));
 }
 
-Ref<DOMMatrix> DOMMatrixReadOnly::scale(double scaleX, Optional<double> scaleY, double scaleZ, double originX, double originY, double originZ)
+Ref<DOMMatrix> DOMMatrixReadOnly::scale(double scaleX, std::optional<double> scaleY, double scaleZ, double originX, double originY, double originZ)
 {
     auto matrix = cloneAsDOMMatrix();
     return matrix->scaleSelf(scaleX, scaleY, scaleZ, originX, originY, originZ);
@@ -303,7 +303,7 @@ Ref<DOMMatrix> DOMMatrixReadOnly::scale3d(double scale, double originX, double o
     return matrix->scale3dSelf(scale, originX, originY, originZ);
 }
 
-Ref<DOMMatrix> DOMMatrixReadOnly::rotate(double rotX, Optional<double> rotY, Optional<double> rotZ)
+Ref<DOMMatrix> DOMMatrixReadOnly::rotate(double rotX, std::optional<double> rotY, std::optional<double> rotZ)
 {
     auto matrix = cloneAsDOMMatrix();
     return matrix->rotateSelf(rotX, rotY, rotZ);
@@ -346,7 +346,7 @@ Ref<DOMPoint> DOMMatrixReadOnly::transformPoint(DOMPointInit&& pointInit)
     return DOMPoint::create(pointInit.x, pointInit.y, pointInit.z, pointInit.w);
 }
 
-ExceptionOr<std::reference_wrapper<Float32Array>> DOMMatrixReadOnly::toFloat32Array() const
+ExceptionOr<ref_ptr<Float32Array>> DOMMatrixReadOnly::toFloat32Array() const
 {
     auto array32 = Float32Array::tryCreateUninitialized(16);
     if (!array32)
@@ -372,7 +372,7 @@ ExceptionOr<std::reference_wrapper<Float32Array>> DOMMatrixReadOnly::toFloat32Ar
     return array32.releaseNonNull();
 }
 
-ExceptionOr<std::reference_wrapper<Float64Array>> DOMMatrixReadOnly::toFloat64Array() const
+ExceptionOr<ref_ptr<Float64Array>> DOMMatrixReadOnly::toFloat64Array() const
 {
     auto array64 = Float64Array::tryCreateUninitialized(16);
     if (!array64)

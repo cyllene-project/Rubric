@@ -65,8 +65,8 @@ private:
     bool parseViewportDescriptor(CSSPropertyID propId, bool important);
     bool parseFontFaceDescriptor(CSSPropertyID);
 
-    void addProperty(CSSPropertyID, CSSPropertyID, std::reference_wrapper<CSSValue>&&, bool important, bool implicit = false);
-    void addExpandedPropertyForValue(CSSPropertyID propId, std::reference_wrapper<CSSValue>&&, bool);
+    void addProperty(CSSPropertyID, CSSPropertyID, ref_ptr<CSSValue>&&, bool important, bool implicit = false);
+    void addExpandedPropertyForValue(CSSPropertyID propId, ref_ptr<CSSValue>&&, bool);
 
     bool consumeBorder(std::shared_ptr<CSSValue>& width, std::shared_ptr<CSSValue>& style, std::shared_ptr<CSSValue>& color);
 

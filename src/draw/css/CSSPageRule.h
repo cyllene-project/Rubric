@@ -32,7 +32,7 @@ class StyleRuleCSSStyleDeclaration;
 
 class CSSPageRule final : public CSSRule {
 public:
-    static std::reference_wrapper<CSSPageRule> create(StyleRulePage& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSPageRule(rule, sheet)); }
+    static ref_ptr<CSSPageRule> create(StyleRulePage& rule, CSSStyleSheet* sheet) { return ref_ptr<CSSPageRule>(rule, sheet); }
 
     virtual ~CSSPageRule();
 
@@ -48,7 +48,7 @@ private:
     std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    std::reference_wrapper<StyleRulePage> m_pageRule;
+    ref_ptr<StyleRulePage> m_pageRule;
     mutable std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
 };
 

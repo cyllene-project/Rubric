@@ -189,9 +189,9 @@ double CSSCalcValue::computeLengthPx(const CSSToLengthConversionData& conversion
 class CSSCalcPrimitiveValue final : public CSSCalcExpressionNode {
 
 public:
-    static std::reference_wrapper<CSSCalcPrimitiveValue> create(std::reference_wrapper<CSSPrimitiveValue>&& value, bool isInteger)
+    static ref_ptr<CSSCalcPrimitiveValue> create(ref_ptr<CSSPrimitiveValue>&& value, bool isInteger)
     {
-        return adoptRef(*new CSSCalcPrimitiveValue(std::move(value), isInteger));
+        return ref_ptr<CSSCalcPrimitiveValue>(std::move(value), isInteger);
     }
 
     static std::shared_ptr<CSSCalcPrimitiveValue> create(double value, CSSPrimitiveValue::UnitType type, bool isInteger)
@@ -290,13 +290,13 @@ private:
     }
 
 private:
-    explicit CSSCalcPrimitiveValue(std::reference_wrapper<CSSPrimitiveValue>&& value, bool isInteger)
+    explicit CSSCalcPrimitiveValue(ref_ptr<CSSPrimitiveValue>&& value, bool isInteger)
         : CSSCalcExpressionNode(unitCategory((CSSPrimitiveValue::UnitType)value->primitiveType()), isInteger)
         , m_value(std::move(value))
     {
     }
 
-    std::reference_wrapper<CSSPrimitiveValue> m_value;
+    ref_ptr<CSSPrimitiveValue> m_value;
 };
 
 static const CalculationCategory addSubtractResult[static_cast<unsigned>(CalculationCategory::Angle)][static_cast<unsigned>(CalculationCategory::Angle)] = {
@@ -372,7 +372,7 @@ static inline bool isIntegerResult(CalcOperator op, const CSSCalcExpressionNode&
     return op != CalcOperator::Divide && leftSide.isInteger() && rightSide.isInteger();
 }
 
-static inline bool isIntegerResult(CalcOperator op, const std::vector<std::reference_wrapper<CSSCalcExpressionNode>>& nodes)
+static inline bool isIntegerResult(CalcOperator op, const std::vector<ref_ptr<CSSCalcExpressionNode>>& nodes)
 {
     // Performs W3C spec's type checking for calc integers.
     // http://www.w3.org/TR/css3-values/#calc-type-checking
@@ -410,11 +410,11 @@ public:
         return adoptRef(new CSSCalcOperation(newCategory, op, leftSide.releaseNonNull(), rightSide.releaseNonNull()));
     }
 
-    static std::shared_ptr<CSSCalcOperation> createMinOrMax(CalcOperator op, std::vector<std::reference_wrapper<CSSCalcExpressionNode>>&& values, CalculationCategory destinationCategory)
+    static std::shared_ptr<CSSCalcOperation> createMinOrMax(CalcOperator op, std::vector<ref_ptr<CSSCalcExpressionNode>>&& values, CalculationCategory destinationCategory)
     {
         assert(op == CalcOperator::Min || op == CalcOperator::Max);
 
-        Optional<CalculationCategory> category = WTF::nullopt;
+        std::optional<CalculationCategory> category = WTF::nullopt;
         for (auto& value : values) {
             auto valueCategory = resolvedTypeForMinOrMax(value->category(), destinationCategory);
 
@@ -652,7 +652,7 @@ private:
         return CSSPrimitiveValue::CSS_UNKNOWN;
     }
 
-    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::reference_wrapper<CSSCalcExpressionNode>&& leftSide, std::reference_wrapper<CSSCalcExpressionNode>&& rightSide)
+    CSSCalcOperation(CalculationCategory category, CalcOperator op, ref_ptr<CSSCalcExpressionNode>&& leftSide, ref_ptr<CSSCalcExpressionNode>&& rightSide)
         : CSSCalcExpressionNode(category, isIntegerResult(op, leftSide.get(), rightSide.get()))
         , m_operator(op)
     {
@@ -661,7 +661,7 @@ private:
         m_children.uncheckedAppend(std::move(rightSide));
     }
 
-    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::vector<std::reference_wrapper<CSSCalcExpressionNode>>&& children)
+    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::vector<ref_ptr<CSSCalcExpressionNode>>&& children)
         : CSSCalcExpressionNode(category, isIntegerResult(op, children))
         , m_operator(op)
         , m_children(std::move(children))
@@ -721,7 +721,7 @@ private:
     }
 
     const CalcOperator m_operator;
-    std::vector<std::reference_wrapper<CSSCalcExpressionNode>> m_children;
+    std::vector<ref_ptr<CSSCalcExpressionNode>> m_children;
 };
 
 static ParseState checkDepthAndIndex(int* depth, CSSParserTokenRange tokens)
@@ -875,7 +875,7 @@ private:
         if (!parseValueExpression(tokens, depth, &value))
             return false;
 
-        std::vector<std::reference_wrapper<CSSCalcExpressionNode>> nodes;
+        std::vector<ref_ptr<CSSCalcExpressionNode>> nodes;
         nodes.append(value.value.releaseNonNull());
 
         while (!tokens.atEnd()) {
@@ -922,7 +922,7 @@ static std::shared_ptr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode
         auto& operationChildren = operationNode.children();
         CalcOperator op = operationNode.getOperator();
         if (op == CalcOperator::Min || op == CalcOperator::Max) {
-            std::vector<std::reference_wrapper<CSSCalcExpressionNode>> values;
+            std::vector<ref_ptr<CSSCalcExpressionNode>> values;
             values.reserveInitialCapacity(operationChildren.size());
             for (auto& child : operationChildren) {
                 auto cssNode = createCSS(*child, style);

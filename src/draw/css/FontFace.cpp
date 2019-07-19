@@ -46,14 +46,14 @@
 
 namespace WebCore {
 
-static bool populateFontFaceWithArrayBuffer(CSSFontFace& fontFace, std::reference_wrapper<JSC::ArrayBufferView>&& arrayBufferView)
+static bool populateFontFaceWithArrayBuffer(CSSFontFace& fontFace, ref_ptr<JSC::ArrayBufferView>&& arrayBufferView)
 {
     auto source = std::make_unique<CSSFontFaceSource>(fontFace, String(), nullptr, nullptr, std::move(arrayBufferView));
     fontFace.adoptSource(std::move(source));
     return false;
 }
 
-ExceptionOr<std::reference_wrapper<FontFace>> FontFace::create(Document& document, const std::string& family, Source&& source, const Descriptors& descriptors)
+ExceptionOr<ref_ptr<FontFace>> FontFace::create(Document& document, const std::string& family, Source&& source, const Descriptors& descriptors)
 {
     auto result = adoptRef(*new FontFace(document.fontSelector()));
 
@@ -120,7 +120,7 @@ ExceptionOr<std::reference_wrapper<FontFace>> FontFace::create(Document& documen
 
 Ref<FontFace> FontFace::create(CSSFontFace& face)
 {
-    return adoptRef(*new FontFace(face));
+    return ref_ptr<FontFace>(face);
 }
 
 FontFace::FontFace(CSSFontSelector& fontSelector)

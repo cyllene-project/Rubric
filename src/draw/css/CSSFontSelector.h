@@ -49,9 +49,9 @@ class StyleRuleFontFace;
 
 class CSSFontSelector final : public FontSelector, public CSSFontFaceSetClient, public CanMakeWeakPtr<CSSFontSelector> {
 public:
-    static std::reference_wrapper<CSSFontSelector> create(Document& document)
+    static ref_ptr<CSSFontSelector> create(Document& document)
     {
-        return adoptRef(*new CSSFontSelector(document));
+        return ref_ptr<CSSFontSelector>(document);
     }
     virtual ~CSSFontSelector();
     
@@ -105,7 +105,7 @@ private:
 
     WeakPtr<Document> m_document;
     std::shared_ptr<FontFaceSet> m_fontFaceSet;
-    std::reference_wrapper<CSSFontFaceSet> m_cssFontFaceSet;
+    ref_ptr<CSSFontFaceSet> m_cssFontFaceSet;
     std::unordered_set<FontSelectorClient*> m_clients;
 
     std::vector<CachedResourceHandle<CachedFont>> m_fontsToBeginLoading;

@@ -38,13 +38,13 @@ class CSSStyleSheet;
 class Document;
 class MediaQuery;
 
-class MediaQuerySet final : public RefCounted<MediaQuerySet> {
+class MediaQuerySet final {
 public:
-    static std::reference_wrapper<MediaQuerySet> create()
+    static ref_ptr<MediaQuerySet> create()
     {
         return adoptRef(*new MediaQuerySet);
     }
-    static std::reference_wrapper<MediaQuerySet> create(const std::string& mediaString, MediaQueryParserContext = MediaQueryParserContext());
+    static ref_ptr<MediaQuerySet> create(const std::string& mediaString, MediaQueryParserContext = MediaQueryParserContext());
 
     ~MediaQuerySet();
 
@@ -61,7 +61,7 @@ public:
 
     std::string mediaText() const;
 
-    std::reference_wrapper<MediaQuerySet> copy() const { return adoptRef(*new MediaQuerySet(*this)); }
+    ref_ptr<MediaQuerySet> copy() const { return ref_ptr<MediaQuerySet>(*this); }
 
     void shrinkToFit();
 
@@ -74,15 +74,15 @@ private:
     std::vector<MediaQuery> m_queries;
 };
 
-class MediaList final : public RefCounted<MediaList> {
+class MediaList final {
 public:
-    static std::reference_wrapper<MediaList> create(MediaQuerySet* mediaQueries, CSSStyleSheet* parentSheet)
+    static ref_ptr<MediaList> create(MediaQuerySet* mediaQueries, CSSStyleSheet* parentSheet)
     {
-        return adoptRef(*new MediaList(mediaQueries, parentSheet));
+        return ref_ptr<MediaList>(mediaQueries, parentSheet);
     }
-    static std::reference_wrapper<MediaList> create(MediaQuerySet* mediaQueries, CSSRule* parentRule)
+    static ref_ptr<MediaList> create(MediaQuerySet* mediaQueries, CSSRule* parentRule)
     {
-        return adoptRef(*new MediaList(mediaQueries, parentRule));
+        return ref_ptr<MediaList>(mediaQueries, parentRule);
     }
 
     ~MediaList();

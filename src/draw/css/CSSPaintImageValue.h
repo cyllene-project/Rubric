@@ -35,9 +35,9 @@ class CSSVariableData;
 
 class CSSPaintImageValue final : public CSSImageGeneratorValue {
 public:
-    static std::reference_wrapper<CSSPaintImageValue> create(const std::string& name, std::reference_wrapper<CSSVariableData>&& arguments)
+    static ref_ptr<CSSPaintImageValue> create(const std::string& name, ref_ptr<CSSVariableData>&& arguments)
     {
-        return adoptRef(*new CSSPaintImageValue(name, std::move(arguments)));
+        return ref_ptr<CSSPaintImageValue>(name, std::move(arguments));
     }
 
     const std::string& name() const { return m_name; }
@@ -56,7 +56,7 @@ public:
     void loadSubimages(CachedResourceLoader&, const ResourceLoaderOptions&) { }
 
 private:
-    CSSPaintImageValue(const std::string& name, std::reference_wrapper<CSSVariableData>&& arguments)
+    CSSPaintImageValue(const std::string& name, ref_ptr<CSSVariableData>&& arguments)
         : CSSImageGeneratorValue(PaintImageClass)
         , m_name(name)
         , m_arguments(std::move(arguments))
@@ -64,7 +64,7 @@ private:
     }
 
     const std::string m_name;
-    std::reference_wrapper<CSSVariableData> m_arguments;
+    ref_ptr<CSSVariableData> m_arguments;
 };
 
 } // namespace WebCore

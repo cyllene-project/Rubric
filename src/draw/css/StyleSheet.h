@@ -30,7 +30,7 @@ class MediaList;
 class Node;
 class StyleSheet;
 
-class StyleSheet : public RefCounted<StyleSheet> {
+class StyleSheet {
 public:
     virtual ~StyleSheet();
 

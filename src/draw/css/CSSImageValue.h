@@ -34,8 +34,8 @@ class RenderElement;
 
 class CSSImageValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSImageValue> create(URL&& url, LoadedFromOpaqueSource loadedFromOpaqueSource) { return adoptRef(*new CSSImageValue(std::move(url), loadedFromOpaqueSource)); }
-    static std::reference_wrapper<CSSImageValue> create(CachedImage& image) { return adoptRef(*new CSSImageValue(image)); }
+    static ref_ptr<CSSImageValue> create(URL&& url, LoadedFromOpaqueSource loadedFromOpaqueSource) { return ref_ptr<CSSImageValue>(std::move(url), loadedFromOpaqueSource); }
+    static ref_ptr<CSSImageValue> create(CachedImage& image) { return ref_ptr<CSSImageValue>(image); }
     ~CSSImageValue();
 
     bool isPending() const;
@@ -46,7 +46,7 @@ public:
 
     std::string customCSSText() const;
 
-    std::reference_wrapper<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
+    ref_ptr<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
 
     bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
 

@@ -30,7 +30,7 @@ class StyleRuleImport;
 
 class CSSImportRule final : public CSSRule {
 public:
-    static std::reference_wrapper<CSSImportRule> create(StyleRuleImport& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSImportRule(rule, sheet)); }
+    static ref_ptr<CSSImportRule> create(StyleRuleImport& rule, CSSStyleSheet* sheet) { return ref_ptr<CSSImportRule>(rule, sheet); }
 
     virtual ~CSSImportRule();
 
@@ -45,7 +45,7 @@ private:
     std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    std::reference_wrapper<StyleRuleImport> m_importRule;
+    ref_ptr<StyleRuleImport> m_importRule;
     mutable std::shared_ptr<MediaList> m_mediaCSSOMWrapper;
     mutable std::shared_ptr<CSSStyleSheet> m_styleSheetCSSOMWrapper;
 };

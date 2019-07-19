@@ -47,7 +47,7 @@ static String serializePositionOffset(const Pair& offset, const Pair& other)
     return offset.cssText();
 }
 
-static std::reference_wrapper<CSSPrimitiveValue> buildSerializablePositionOffset(CSSPrimitiveValue* offset, CSSValueID defaultSide)
+static ref_ptr<CSSPrimitiveValue> buildSerializablePositionOffset(CSSPrimitiveValue* offset, CSSValueID defaultSide)
 {
     CSSValueID side = defaultSide;
     std::shared_ptr<CSSPrimitiveValue> amount;
@@ -108,8 +108,8 @@ static String buildCircleString(const std::string& radius, const std::string& ce
 
 String CSSBasicShapeCircle::cssText() const
 {
-    std::reference_wrapper<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
-    std::reference_wrapper<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
+    ref_ptr<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
+    ref_ptr<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
 
     std::string radius;
     if (m_radius && m_radius->valueID() != CSSValueClosestSide)
@@ -165,8 +165,8 @@ static String buildEllipseString(const std::string& radiusX, const std::string& 
 
 String CSSBasicShapeEllipse::cssText() const
 {
-    std::reference_wrapper<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
-    std::reference_wrapper<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
+    ref_ptr<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
+    ref_ptr<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
 
     std::string radiusX;
     std::string radiusY;

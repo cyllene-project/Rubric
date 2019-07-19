@@ -33,9 +33,9 @@ namespace WebCore {
 
 class CSSPrimitiveValue;
 
-class RGBColor final : public RefCounted<RGBColor> {
+class RGBColor final {
 public:
-    static std::reference_wrapper<RGBColor> create(unsigned rgbColor);
+    static ref_ptr<RGBColor> create(unsigned rgbColor);
 
     Color color() const { return Color(m_rgbColor); }
 

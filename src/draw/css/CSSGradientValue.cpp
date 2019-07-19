@@ -41,7 +41,7 @@
 
 namespace WebCore {
 
-static inline std::reference_wrapper<Gradient> createGradient(CSSGradientValue& value, RenderElement& renderer, FloatSize size)
+static inline ref_ptr<Gradient> createGradient(CSSGradientValue& value, RenderElement& renderer, FloatSize size)
 {
     if (is<CSSLinearGradientValue>(value))
         return downcast<CSSLinearGradientValue>(value).createGradient(renderer, size);
@@ -93,7 +93,7 @@ struct GradientStop {
     bool isMidpoint { false };
 };
 
-static inline std::reference_wrapper<CSSGradientValue> clone(CSSGradientValue& value)
+static inline ref_ptr<CSSGradientValue> clone(CSSGradientValue& value)
 {
     if (is<CSSLinearGradientValue>(value))
         return downcast<CSSLinearGradientValue>(value).clone();
@@ -348,7 +348,7 @@ Gradient::ColorStopVector CSSGradientValue::computeStops(GradientAdapter& gradie
                 if (positionValue.isLength())
                     length = positionValue.computeLength<float>(conversionData);
                 else {
-                    std::reference_wrapper<CalculationValue> calculationValue { positionValue.cssCalcValue()->createCalculationValue(conversionData) };
+                    ref_ptr<CalculationValue> calculationValue { positionValue.cssCalcValue()->createCalculationValue(conversionData) };
                     length = calculationValue->evaluate(gradientLength);
                 }
                 stops[i].offset = (gradientLength > 0) ? length / gradientLength : 0;
@@ -594,7 +594,7 @@ static float positionFromValue(const CSSPrimitiveValue* value, const CSSToLength
         return origin + sign * value->floatValue() / 100.f * edgeDistance;
 
     if (value->isCalculatedPercentageWithLength()) {
-        std::reference_wrapper<CalculationValue> calculationValue { value->cssCalcValue()->createCalculationValue(conversionData) };
+        ref_ptr<CalculationValue> calculationValue { value->cssCalcValue()->createCalculationValue(conversionData) };
         return origin + sign * calculationValue->evaluate(edgeDistance);
     }
     

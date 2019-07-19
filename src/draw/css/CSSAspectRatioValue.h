@@ -34,9 +34,9 @@ namespace WebCore {
 
 class CSSAspectRatioValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSAspectRatioValue> create(float numeratorValue, float denominatorValue)
+    static ref_ptr<CSSAspectRatioValue> create(float numeratorValue, float denominatorValue)
     {
-        return adoptRef(*new CSSAspectRatioValue(numeratorValue, denominatorValue));
+        return ref_ptr<CSSAspectRatioValue>(numeratorValue, denominatorValue);
     }
 
     std::string customCSSText() const;

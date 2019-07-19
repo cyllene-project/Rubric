@@ -36,15 +36,15 @@ namespace WebCore {
 
 class CSSCustomIdentValue : public CSSValue {
 public:
-    static std::reference_wrapper<CSSCustomIdentValue> create(const std::string& str)
+    static ref_ptr<CSSCustomIdentValue> create(const std::string& str)
     {
-        return adoptRef(*new CSSCustomIdentValue(str));
+        return ref_ptr<CSSCustomIdentValue>(str);
     }
 
     // FIXME: Remove this and lazily parse the CSSPropertyID in isKnownPropertyID().
-    static std::reference_wrapper<CSSCustomIdentValue> create(CSSPropertyID id)
+    static ref_ptr<CSSCustomIdentValue> create(CSSPropertyID id)
     {
-        return adoptRef(*new CSSCustomIdentValue(id));
+        return ref_ptr<CSSCustomIdentValue>(id);
     }
 
     std::string value() const { assert(!isKnownPropertyID()); return m_string; }

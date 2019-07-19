@@ -89,7 +89,7 @@ std::shared_ptr<MediaQueryList> MediaQueryMatcher::matchMedia(const std::string&
     return MediaQueryList::create(*this, std::move(media), result);
 }
 
-void MediaQueryMatcher::addListener(std::reference_wrapper<MediaQueryListListener>&& listener, MediaQueryList& query)
+void MediaQueryMatcher::addListener(ref_ptr<MediaQueryListListener>&& listener, MediaQueryList& query)
 {
     if (!m_document)
         return;

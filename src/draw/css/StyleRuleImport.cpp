@@ -36,12 +36,12 @@
 
 namespace WebCore {
 
-Ref<StyleRuleImport> StyleRuleImport::create(const std::string& href, std::reference_wrapper<MediaQuerySet>&& media)
+Ref<StyleRuleImport> StyleRuleImport::create(const std::string& href, ref_ptr<MediaQuerySet>&& media)
 {
-    return adoptRef(*new StyleRuleImport(href, std::move(media)));
+    return ref_ptr<StyleRuleImport>(href, std::move(media));
 }
 
-StyleRuleImport::StyleRuleImport(const std::string& href, std::reference_wrapper<MediaQuerySet>&& media)
+StyleRuleImport::StyleRuleImport(const std::string& href, ref_ptr<MediaQuerySet>&& media)
     : StyleRuleBase(Import)
     , m_parentStyleSheet(0)
     , m_styleSheetClient(this)

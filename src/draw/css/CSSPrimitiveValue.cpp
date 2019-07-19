@@ -405,35 +405,35 @@ void CSSPrimitiveValue::init(const LengthSize& lengthSize, const RenderStyle& st
     m_value.pair = &Pair::create(create(lengthSize.width, style), create(lengthSize.height, style)).leakRef();
 }
 
-void CSSPrimitiveValue::init(std::reference_wrapper<Counter>&& counter)
+void CSSPrimitiveValue::init(ref_ptr<Counter>&& counter)
 {
     m_primitiveUnitType = CSS_COUNTER;
     m_hasCachedCSSText = false;
     m_value.counter = &counter.leakRef();
 }
 
-void CSSPrimitiveValue::init(std::reference_wrapper<Rect>&& r)
+void CSSPrimitiveValue::init(ref_ptr<Rect>&& r)
 {
     m_primitiveUnitType = CSS_RECT;
     m_hasCachedCSSText = false;
     m_value.rect = &r.leakRef();
 }
 
-void CSSPrimitiveValue::init(std::reference_wrapper<Quad>&& quad)
+void CSSPrimitiveValue::init(ref_ptr<Quad>&& quad)
 {
     m_primitiveUnitType = CSS_QUAD;
     m_hasCachedCSSText = false;
     m_value.quad = &quad.leakRef();
 }
 
-void CSSPrimitiveValue::init(std::reference_wrapper<Pair>&& p)
+void CSSPrimitiveValue::init(ref_ptr<Pair>&& p)
 {
     m_primitiveUnitType = CSS_PAIR;
     m_hasCachedCSSText = false;
     m_value.pair = &p.leakRef();
 }
 
-void CSSPrimitiveValue::init(std::reference_wrapper<CSSBasicShape>&& shape)
+void CSSPrimitiveValue::init(ref_ptr<CSSBasicShape>&& shape)
 {
     m_primitiveUnitType = CSS_SHAPE;
     m_hasCachedCSSText = false;
@@ -794,7 +794,7 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::canonicalUnitTypeForCategory(Unit
     }
 }
 
-Optional<double> CSSPrimitiveValue::doubleValueInternal(UnitType requestedUnitType) const
+std::optional<double> CSSPrimitiveValue::doubleValueInternal(UnitType requestedUnitType) const
 {
     if (!isValidCSSUnitTypeForDoubleConversion(static_cast<UnitType>(m_primitiveUnitType)) || !isValidCSSUnitTypeForDoubleConversion(requestedUnitType))
         return WTF::nullopt;
@@ -899,7 +899,7 @@ ExceptionOr<Rect&> CSSPrimitiveValue::getRectValue() const
     return *m_value.rect;
 }
 
-ExceptionOr<std::reference_wrapper<RGBColor>> CSSPrimitiveValue::getRGBColorValue() const
+ExceptionOr<ref_ptr<RGBColor>> CSSPrimitiveValue::getRGBColorValue() const
 {
     if (m_primitiveUnitType != CSS_RGBCOLOR)
         return Exception { InvalidAccessError };

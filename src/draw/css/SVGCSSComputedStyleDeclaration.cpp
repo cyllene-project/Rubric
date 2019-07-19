@@ -49,7 +49,7 @@ static std::shared_ptr<CSSPrimitiveValue> glyphOrientationToCSSPrimitiveValue(Gl
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-static std::reference_wrapper<CSSValue> strokeDashArrayToCSSValueList(const std::vector<SVGLengthValue>& dashes)
+static ref_ptr<CSSValue> strokeDashArrayToCSSValueList(const std::vector<SVGLengthValue>& dashes)
 {
     if (dashes.isEmpty())
         return CSSPrimitiveValue::createIdentifier(CSSValueNone);

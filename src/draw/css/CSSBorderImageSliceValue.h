@@ -34,9 +34,9 @@ class Rect;
 
 class CSSBorderImageSliceValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSBorderImageSliceValue> create(std::shared_ptr<CSSPrimitiveValue>&& slices, bool fill)
+    static ref_ptr<CSSBorderImageSliceValue> create(std::shared_ptr<CSSPrimitiveValue>&& slices, bool fill)
     {
-        return adoptRef(*new CSSBorderImageSliceValue(std::move(slices), fill));
+        return ref_ptr<CSSBorderImageSliceValue>(std::move(slices), fill);
     }
 
     std::string customCSSText() const;

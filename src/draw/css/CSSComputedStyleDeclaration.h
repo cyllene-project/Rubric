@@ -60,20 +60,20 @@ public:
     std::shared_ptr<CSSValue> customPropertyValue(const std::string& propertyName);
 
     // Helper methods for HTML editing.
-    std::reference_wrapper<MutableStyleProperties> copyPropertiesInSet(const CSSPropertyID* set, unsigned length);
-    std::reference_wrapper<MutableStyleProperties> copyProperties();
+    ref_ptr<MutableStyleProperties> copyPropertiesInSet(const CSSPropertyID* set, unsigned length);
+    ref_ptr<MutableStyleProperties> copyProperties();
     std::shared_ptr<CSSPrimitiveValue> getFontSizeCSSValuePreferringKeyword();
     bool useFixedFontDefaultSize();
     bool propertyMatches(CSSPropertyID, const CSSValue*);
 
-    static std::reference_wrapper<CSSValue> valueForFilter(const RenderStyle&, const FilterOperations&, AdjustPixelValuesForComputedStyle = AdjustPixelValues);
+    static ref_ptr<CSSValue> valueForFilter(const RenderStyle&, const FilterOperations&, AdjustPixelValuesForComputedStyle = AdjustPixelValues);
 
-    static std::reference_wrapper<CSSPrimitiveValue> fontNonKeywordWeightFromStyleValue(FontSelectionValue);
-    static std::reference_wrapper<CSSPrimitiveValue> fontWeightFromStyleValue(FontSelectionValue);
-    static std::reference_wrapper<CSSPrimitiveValue> fontNonKeywordStretchFromStyleValue(FontSelectionValue);
-    static std::reference_wrapper<CSSPrimitiveValue> fontStretchFromStyleValue(FontSelectionValue);
-    static std::reference_wrapper<CSSFontStyleValue> fontNonKeywordStyleFromStyleValue(FontSelectionValue);
-    static std::reference_wrapper<CSSFontStyleValue> fontStyleFromStyleValue(Optional<FontSelectionValue>, FontStyleAxis);
+    static ref_ptr<CSSPrimitiveValue> fontNonKeywordWeightFromStyleValue(FontSelectionValue);
+    static ref_ptr<CSSPrimitiveValue> fontWeightFromStyleValue(FontSelectionValue);
+    static ref_ptr<CSSPrimitiveValue> fontNonKeywordStretchFromStyleValue(FontSelectionValue);
+    static ref_ptr<CSSPrimitiveValue> fontStretchFromStyleValue(FontSelectionValue);
+    static ref_ptr<CSSFontStyleValue> fontNonKeywordStyleFromStyleValue(FontSelectionValue);
+    static ref_ptr<CSSFontStyleValue> fontStyleFromStyleValue(std::optional<FontSelectionValue>, FontStyleAxis);
 
 private:
     // The styled element is either the element passed into
@@ -87,15 +87,15 @@ private:
     RenderElement* styledRenderer() const;
 
     std::shared_ptr<CSSValue> svgPropertyValue(CSSPropertyID);
-    std::reference_wrapper<CSSValue> adjustSVGPaintForCurrentColor(SVGPaintType, const std::string& url, const Color&, const Color& currentColor) const;
-    static std::reference_wrapper<CSSValue> valueForShadow(const ShadowData*, CSSPropertyID, const RenderStyle&, AdjustPixelValuesForComputedStyle = AdjustPixelValues);
-    std::reference_wrapper<CSSPrimitiveValue> currentColorOrValidColor(const RenderStyle*, const Color&) const;
+    ref_ptr<CSSValue> adjustSVGPaintForCurrentColor(SVGPaintType, const std::string& url, const Color&, const Color& currentColor) const;
+    static ref_ptr<CSSValue> valueForShadow(const ShadowData*, CSSPropertyID, const RenderStyle&, AdjustPixelValuesForComputedStyle = AdjustPixelValues);
+    ref_ptr<CSSPrimitiveValue> currentColorOrValidColor(const RenderStyle*, const Color&) const;
 
-    std::reference_wrapper<CSSValueList> getCSSPropertyValuesForShorthandProperties(const StylePropertyShorthand&);
+    ref_ptr<CSSValueList> getCSSPropertyValuesForShorthandProperties(const StylePropertyShorthand&);
     std::shared_ptr<CSSValueList> getCSSPropertyValuesFor2SidesShorthand(const StylePropertyShorthand&);
     std::shared_ptr<CSSValueList> getCSSPropertyValuesFor4SidesShorthand(const StylePropertyShorthand&);
-    std::reference_wrapper<CSSValueList> getBackgroundShorthandValue();
-    std::reference_wrapper<CSSValueList> getCSSPropertyValuesForGridShorthand(const StylePropertyShorthand&);
+    ref_ptr<CSSValueList> getBackgroundShorthandValue();
+    ref_ptr<CSSValueList> getCSSPropertyValuesForGridShorthand(const StylePropertyShorthand&);
 
     std::shared_ptr<Element> m_element;
     PseudoId m_pseudoElementSpecifier;
@@ -105,7 +105,7 @@ private:
 class CSSComputedStyleDeclaration final : public CSSStyleDeclaration {
     WTF_MAKE_ISO_ALLOCATED_EXPORT(CSSComputedStyleDeclaration, WEBCORE_EXPORT);
 public:
-    static std::reference_wrapper<CSSComputedStyleDeclaration> create(Element&, bool allowVisitedStyle = false, StringView pseudoElementName = StringView { });
+    static ref_ptr<CSSComputedStyleDeclaration> create(Element&, bool allowVisitedStyle = false, StringView pseudoElementName = StringView { });
     virtual ~CSSComputedStyleDeclaration();
 
     void ref() final;
@@ -132,11 +132,11 @@ private:
     std::shared_ptr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) final;
     std::string getPropertyValueInternal(CSSPropertyID) final;
     ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) final;
-    std::reference_wrapper<MutableStyleProperties> copyProperties() const final;
+    ref_ptr<MutableStyleProperties> copyProperties() const final;
 
     std::shared_ptr<CSSValue> getPropertyCSSValue(CSSPropertyID, EUpdateLayout = UpdateLayout) const;
 
-    mutable std::reference_wrapper<Element> m_element;
+    mutable ref_ptr<Element> m_element;
     PseudoId m_pseudoElementSpecifier;
     bool m_allowVisitedStyle;
     unsigned m_refCount { 1 };

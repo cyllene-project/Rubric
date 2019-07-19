@@ -33,15 +33,15 @@ namespace WebCore {
 
 class CSSContentDistributionValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSContentDistributionValue> create(CSSValueID distribution, CSSValueID position, CSSValueID overflow)
+    static ref_ptr<CSSContentDistributionValue> create(CSSValueID distribution, CSSValueID position, CSSValueID overflow)
     {
-        return adoptRef(*new CSSContentDistributionValue(distribution, position, overflow));
+        return ref_ptr<CSSContentDistributionValue>(distribution, position, overflow);
     }
     ~CSSContentDistributionValue();
 
-    std::reference_wrapper<CSSPrimitiveValue> distribution() const { return CSSValuePool::singleton().createIdentifierValue(m_distribution); }
-    std::reference_wrapper<CSSPrimitiveValue> position() const { return CSSValuePool::singleton().createIdentifierValue(m_position); }
-    std::reference_wrapper<CSSPrimitiveValue> overflow() const { return CSSValuePool::singleton().createIdentifierValue(m_overflow); }
+    ref_ptr<CSSPrimitiveValue> distribution() const { return CSSValuePool::singleton().createIdentifierValue(m_distribution); }
+    ref_ptr<CSSPrimitiveValue> position() const { return CSSValuePool::singleton().createIdentifierValue(m_position); }
+    ref_ptr<CSSPrimitiveValue> overflow() const { return CSSValuePool::singleton().createIdentifierValue(m_overflow); }
 
     std::string customCSSText() const;
 

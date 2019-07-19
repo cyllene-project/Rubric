@@ -33,36 +33,36 @@ class ScriptExecutionContext;
 
 class DOMMatrix : public DOMMatrixReadOnly {
 public:
-    static ExceptionOr<std::reference_wrapper<DOMMatrix>> create(ScriptExecutionContext&, Optional<Variant<String, std::vector<double>>>&&);
+    static ExceptionOr<ref_ptr<DOMMatrix>> create(ScriptExecutionContext&, std::optional<Variant<String, std::vector<double>>>&&);
 
-    static std::reference_wrapper<DOMMatrix> create(const TransformationMatrix& matrix, Is2D is2D)
+    static ref_ptr<DOMMatrix> create(const TransformationMatrix& matrix, Is2D is2D)
     {
-        return adoptRef(*new DOMMatrix(matrix, is2D));
+        return ref_ptr<DOMMatrix>(matrix, is2D);
     }
 
-    static std::reference_wrapper<DOMMatrix> create(TransformationMatrix&& matrix, Is2D is2D)
+    static ref_ptr<DOMMatrix> create(TransformationMatrix&& matrix, Is2D is2D)
     {
-        return adoptRef(*new DOMMatrix(std::move(matrix), is2D));
+        return ref_ptr<DOMMatrix>(std::move(matrix), is2D);
     }
 
-    static ExceptionOr<std::reference_wrapper<DOMMatrix>> fromMatrix(DOMMatrixInit&&);
+    static ExceptionOr<ref_ptr<DOMMatrix>> fromMatrix(DOMMatrixInit&&);
 
-    static ExceptionOr<std::reference_wrapper<DOMMatrix>> fromFloat32Array(std::reference_wrapper<Float32Array>&&);
-    static ExceptionOr<std::reference_wrapper<DOMMatrix>> fromFloat64Array(std::reference_wrapper<Float64Array>&&);
+    static ExceptionOr<ref_ptr<DOMMatrix>> fromFloat32Array(ref_ptr<Float32Array>&&);
+    static ExceptionOr<ref_ptr<DOMMatrix>> fromFloat64Array(ref_ptr<Float64Array>&&);
 
-    ExceptionOr<std::reference_wrapper<DOMMatrix>> multiplySelf(DOMMatrixInit&& other);
-    ExceptionOr<std::reference_wrapper<DOMMatrix>> preMultiplySelf(DOMMatrixInit&& other);
-    std::reference_wrapper<DOMMatrix> translateSelf(double tx = 0, double ty = 0, double tz = 0);
-    std::reference_wrapper<DOMMatrix> scaleSelf(double scaleX = 1, Optional<double> scaleY = WTF::nullopt, double scaleZ = 1, double originX = 0, double originY = 0, double originZ = 0);
-    std::reference_wrapper<DOMMatrix> scale3dSelf(double scale = 1, double originX = 0, double originY = 0, double originZ = 0);
-    std::reference_wrapper<DOMMatrix> rotateSelf(double rotX = 0, Optional<double> rotY = WTF::nullopt, Optional<double> rotZ = WTF::nullopt); // Angles are in degrees.
-    std::reference_wrapper<DOMMatrix> rotateFromVectorSelf(double x = 0, double y = 0);
-    std::reference_wrapper<DOMMatrix> rotateAxisAngleSelf(double x = 0, double y = 0, double z = 0, double angle = 0); // Angle is in degrees.
-    std::reference_wrapper<DOMMatrix> skewXSelf(double sx = 0); // Angle is in degrees.
-    std::reference_wrapper<DOMMatrix> skewYSelf(double sy = 0); // Angle is in degrees.
-    std::reference_wrapper<DOMMatrix> invertSelf();
+    ExceptionOr<ref_ptr<DOMMatrix>> multiplySelf(DOMMatrixInit&& other);
+    ExceptionOr<ref_ptr<DOMMatrix>> preMultiplySelf(DOMMatrixInit&& other);
+    ref_ptr<DOMMatrix> translateSelf(double tx = 0, double ty = 0, double tz = 0);
+    ref_ptr<DOMMatrix> scaleSelf(double scaleX = 1, std::optional<double> scaleY = WTF::nullopt, double scaleZ = 1, double originX = 0, double originY = 0, double originZ = 0);
+    ref_ptr<DOMMatrix> scale3dSelf(double scale = 1, double originX = 0, double originY = 0, double originZ = 0);
+    ref_ptr<DOMMatrix> rotateSelf(double rotX = 0, std::optional<double> rotY = WTF::nullopt, std::optional<double> rotZ = WTF::nullopt); // Angles are in degrees.
+    ref_ptr<DOMMatrix> rotateFromVectorSelf(double x = 0, double y = 0);
+    ref_ptr<DOMMatrix> rotateAxisAngleSelf(double x = 0, double y = 0, double z = 0, double angle = 0); // Angle is in degrees.
+    ref_ptr<DOMMatrix> skewXSelf(double sx = 0); // Angle is in degrees.
+    ref_ptr<DOMMatrix> skewYSelf(double sy = 0); // Angle is in degrees.
+    ref_ptr<DOMMatrix> invertSelf();
 
-    ExceptionOr<std::reference_wrapper<DOMMatrix>> setMatrixValueForBindings(const std::string&);
+    ExceptionOr<ref_ptr<DOMMatrix>> setMatrixValueForBindings(const std::string&);
 
     void setA(double f) { m_matrix.setA(f); }
     void setB(double f) { m_matrix.setB(f); }

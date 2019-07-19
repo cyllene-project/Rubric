@@ -35,20 +35,20 @@ class CSSFontSelector;
 class FontDescription;
 class FontRanges;
 
-class CSSSegmentedFontFace final : public RefCounted<CSSSegmentedFontFace>, public CSSFontFace::Client {
+class CSSSegmentedFontFace final :  public CSSFontFace::Client {
 
 public:
-    static std::reference_wrapper<CSSSegmentedFontFace> create()
+    static ref_ptr<CSSSegmentedFontFace> create()
     {
-        return adoptRef(*new CSSSegmentedFontFace());
+        return ref_ptr<CSSSegmentedFontFace>();
     }
     ~CSSSegmentedFontFace();
 
-    void appendFontFace(std::reference_wrapper<CSSFontFace>&&);
+    void appendFontFace(ref_ptr<CSSFontFace>&&);
 
     FontRanges fontRanges(const FontDescription&);
 
-    std::vector<std::reference_wrapper<CSSFontFace>, 1>& constituentFaces() { return m_fontFaces; }
+    std::vector<ref_ptr<CSSFontFace>, 1>& constituentFaces() { return m_fontFaces; }
 
     // CSSFontFace::Client needs to be able to be held in a RefPtr.
     void ref() final { RefCounted<CSSSegmentedFontFace>::ref(); }
@@ -59,7 +59,7 @@ private:
     void fontLoaded(CSSFontFace&) final;
 
     std::unordered_map<FontDescriptionKey, FontRanges, FontDescriptionKeyHash, WTF::SimpleClassHashTraits<FontDescriptionKey>> m_cache;
-    std::vector<std::reference_wrapper<CSSFontFace>, 1> m_fontFaces;
+    std::vector<ref_ptr<CSSFontFace>, 1> m_fontFaces;
 };
 
 } // namespace WebCore

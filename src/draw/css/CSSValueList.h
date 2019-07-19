@@ -23,6 +23,9 @@
 #include "CSSValue.h"
 
 #include <vector>
+#include <draw/css/ref_ptr.h>
+
+using namespace rubric::draw::css;
 
 namespace WebCore {
 
@@ -32,20 +35,20 @@ class CSSParserValueList;
 
 class CSSValueList : public CSSValue {
 public:
-    typedef std::vector<std::reference_wrapper<CSSValue>>::iterator iterator;
-    typedef std::vector<std::reference_wrapper<CSSValue>>::const_iterator const_iterator;
+    typedef std::vector<ref_ptr<CSSValue>>::iterator iterator;
+    typedef std::vector<ref_ptr<CSSValue>>::const_iterator const_iterator;
 
-    static std::reference_wrapper<CSSValueList> createCommaSeparated()
+    static ref_ptr<CSSValueList> createCommaSeparated()
     {
-        return adoptRef(*new CSSValueList(CommaSeparator));
+        return ref_ptr<CSSValueList>(CommaSeparator);
     }
-    static std::reference_wrapper<CSSValueList> createSpaceSeparated()
+    static ref_ptr<CSSValueList> createSpaceSeparated()
     {
-        return adoptRef(*new CSSValueList(SpaceSeparator));
+        return ref_ptr<CSSValueList>(SpaceSeparator);
     }
-    static std::reference_wrapper<CSSValueList> createSlashSeparated()
+    static ref_ptr<CSSValueList> createSlashSeparated()
     {
-        return adoptRef(*new CSSValueList(SlashSeparator));
+        return ref_ptr<CSSValueList>(SlashSeparator);
     }
 
     size_t length() const { return m_values.size(); }
@@ -59,11 +62,11 @@ public:
     iterator begin() { return m_values.begin(); }
     iterator end() { return m_values.end(); }
 
-    void append(std::reference_wrapper<CSSValue>&&);
-    void prepend(std::reference_wrapper<CSSValue>&&);
+    void append(ref_ptr<CSSValue>&&);
+    void prepend(ref_ptr<CSSValue>&&);
     bool removeAll(CSSValue*);
     bool hasValue(CSSValue*) const;
-    std::reference_wrapper<CSSValueList> copy();
+    ref_ptr<CSSValueList> copy();
 
     std::string customCSSText() const;
     bool equals(const CSSValueList&) const;
@@ -79,15 +82,15 @@ protected:
 private:
     explicit CSSValueList(ValueListSeparator);
 
-    std::vector<std::reference_wrapper<CSSValue>> m_values;
+    std::vector<ref_ptr<CSSValue>> m_values;
 };
 
-inline void CSSValueList::append(std::reference_wrapper<CSSValue>&& value)
+inline void CSSValueList::append(ref_ptr<CSSValue>&& value)
 {
     m_values.push_back(std::move(value));
 }
 
-inline void CSSValueList::prepend(std::reference_wrapper<CSSValue>&& value)
+inline void CSSValueList::prepend(ref_ptr<CSSValue>&& value)
 {
     m_values.insert(m_values.begin(), std::move(value));
 }

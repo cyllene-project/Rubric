@@ -31,7 +31,7 @@ namespace WebCore {
 
 Ref<RGBColor> RGBColor::create(unsigned rgbColor)
 {
-    return adoptRef(*new RGBColor(rgbColor));
+    return ref_ptr<RGBColor>(rgbColor);
 }
 
 } // namespace WebCore

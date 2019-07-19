@@ -323,9 +323,6 @@ add_library(RubricCSS SHARED
         src/draw/css/DOMCSSPaintWorklet.cpp
         src/draw/css/DOMMatrix.cpp
         src/draw/css/DOMMatrixReadOnly.cpp
-        src/draw/css/DeprecatedCSSOMPrimitiveValue.cpp
-        src/draw/css/DeprecatedCSSOMValue.cpp
-        src/draw/css/DeprecatedCSSOMValueList.cpp
         src/draw/css/DocumentRuleSets.cpp
         src/draw/css/ElementRuleCollector.cpp
         src/draw/css/FontVariantBuilder.cpp
@@ -362,7 +359,7 @@ add_library(RubricCSS SHARED
         src/draw/css/WebKitCSSMatrix.cpp
         src/draw/css/WebKitCSSViewportRule.cpp
         src/draw/css/WritingMode.h
-        )
+        src/draw/css/ref_ptr.cpp src/draw/css/ref_ptr.h)
 
 add_library(RubricUI SHARED
         src/ui/Application.cpp

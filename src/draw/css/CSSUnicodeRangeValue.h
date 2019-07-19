@@ -31,9 +31,9 @@ namespace WebCore {
 
 class CSSUnicodeRangeValue final : public CSSValue {
 public:
-    static std::reference_wrapper<CSSUnicodeRangeValue> create(UChar32 from, UChar32 to)
+    static ref_ptr<CSSUnicodeRangeValue> create(UChar32 from, UChar32 to)
     {
-        return adoptRef(*new CSSUnicodeRangeValue(from, to));
+        return ref_ptr<CSSUnicodeRangeValue>(from, to);
     }
 
     UChar32 from() const { return m_from; }

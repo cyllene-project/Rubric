@@ -43,23 +43,23 @@ struct DOMPointInit;
 class DOMMatrixReadOnly : public ScriptWrappable, public RefCounted<DOMMatrixReadOnly> {
     WTF_MAKE_ISO_ALLOCATED(DOMMatrixReadOnly);
 public:
-    static ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> create(ScriptExecutionContext&, Optional<Variant<String, std::vector<double>>>&&);
+    static ExceptionOr<ref_ptr<DOMMatrixReadOnly>> create(ScriptExecutionContext&, std::optional<Variant<String, std::vector<double>>>&&);
 
     enum class Is2D { No, Yes };
-    static std::reference_wrapper<DOMMatrixReadOnly> create(const TransformationMatrix& matrix, Is2D is2D)
+    static ref_ptr<DOMMatrixReadOnly> create(const TransformationMatrix& matrix, Is2D is2D)
     {
-        return adoptRef(*new DOMMatrixReadOnly(matrix, is2D));
+        return ref_ptr<DOMMatrixReadOnly>(matrix, is2D);
     }
 
-    static std::reference_wrapper<DOMMatrixReadOnly> create(TransformationMatrix&& matrix, Is2D is2D)
+    static ref_ptr<DOMMatrixReadOnly> create(TransformationMatrix&& matrix, Is2D is2D)
     {
-        return adoptRef(*new DOMMatrixReadOnly(std::move(matrix), is2D));
+        return ref_ptr<DOMMatrixReadOnly>(std::move(matrix), is2D);
     }
 
-    static ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> fromMatrix(DOMMatrixInit&&);
+    static ExceptionOr<ref_ptr<DOMMatrixReadOnly>> fromMatrix(DOMMatrixInit&&);
 
-    static ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> fromFloat32Array(std::reference_wrapper<Float32Array>&&);
-    static ExceptionOr<std::reference_wrapper<DOMMatrixReadOnly>> fromFloat64Array(std::reference_wrapper<Float64Array>&&);
+    static ExceptionOr<ref_ptr<DOMMatrixReadOnly>> fromFloat32Array(ref_ptr<Float32Array>&&);
+    static ExceptionOr<ref_ptr<DOMMatrixReadOnly>> fromFloat64Array(ref_ptr<Float64Array>&&);
 
     static ExceptionOr<void> validateAndFixup(DOMMatrix2DInit&);
     static ExceptionOr<void> validateAndFixup(DOMMatrixInit&);
@@ -94,23 +94,23 @@ public:
     ExceptionOr<void> setMatrixValue(const std::string&);
     ExceptionOr<void> setMatrixValue(const std::vector<double>&);
 
-    std::reference_wrapper<DOMMatrix> translate(double tx = 0, double ty = 0, double tz = 0);
-    ExceptionOr<std::reference_wrapper<DOMMatrix>> multiply(DOMMatrixInit&& other) const;
-    std::reference_wrapper<DOMMatrix> flipX();
-    std::reference_wrapper<DOMMatrix> flipY();
-    std::reference_wrapper<DOMMatrix> scale(double scaleX = 1, Optional<double> scaleY = WTF::nullopt, double scaleZ = 1, double originX = 0, double originY = 0, double originZ = 0);
-    std::reference_wrapper<DOMMatrix> scale3d(double scale = 1, double originX = 0, double originY = 0, double originZ = 0);
-    std::reference_wrapper<DOMMatrix> rotate(double rotX = 0, Optional<double> rotY = WTF::nullopt, Optional<double> rotZ = WTF::nullopt); // Angles are in degrees.
-    std::reference_wrapper<DOMMatrix> rotateFromVector(double x = 0, double y = 0);
-    std::reference_wrapper<DOMMatrix> rotateAxisAngle(double x = 0, double y = 0, double z = 0, double angle = 0); // Angle is in degrees.
-    std::reference_wrapper<DOMMatrix> skewX(double sx = 0); // Angle is in degrees.
-    std::reference_wrapper<DOMMatrix> skewY(double sy = 0); // Angle is in degrees.
-    std::reference_wrapper<DOMMatrix> inverse() const;
+    ref_ptr<DOMMatrix> translate(double tx = 0, double ty = 0, double tz = 0);
+    ExceptionOr<ref_ptr<DOMMatrix>> multiply(DOMMatrixInit&& other) const;
+    ref_ptr<DOMMatrix> flipX();
+    ref_ptr<DOMMatrix> flipY();
+    ref_ptr<DOMMatrix> scale(double scaleX = 1, std::optional<double> scaleY = WTF::nullopt, double scaleZ = 1, double originX = 0, double originY = 0, double originZ = 0);
+    ref_ptr<DOMMatrix> scale3d(double scale = 1, double originX = 0, double originY = 0, double originZ = 0);
+    ref_ptr<DOMMatrix> rotate(double rotX = 0, std::optional<double> rotY = WTF::nullopt, std::optional<double> rotZ = WTF::nullopt); // Angles are in degrees.
+    ref_ptr<DOMMatrix> rotateFromVector(double x = 0, double y = 0);
+    ref_ptr<DOMMatrix> rotateAxisAngle(double x = 0, double y = 0, double z = 0, double angle = 0); // Angle is in degrees.
+    ref_ptr<DOMMatrix> skewX(double sx = 0); // Angle is in degrees.
+    ref_ptr<DOMMatrix> skewY(double sy = 0); // Angle is in degrees.
+    ref_ptr<DOMMatrix> inverse() const;
 
-    std::reference_wrapper<DOMPoint> transformPoint(DOMPointInit&&);
+    ref_ptr<DOMPoint> transformPoint(DOMPointInit&&);
 
-    ExceptionOr<std::reference_wrapper<Float32Array>> toFloat32Array() const;
-    ExceptionOr<std::reference_wrapper<Float64Array>> toFloat64Array() const;
+    ExceptionOr<ref_ptr<Float32Array>> toFloat32Array() const;
+    ExceptionOr<ref_ptr<Float64Array>> toFloat64Array() const;
 
     ExceptionOr<std::string> toString() const;
 
@@ -128,10 +128,10 @@ protected:
 
     static ExceptionOr<AbstractMatrix> parseStringIntoAbstractMatrix(const std::string&);
 
-    std::reference_wrapper<DOMMatrix> cloneAsDOMMatrix() const;
+    ref_ptr<DOMMatrix> cloneAsDOMMatrix() const;
 
     template <typename T>
-    static ExceptionOr<std::reference_wrapper<T>> fromMatrixHelper(DOMMatrixInit&&);
+    static ExceptionOr<ref_ptr<T>> fromMatrixHelper(DOMMatrixInit&&);
 
     TransformationMatrix m_matrix;
     bool m_is2D { true };
@@ -139,7 +139,7 @@ protected:
 
 // https://drafts.fxtf.org/geometry/#create-a-dommatrix-from-the-dictionary
 template<typename T>
-inline ExceptionOr<std::reference_wrapper<T>> DOMMatrixReadOnly::fromMatrixHelper(DOMMatrixInit&& init)
+inline ExceptionOr<ref_ptr<T>> DOMMatrixReadOnly::fromMatrixHelper(DOMMatrixInit&& init)
 {
     auto result = validateAndFixup(init);
     if (result.hasException())

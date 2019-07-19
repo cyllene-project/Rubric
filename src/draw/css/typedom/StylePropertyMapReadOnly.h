@@ -36,7 +36,7 @@ class Element;
 class StyledElement;
 class TypedOMCSSStyleValue;
 
-class StylePropertyMapReadOnly : public RefCounted<StylePropertyMapReadOnly> {
+class StylePropertyMapReadOnly {
 public:
     virtual ~StylePropertyMapReadOnly() = default;
     virtual std::shared_ptr<TypedOMCSSStyleValue> get(const std::string& property) const = 0;

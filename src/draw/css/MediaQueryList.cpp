@@ -27,7 +27,7 @@
 
 namespace WebCore {
 
-inline MediaQueryList::MediaQueryList(MediaQueryMatcher& matcher, std::reference_wrapper<MediaQuerySet>&& media, bool matches)
+inline MediaQueryList::MediaQueryList(MediaQueryMatcher& matcher, ref_ptr<MediaQuerySet>&& media, bool matches)
     : m_matcher(matcher)
     , m_media(std::move(media))
     , m_evaluationRound(m_matcher->evaluationRound())
@@ -36,9 +36,9 @@ inline MediaQueryList::MediaQueryList(MediaQueryMatcher& matcher, std::reference
 {
 }
 
-Ref<MediaQueryList> MediaQueryList::create(MediaQueryMatcher& matcher, std::reference_wrapper<MediaQuerySet>&& media, bool matches)
+Ref<MediaQueryList> MediaQueryList::create(MediaQueryMatcher& matcher, ref_ptr<MediaQuerySet>&& media, bool matches)
 {
-    return adoptRef(*new MediaQueryList(matcher, std::move(media), matches));
+    return ref_ptr<MediaQueryList>(matcher, std::move(media), matches);
 }
 
 MediaQueryList::~MediaQueryList() = default;

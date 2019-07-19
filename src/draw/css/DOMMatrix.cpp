@@ -33,13 +33,13 @@
 namespace WebCore {
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrixreadonly-dommatrixreadonly
-ExceptionOr<Ref<DOMMatrix>> DOMMatrix::create(ScriptExecutionContext& scriptExecutionContext, Optional<Variant<String, Vector<double>>>&& init)
+ExceptionOr<Ref<DOMMatrix>> DOMMatrix::create(ScriptExecutionContext& scriptExecutionContext, Optional<Variant<String, std::vector<double>>>&& init)
 {
     if (!init)
         return adoptRef(*new DOMMatrix);
 
     return WTF::switchOn(init.value(),
-        [&scriptExecutionContext](const String& init) -> ExceptionOr<Ref<DOMMatrix>> {
+        [&scriptExecutionContext](const std::string& init) -> ExceptionOr<Ref<DOMMatrix>> {
             if (!scriptExecutionContext.isDocument())
                 return Exception { TypeError };
 
@@ -49,7 +49,7 @@ ExceptionOr<Ref<DOMMatrix>> DOMMatrix::create(ScriptExecutionContext& scriptExec
             
             return adoptRef(*new DOMMatrix(parseResult.returnValue().matrix, parseResult.returnValue().is2D ? Is2D::Yes : Is2D::No));
         },
-        [](const Vector<double>& init) -> ExceptionOr<Ref<DOMMatrix>> {
+        [](const std::vector<double>& init) -> ExceptionOr<Ref<DOMMatrix>> {
             if (init.size() == 6) {
                 return adoptRef(*new DOMMatrix(TransformationMatrix {
                     init[0], init[1], init[2], init[3], init[4], init[5]
@@ -243,7 +243,7 @@ Ref<DOMMatrix> DOMMatrix::invertSelf()
     return Ref<DOMMatrix> { *this };
 }
 
-ExceptionOr<Ref<DOMMatrix>> DOMMatrix::setMatrixValueForBindings(const String& string)
+ExceptionOr<Ref<DOMMatrix>> DOMMatrix::setMatrixValueForBindings(const std::string& string)
 {
     auto result = setMatrixValue(string);
     if (result.hasException())

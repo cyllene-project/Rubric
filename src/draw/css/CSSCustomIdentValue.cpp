@@ -34,7 +34,7 @@
 #include <wtf/text/StringBuilder.h>
 namespace WebCore {
 
-CSSCustomIdentValue::CSSCustomIdentValue(const String& str)
+CSSCustomIdentValue::CSSCustomIdentValue(const std::string& str)
     : CSSValue(CustomIdentClass)
     , m_string(str)
     , m_propertyId(CSSPropertyInvalid) { }

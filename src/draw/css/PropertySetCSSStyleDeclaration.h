@@ -68,18 +68,18 @@ private:
     CSSRule* parentRule() const override { return nullptr; }
     unsigned length() const final;
     std::string item(unsigned index) const final;
-    RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const String& propertyName) final;
-    std::string getPropertyValue(const String& propertyName) final;
-    std::string getPropertyPriority(const String& propertyName) final;
-    std::string getPropertyShorthand(const String& propertyName) final;
-    bool isPropertyImplicit(const String& propertyName) final;
-    ExceptionOr<void> setProperty(const String& propertyName, const String& value, const String& priority) final;
-    ExceptionOr<String> removeProperty(const String& propertyName) final;
+    RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) final;
+    std::string getPropertyValue(const std::string& propertyName) final;
+    std::string getPropertyPriority(const std::string& propertyName) final;
+    std::string getPropertyShorthand(const std::string& propertyName) final;
+    bool isPropertyImplicit(const std::string& propertyName) final;
+    ExceptionOr<void> setProperty(const std::string& propertyName, const std::string& value, const std::string& priority) final;
+    ExceptionOr<String> removeProperty(const std::string& propertyName) final;
     std::string cssText() const final;
     ExceptionOr<void> setCssText(const String&) final;
     RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) final;
     std::string getPropertyValueInternal(CSSPropertyID) final;
-    ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const String& value, bool important) final;
+    ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) final;
     
     Ref<MutableStyleProperties> copyProperties() const final;
 

@@ -32,8 +32,8 @@ class CSSParserValueList;
 
 class CSSValueList : public CSSValue {
 public:
-    typedef Vector<Ref<CSSValue>, 4>::iterator iterator;
-    typedef Vector<Ref<CSSValue>, 4>::const_iterator const_iterator;
+    typedef std::vector<Ref<CSSValue>, 4>::iterator iterator;
+    typedef std::vector<Ref<CSSValue>, 4>::const_iterator const_iterator;
 
     static Ref<CSSValueList> createCommaSeparated()
     {
@@ -79,7 +79,7 @@ protected:
 private:
     explicit CSSValueList(ValueListSeparator);
 
-    Vector<Ref<CSSValue>, 4> m_values;
+    std::vector<Ref<CSSValue>, 4> m_values;
 };
 
 inline void CSSValueList::append(Ref<CSSValue>&& value)

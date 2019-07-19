@@ -135,7 +135,7 @@ public:
     }
     float maxExtent(float, float) const { return 1; }
 
-    void normalizeStopsAndEndpointsOutsideRange(Vector<GradientStop>& stops)
+    void normalizeStopsAndEndpointsOutsideRange(std::vector<GradientStop>& stops)
     {
         float firstOffset = stops.first().offset;
         float lastOffset = stops.last().offset;
@@ -178,7 +178,7 @@ public:
         return 1;
     }
 
-    void normalizeStopsAndEndpointsOutsideRange(Vector<GradientStop>& stops)
+    void normalizeStopsAndEndpointsOutsideRange(std::vector<GradientStop>& stops)
     {
         auto numStops = stops.size();
 
@@ -234,7 +234,7 @@ public:
     float gradientLength() const { return 1; }
     float maxExtent(float, float) const { return 1; }
 
-    void normalizeStopsAndEndpointsOutsideRange(Vector<GradientStop>& stops)
+    void normalizeStopsAndEndpointsOutsideRange(std::vector<GradientStop>& stops)
     {
         auto numStops = stops.size();
         
@@ -324,7 +324,7 @@ Gradient::ColorStopVector CSSGradientValue::computeStops(GradientAdapter& gradie
     }
 
     size_t numStops = m_stops.size();
-    Vector<GradientStop> stops(numStops);
+    std::vector<GradientStop> stops(numStops);
 
     float gradientLength = gradientAdapter.gradientLength();
 

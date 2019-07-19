@@ -95,7 +95,7 @@ private:
     bool m_syntheticItalic;
 };
 
-static void appendFont(FontRanges& ranges, Ref<FontAccessor>&& fontAccessor, const Vector<CSSFontFace::UnicodeRange>& unicodeRanges)
+static void appendFont(FontRanges& ranges, Ref<FontAccessor>&& fontAccessor, const std::vector<CSSFontFace::UnicodeRange>& unicodeRanges)
 {
     if (unicodeRanges.isEmpty()) {
         ranges.appendRange({ 0, 0x7FFFFFFF, WTFMove(fontAccessor) });

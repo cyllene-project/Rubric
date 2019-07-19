@@ -99,7 +99,7 @@ void DocumentRuleSets::initializeUserStyle()
         m_userStyle = WTFMove(tempUserStyle);
 }
 
-void DocumentRuleSets::collectRulesFromUserStyleSheets(const Vector<RefPtr<CSSStyleSheet>>& userSheets, RuleSet& userStyle, const MediaQueryEvaluator& medium, StyleResolver& resolver)
+void DocumentRuleSets::collectRulesFromUserStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& userSheets, RuleSet& userStyle, const MediaQueryEvaluator& medium, StyleResolver& resolver)
 {
     for (unsigned i = 0; i < userSheets.size(); ++i) {
         ASSERT(userSheets[i]->contents().isUserStyleSheet());
@@ -107,7 +107,7 @@ void DocumentRuleSets::collectRulesFromUserStyleSheets(const Vector<RefPtr<CSSSt
     }
 }
 
-static std::unique_ptr<RuleSet> makeRuleSet(const Vector<RuleFeature>& rules)
+static std::unique_ptr<RuleSet> makeRuleSet(const std::vector<RuleFeature>& rules)
 {
     size_t size = rules.size();
     if (!size)
@@ -131,7 +131,7 @@ void DocumentRuleSets::resetUserAgentMediaQueryStyle()
     m_userAgentMediaQueryStyle = nullptr;
 }
 
-void DocumentRuleSets::appendAuthorStyleSheets(const Vector<RefPtr<CSSStyleSheet>>& styleSheets, MediaQueryEvaluator* medium, InspectorCSSOMWrappers& inspectorCSSOMWrappers, StyleResolver* resolver)
+void DocumentRuleSets::appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& styleSheets, MediaQueryEvaluator* medium, InspectorCSSOMWrappers& inspectorCSSOMWrappers, StyleResolver* resolver)
 {
     // This handles sheets added to the end of the stylesheet list only. In other cases the style resolver
     // needs to be reconstructed. To handle insertions too the rule order numbers would need to be updated.
@@ -174,15 +174,15 @@ void DocumentRuleSets::collectFeatures() const
     m_features.shrinkToFit();
 }
 
-static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const AtomString& key, HashMap<AtomString, std::unique_ptr<Vector<InvalidationRuleSet>>>& ruleSetMap, const HashMap<AtomString, std::unique_ptr<Vector<RuleFeature>>>& ruleFeatures)
+static std::vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const AtomString& key, HashMap<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>>& ruleSetMap, const HashMap<AtomString, std::unique_ptr<std::vector<RuleFeature>>>& ruleFeatures)
 {
-    return ruleSetMap.ensure(key, [&] () -> std::unique_ptr<Vector<InvalidationRuleSet>> {
+    return ruleSetMap.ensure(key, [&] () -> std::unique_ptr<std::vector<InvalidationRuleSet>> {
         auto* features = ruleFeatures.get(key);
         if (!features)
             return nullptr;
 
         std::array<std::unique_ptr<RuleSet>, matchElementCount> matchElementArray;
-        std::array<Vector<const CSSSelector*>, matchElementCount> invalidationSelectorArray;
+        std::array<std::vector<const CSSSelector*>, matchElementCount> invalidationSelectorArray;
         for (auto& feature : *features) {
             auto arrayIndex = static_cast<unsigned>(*feature.matchElement);
             auto& ruleSet = matchElementArray[arrayIndex];
@@ -192,7 +192,7 @@ static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const AtomString&
             if (feature.invalidationSelector)
                 invalidationSelectorArray[arrayIndex].append(feature.invalidationSelector);
         }
-        auto invalidationRuleSets = std::make_unique<Vector<InvalidationRuleSet>>();
+        auto invalidationRuleSets = std::make_unique<std::vector<InvalidationRuleSet>>();
         for (unsigned i = 0; i < matchElementArray.size(); ++i) {
             if (matchElementArray[i])
                 invalidationRuleSets->append({ static_cast<MatchElement>(i), WTFMove(matchElementArray[i]), WTFMove(invalidationSelectorArray[i]) });
@@ -201,12 +201,12 @@ static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const AtomString&
     }).iterator->value.get();
 }
 
-const Vector<InvalidationRuleSet>* DocumentRuleSets::classInvalidationRuleSets(const AtomString& className) const
+const std::vector<InvalidationRuleSet>* DocumentRuleSets::classInvalidationRuleSets(const AtomString& className) const
 {
     return ensureInvalidationRuleSets(className, m_classInvalidationRuleSets, m_features.classRules);
 }
 
-const Vector<InvalidationRuleSet>* DocumentRuleSets::attributeInvalidationRuleSets(const AtomString& attributeName) const
+const std::vector<InvalidationRuleSet>* DocumentRuleSets::attributeInvalidationRuleSets(const AtomString& attributeName) const
 {
     return ensureInvalidationRuleSets(attributeName, m_attributeInvalidationRuleSets, m_features.attributeRules);
 }

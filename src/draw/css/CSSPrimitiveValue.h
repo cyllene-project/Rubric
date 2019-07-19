@@ -199,7 +199,7 @@ public:
     static Ref<CSSPrimitiveValue> createIdentifier(CSSPropertyID propertyID) { return adoptRef(*new CSSPrimitiveValue(propertyID)); }
 
     static Ref<CSSPrimitiveValue> create(double value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
-    static Ref<CSSPrimitiveValue> create(const String& value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
+    static Ref<CSSPrimitiveValue> create(const std::string& value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
     static Ref<CSSPrimitiveValue> create(const Length& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
     static Ref<CSSPrimitiveValue> create(const LengthSize& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
 
@@ -218,7 +218,7 @@ public:
     unsigned short primitiveType() const;
     ExceptionOr<void> setFloatValue(unsigned short unitType, double floatValue);
     ExceptionOr<float> getFloatValue(unsigned short unitType) const;
-    ExceptionOr<void> setStringValue(unsigned short stringType, const String& stringValue);
+    ExceptionOr<void> setStringValue(unsigned short stringType, const std::string& stringValue);
     ExceptionOr<String> getStringValue() const;
     ExceptionOr<Counter&> getCounterValue() const;
     ExceptionOr<Rect&> getRectValue() const;

@@ -22,6 +22,7 @@ find_package(Protobuf REQUIRED)
 find_package(xpp REQUIRED)
 find_package(bgfx REQUIRED)
 find_package(kiwi REQUIRED)
+find_package(frozen REQUIRED)
 
 # Generate CSS Properties
 find_package(Perl REQUIRED)
@@ -29,6 +30,22 @@ find_package(Python REQUIRED)
 
 set(CSS_PROPERTY_NAMES ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/CSSProperties.json)
 set(CSS_VALUE_KEYWORDS ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/CSSValueKeywords.in ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/SVGCSSValueKeywords.in)
+set(CSS_MAKE_VALUES ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makevalues.pl)
+set(CSS_MAKE_PROPS ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makeprop.pl)
+
+set(CSS_FLAGS
+        ENABLE_TEXT_AUTOSIZING
+        ENABLE_VARIATION_FONTS
+        ENABLE_CURSOR_VISIBILITY
+        ENABLE_CSS_IMAGE_ORIENTATION
+        ENABLE_CSS_IMAGE_RESOLUTION
+        ENABLE_CSS_COMPOSITING
+        ENABLE_FILTERS_LEVEL_2
+        ENABLE_DARK_MODE_CSS
+        ENABLE_CSS3_TEXT
+        ENABLE_TOUCH_EVENTS
+        ENABLE_POINTER_EVENTS
+        )
 
 set(CSS_PROPERTY_NAME_FILES
         CSSPropertyNames.cpp
@@ -38,9 +55,10 @@ set(CSS_PROPERTY_NAME_FILES
         StylePropertyShorthandFunctions.h)
 
 add_custom_command(
-        OUTPUT CSSProperties.json ${CSS_PROPERTY_NAME_FILES}
+        OUTPUT ${CSS_PROPERTY_NAME_FILES}
         COMMAND ${PERL_EXECUTABLE} -pe '' ${CSS_PROPERTY_NAMES} > CSSProperties.json
-        COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makeprop.pl --defines
+        COMMAND ${PERL_EXECUTABLE} ${CSS_MAKE_PROPS} --defines ${CSS_FLAGS}
+        DEPENDS ${CSS_PROPERTY_NAMES} ${CSS_MAKE_PROPS}
 )
 
 set(CSS_VALUE_KEYWORD_FILES
@@ -48,9 +66,10 @@ set(CSS_VALUE_KEYWORD_FILES
         CSSValueKeywords.cpp)
 
 add_custom_command(
-        OUTPUT CSSValueKeywords.in ${CSS_VALUE_KEYWORD_FILES}
+        OUTPUT ${CSS_VALUE_KEYWORD_FILES}
         COMMAND ${PERL_EXECUTABLE} -pe '' ${CSS_VALUE_KEYWORDS} > CSSValueKeywords.in
-        COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/makevalues.pl --defines
+        COMMAND ${PERL_EXECUTABLE} ${CSS_MAKE_VALUES} --defines ${CSS_FLAGS}
+        DEPENDS ${CSS_VALUE_KEYWORDS} ${CSS_MAKE_VALUES}
 )
 
 set(CSS_SELECTOR_SCRIPTS
@@ -74,14 +93,18 @@ add_custom_command(
 )
 
 # color names
+set(COLOR_GEN ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/make-hash-tools.pl)
+set(COLOR_DATA ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/ColorData.gperf)
 add_custom_command(
         OUTPUT ColorData.cpp
-        COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/make-hash-tools.pl . ${CMAKE_CURRENT_SOURCE_DIR}/src/draw/css/ColorData.gperf
+        COMMAND ${PERL_EXECUTABLE} ${COLOR_GEN} . ${COLOR_DATA}
+        DEPENDS ${COLOR_GEN} ${COLOR_DATA}
 )
 
 
 include_directories(${WAYLAND_CLIENT_INCLUDE_DIR})
 
+# generate protobuf classes
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
         proto/object.proto
         proto/property.proto
@@ -96,6 +119,8 @@ target_link_libraries(RubricProto ${PROTOBUF_LIBRARIES})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+
+# core library
 add_library(Rubric SHARED
         CSSProperties.json
         include/core/Type.h
@@ -163,6 +188,7 @@ add_library(RubricCSS SHARED
         # css parser
         ${CSS_PROPERTY_NAME_FILES}
         ${CSS_VALUE_KEYWORD_FILES}
+
         src/draw/css/parser/CSSAtRuleID.cpp
         src/draw/css/parser/CSSAtRuleID.h
         src/draw/css/parser/CSSDeferredParser.cpp
@@ -337,6 +363,7 @@ add_library(RubricCSS SHARED
         src/draw/css/WebKitCSSMatrix.cpp
         src/draw/css/WebKitCSSViewportRule.cpp
         ]]#
+        #src/draw/css/CSSPropertyNames.cpp src/draw/css/CSSPropertyNames.h src/draw/css/CSSValueKeywords.cpp src/draw/css/CSSValueKeywords.h
         )
 
 add_library(RubricUI SHARED
@@ -409,7 +436,7 @@ target_link_libraries(tests
         Catch2::Catch2
         ${RUBRIC_LIBS})
 
-include(CTest)
-include(Catch)
+#include(CTest)
+#include(Catch)
 
-catch_discover_tests(tests)
+#catch_discover_tests(tests)

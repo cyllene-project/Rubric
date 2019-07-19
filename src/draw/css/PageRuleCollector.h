@@ -44,8 +44,8 @@ private:
     bool isFirstPage(int pageIndex) const;
     std::string pageName(int pageIndex) const;
 
-    void matchPageRules(RuleSet* rules, bool isLeftPage, bool isFirstPage, const String& pageName);
-    void matchPageRulesForList(Vector<StyleRulePage*>& matchedRules, const Vector<StyleRulePage*>& rules, bool isLeftPage, bool isFirstPage, const String& pageName);
+    void matchPageRules(RuleSet* rules, bool isLeftPage, bool isFirstPage, const std::string& pageName);
+    void matchPageRulesForList(std::vector<StyleRulePage*>& matchedRules, const std::vector<StyleRulePage*>& rules, bool isLeftPage, bool isFirstPage, const std::string& pageName);
 
     const StyleResolver::State& m_state;
     DocumentRuleSets& m_ruleSets;

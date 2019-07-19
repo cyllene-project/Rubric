@@ -43,7 +43,7 @@ StyleSheetList::StyleSheetList(ShadowRoot& shadowRoot)
 
 StyleSheetList::~StyleSheetList() = default;
 
-inline const Vector<RefPtr<StyleSheet>>& StyleSheetList::styleSheets() const
+inline const std::vector<RefPtr<StyleSheet>>& StyleSheetList::styleSheets() const
 {
     if (m_document)
         return m_document->styleScope().styleSheetsForStyleSheetList();
@@ -80,7 +80,7 @@ unsigned StyleSheetList::length() const
 
 StyleSheet* StyleSheetList::item(unsigned index)
 {
-    const Vector<RefPtr<StyleSheet>>& sheets = styleSheets();
+    const std::vector<RefPtr<StyleSheet>>& sheets = styleSheets();
     return index < sheets.size() ? sheets[index].get() : 0;
 }
 
@@ -101,10 +101,10 @@ CSSStyleSheet* StyleSheetList::namedItem(const AtomString& name) const
     return nullptr;
 }
 
-Vector<AtomString> StyleSheetList::supportedPropertyNames()
+std::vector<AtomString> StyleSheetList::supportedPropertyNames()
 {
     // FIXME: Should be implemented.
-    return Vector<AtomString>();
+    return std::vector<AtomString>();
 }
 
 } // namespace WebCore

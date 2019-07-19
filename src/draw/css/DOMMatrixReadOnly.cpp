@@ -44,13 +44,13 @@ namespace WebCore {
 WTF_MAKE_ISO_ALLOCATED_IMPL(DOMMatrixReadOnly);
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrixreadonly-dommatrixreadonly
-ExceptionOr<Ref<DOMMatrixReadOnly>> DOMMatrixReadOnly::create(ScriptExecutionContext& scriptExecutionContext, Optional<Variant<String, Vector<double>>>&& init)
+ExceptionOr<Ref<DOMMatrixReadOnly>> DOMMatrixReadOnly::create(ScriptExecutionContext& scriptExecutionContext, Optional<Variant<String, std::vector<double>>>&& init)
 {
     if (!init)
         return adoptRef(*new DOMMatrixReadOnly);
 
     return WTF::switchOn(init.value(),
-        [&scriptExecutionContext](const String& init) -> ExceptionOr<Ref<DOMMatrixReadOnly>> {
+        [&scriptExecutionContext](const std::string& init) -> ExceptionOr<Ref<DOMMatrixReadOnly>> {
             if (!scriptExecutionContext.isDocument())
                 return Exception { TypeError };
 
@@ -60,7 +60,7 @@ ExceptionOr<Ref<DOMMatrixReadOnly>> DOMMatrixReadOnly::create(ScriptExecutionCon
             
             return adoptRef(*new DOMMatrixReadOnly(parseResult.returnValue().matrix, parseResult.returnValue().is2D ? Is2D::Yes : Is2D::No));
         },
-        [](const Vector<double>& init) -> ExceptionOr<Ref<DOMMatrixReadOnly>> {
+        [](const std::vector<double>& init) -> ExceptionOr<Ref<DOMMatrixReadOnly>> {
             if (init.size() == 6) {
                 return adoptRef(*new DOMMatrixReadOnly(TransformationMatrix {
                     init[0], init[1], init[2], init[3], init[4], init[5]
@@ -220,7 +220,7 @@ bool DOMMatrixReadOnly::isIdentity() const
     return m_matrix.isIdentity();
 }
 
-ExceptionOr<DOMMatrixReadOnly::AbstractMatrix> DOMMatrixReadOnly::parseStringIntoAbstractMatrix(const String& string)
+ExceptionOr<DOMMatrixReadOnly::AbstractMatrix> DOMMatrixReadOnly::parseStringIntoAbstractMatrix(const std::string& string)
 {
     if (string.isEmpty())
         return AbstractMatrix { };
@@ -252,7 +252,7 @@ ExceptionOr<DOMMatrixReadOnly::AbstractMatrix> DOMMatrixReadOnly::parseStringInt
 }
 
 // https://drafts.fxtf.org/geometry/#dom-dommatrix-setmatrixvalue
-ExceptionOr<void> DOMMatrixReadOnly::setMatrixValue(const String& string)
+ExceptionOr<void> DOMMatrixReadOnly::setMatrixValue(const std::string& string)
 {
     auto parseResult = parseStringIntoAbstractMatrix(string);
     if (parseResult.hasException())

@@ -54,7 +54,7 @@ static size_t sizeForImmutableStylePropertiesWithPropertyCount(unsigned count)
     return sizeof(ImmutableStyleProperties) - sizeof(void*) + sizeof(CSSValue*) * count + sizeof(StylePropertyMetadata) * count;
 }
 
-static bool isInitialOrInherit(const String& value)
+static bool isInitialOrInherit(const std::string& value)
 {
     return value.length() == 7 && (value == "initial" || value == "inherit");
 }
@@ -305,7 +305,7 @@ CSSValueID StyleProperties::propertyAsValueID(CSSPropertyID property) const
     return is<CSSPrimitiveValue>(cssValue) ? downcast<CSSPrimitiveValue>(*cssValue).valueID() : CSSValueInvalid;
 }
 
-String StyleProperties::getCustomPropertyValue(const String& propertyName) const
+String StyleProperties::getCustomPropertyValue(const std::string& propertyName) const
 {
     RefPtr<CSSValue> value = getCustomPropertyCSSValue(propertyName);
     if (value)
@@ -497,7 +497,7 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
 
     const unsigned size = shorthand.length();
     // Begin by collecting the properties into an array.
-    Vector< RefPtr<CSSValue>> values(size);
+    std::vector< RefPtr<CSSValue>> values(size);
     size_t numLayers = 0;
 
     for (unsigned i = 0; i < size; ++i) {
@@ -757,7 +757,7 @@ RefPtr<CSSValue> StyleProperties::getPropertyCSSValueInternal(CSSPropertyID prop
     return propertyAt(foundPropertyIndex).value();
 }
 
-RefPtr<CSSValue> StyleProperties::getCustomPropertyCSSValue(const String& propertyName) const
+RefPtr<CSSValue> StyleProperties::getCustomPropertyCSSValue(const std::string& propertyName) const
 {
     int foundPropertyIndex = findCustomPropertyIndex(propertyName);
     if (foundPropertyIndex == -1)
@@ -800,7 +800,7 @@ bool MutableStyleProperties::removeProperty(CSSPropertyID propertyID, String* re
     return true;
 }
 
-bool MutableStyleProperties::removeCustomProperty(const String& propertyName, String* returnText)
+bool MutableStyleProperties::removeCustomProperty(const std::string& propertyName, String* returnText)
 {
     int foundPropertyIndex = findCustomPropertyIndex(propertyName);
     if (foundPropertyIndex == -1) {
@@ -836,7 +836,7 @@ bool StyleProperties::propertyIsImportant(CSSPropertyID propertyID) const
     return true;
 }
 
-bool StyleProperties::customPropertyIsImportant(const String& propertyName) const
+bool StyleProperties::customPropertyIsImportant(const std::string& propertyName) const
 {
     int foundPropertyIndex = findCustomPropertyIndex(propertyName);
     if (foundPropertyIndex != -1)
@@ -860,7 +860,7 @@ bool StyleProperties::isPropertyImplicit(CSSPropertyID propertyID) const
     return propertyAt(foundPropertyIndex).isImplicit();
 }
 
-bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, const String& value, bool important, CSSParserContext parserContext)
+bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, const std::string& value, bool important, CSSParserContext parserContext)
 {
     if (!isEnabledCSSProperty(propertyID))
         return false;
@@ -877,13 +877,13 @@ bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, const String&
     return CSSParser::parseValue(*this, propertyID, value, important, parserContext) == CSSParser::ParseResult::Changed;
 }
 
-bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, const String& value, bool important)
+bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, const std::string& value, bool important)
 {
     CSSParserContext parserContext(cssParserMode());
     return setProperty(propertyID, value, important, parserContext);
 }
 
-bool MutableStyleProperties::setCustomProperty(const Document* document, const String& propertyName, const String& value, bool important, CSSParserContext parserContext)
+bool MutableStyleProperties::setCustomProperty(const Document* document, const std::string& propertyName, const std::string& value, bool important, CSSParserContext parserContext)
 {
     // Setting the value to an empty string just removes the property in both IE and Gecko.
     // Setting it to null seems to produce less consistent results, but we treat it just the same.
@@ -956,7 +956,7 @@ bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, CSSPropertyID
     return setProperty(CSSProperty(propertyID, CSSValuePool::singleton().createIdentifierValue(identifier), important));
 }
 
-bool MutableStyleProperties::parseDeclaration(const String& styleDeclaration, CSSParserContext context)
+bool MutableStyleProperties::parseDeclaration(const std::string& styleDeclaration, CSSParserContext context)
 {
     auto oldProperties = WTFMove(m_propertyVector);
     m_propertyVector.clear();
@@ -1444,7 +1444,7 @@ int MutableStyleProperties::findPropertyIndex(CSSPropertyID propertyID) const
     return -1;
 }
 
-int ImmutableStyleProperties::findCustomPropertyIndex(const String& propertyName) const
+int ImmutableStyleProperties::findCustomPropertyIndex(const std::string& propertyName) const
 {
     // Convert the propertyID into an uint16_t to compare it with the metadata's m_propertyID to avoid
     // the compiler converting it to an int multiple times in the loop.
@@ -1461,7 +1461,7 @@ int ImmutableStyleProperties::findCustomPropertyIndex(const String& propertyName
     return -1;
 }
 
-int MutableStyleProperties::findCustomPropertyIndex(const String& propertyName) const
+int MutableStyleProperties::findCustomPropertyIndex(const std::string& propertyName) const
 {
     // Convert the propertyID into an uint16_t to compare it with the metadata's m_propertyID to avoid
     // the compiler converting it to an int multiple times in the loop.
@@ -1486,7 +1486,7 @@ CSSProperty* MutableStyleProperties::findCSSPropertyWithID(CSSPropertyID propert
     return &m_propertyVector.at(foundPropertyIndex);
 }
 
-CSSProperty* MutableStyleProperties::findCustomCSSPropertyWithName(const String& propertyName)
+CSSProperty* MutableStyleProperties::findCustomCSSPropertyWithName(const std::string& propertyName)
 {
     int foundPropertyIndex = findCustomPropertyIndex(propertyName);
     if (foundPropertyIndex == -1)
@@ -1509,7 +1509,7 @@ Ref<MutableStyleProperties> StyleProperties::mutableCopy() const
 
 Ref<MutableStyleProperties> StyleProperties::copyPropertiesInSet(const CSSPropertyID* set, unsigned length) const
 {
-    Vector<CSSProperty, 256> list;
+    std::vector<CSSProperty, 256> list;
     list.reserveInitialCapacity(length);
     for (unsigned i = 0; i < length; ++i) {
         if (auto value = getPropertyCSSValueInternal(set[i]))

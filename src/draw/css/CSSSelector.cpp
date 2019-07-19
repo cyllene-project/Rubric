@@ -370,7 +370,7 @@ static void appendPseudoClassFunctionTail(StringBuilder& str, const CSSSelector*
 
 }
 
-static void appendLangArgumentList(StringBuilder& str, const Vector<AtomString>& argumentList)
+static void appendLangArgumentList(StringBuilder& str, const std::vector<AtomString>& argumentList)
 {
     unsigned argumentListSize = argumentList.size();
     for (unsigned i = 0; i < argumentListSize; ++i) {
@@ -382,7 +382,7 @@ static void appendLangArgumentList(StringBuilder& str, const Vector<AtomString>&
     }
 }
 
-String CSSSelector::selectorText(const String& rightSide) const
+String CSSSelector::selectorText(const std::string& rightSide) const
 {
     StringBuilder str;
 
@@ -762,7 +762,7 @@ void CSSSelector::setArgument(const AtomString& value)
     m_data.m_rareData->m_argument = value;
 }
 
-void CSSSelector::setLangArgumentList(std::unique_ptr<Vector<AtomString>> argumentList)
+void CSSSelector::setLangArgumentList(std::unique_ptr<std::vector<AtomString>> argumentList)
 {
     createRareData();
     m_data.m_rareData->m_langArgumentList = WTFMove(argumentList);

@@ -50,7 +50,7 @@ namespace WebCore {
 
 template<typename T> void iterateClients(HashSet<CSSFontFace::Client*>& clients, T callback)
 {
-    Vector<Ref<CSSFontFace::Client>> clientsCopy;
+    std::vector<Ref<CSSFontFace::Client>> clientsCopy;
     clientsCopy.reserveInitialCapacity(clients.size());
     for (auto* client : clients)
         clientsCopy.uncheckedAppend(*client);
@@ -256,7 +256,7 @@ bool CSSFontFace::setUnicodeRange(CSSValue& unicodeRange)
     if (!is<CSSValueList>(unicodeRange))
         return false;
 
-    Vector<UnicodeRange> ranges;
+    std::vector<UnicodeRange> ranges;
     auto& list = downcast<CSSValueList>(unicodeRange);
     for (auto& rangeValue : list) {
         auto& range = downcast<CSSUnicodeRangeValue>(rangeValue.get());

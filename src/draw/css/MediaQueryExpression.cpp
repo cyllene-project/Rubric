@@ -61,7 +61,7 @@ static inline bool featureWithValidIdent(const AtomString& mediaFeature, const C
     || (mediaFeature == MediaFeatureNames::prefersDarkInterface && (context.useSystemAppearance || isUASheetBehavior(context.mode)));
 }
 
-static inline bool featureWithValidDensity(const String& mediaFeature, const CSSPrimitiveValue& value)
+static inline bool featureWithValidDensity(const std::string& mediaFeature, const CSSPrimitiveValue& value)
 {
     if (!value.isResolution() || value.doubleValue() <= 0)
         return false;
@@ -71,7 +71,7 @@ static inline bool featureWithValidDensity(const String& mediaFeature, const CSS
     || mediaFeature == MediaFeatureNames::maxResolution;
 }
 
-static inline bool featureWithValidPositiveLength(const String& mediaFeature, const CSSPrimitiveValue& value)
+static inline bool featureWithValidPositiveLength(const std::string& mediaFeature, const CSSPrimitiveValue& value)
 {
     if (!(value.isLength() || (value.isNumber() && !value.doubleValue())) || value.doubleValue() < 0)
         return false;
@@ -90,7 +90,7 @@ static inline bool featureWithValidPositiveLength(const String& mediaFeature, co
     || mediaFeature == MediaFeatureNames::maxDeviceWidth;
 }
 
-static inline bool featureExpectingPositiveInteger(const String& mediaFeature)
+static inline bool featureExpectingPositiveInteger(const std::string& mediaFeature)
 {
     return mediaFeature == MediaFeatureNames::color
     || mediaFeature == MediaFeatureNames::maxColor
@@ -103,14 +103,14 @@ static inline bool featureExpectingPositiveInteger(const String& mediaFeature)
     || mediaFeature == MediaFeatureNames::minMonochrome;
 }
 
-static inline bool featureWithPositiveInteger(const String& mediaFeature, const CSSPrimitiveValue& value)
+static inline bool featureWithPositiveInteger(const std::string& mediaFeature, const CSSPrimitiveValue& value)
 {
     if (!value.isNumber())
         return false;
     return featureExpectingPositiveInteger(mediaFeature);
 }
 
-static inline bool featureWithPositiveNumber(const String& mediaFeature, const CSSPrimitiveValue& value)
+static inline bool featureWithPositiveNumber(const std::string& mediaFeature, const CSSPrimitiveValue& value)
 {
     if (!value.isNumber())
         return false;
@@ -124,7 +124,7 @@ static inline bool featureWithPositiveNumber(const String& mediaFeature, const C
     || mediaFeature == MediaFeatureNames::transform2d;
 }
 
-static inline bool featureWithZeroOrOne(const String& mediaFeature, const CSSPrimitiveValue& value)
+static inline bool featureWithZeroOrOne(const std::string& mediaFeature, const CSSPrimitiveValue& value)
 {
     if (!value.isNumber() || !(value.doubleValue() == 1 || !value.doubleValue()))
         return false;
@@ -178,7 +178,7 @@ static inline bool isFeatureValidWithoutValue(const AtomString& mediaFeature, co
         || mediaFeature == MediaFeatureNames::videoPlayableInline;
 }
 
-inline RefPtr<CSSPrimitiveValue> consumeFirstValue(const String& mediaFeature, CSSParserTokenRange& range)
+inline RefPtr<CSSPrimitiveValue> consumeFirstValue(const std::string& mediaFeature, CSSParserTokenRange& range)
 {
     if (auto value = CSSPropertyParserHelpers::consumeInteger(range, 0))
         return value;
@@ -200,7 +200,7 @@ inline RefPtr<CSSPrimitiveValue> consumeFirstValue(const String& mediaFeature, C
     return nullptr;
 }
 
-MediaQueryExpression::MediaQueryExpression(const String& feature, CSSParserTokenRange& range, MediaQueryParserContext& context)
+MediaQueryExpression::MediaQueryExpression(const std::string& feature, CSSParserTokenRange& range, MediaQueryParserContext& context)
     : m_mediaFeature(feature.convertToASCIILowercase())
     , m_isValid(false)
 {

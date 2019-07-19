@@ -126,7 +126,7 @@ protected:
     RefPtr<CSSPrimitiveValue> m_secondY;
 
     // Stops
-    Vector<CSSGradientColorStop, 2> m_stops;
+    std::vector<CSSGradientColorStop, 2> m_stops;
     bool m_stopsSorted;
     CSSGradientType m_gradientType;
     bool m_repeating;

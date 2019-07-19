@@ -66,7 +66,7 @@ public:
 
 private:
     Rect() = default;
-    static String generateCSSString(const String& top, const String& right, const String& bottom, const String& left)
+    static String generateCSSString(const std::string& top, const std::string& right, const std::string& bottom, const std::string& left)
     {
         return "rect(" + top + ", " + right + ", " + bottom + ", " + left + ')';
     }
@@ -83,7 +83,7 @@ public:
 
 private:
     Quad() = default;
-    static String generateCSSString(const String& top, const String& right, const String& bottom, const String& left)
+    static String generateCSSString(const std::string& top, const std::string& right, const std::string& bottom, const std::string& left)
     {
         StringBuilder result;
         // reserve space for the four strings, plus three space separator characters.

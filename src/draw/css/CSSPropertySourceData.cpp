@@ -54,7 +54,7 @@ unsigned SourceRange::length() const
     return end - start;
 }
 
-CSSPropertySourceData::CSSPropertySourceData(const String& name, const String& value, bool important, bool disabled, bool parsedOk, const SourceRange& range)
+CSSPropertySourceData::CSSPropertySourceData(const std::string& name, const std::string& value, bool important, bool disabled, bool parsedOk, const SourceRange& range)
     : name(name)
     , value(value)
     , important(important)

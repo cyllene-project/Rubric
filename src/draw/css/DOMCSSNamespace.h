@@ -40,9 +40,9 @@ class Document;
 
 class DOMCSSNamespace final : public RefCounted<DOMCSSNamespace>, public Supplementable<DOMCSSNamespace> {
 public:
-    static bool supports(Document&, const String& property, const String& value);
-    static bool supports(Document&, const String& conditionText);
-    static String escape(const String& ident);
+    static bool supports(Document&, const std::string& property, const std::string& value);
+    static bool supports(Document&, const std::string& conditionText);
+    static String escape(const std::string& ident);
 };
 
 }

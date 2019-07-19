@@ -57,7 +57,7 @@ public:
     bool hasAnyMatchingRules(const RuleSet*);
 
     StyleResolver::MatchResult& matchedResult();
-    const Vector<RefPtr<StyleRule>>& matchedRuleList() const;
+    const std::vector<RefPtr<StyleRule>>& matchedRuleList() const;
 
     bool hasMatchedRules() const { return !m_matchedRules.isEmpty(); }
     void clearMatchedRules();
@@ -97,12 +97,12 @@ private:
     SelectorChecker::Mode m_mode { SelectorChecker::Mode::ResolvingStyle };
     bool m_isMatchingSlottedPseudoElements { false };
     bool m_isMatchingHostPseudoClass { false };
-    Vector<std::unique_ptr<RuleSet::RuleDataVector>> m_keepAliveSlottedPseudoElementRules;
+    std::vector<std::unique_ptr<RuleSet::RuleDataVector>> m_keepAliveSlottedPseudoElementRules;
 
-    Vector<MatchedRule, 64> m_matchedRules;
+    std::vector<MatchedRule, 64> m_matchedRules;
 
     // Output.
-    Vector<RefPtr<StyleRule>> m_matchedRuleList;
+    std::vector<RefPtr<StyleRule>> m_matchedRuleList;
     bool m_didMatchUncommonAttributeSelector { false };
     StyleResolver::MatchResult m_result;
     Style::Relations m_styleRelations;

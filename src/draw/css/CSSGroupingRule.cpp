@@ -56,7 +56,7 @@ CSSGroupingRule::~CSSGroupingRule()
     }
 }
 
-ExceptionOr<unsigned> CSSGroupingRule::insertRule(const String& ruleString, unsigned index)
+ExceptionOr<unsigned> CSSGroupingRule::insertRule(const std::string& ruleString, unsigned index)
 {
     ASSERT(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
 

@@ -46,7 +46,7 @@ namespace WebCore {
         /**
          * Re-create selector text from selector's data
          */
-        std::string selectorText(const String& = emptyString()) const;
+        std::string selectorText(const std::string& = emptyString()) const;
 
         // checks if the 2 selectors (including sub selectors) agree.
         bool operator==(const CSSSelector&) const;
@@ -224,7 +224,7 @@ namespace WebCore {
         const AtomString& attributeCanonicalLocalName() const;
         const AtomString& argument() const { return m_hasRareData ? m_data.m_rareData->m_argument : nullAtom(); }
         bool attributeValueMatchingIsCaseInsensitive() const;
-        const Vector<AtomString>* langArgumentList() const { return m_hasRareData ? m_data.m_rareData->m_langArgumentList.get() : nullptr; }
+        const std::vector<AtomString>* langArgumentList() const { return m_hasRareData ? m_data.m_rareData->m_langArgumentList.get() : nullptr; }
         const CSSSelectorList* selectorList() const { return m_hasRareData ? m_data.m_rareData->m_selectorList.get() : nullptr; }
 
         void setValue(const AtomString&, bool matchLowerCase = false);
@@ -232,7 +232,7 @@ namespace WebCore {
         void setAttribute(const QualifiedName&, bool convertToLowercase, AttributeMatchType);
         void setNth(int a, int b);
         void setArgument(const AtomString&);
-        void setLangArgumentList(std::unique_ptr<Vector<AtomString>>);
+        void setLangArgumentList(std::unique_ptr<std::vector<AtomString>>);
         void setSelectorList(std::unique_ptr<CSSSelectorList>);
 
         bool matchNth(int count) const;
@@ -342,7 +342,7 @@ namespace WebCore {
             QualifiedName m_attribute; // used for attribute selector
             AtomString m_attributeCanonicalLocalName;
             AtomString m_argument; // Used for :contains and :nth-*
-            std::unique_ptr<Vector<AtomString>> m_langArgumentList; // Used for :lang arguments.
+            std::unique_ptr<std::vector<AtomString>> m_langArgumentList; // Used for :lang arguments.
             std::unique_ptr<CSSSelectorList> m_selectorList; // Used for :matches() and :not().
         
         private:

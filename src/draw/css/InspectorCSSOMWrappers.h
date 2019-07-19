@@ -49,8 +49,8 @@ private:
     void collect(ListType*);
 
     void collectFromStyleSheetContents(StyleSheetContents*);
-    void collectFromStyleSheets(const Vector<RefPtr<CSSStyleSheet>>&);
-    void maybeCollectFromStyleSheets(const Vector<RefPtr<CSSStyleSheet>>&);
+    void collectFromStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&);
+    void maybeCollectFromStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&);
 
     HashMap<StyleRule*, RefPtr<CSSStyleRule>> m_styleRuleToCSSOMWrapperMap;
     HashSet<RefPtr<CSSStyleSheet>> m_styleSheetCSSOMWrapperSet;

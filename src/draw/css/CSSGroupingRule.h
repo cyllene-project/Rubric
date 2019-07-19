@@ -35,7 +35,7 @@ public:
 
     CSSRuleList& cssRules() const;
 
-    ExceptionOr<unsigned> insertRule(const String& rule, unsigned index);
+    ExceptionOr<unsigned> insertRule(const std::string& rule, unsigned index);
     ExceptionOr<void> deleteRule(unsigned index);
         
     // For CSSRuleList
@@ -52,7 +52,7 @@ protected:
     Ref<StyleRuleGroup> m_groupRule;
 
 private:
-    mutable Vector<RefPtr<CSSRule>> m_childRuleCSSOMWrappers;
+    mutable std::vector<RefPtr<CSSRule>> m_childRuleCSSOMWrappers;
     mutable std::unique_ptr<CSSRuleList> m_ruleListCSSOMWrapper;
 };
 

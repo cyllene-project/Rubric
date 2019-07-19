@@ -100,7 +100,7 @@ Ref<CSSPrimitiveValue> valueForBasicShape(const RenderStyle& style, const BasicS
         auto polygonValue = CSSBasicShapePolygon::create();
 
         polygonValue->setWindRule(polygon.windRule());
-        const Vector<Length>& values = polygon.values();
+        const std::vector<Length>& values = polygon.values();
         for (unsigned i = 0; i < values.size(); i += 2)
             polygonValue->appendPoint(cssValuePool.createValue(values.at(i), style), cssValuePool.createValue(values.at(i + 1), style));
 

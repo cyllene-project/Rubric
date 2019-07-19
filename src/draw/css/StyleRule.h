@@ -134,7 +134,7 @@ public:
 
     Ref<StyleRule> copy() const { return adoptRef(*new StyleRule(*this)); }
 
-    Vector<RefPtr<StyleRule>> splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned) const;
+    std::vector<RefPtr<StyleRule>> splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned) const;
 
 //#if ENABLE(CSS_SELECTOR_JIT)
     CompiledSelector& compiledSelectorForListIndex(unsigned index)
@@ -155,7 +155,7 @@ private:
     StyleRule(Ref<StylePropertiesBase>&&, bool hasDocumentSecurityOrigin, CSSSelectorList&&);
     StyleRule(const StyleRule&);
 
-    static Ref<StyleRule> createForSplitting(const Vector<const CSSSelector*>&, Ref<StyleProperties>&&, bool hasDocumentSecurityOrigin);
+    static Ref<StyleRule> createForSplitting(const std::vector<const CSSSelector*>&, Ref<StyleProperties>&&, bool hasDocumentSecurityOrigin);
 
     mutable Ref<StylePropertiesBase> m_properties;
     CSSSelectorList m_selectorList;
@@ -215,42 +215,42 @@ class DeferredStyleGroupRuleList final {
 public:
     DeferredStyleGroupRuleList(const CSSParserTokenRange&, CSSDeferredParser&);
     
-    void parseDeferredRules(Vector<RefPtr<StyleRuleBase>>&);
+    void parseDeferredRules(std::vector<RefPtr<StyleRuleBase>>&);
     void parseDeferredKeyframes(StyleRuleKeyframes&);
 
 private:
-    Vector<CSSParserToken> m_tokens;
+    std::vector<CSSParserToken> m_tokens;
     Ref<CSSDeferredParser> m_parser;
 };
     
 class StyleRuleGroup : public StyleRuleBase {
 public:
-    const Vector<RefPtr<StyleRuleBase>>& childRules() const;
-    const Vector<RefPtr<StyleRuleBase>>* childRulesWithoutDeferredParsing() const;
+    const std::vector<RefPtr<StyleRuleBase>>& childRules() const;
+    const std::vector<RefPtr<StyleRuleBase>>* childRulesWithoutDeferredParsing() const;
 
     void wrapperInsertRule(unsigned, Ref<StyleRuleBase>&&);
     void wrapperRemoveRule(unsigned);
     
 protected:
-    StyleRuleGroup(Type, Vector<RefPtr<StyleRuleBase>>&);
+    StyleRuleGroup(Type, std::vector<RefPtr<StyleRuleBase>>&);
     StyleRuleGroup(Type, std::unique_ptr<DeferredStyleGroupRuleList>&&);
     StyleRuleGroup(const StyleRuleGroup&);
     
 private:
     void parseDeferredRulesIfNeeded() const;
 
-    mutable Vector<RefPtr<StyleRuleBase>> m_childRules;
+    mutable std::vector<RefPtr<StyleRuleBase>> m_childRules;
     mutable std::unique_ptr<DeferredStyleGroupRuleList> m_deferredRules;
 };
 
-inline const Vector<RefPtr<StyleRuleBase>>* StyleRuleGroup::childRulesWithoutDeferredParsing() const
+inline const std::vector<RefPtr<StyleRuleBase>>* StyleRuleGroup::childRulesWithoutDeferredParsing() const
 {
     return !m_deferredRules ? &m_childRules : nullptr;
 }
 
 class StyleRuleMedia final : public StyleRuleGroup {
 public:
-    static Ref<StyleRuleMedia> create(Ref<MediaQuerySet>&& media, Vector<RefPtr<StyleRuleBase>>& adoptRules)
+    static Ref<StyleRuleMedia> create(Ref<MediaQuerySet>&& media, std::vector<RefPtr<StyleRuleBase>>& adoptRules)
     {
         return adoptRef(*new StyleRuleMedia(WTFMove(media), adoptRules));
     }
@@ -265,7 +265,7 @@ public:
     Ref<StyleRuleMedia> copy() const { return adoptRef(*new StyleRuleMedia(*this)); }
 
 private:
-    StyleRuleMedia(Ref<MediaQuerySet>&&, Vector<RefPtr<StyleRuleBase>>& adoptRules);
+    StyleRuleMedia(Ref<MediaQuerySet>&&, std::vector<RefPtr<StyleRuleBase>>& adoptRules);
     StyleRuleMedia(Ref<MediaQuerySet>&&, std::unique_ptr<DeferredStyleGroupRuleList>&&);
     StyleRuleMedia(const StyleRuleMedia&);
 
@@ -274,12 +274,12 @@ private:
 
 class StyleRuleSupports final : public StyleRuleGroup {
 public:
-    static Ref<StyleRuleSupports> create(const String& conditionText, bool conditionIsSupported, Vector<RefPtr<StyleRuleBase>>& adoptRules)
+    static Ref<StyleRuleSupports> create(const std::string& conditionText, bool conditionIsSupported, std::vector<RefPtr<StyleRuleBase>>& adoptRules)
     {
         return adoptRef(*new StyleRuleSupports(conditionText, conditionIsSupported, adoptRules));
     }
     
-    static Ref<StyleRuleSupports> create(const String& conditionText, bool conditionIsSupported, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredChildRules)
+    static Ref<StyleRuleSupports> create(const std::string& conditionText, bool conditionIsSupported, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredChildRules)
     {
         return adoptRef(*new StyleRuleSupports(conditionText, conditionIsSupported, WTFMove(deferredChildRules)));
     }
@@ -289,8 +289,8 @@ public:
     Ref<StyleRuleSupports> copy() const { return adoptRef(*new StyleRuleSupports(*this)); }
 
 private:
-    StyleRuleSupports(const String& conditionText, bool conditionIsSupported, Vector<RefPtr<StyleRuleBase>>& adoptRules);
-    StyleRuleSupports(const String& conditionText, bool conditionIsSupported, std::unique_ptr<DeferredStyleGroupRuleList>&&);
+    StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported, std::vector<RefPtr<StyleRuleBase>>& adoptRules);
+    StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported, std::unique_ptr<DeferredStyleGroupRuleList>&&);
     
     StyleRuleSupports(const StyleRuleSupports&);
 

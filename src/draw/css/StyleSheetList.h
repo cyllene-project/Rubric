@@ -43,7 +43,7 @@ public:
     StyleSheet* item(unsigned index);
 
     CSSStyleSheet* namedItem(const AtomString&) const;
-    Vector<AtomString> supportedPropertyNames();
+    std::vector<AtomString> supportedPropertyNames();
 
     Node* ownerNode() const;
 
@@ -52,11 +52,11 @@ public:
 private:
     StyleSheetList(Document&);
     StyleSheetList(ShadowRoot&);
-    const Vector<RefPtr<StyleSheet>>& styleSheets() const;
+    const std::vector<RefPtr<StyleSheet>>& styleSheets() const;
 
     WeakPtr<Document> m_document;
     ShadowRoot* m_shadowRoot { nullptr };
-    Vector<RefPtr<StyleSheet>> m_detachedStyleSheets;
+    std::vector<RefPtr<StyleSheet>> m_detachedStyleSheets;
 };
 
 } // namespace WebCore

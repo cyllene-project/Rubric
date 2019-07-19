@@ -48,7 +48,7 @@ public:
 
     FontRanges fontRanges(const FontDescription&);
 
-    Vector<Ref<CSSFontFace>, 1>& constituentFaces() { return m_fontFaces; }
+    std::vector<Ref<CSSFontFace>, 1>& constituentFaces() { return m_fontFaces; }
 
     // CSSFontFace::Client needs to be able to be held in a RefPtr.
     void ref() final { RefCounted<CSSSegmentedFontFace>::ref(); }
@@ -59,7 +59,7 @@ private:
     void fontLoaded(CSSFontFace&) final;
 
     HashMap<FontDescriptionKey, FontRanges, FontDescriptionKeyHash, WTF::SimpleClassHashTraits<FontDescriptionKey>> m_cache;
-    Vector<Ref<CSSFontFace>, 1> m_fontFaces;
+    std::vector<Ref<CSSFontFace>, 1> m_fontFaces;
 };
 
 } // namespace WebCore

@@ -37,7 +37,7 @@ namespace WebCore {
 
 WTF_MAKE_ISO_ALLOCATED_IMPL(FontFaceSet);
 
-Ref<FontFaceSet> FontFaceSet::create(Document& document, const Vector<RefPtr<FontFace>>& initialFaces)
+Ref<FontFaceSet> FontFaceSet::create(Document& document, const std::vector<RefPtr<FontFace>>& initialFaces)
 {
     Ref<FontFaceSet> result = adoptRef(*new FontFaceSet(document, initialFaces));
     result->suspendIfNeeded();
@@ -51,7 +51,7 @@ Ref<FontFaceSet> FontFaceSet::create(Document& document, CSSFontFaceSet& backing
     return result;
 }
 
-FontFaceSet::FontFaceSet(Document& document, const Vector<RefPtr<FontFace>>& initialFaces)
+FontFaceSet::FontFaceSet(Document& document, const std::vector<RefPtr<FontFace>>& initialFaces)
     : ActiveDOMObject(document)
     , m_backing(CSSFontFaceSet::create())
     , m_readyPromise(*this, &FontFaceSet::readyPromiseResolve)
@@ -126,7 +126,7 @@ void FontFaceSet::clear()
         m_backing->remove(m_backing.get()[0]);
 }
 
-void FontFaceSet::load(const String& font, const String& text, LoadPromise&& promise)
+void FontFaceSet::load(const std::string& font, const std::string& text, LoadPromise&& promise)
 {
     auto matchingFacesResult = m_backing->matchingFacesExcludingPreinstalledFonts(font, text);
     if (matchingFacesResult.hasException()) {
@@ -159,14 +159,14 @@ void FontFaceSet::load(const String& font, const String& text, LoadPromise&& pro
             continue;
         waiting = true;
         ASSERT(face.get().existingWrapper());
-        m_pendingPromises.add(face.get().existingWrapper(), Vector<Ref<PendingPromise>>()).iterator->value.append(pendingPromise.copyRef());
+        m_pendingPromises.add(face.get().existingWrapper(), std::vector<Ref<PendingPromise>>()).iterator->value.append(pendingPromise.copyRef());
     }
 
     if (!waiting)
         pendingPromise->promise.resolve(pendingPromise->faces);
 }
 
-ExceptionOr<bool> FontFaceSet::check(const String& family, const String& text)
+ExceptionOr<bool> FontFaceSet::check(const std::string& family, const std::string& text)
 {
     return m_backing->check(family, text);
 }

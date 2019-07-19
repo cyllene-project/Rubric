@@ -314,7 +314,7 @@ ExceptionOr<void> CSSStyleDeclaration::setNamedItem(const AtomString& propertyNa
     return { };
 }
 
-Vector<AtomString> CSSStyleDeclaration::supportedPropertyNames() const
+std::vector<AtomString> CSSStyleDeclaration::supportedPropertyNames() const
 {
     static unsigned numNames = 0;
     static const AtomString* const cssPropertyNames = [] {
@@ -331,7 +331,7 @@ Vector<AtomString> CSSStyleDeclaration::supportedPropertyNames() const
         return identifiers;
     }();
 
-    Vector<AtomString> result;
+    std::vector<AtomString> result;
     result.reserveInitialCapacity(numNames);
 
     for (unsigned i = 0; i < numNames; ++i)
@@ -345,7 +345,7 @@ String CSSStyleDeclaration::cssFloat()
     return getPropertyValueInternal(CSSPropertyFloat);
 }
 
-ExceptionOr<void> CSSStyleDeclaration::setCssFloat(const String& value)
+ExceptionOr<void> CSSStyleDeclaration::setCssFloat(const std::string& value)
 {
     auto result = setPropertyInternal(CSSPropertyFloat, value, false /* important */);
     if (result.hasException())

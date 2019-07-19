@@ -873,7 +873,7 @@ inline void StyleBuilderCustom::applyValueFontFamily(StyleResolver& styleResolve
     // Before mapping in a new font-family property, we should reset the generic family.
     bool oldFamilyUsedFixedDefaultSize = fontDescription.useFixedDefaultSize();
 
-    Vector<AtomString> families;
+    std::vector<AtomString> families;
     families.reserveInitialCapacity(valueList.length());
 
     for (auto& item : valueList) {

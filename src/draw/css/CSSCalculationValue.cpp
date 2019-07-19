@@ -148,7 +148,7 @@ static bool hasDoubleValue(CSSPrimitiveValue::UnitType type)
     return false;
 }
 
-static String buildCssText(const String& expression)
+static String buildCssText(const std::string& expression)
 {
     StringBuilder result;
     result.appendLiteral("calc");
@@ -372,7 +372,7 @@ static inline bool isIntegerResult(CalcOperator op, const CSSCalcExpressionNode&
     return op != CalcOperator::Divide && leftSide.isInteger() && rightSide.isInteger();
 }
 
-static inline bool isIntegerResult(CalcOperator op, const Vector<Ref<CSSCalcExpressionNode>>& nodes)
+static inline bool isIntegerResult(CalcOperator op, const std::vector<Ref<CSSCalcExpressionNode>>& nodes)
 {
     // Performs W3C spec's type checking for calc integers.
     // http://www.w3.org/TR/css3-values/#calc-type-checking
@@ -410,7 +410,7 @@ public:
         return adoptRef(new CSSCalcOperation(newCategory, op, leftSide.releaseNonNull(), rightSide.releaseNonNull()));
     }
 
-    static RefPtr<CSSCalcOperation> createMinOrMax(CalcOperator op, Vector<Ref<CSSCalcExpressionNode>>&& values, CalculationCategory destinationCategory)
+    static RefPtr<CSSCalcOperation> createMinOrMax(CalcOperator op, std::vector<Ref<CSSCalcExpressionNode>>&& values, CalculationCategory destinationCategory)
     {
         ASSERT(op == CalcOperator::Min || op == CalcOperator::Max);
 
@@ -510,7 +510,7 @@ private:
 
     std::unique_ptr<CalcExpressionNode> createCalcExpression(const CSSToLengthConversionData& conversionData) const final
     {
-        Vector<std::unique_ptr<CalcExpressionNode>> nodes;
+        std::vector<std::unique_ptr<CalcExpressionNode>> nodes;
         nodes.reserveInitialCapacity(m_children.size());
 
         for (auto& child : m_children) {
@@ -524,7 +524,7 @@ private:
 
     double doubleValue() const final
     {
-        Vector<double> doubleValues;
+        std::vector<double> doubleValues;
         for (auto& child : m_children)
             doubleValues.append(child->doubleValue());
         return evaluate(doubleValues);
@@ -532,7 +532,7 @@ private:
 
     double computeLengthPx(const CSSToLengthConversionData& conversionData) const final
     {
-        Vector<double> doubleValues;
+        std::vector<double> doubleValues;
         for (auto& child : m_children)
             doubleValues.append(child->computeLengthPx(conversionData));
         return evaluate(doubleValues);
@@ -550,7 +550,7 @@ private:
             child->collectDirectRootComputationalDependencies(values);
     }
 
-    static String buildCssText(Vector<String> childExpressions, CalcOperator op)
+    static String buildCssText(std::vector<String> childExpressions, CalcOperator op)
     {
         StringBuilder result;
         result.append('(');
@@ -586,7 +586,7 @@ private:
 
     std::string customCSSText() const final
     {
-        Vector<String> cssTexts;
+        std::vector<String> cssTexts;
         for (auto& child : m_children)
             cssTexts.append(child->customCSSText());
         return buildCssText(cssTexts, m_operator);
@@ -661,7 +661,7 @@ private:
         m_children.uncheckedAppend(WTFMove(rightSide));
     }
 
-    CSSCalcOperation(CalculationCategory category, CalcOperator op, Vector<Ref<CSSCalcExpressionNode>>&& children)
+    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::vector<Ref<CSSCalcExpressionNode>>&& children)
         : CSSCalcExpressionNode(category, isIntegerResult(op, children))
         , m_operator(op)
         , m_children(WTFMove(children))
@@ -677,12 +677,12 @@ private:
         return nullptr;
     }
 
-    double evaluate(const Vector<double>& children) const
+    double evaluate(const std::vector<double>& children) const
     {
         return evaluateOperator(m_operator, children);
     }
 
-    static double evaluateOperator(CalcOperator op, const Vector<double>& children)
+    static double evaluateOperator(CalcOperator op, const std::vector<double>& children)
     {
         switch (op) {
         case CalcOperator::Add:
@@ -721,7 +721,7 @@ private:
     }
 
     const CalcOperator m_operator;
-    Vector<Ref<CSSCalcExpressionNode>> m_children;
+    std::vector<Ref<CSSCalcExpressionNode>> m_children;
 };
 
 static ParseState checkDepthAndIndex(int* depth, CSSParserTokenRange tokens)
@@ -875,7 +875,7 @@ private:
         if (!parseValueExpression(tokens, depth, &value))
             return false;
 
-        Vector<Ref<CSSCalcExpressionNode>> nodes;
+        std::vector<Ref<CSSCalcExpressionNode>> nodes;
         nodes.append(value.value.releaseNonNull());
 
         while (!tokens.atEnd()) {
@@ -922,7 +922,7 @@ static RefPtr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode& node, c
         auto& operationChildren = operationNode.children();
         CalcOperator op = operationNode.getOperator();
         if (op == CalcOperator::Min || op == CalcOperator::Max) {
-            Vector<Ref<CSSCalcExpressionNode>> values;
+            std::vector<Ref<CSSCalcExpressionNode>> values;
             values.reserveInitialCapacity(operationChildren.size());
             for (auto& child : operationChildren) {
                 auto cssNode = createCSS(*child, style);

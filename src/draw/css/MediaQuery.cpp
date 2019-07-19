@@ -69,7 +69,7 @@ String MediaQuery::serialize() const
     return result.toString();
 }
 
-MediaQuery::MediaQuery(Restrictor restrictor, const String& mediaType, Vector<MediaQueryExpression>&& expressions)
+MediaQuery::MediaQuery(Restrictor restrictor, const std::string& mediaType, std::vector<MediaQueryExpression>&& expressions)
     : m_mediaType(mediaType.convertToASCIILowercase())
     , m_expressions(WTFMove(expressions))
     , m_restrictor(restrictor)
@@ -100,7 +100,7 @@ bool MediaQuery::operator==(const MediaQuery& other) const
 }
 
 // http://dev.w3.org/csswg/cssom/#serialize-a-list-of-media-queries
-const String& MediaQuery::cssText() const
+const std::string& MediaQuery::cssText() const
 {
     if (m_serializationCache.isNull())
         m_serializationCache = serialize();

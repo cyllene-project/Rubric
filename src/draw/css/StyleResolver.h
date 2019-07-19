@@ -143,7 +143,7 @@ public:
     const Document& document() const { return m_document; }
     const Settings& settings() const { return m_document.settings(); }
 
-    void appendAuthorStyleSheets(const Vector<RefPtr<CSSStyleSheet>>&);
+    void appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&);
 
     DocumentRuleSets& ruleSets() { return m_ruleSets; }
     const DocumentRuleSets& ruleSets() const { return m_ruleSets; }
@@ -169,8 +169,8 @@ public:
         AllButEmptyCSSRules = UAAndUserCSSRules | AuthorCSSRules,
         AllCSSRules         = AllButEmptyCSSRules | EmptyCSSRules,
     };
-    Vector<RefPtr<StyleRule>> styleRulesForElement(const Element*, unsigned rulesToInclude = AllButEmptyCSSRules);
-    Vector<RefPtr<StyleRule>> pseudoStyleRulesForElement(const Element*, PseudoId, unsigned rulesToInclude = AllButEmptyCSSRules);
+    std::vector<RefPtr<StyleRule>> styleRulesForElement(const Element*, unsigned rulesToInclude = AllButEmptyCSSRules);
+    std::vector<RefPtr<StyleRule>> pseudoStyleRulesForElement(const Element*, PseudoId, unsigned rulesToInclude = AllButEmptyCSSRules);
 
 public:
     struct MatchResult;
@@ -247,15 +247,15 @@ public:
 
     struct MatchResult {
         MatchResult() : isCacheable(true) { }
-        Vector<StyleRule*, 64> matchedRules;
+        std::vector<StyleRule*, 64> matchedRules;
         MatchRanges ranges;
         bool isCacheable;
 
-        const Vector<MatchedProperties, 64>& matchedProperties() const { return m_matchedProperties; }
+        const std::vector<MatchedProperties, 64>& matchedProperties() const { return m_matchedProperties; }
 
         void addMatchedProperties(const StyleProperties&, StyleRule* = nullptr, unsigned linkMatchType = SelectorChecker::MatchAll, PropertyWhitelistType = PropertyWhitelistNone, Style::ScopeOrdinal = Style::ScopeOrdinal::Element);
     private:
-        Vector<MatchedProperties, 64> m_matchedProperties;
+        std::vector<MatchedProperties, 64> m_matchedProperties;
     };
     
     class CascadedProperties {
@@ -293,7 +293,7 @@ public:
         Property m_properties[numCSSProperties + 2];
         std::bitset<numCSSProperties + 2> m_propertyIsPresent;
 
-        Vector<Property, 8> m_deferredProperties;
+        std::vector<Property, 8> m_deferredProperties;
         HashMap<AtomString, Property> m_customProperties;
 
         TextDirection m_direction;
@@ -301,7 +301,7 @@ public:
     };
 
     void applyCascadedProperties(int firstProperty, int lastProperty, ApplyCascadedPropertyState&);
-    void applyCascadedCustomProperty(const String& name, ApplyCascadedPropertyState&);
+    void applyCascadedCustomProperty(const std::string& name, ApplyCascadedPropertyState&);
 
 private:
     // This function fixes up the default font size if it detects that the current generic font family has changed. -dwh
@@ -327,8 +327,8 @@ private:
 
     void cascadeMatches(CascadedProperties&, const MatchResult&, bool important, int startIndex, int endIndex, bool inheritedOnly);
 
-    void matchPageRules(MatchResult&, RuleSet*, bool isLeftPage, bool isFirstPage, const String& pageName);
-    void matchPageRulesForList(Vector<StyleRulePage*>& matchedRules, const Vector<StyleRulePage*>&, bool isLeftPage, bool isFirstPage, const String& pageName);
+    void matchPageRules(MatchResult&, RuleSet*, bool isLeftPage, bool isFirstPage, const std::string& pageName);
+    void matchPageRulesForList(std::vector<StyleRulePage*>& matchedRules, const std::vector<StyleRulePage*>&, bool isLeftPage, bool isFirstPage, const std::string& pageName);
 
     bool isLeftPage(int pageIndex) const;
     bool isRightPage(int pageIndex) const { return !isLeftPage(pageIndex); }
@@ -469,7 +469,7 @@ private:
 
     static unsigned computeMatchedPropertiesHash(const MatchedProperties*, unsigned size);
     struct MatchedPropertiesCacheItem {
-        Vector<MatchedProperties> matchedProperties;
+        std::vector<MatchedProperties> matchedProperties;
         MatchRanges ranges;
         std::unique_ptr<RenderStyle> renderStyle;
         std::unique_ptr<RenderStyle> parentRenderStyle;
@@ -505,9 +505,9 @@ private:
 
     RenderStyle* m_overrideDocumentElementStyle { nullptr };
 
-    Vector<MediaQueryResult> m_viewportDependentMediaQueryResults;
-    Vector<MediaQueryResult> m_accessibilitySettingsDependentMediaQueryResults;
-    Vector<MediaQueryResult> m_appearanceDependentMediaQueryResults;
+    std::vector<MediaQueryResult> m_viewportDependentMediaQueryResults;
+    std::vector<MediaQueryResult> m_accessibilitySettingsDependentMediaQueryResults;
+    std::vector<MediaQueryResult> m_appearanceDependentMediaQueryResults;
 
     CSSToStyleMap m_styleMap;
     InspectorCSSOMWrappers m_inspectorCSSOMWrappers;

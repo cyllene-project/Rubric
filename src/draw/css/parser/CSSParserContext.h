@@ -28,6 +28,7 @@
 #include "CSSParserMode.h"
 #include <core/URL.h>
 #include <string>
+#include <functional>
 
 //#include "TextEncoding.h"
 //#include <wtf/HashFunctions.h>
@@ -76,16 +77,16 @@ struct CSSParserContextHash {
     {
         unsigned hash = 0;
         if (!key.baseURL.empty())
-            hash ^= WTF::URLHash::hash(key.baseURL);
+            hash ^= std::hash<URL>{}(key.baseURL);
         if (!key.charset.empty())
-            hash ^= StringHash::hash(key.charset);
+            hash ^= std::hash<std::string>{}(key.charset);
         unsigned bits = key.springTimingFunctionEnabled << 0
             & key.textAutosizingEnabled                     << 1
             & key.constantPropertiesEnabled                 << 2
             & key.colorFilterEnabled                        << 3
             & key.deferredCSSParserEnabled                  << 4
             & key.useSystemAppearance                       << 5;
-        hash ^= WTF::intHash(bits);
+        hash ^= std::hash<int>{} (bits);
         return hash;
     }
     static bool equal(const CSSParserContext& a, const CSSParserContext& b)
@@ -97,14 +98,12 @@ struct CSSParserContextHash {
 
 } // namespace WebCore
 
-namespace WTF {
-template<> struct HashTraits<WebCore::CSSParserContext> : GenericHashTraits<WebCore::CSSParserContext> {
-    static void constructDeletedValue(WebCore::CSSParserContext& slot) { new (NotNull, &slot.baseURL) URL(WTF::HashTableDeletedValue); }
-    static bool isDeletedValue(const WebCore::CSSParserContext& value) { return value.baseURL.isHashTableDeletedValue(); }
-    static WebCore::CSSParserContext emptyValue() { return WebCore::CSSParserContext(); }
-};
-
-template<> struct DefaultHash<WebCore::CSSParserContext> {
-    typedef WebCore::CSSParserContextHash Hash;
-};
-} // namespace WTF
+namespace std {
+    template<> struct hash<WebCore::CSSParserContext> {
+        typedef WebCore::CSSParserContext argument_type;
+        typedef std::size_t result_type;
+        result_type operator()(argument_type const& s) const noexcept  {
+            return WebCore::CSSParserContextHash::hash(s);
+        }
+    };
+}

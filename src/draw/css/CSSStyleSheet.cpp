@@ -266,7 +266,7 @@ RefPtr<CSSRuleList> CSSStyleSheet::rules()
     return ruleList;
 }
 
-ExceptionOr<unsigned> CSSStyleSheet::insertRule(const String& ruleString, unsigned index)
+ExceptionOr<unsigned> CSSStyleSheet::insertRule(const std::string& ruleString, unsigned index)
 {
     ASSERT(m_childRuleCSSOMWrappers.isEmpty() || m_childRuleCSSOMWrappers.size() == m_contents->ruleCount());
 
@@ -307,7 +307,7 @@ ExceptionOr<void> CSSStyleSheet::deleteRule(unsigned index)
     return { };
 }
 
-ExceptionOr<int> CSSStyleSheet::addRule(const String& selector, const String& style, Optional<unsigned> index)
+ExceptionOr<int> CSSStyleSheet::addRule(const std::string& selector, const std::string& style, Optional<unsigned> index)
 {
     StringBuilder text;
     text.append(selector);

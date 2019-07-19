@@ -98,7 +98,7 @@ bool CSSFontFaceSet::hasFace(const CSSFontFace& face) const
     return false;
 }
 
-void CSSFontFaceSet::ensureLocalFontFacesForFamilyRegistered(const String& familyName)
+void CSSFontFaceSet::ensureLocalFontFacesForFamilyRegistered(const std::string& familyName)
 {
     ASSERT(m_owningFontSelector);
     if (m_locallyInstalledFacesLookupTable.contains(familyName))
@@ -107,11 +107,11 @@ void CSSFontFaceSet::ensureLocalFontFacesForFamilyRegistered(const String& famil
     AllowUserInstalledFonts allowUserInstalledFonts = AllowUserInstalledFonts::Yes;
     if (m_owningFontSelector->document())
         allowUserInstalledFonts = m_owningFontSelector->document()->settings().shouldAllowUserInstalledFonts() ? AllowUserInstalledFonts::Yes : AllowUserInstalledFonts::No;
-    Vector<FontSelectionCapabilities> capabilities = FontCache::singleton().getFontSelectionCapabilitiesInFamily(familyName, allowUserInstalledFonts);
+    std::vector<FontSelectionCapabilities> capabilities = FontCache::singleton().getFontSelectionCapabilitiesInFamily(familyName, allowUserInstalledFonts);
     if (capabilities.isEmpty())
         return;
 
-    Vector<Ref<CSSFontFace>> faces;
+    std::vector<Ref<CSSFontFace>> faces;
     for (auto item : capabilities) {
         Ref<CSSFontFace> face = CSSFontFace::create(m_owningFontSelector.get(), nullptr, nullptr, true);
         
@@ -165,7 +165,7 @@ void CSSFontFaceSet::addToFacesLookupTable(CSSFontFace& face)
         if (familyName.isEmpty())
             continue;
 
-        auto addResult = m_facesLookupTable.add(familyName, Vector<Ref<CSSFontFace>>());
+        auto addResult = m_facesLookupTable.add(familyName, std::vector<Ref<CSSFontFace>>());
         auto& familyFontFaces = addResult.iterator->value;
         if (addResult.isNewEntry) {
             // m_locallyInstalledFontFaces grows without bound, eventually encorporating every font installed on the system.
@@ -266,7 +266,7 @@ CSSFontFace* CSSFontFaceSet::lookUpByCSSConnection(StyleRuleFontFace& target)
 
 void CSSFontFaceSet::purge()
 {
-    Vector<Ref<CSSFontFace>> toRemove;
+    std::vector<Ref<CSSFontFace>> toRemove;
     for (auto& face : m_faces) {
         if (face->purgeable())
             toRemove.append(face.copyRef());
@@ -337,7 +337,7 @@ static HashSet<UChar32> codePointsFromString(StringView stringView)
     return result;
 }
 
-ExceptionOr<Vector<std::reference_wrapper<CSSFontFace>>> CSSFontFaceSet::matchingFacesExcludingPreinstalledFonts(const String& font, const String& string)
+ExceptionOr<std::vector<std::reference_wrapper<CSSFontFace>>> CSSFontFaceSet::matchingFacesExcludingPreinstalledFonts(const std::string& font, const std::string& string)
 {
     auto style = MutableStyleProperties::create();
     auto parseResult = CSSParser::parseValue(style, CSSPropertyFont, font, true, HTMLStandardMode);
@@ -352,7 +352,7 @@ ExceptionOr<Vector<std::reference_wrapper<CSSFontFace>>> CSSFontFaceSet::matchin
     CSSValueList& familyList = downcast<CSSValueList>(*family);
 
     HashSet<AtomString> uniqueFamilies;
-    Vector<AtomString> familyOrder;
+    std::vector<AtomString> familyOrder;
     for (auto& family : familyList) {
         auto& primitive = downcast<CSSPrimitiveValue>(family.get());
         if (!primitive.isFontFamily())
@@ -382,14 +382,14 @@ ExceptionOr<Vector<std::reference_wrapper<CSSFontFace>>> CSSFontFaceSet::matchin
         }
     }
 
-    Vector<std::reference_wrapper<CSSFontFace>> result;
+    std::vector<std::reference_wrapper<CSSFontFace>> result;
     result.reserveInitialCapacity(resultConstituents.size());
     for (auto* constituent : resultConstituents)
         result.uncheckedAppend(*constituent);
     return result;
 }
 
-ExceptionOr<bool> CSSFontFaceSet::check(const String& font, const String& text)
+ExceptionOr<bool> CSSFontFaceSet::check(const std::string& font, const std::string& text)
 {
     auto matchingFaces = this->matchingFacesExcludingPreinstalledFonts(font, text);
     if (matchingFaces.hasException())
@@ -417,7 +417,7 @@ CSSSegmentedFontFace* CSSFontFaceSet::fontFace(FontSelectionRequest request, con
 
     face = CSSSegmentedFontFace::create();
 
-    Vector<std::reference_wrapper<CSSFontFace>, 32> candidateFontFaces;
+    std::vector<std::reference_wrapper<CSSFontFace>, 32> candidateFontFaces;
     for (int i = familyFontFaces.size() - 1; i >= 0; --i) {
         CSSFontFace& candidate = familyFontFaces[i];
         auto capabilities = candidate.fontSelectionCapabilities();
@@ -437,7 +437,7 @@ CSSSegmentedFontFace* CSSFontFaceSet::fontFace(FontSelectionRequest request, con
     }
 
     if (!candidateFontFaces.isEmpty()) {
-        Vector<FontSelectionCapabilities> capabilities;
+        std::vector<FontSelectionCapabilities> capabilities;
         capabilities.reserveInitialCapacity(candidateFontFaces.size());
         for (auto& face : candidateFontFaces)
             capabilities.uncheckedAppend(face.get().fontSelectionCapabilities());

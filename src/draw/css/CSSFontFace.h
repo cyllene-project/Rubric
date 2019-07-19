@@ -84,7 +84,7 @@ public:
     FontSelectionRange stretch() const { return m_fontSelectionCapabilities.computeWidth(); }
     FontSelectionRange italic() const { return m_fontSelectionCapabilities.computeSlope(); }
     FontSelectionCapabilities fontSelectionCapabilities() const { return m_fontSelectionCapabilities.computeFontSelectionCapabilities(); }
-    const Vector<UnicodeRange>& ranges() const { return m_ranges; }
+    const std::vector<UnicodeRange>& ranges() const { return m_ranges; }
     const FontFeatureSettings& featureSettings() const { return m_featureSettings; }
     const FontVariantSettings& variantSettings() const { return m_variantSettings; }
     FontLoadingBehavior loadingBehavior() const { return m_loadingBehavior; }
@@ -182,13 +182,13 @@ private:
     void timeoutFired();
 
     RefPtr<CSSValueList> m_families;
-    Vector<UnicodeRange> m_ranges;
+    std::vector<UnicodeRange> m_ranges;
 
     FontFeatureSettings m_featureSettings;
     FontVariantSettings m_variantSettings;
     FontLoadingBehavior m_loadingBehavior { FontLoadingBehavior::Auto };
 
-    Vector<std::unique_ptr<CSSFontFaceSource>, 0, CrashOnOverflow, 0> m_sources;
+    std::vector<std::unique_ptr<CSSFontFaceSource>, 0, CrashOnOverflow, 0> m_sources;
     RefPtr<CSSFontSelector> m_fontSelector; // FIXME: https://bugs.webkit.org/show_bug.cgi?id=196437 There's a retain cycle: CSSFontSelector -> CSSFontFaceSet -> CSSFontFace -> CSSFontSelector
     RefPtr<StyleRuleFontFace> m_cssConnection;
     HashSet<Client*> m_clients;

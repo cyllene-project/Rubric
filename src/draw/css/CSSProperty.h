@@ -77,7 +77,7 @@ public:
 
     static CSSPropertyID resolveDirectionAwareProperty(CSSPropertyID, TextDirection, WritingMode);
     static bool isInheritedProperty(CSSPropertyID);
-    static Vector<String> aliasesForProperty(CSSPropertyID);
+    static std::vector<String> aliasesForProperty(CSSPropertyID);
     static bool isDirectionAwareProperty(CSSPropertyID);
     static bool isDescriptorOnly(CSSPropertyID);
 
@@ -102,7 +102,7 @@ private:
     RefPtr<CSSValue> m_value;
 };
 
-typedef Vector<CSSProperty, 256> ParsedPropertyVector;
+typedef std::vector<CSSProperty, 256> ParsedPropertyVector;
 
 } // namespace WebCore
 

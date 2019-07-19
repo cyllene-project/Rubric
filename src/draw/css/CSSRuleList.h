@@ -52,7 +52,7 @@ public:
     void ref() final { ++m_refCount; }
     void deref() final;
 
-    Vector<RefPtr<CSSRule>>& rules() { return m_rules; }
+    std::vector<RefPtr<CSSRule>>& rules() { return m_rules; }
     
     CSSStyleSheet* styleSheet() const final { return nullptr; }
 
@@ -63,7 +63,7 @@ private:
     unsigned length() const final { return m_rules.size(); }
     CSSRule* item(unsigned index) const final { return index < m_rules.size() ? m_rules[index].get() : nullptr; }
 
-    Vector<RefPtr<CSSRule>> m_rules;
+    std::vector<RefPtr<CSSRule>> m_rules;
     unsigned m_refCount;
 };
 

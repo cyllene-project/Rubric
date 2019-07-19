@@ -53,12 +53,12 @@ public:
 
     // Creates evaluator which evaluates only simple media queries.
     // Evaluator returns true for acceptedMediaType and returns value of \mediaFeatureResult for any media features.
-    MediaQueryEvaluator(const String& acceptedMediaType, bool mediaFeatureResult = false);
+    MediaQueryEvaluator(const std::string& acceptedMediaType, bool mediaFeatureResult = false);
 
     // Creates evaluator which evaluates full media queries.
-    MediaQueryEvaluator(const String& acceptedMediaType, const Document&, const RenderStyle*);
+    MediaQueryEvaluator(const std::string& acceptedMediaType, const Document&, const RenderStyle*);
 
-    bool mediaTypeMatch(const String& mediaTypeToMatch) const;
+    bool mediaTypeMatch(const std::string& mediaTypeToMatch) const;
     bool mediaTypeMatchSpecific(const char* mediaTypeToMatch) const;
 
     // Evaluates a list of media queries.
@@ -68,9 +68,9 @@ public:
     bool evaluate(const MediaQueryExpression&) const;
 
     // Evaluates a list of media queries and fills in vectors with any viewport or dark mode dependent results found.
-    bool evaluate(const MediaQuerySet&, Vector<MediaQueryResult>& viewportDependentResults, Vector<MediaQueryResult>& appearanceDependentResults) const;
+    bool evaluate(const MediaQuerySet&, std::vector<MediaQueryResult>& viewportDependentResults, std::vector<MediaQueryResult>& appearanceDependentResults) const;
 
-    static bool mediaAttributeMatches(Document&, const String& attributeValue);
+    static bool mediaAttributeMatches(Document&, const std::string& attributeValue);
 
 private:
     std::string m_mediaType;

@@ -66,9 +66,9 @@ String CSSCustomPropertyValue::customCSSText() const
     return m_stringValue;
 }
 
-Vector<CSSParserToken> CSSCustomPropertyValue::tokens() const
+std::vector<CSSParserToken> CSSCustomPropertyValue::tokens() const
 {
-    Vector<CSSParserToken> result;
+    std::vector<CSSParserToken> result;
 
     WTF::switchOn(m_value, [&](const Ref<CSSVariableReferenceValue>&) {
         ASSERT_NOT_REACHED();

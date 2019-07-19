@@ -38,7 +38,7 @@ class DOMException;
 class FontFaceSet final : public RefCounted<FontFaceSet>, private CSSFontFaceSetClient, public EventTargetWithInlineData, private  ActiveDOMObject {
     WTF_MAKE_ISO_ALLOCATED(FontFaceSet);
 public:
-    static Ref<FontFaceSet> create(Document&, const Vector<RefPtr<FontFace>>& initialFaces);
+    static Ref<FontFaceSet> create(Document&, const std::vector<RefPtr<FontFace>>& initialFaces);
     static Ref<FontFaceSet> create(Document&, CSSFontFaceSet& backing);
     virtual ~FontFaceSet();
 
@@ -49,8 +49,8 @@ public:
     void clear();
 
     using LoadPromise = DOMPromiseDeferred<IDLSequence<IDLInterface<FontFace>>>;
-    void load(const String& font, const String& text, LoadPromise&&);
-    ExceptionOr<bool> check(const String& font, const String& text);
+    void load(const std::string& font, const std::string& text, LoadPromise&&);
+    ExceptionOr<bool> check(const std::string& font, const std::string& text);
 
     enum class LoadStatus { Loading, Loaded };
     LoadStatus status() const;
@@ -86,12 +86,12 @@ private:
         PendingPromise(LoadPromise&&);
 
     public:
-        Vector<Ref<FontFace>> faces;
+        std::vector<Ref<FontFace>> faces;
         LoadPromise promise;
         bool hasReachedTerminalState { false };
     };
 
-    FontFaceSet(Document&, const Vector<RefPtr<FontFace>>&);
+    FontFaceSet(Document&, const std::vector<RefPtr<FontFace>>&);
     FontFaceSet(Document&, CSSFontFaceSet&);
 
     // CSSFontFaceSetClient
@@ -113,7 +113,7 @@ private:
     FontFaceSet& readyPromiseResolve();
 
     Ref<CSSFontFaceSet> m_backing;
-    HashMap<RefPtr<FontFace>, Vector<Ref<PendingPromise>>> m_pendingPromises;
+    HashMap<RefPtr<FontFace>, std::vector<Ref<PendingPromise>>> m_pendingPromises;
     ReadyPromise m_readyPromise;
 };
 

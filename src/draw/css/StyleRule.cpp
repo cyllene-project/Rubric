@@ -213,7 +213,7 @@ MutableStyleProperties& StyleRule::mutableProperties()
     return downcast<MutableStyleProperties>(m_properties.get());
 }
 
-Ref<StyleRule> StyleRule::createForSplitting(const Vector<const CSSSelector*>& selectors, Ref<StyleProperties>&& properties, bool hasDocumentSecurityOrigin)
+Ref<StyleRule> StyleRule::createForSplitting(const std::vector<const CSSSelector*>& selectors, Ref<StyleProperties>&& properties, bool hasDocumentSecurityOrigin)
 {
     ASSERT_WITH_SECURITY_IMPLICATION(!selectors.isEmpty());
     auto selectorListArray = makeUniqueArray<CSSSelector>(selectors.size());
@@ -223,15 +223,15 @@ Ref<StyleRule> StyleRule::createForSplitting(const Vector<const CSSSelector*>& s
     return StyleRule::create(WTFMove(properties), hasDocumentSecurityOrigin, CSSSelectorList(WTFMove(selectorListArray)));
 }
 
-Vector<RefPtr<StyleRule>> StyleRule::splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned maxCount) const
+std::vector<RefPtr<StyleRule>> StyleRule::splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned maxCount) const
 {
     ASSERT(selectorList().componentCount() > maxCount);
 
-    Vector<RefPtr<StyleRule>> rules;
-    Vector<const CSSSelector*> componentsSinceLastSplit;
+    std::vector<RefPtr<StyleRule>> rules;
+    std::vector<const CSSSelector*> componentsSinceLastSplit;
 
     for (const CSSSelector* selector = selectorList().first(); selector; selector = CSSSelectorList::next(selector)) {
-        Vector<const CSSSelector*, 8> componentsInThisSelector;
+        std::vector<const CSSSelector*, 8> componentsInThisSelector;
         for (const CSSSelector* component = selector; component; component = component->tagHistory())
             componentsInThisSelector.append(component);
 
@@ -301,7 +301,7 @@ DeferredStyleGroupRuleList::DeferredStyleGroupRuleList(const CSSParserTokenRange
     m_tokens.append(range.begin(), length);
 }
 
-void DeferredStyleGroupRuleList::parseDeferredRules(Vector<RefPtr<StyleRuleBase>>& childRules)
+void DeferredStyleGroupRuleList::parseDeferredRules(std::vector<RefPtr<StyleRuleBase>>& childRules)
 {
     m_parser->parseRuleList(m_tokens, childRules);
 }
@@ -311,7 +311,7 @@ void DeferredStyleGroupRuleList::parseDeferredKeyframes(StyleRuleKeyframes& keyf
     m_parser->parseKeyframeList(m_tokens, keyframesRule);
 }
     
-StyleRuleGroup::StyleRuleGroup(Type type, Vector<RefPtr<StyleRuleBase>>& adoptRule)
+StyleRuleGroup::StyleRuleGroup(Type type, std::vector<RefPtr<StyleRuleBase>>& adoptRule)
     : StyleRuleBase(type)
 {
     m_childRules.swap(adoptRule);
@@ -331,7 +331,7 @@ StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& o)
         m_childRules.uncheckedAppend(childRule->copy());
 }
 
-const Vector<RefPtr<StyleRuleBase>>& StyleRuleGroup::childRules() const
+const std::vector<RefPtr<StyleRuleBase>>& StyleRuleGroup::childRules() const
 {
     parseDeferredRulesIfNeeded();
     return m_childRules;
@@ -358,7 +358,7 @@ void StyleRuleGroup::parseDeferredRulesIfNeeded() const
     m_deferredRules = nullptr;
 }
     
-StyleRuleMedia::StyleRuleMedia(Ref<MediaQuerySet>&& media, Vector<RefPtr<StyleRuleBase>>& adoptRules)
+StyleRuleMedia::StyleRuleMedia(Ref<MediaQuerySet>&& media, std::vector<RefPtr<StyleRuleBase>>& adoptRules)
     : StyleRuleGroup(Media, adoptRules)
     , m_mediaQueries(WTFMove(media))
 {
@@ -378,14 +378,14 @@ StyleRuleMedia::StyleRuleMedia(const StyleRuleMedia& o)
 }
 
 
-StyleRuleSupports::StyleRuleSupports(const String& conditionText, bool conditionIsSupported, Vector<RefPtr<StyleRuleBase>>& adoptRules)
+StyleRuleSupports::StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported, std::vector<RefPtr<StyleRuleBase>>& adoptRules)
     : StyleRuleGroup(Supports, adoptRules)
     , m_conditionText(conditionText)
     , m_conditionIsSupported(conditionIsSupported)
 {
 }
 
-StyleRuleSupports::StyleRuleSupports(const String& conditionText, bool conditionIsSupported,  std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
+StyleRuleSupports::StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported,  std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
     : StyleRuleGroup(Supports, WTFMove(deferredRules))
     , m_conditionText(conditionText)
     , m_conditionIsSupported(conditionIsSupported)

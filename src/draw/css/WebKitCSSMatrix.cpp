@@ -51,7 +51,7 @@ Ref<WebKitCSSMatrix> WebKitCSSMatrix::create(const TransformationMatrix& matrix)
     return adoptRef(*new WebKitCSSMatrix(matrix));
 }
 
-ExceptionOr<Ref<WebKitCSSMatrix>> WebKitCSSMatrix::create(const String& string)
+ExceptionOr<Ref<WebKitCSSMatrix>> WebKitCSSMatrix::create(const std::string& string)
 {
     auto result = adoptRef(*new WebKitCSSMatrix);
     auto setMatrixValueResult = result->setMatrixValue(string);
@@ -62,7 +62,7 @@ ExceptionOr<Ref<WebKitCSSMatrix>> WebKitCSSMatrix::create(const String& string)
 
 WebKitCSSMatrix::~WebKitCSSMatrix() = default;
 
-ExceptionOr<void> WebKitCSSMatrix::setMatrixValue(const String& string)
+ExceptionOr<void> WebKitCSSMatrix::setMatrixValue(const std::string& string)
 {
     if (string.isEmpty())
         return { };

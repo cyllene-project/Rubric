@@ -74,7 +74,7 @@ inline void CSSFontFaceSource::setStatus(Status newStatus)
     m_status = newStatus;
 }
 
-CSSFontFaceSource::CSSFontFaceSource(CSSFontFace& owner, const String& familyNameOrURI, CachedFont* font, SVGFontFaceElement* fontFace, RefPtr<JSC::ArrayBufferView>&& arrayBufferView)
+CSSFontFaceSource::CSSFontFaceSource(CSSFontFace& owner, const std::string& familyNameOrURI, CachedFont* font, SVGFontFaceElement* fontFace, RefPtr<JSC::ArrayBufferView>&& arrayBufferView)
     : m_familyNameOrURI(familyNameOrURI)
     , m_font(font)
     , m_face(owner)

@@ -43,11 +43,11 @@ public:
     {
         return adoptRef(*new StyleSheetContents(0, String(), context));
     }
-    static Ref<StyleSheetContents> create(const String& originalURL, const CSSParserContext& context)
+    static Ref<StyleSheetContents> create(const std::string& originalURL, const CSSParserContext& context)
     {
         return adoptRef(*new StyleSheetContents(0, originalURL, context));
     }
-    static Ref<StyleSheetContents> create(StyleRuleImport* ownerRule, const String& originalURL, const CSSParserContext& context)
+    static Ref<StyleSheetContents> create(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext& context)
     {
         return adoptRef(*new StyleSheetContents(ownerRule, originalURL, context));
     }
@@ -75,11 +75,11 @@ public:
     Node* singleOwnerNode() const;
     Document* singleOwnerDocument() const;
 
-    const String& charset() const { return m_parserContext.charset; }
+    const std::string& charset() const { return m_parserContext.charset; }
 
     bool loadCompleted() const { return m_loadCompleted; }
 
-    URL completeURL(const String& url) const;
+    URL completeURL(const std::string& url) const;
     bool traverseRules(const WTF::Function<bool (const StyleRuleBase&)>& handler) const;
     bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
 
@@ -90,16 +90,16 @@ public:
 
     void parserAddNamespace(const AtomString& prefix, const AtomString& uri);
     void parserAppendRule(StyleRuleBase&);
-    void parserSetEncodingFromCharsetRule(const String& encoding); 
+    void parserSetEncodingFromCharsetRule(const std::string& encoding);
     void parserSetUsesStyleBasedEditability() { m_usesStyleBasedEditability = true; }
 
     void clearRules();
 
     std::string encodingFromCharsetRule() const { return m_encodingFromCharsetRule; }
     // Rules other than @charset and @import.
-    const Vector<RefPtr<StyleRuleBase>>& childRules() const { return m_childRules; }
-    const Vector<RefPtr<StyleRuleImport>>& importRules() const { return m_importRules; }
-    const Vector<RefPtr<StyleRuleNamespace>>& namespaceRules() const { return m_namespaceRules; }
+    const std::vector<RefPtr<StyleRuleBase>>& childRules() const { return m_childRules; }
+    const std::vector<RefPtr<StyleRuleImport>>& importRules() const { return m_importRules; }
+    const std::vector<RefPtr<StyleRuleNamespace>>& namespaceRules() const { return m_namespaceRules; }
 
     void notifyLoadedSheet(const CachedCSSStyleSheet*);
     
@@ -142,7 +142,7 @@ public:
     bool isContentOpaque() const { return m_parserContext.isContentOpaque; }
 
 private:
-    StyleSheetContents(StyleRuleImport* ownerRule, const String& originalURL, const CSSParserContext&);
+    StyleSheetContents(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext&);
     StyleSheetContents(const StyleSheetContents&);
 
     void clearCharsetRule();
@@ -152,9 +152,9 @@ private:
     std::string m_originalURL;
 
     std::string m_encodingFromCharsetRule;
-    Vector<RefPtr<StyleRuleImport>> m_importRules;
-    Vector<RefPtr<StyleRuleNamespace>> m_namespaceRules;
-    Vector<RefPtr<StyleRuleBase>> m_childRules;
+    std::vector<RefPtr<StyleRuleImport>> m_importRules;
+    std::vector<RefPtr<StyleRuleNamespace>> m_namespaceRules;
+    std::vector<RefPtr<StyleRuleBase>> m_childRules;
     typedef HashMap<AtomString, AtomString> PrefixNamespaceURIMap;
     PrefixNamespaceURIMap m_namespaces;
     AtomString m_defaultNamespace;
@@ -169,7 +169,7 @@ private:
 
     CSSParserContext m_parserContext;
 
-    Vector<CSSStyleSheet*> m_clients;
+    std::vector<CSSStyleSheet*> m_clients;
 };
 
 } // namespace WebCore

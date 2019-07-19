@@ -48,7 +48,7 @@ struct SourceRange {
 };
 
 struct CSSPropertySourceData {
-    CSSPropertySourceData(const String& name, const String& value, bool important, bool disabled, bool parsedOk, const SourceRange&);
+    CSSPropertySourceData(const std::string& name, const std::string& value, bool important, bool disabled, bool parsedOk, const SourceRange&);
     CSSPropertySourceData(const CSSPropertySourceData& other);
     CSSPropertySourceData();
 
@@ -69,12 +69,12 @@ struct CSSStyleSourceData : public RefCounted<CSSStyleSourceData> {
         return adoptRef(*new CSSStyleSourceData);
     }
 
-    Vector<CSSPropertySourceData> propertyData;
+    std::vector<CSSPropertySourceData> propertyData;
 };
 
 struct CSSRuleSourceData;
-typedef Vector<Ref<CSSRuleSourceData>> RuleSourceDataList;
-typedef Vector<SourceRange> SelectorRangeList;
+typedef std::vector<Ref<CSSRuleSourceData>> RuleSourceDataList;
+typedef std::vector<SourceRange> SelectorRangeList;
 
 struct CSSRuleSourceData : public RefCounted<CSSRuleSourceData> {
     static Ref<CSSRuleSourceData> create(StyleRule::Type type)

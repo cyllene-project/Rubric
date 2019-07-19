@@ -185,7 +185,7 @@ public:
         m_values.append(WTFMove(y));
     }
 
-    const Vector<Ref<CSSPrimitiveValue>>& values() const { return m_values; }
+    const std::vector<Ref<CSSPrimitiveValue>>& values() const { return m_values; }
 
     void setWindRule(WindRule rule) { m_windRule = rule; }
     WindRule windRule() const { return m_windRule; }
@@ -200,7 +200,7 @@ private:
     std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
-    Vector<Ref<CSSPrimitiveValue>> m_values;
+    std::vector<Ref<CSSPrimitiveValue>> m_values;
     WindRule m_windRule;
 };
 

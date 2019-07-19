@@ -61,7 +61,7 @@ namespace WebCore {
  * throw SyntaxError exception.
  */
     
-Ref<MediaQuerySet> MediaQuerySet::create(const String& mediaString, MediaQueryParserContext context)
+Ref<MediaQuerySet> MediaQuerySet::create(const std::string& mediaString, MediaQueryParserContext context)
 {
     if (mediaString.isEmpty())
         return MediaQuerySet::create();
@@ -80,14 +80,14 @@ MediaQuerySet::MediaQuerySet(const MediaQuerySet& o)
 
 MediaQuerySet::~MediaQuerySet() = default;
 
-bool MediaQuerySet::set(const String& mediaString)
+bool MediaQuerySet::set(const std::string& mediaString)
 {
     auto result = create(mediaString);
     m_queries.swap(result->m_queries);
     return true;
 }
 
-bool MediaQuerySet::add(const String& queryString)
+bool MediaQuerySet::add(const std::string& queryString)
 {
     // To "parse a media query" for a given string means to follow "the parse
     // a media query list" steps and return "null" if more than one media query
@@ -109,7 +109,7 @@ bool MediaQuerySet::add(const String& queryString)
     return true;
 }
 
-bool MediaQuerySet::remove(const String& queryStringToRemove)
+bool MediaQuerySet::remove(const std::string& queryStringToRemove)
 {
     // To "parse a media query" for a given string means to follow "the parse
     // a media query list" steps and return "null" if more than one media query
@@ -175,7 +175,7 @@ MediaList::MediaList(MediaQuerySet* mediaQueries, CSSRule* parentRule)
 
 MediaList::~MediaList() = default;
 
-ExceptionOr<void> MediaList::setMediaText(const String& value)
+ExceptionOr<void> MediaList::setMediaText(const std::string& value)
 {
     CSSStyleSheet::RuleMutationScope mutationScope(m_parentRule);
     m_mediaQueries->set(value);
@@ -192,7 +192,7 @@ String MediaList::item(unsigned index) const
     return String();
 }
 
-ExceptionOr<void> MediaList::deleteMedium(const String& medium)
+ExceptionOr<void> MediaList::deleteMedium(const std::string& medium)
 {
     CSSStyleSheet::RuleMutationScope mutationScope(m_parentRule);
 
@@ -204,7 +204,7 @@ ExceptionOr<void> MediaList::deleteMedium(const String& medium)
     return { };
 }
 
-void MediaList::appendMedium(const String& medium)
+void MediaList::appendMedium(const std::string& medium)
 {
     CSSStyleSheet::RuleMutationScope mutationScope(m_parentRule);
 
@@ -222,7 +222,7 @@ void MediaList::reattach(MediaQuerySet* mediaQueries)
 
 #if ENABLE(RESOLUTION_MEDIA_QUERY)
 
-static void addResolutionWarningMessageToConsole(Document& document, const String& serializedExpression, const CSSPrimitiveValue& value)
+static void addResolutionWarningMessageToConsole(Document& document, const std::string& serializedExpression, const CSSPrimitiveValue& value)
 {
     static NeverDestroyed<String> mediaQueryMessage(MAKE_STATIC_STRING_IMPL("Consider using 'dppx' units instead of '%replacementUnits%', as in CSS '%replacementUnits%' means dots-per-CSS-%lengthUnit%, not dots-per-physical-%lengthUnit%, so does not correspond to the actual '%replacementUnits%' of a screen. In media query expression: "));
     static NeverDestroyed<String> mediaValueDPI(MAKE_STATIC_STRING_IMPL("dpi"));

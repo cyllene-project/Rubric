@@ -108,7 +108,7 @@ static const MediaQueryEvaluator& printEval()
     return staticPrintEval;
 }
 
-static StyleSheetContents* parseUASheet(const String& str)
+static StyleSheetContents* parseUASheet(const std::string& str)
 {
     StyleSheetContents& sheet = StyleSheetContents::create(CSSParserContext(UASheetMode)).leakRef(); // leak the sheet on purpose
     sheet.parseString(str);

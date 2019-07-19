@@ -43,7 +43,7 @@ static bool isExcludedAttribute(const AtomString& name)
     return name == HTMLNames::classAttr->localName() || name == HTMLNames::idAttr->localName() || name == HTMLNames::styleAttr->localName();
 }
 
-static inline void collectElementIdentifierHashes(const Element& element, Vector<unsigned, 4>& identifierHashes)
+static inline void collectElementIdentifierHashes(const Element& element, std::vector<unsigned, 4>& identifierHashes)
 {
     AtomString tagLowercaseLocalName = element.localName().convertToASCIILowercase();
     identifierHashes.append(tagLowercaseLocalName.impl()->existingHash() * TagNameSalt);
@@ -79,7 +79,7 @@ bool SelectorFilter::parentStackIsConsistent(const ContainerNode* parentNode) co
 
 void SelectorFilter::initializeParentStack(Element& parent)
 {
-    Vector<Element*, 20> ancestors;
+    std::vector<Element*, 20> ancestors;
     for (auto* ancestor = &parent; ancestor; ancestor = ancestor->parentElement())
         ancestors.append(ancestor);
     for (unsigned i = ancestors.size(); i--;)
@@ -133,7 +133,7 @@ void SelectorFilter::popParentsUntil(Element* parent)
 }
 
 struct CollectedSelectorHashes {
-    using HashVector = Vector<unsigned, 8>;
+    using HashVector = std::vector<unsigned, 8>;
     HashVector ids;
     HashVector classes;
     HashVector tags;

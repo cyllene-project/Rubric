@@ -54,7 +54,7 @@ String StyleMedia::type() const
     return String();
 }
 
-bool StyleMedia::matchMedium(const String& query) const
+bool StyleMedia::matchMedium(const std::string& query) const
 {
     auto* frame = this->frame();
     if (!frame)

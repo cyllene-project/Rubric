@@ -101,14 +101,14 @@ private:
         StyleRuleFontFace& styleRuleFontFace;
         bool isInitiatingElementInUserAgentShadowTree;
     };
-    Vector<PendingFontFaceRule> m_stagingArea;
+    std::vector<PendingFontFaceRule> m_stagingArea;
 
     WeakPtr<Document> m_document;
     RefPtr<FontFaceSet> m_fontFaceSet;
     Ref<CSSFontFaceSet> m_cssFontFaceSet;
     HashSet<FontSelectorClient*> m_clients;
 
-    Vector<CachedResourceHandle<CachedFont>> m_fontsToBeginLoading;
+    std::vector<CachedResourceHandle<CachedFont>> m_fontsToBeginLoading;
     HashSet<RefPtr<CSSFontFace>> m_cssConnectionsPossiblyToRemove;
     HashSet<RefPtr<StyleRuleFontFace>> m_cssConnectionsEncounteredDuringBuild;
     Timer m_beginLoadingTimer;

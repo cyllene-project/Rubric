@@ -70,7 +70,7 @@ void StyleRuleKeyframes::parseDeferredRulesIfNeeded() const
     m_deferredRules = nullptr;
 }
 
-const Vector<Ref<StyleRuleKeyframe>>& StyleRuleKeyframes::keyframes() const
+const std::vector<Ref<StyleRuleKeyframe>>& StyleRuleKeyframes::keyframes() const
 {
     parseDeferredRulesIfNeeded();
     return m_keyframes;
@@ -95,7 +95,7 @@ void StyleRuleKeyframes::wrapperRemoveKeyframe(unsigned index)
     m_keyframes.remove(index);
 }
 
-size_t StyleRuleKeyframes::findKeyframeIndex(const String& key) const
+size_t StyleRuleKeyframes::findKeyframeIndex(const std::string& key) const
 {
     parseDeferredRulesIfNeeded();
 
@@ -129,14 +129,14 @@ CSSKeyframesRule::~CSSKeyframesRule()
     }
 }
 
-void CSSKeyframesRule::setName(const String& name)
+void CSSKeyframesRule::setName(const std::string& name)
 {
     CSSStyleSheet::RuleMutationScope mutationScope(this);
 
     m_keyframesRule->setName(name);
 }
 
-void CSSKeyframesRule::appendRule(const String& ruleText)
+void CSSKeyframesRule::appendRule(const std::string& ruleText)
 {
     ASSERT(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
 
@@ -152,7 +152,7 @@ void CSSKeyframesRule::appendRule(const String& ruleText)
     m_childRuleCSSOMWrappers.grow(length());
 }
 
-void CSSKeyframesRule::insertRule(const String& ruleText)
+void CSSKeyframesRule::insertRule(const std::string& ruleText)
 {
     if (CSSStyleSheet* parent = parentStyleSheet()) {
         if (Document* ownerDocument = parent->ownerDocument())
@@ -161,7 +161,7 @@ void CSSKeyframesRule::insertRule(const String& ruleText)
     appendRule(ruleText);
 }
 
-void CSSKeyframesRule::deleteRule(const String& s)
+void CSSKeyframesRule::deleteRule(const std::string& s)
 {
     ASSERT(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
 
@@ -178,7 +178,7 @@ void CSSKeyframesRule::deleteRule(const String& s)
     m_childRuleCSSOMWrappers.remove(i);
 }
 
-CSSKeyframeRule* CSSKeyframesRule::findRule(const String& s)
+CSSKeyframeRule* CSSKeyframesRule::findRule(const std::string& s)
 {
     size_t i = m_keyframesRule->findKeyframeIndex(s);
     return i != notFound ? item(i) : nullptr;

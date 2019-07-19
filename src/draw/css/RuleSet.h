@@ -109,7 +109,7 @@ public:
     RuleSet();
     ~RuleSet();
 
-    typedef Vector<RuleData, 1> RuleDataVector;
+    typedef std::vector<RuleData, 1> RuleDataVector;
     typedef HashMap<AtomString, std::unique_ptr<RuleDataVector>> AtomRuleMap;
 
     void addRulesFromSheet(StyleSheetContents&, const MediaQueryEvaluator&, StyleResolver* = 0);
@@ -134,7 +134,7 @@ public:
     const RuleDataVector* focusPseudoClassRules() const { return &m_focusPseudoClassRules; }
     const RuleDataVector* universalRules() const { return &m_universalRules; }
 
-    const Vector<StyleRulePage*>& pageRules() const { return m_pageRules; }
+    const std::vector<StyleRulePage*>& pageRules() const { return m_pageRules; }
 
     unsigned ruleCount() const { return m_ruleCount; }
 
@@ -142,7 +142,7 @@ public:
     bool hasHostPseudoClassRulesMatchingInShadowTree() const { return m_hasHostPseudoClassRulesMatchingInShadowTree; }
 
 private:
-    void addChildRules(const Vector<RefPtr<StyleRuleBase>>&, const MediaQueryEvaluator& medium, StyleResolver*, bool isInitiatingElementInUserAgentShadowTree);
+    void addChildRules(const std::vector<RefPtr<StyleRuleBase>>&, const MediaQueryEvaluator& medium, StyleResolver*, bool isInitiatingElementInUserAgentShadowTree);
 
     AtomRuleMap m_idRules;
     AtomRuleMap m_classRules;
@@ -155,7 +155,7 @@ private:
     RuleDataVector m_slottedPseudoElementRules;
     RuleDataVector m_focusPseudoClassRules;
     RuleDataVector m_universalRules;
-    Vector<StyleRulePage*> m_pageRules;
+    std::vector<StyleRulePage*> m_pageRules;
     unsigned m_ruleCount { 0 };
     bool m_hasHostPseudoClassRulesMatchingInShadowTree { false };
     bool m_autoShrinkToFitEnabled { true };

@@ -66,7 +66,7 @@ unsigned StyleSheetContents::estimatedSizeInBytes() const
     return size;
 }
 
-StyleSheetContents::StyleSheetContents(StyleRuleImport* ownerRule, const String& originalURL, const CSSParserContext& context)
+StyleSheetContents::StyleSheetContents(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext& context)
     : m_ownerRule(ownerRule)
     , m_originalURL(originalURL)
     , m_defaultNamespace(starAtom())
@@ -208,7 +208,7 @@ void StyleSheetContents::clearRules()
     clearCharsetRule();
 }
 
-void StyleSheetContents::parserSetEncodingFromCharsetRule(const String& encoding)
+void StyleSheetContents::parserSetEncodingFromCharsetRule(const std::string& encoding)
 {
     // Parser enforces that there is ever only one @charset.
     ASSERT(m_encodingFromCharsetRule.isNull());
@@ -341,7 +341,7 @@ void StyleSheetContents::parseAuthorStyleSheet(const CachedCSSStyleSheet* cached
     CSSParser(parserContext()).parseSheet(this, sheetText, CSSParser::RuleParsing::Deferred);
 }
 
-bool StyleSheetContents::parseString(const String& sheetText)
+bool StyleSheetContents::parseString(const std::string& sheetText)
 {
     CSSParser p(parserContext());
     p.parseSheet(this, sheetText, parserContext().mode != UASheetMode ? CSSParser::RuleParsing::Deferred : CSSParser::RuleParsing::Normal);
@@ -415,12 +415,12 @@ Document* StyleSheetContents::singleOwnerDocument() const
     return ownerNode ? &ownerNode->document() : 0;
 }
 
-URL StyleSheetContents::completeURL(const String& url) const
+URL StyleSheetContents::completeURL(const std::string& url) const
 {
     return m_parserContext.completeURL(url);
 }
 
-static bool traverseRulesInVector(const Vector<RefPtr<StyleRuleBase>>& rules, const WTF::Function<bool (const StyleRuleBase&)>& handler)
+static bool traverseRulesInVector(const std::vector<RefPtr<StyleRuleBase>>& rules, const WTF::Function<bool (const StyleRuleBase&)>& handler)
 {
     for (auto& rule : rules) {
         if (handler(*rule))

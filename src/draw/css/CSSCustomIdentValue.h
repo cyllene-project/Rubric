@@ -36,7 +36,7 @@ namespace WebCore {
 
 class CSSCustomIdentValue : public CSSValue {
 public:
-    static Ref<CSSCustomIdentValue> create(const String& str)
+    static Ref<CSSCustomIdentValue> create(const std::string& str)
     {
         return adoptRef(*new CSSCustomIdentValue(str));
     }

@@ -31,11 +31,11 @@ class CSSCustomPropertyValue;
 
 struct CSSRegisteredCustomProperty {
 
-    const String name;
-    const String syntax;
+    const std::string name;
+    const std::string syntax;
     const bool inherits;
 
-    CSSRegisteredCustomProperty(const String& name, const String& syntax, bool inherits, RefPtr<CSSCustomPropertyValue>&& initialValue);
+    CSSRegisteredCustomProperty(const std::string& name, const std::string& syntax, bool inherits, RefPtr<CSSCustomPropertyValue>&& initialValue);
 
     const CSSCustomPropertyValue* initialValue() const { return m_initialValue.get(); }
     RefPtr<CSSCustomPropertyValue> initialValueCopy() const;

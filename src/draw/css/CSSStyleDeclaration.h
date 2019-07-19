@@ -51,13 +51,13 @@ public:
     virtual ExceptionOr<void> setCssText(const String&) = 0;
     virtual unsigned length() const = 0;
     virtual String item(unsigned index) const = 0;
-    virtual RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const String& propertyName) = 0;
-    virtual String getPropertyValue(const String& propertyName) = 0;
-    virtual String getPropertyPriority(const String& propertyName) = 0;
-    virtual String getPropertyShorthand(const String& propertyName) = 0;
-    virtual bool isPropertyImplicit(const String& propertyName) = 0;
-    virtual ExceptionOr<void> setProperty(const String& propertyName, const String& value, const String& priority) = 0;
-    virtual ExceptionOr<String> removeProperty(const String& propertyName) = 0;
+    virtual RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) = 0;
+    virtual String getPropertyValue(const std::string& propertyName) = 0;
+    virtual String getPropertyPriority(const std::string& propertyName) = 0;
+    virtual String getPropertyShorthand(const std::string& propertyName) = 0;
+    virtual bool isPropertyImplicit(const std::string& propertyName) = 0;
+    virtual ExceptionOr<void> setProperty(const std::string& propertyName, const std::string& value, const std::string& priority) = 0;
+    virtual ExceptionOr<String> removeProperty(const std::string& propertyName) = 0;
 
     std::string cssFloat();
     ExceptionOr<void> setCssFloat(const String&);
@@ -67,7 +67,7 @@ public:
     // The CSSValue returned by this function should not be exposed to the web as it may be used by multiple documents at the same time.
     virtual RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) = 0;
     virtual String getPropertyValueInternal(CSSPropertyID) = 0;
-    virtual ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const String& value, bool important) = 0;
+    virtual ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) = 0;
 
     virtual Ref<MutableStyleProperties> copyProperties() const = 0;
 
@@ -76,7 +76,7 @@ public:
     // Bindings support.
     Optional<Variant<String, double>> namedItem(const AtomString&);
     ExceptionOr<void> setNamedItem(const AtomString& name, String value, bool& propertySupported);
-    Vector<AtomString> supportedPropertyNames() const;
+    std::vector<AtomString> supportedPropertyNames() const;
 
     static CSSPropertyID getCSSPropertyIDFromJavaScriptPropertyName(const AtomString&);
 protected:

@@ -37,7 +37,7 @@
 #include <wtf/text/StringBuilder.h>
 namespace WebCore {
 
-static String valueWithoutImportant(const String& value)
+static String valueWithoutImportant(const std::string& value)
 {
     if (!value.endsWithIgnoringASCIICase("important"))
         return value;
@@ -51,7 +51,7 @@ static String valueWithoutImportant(const String& value)
     return newValue;
 }
 
-bool DOMCSSNamespace::supports(Document& document, const String& property, const String& value)
+bool DOMCSSNamespace::supports(Document& document, const std::string& property, const std::string& value)
 {
     CSSPropertyID propertyID = cssPropertyID(property.stripWhiteSpace());
 
@@ -71,14 +71,14 @@ bool DOMCSSNamespace::supports(Document& document, const String& property, const
     return CSSParser::parseValue(dummyStyle, propertyID, normalizedValue, false, document) != CSSParser::ParseResult::Error;
 }
 
-bool DOMCSSNamespace::supports(Document& document, const String& conditionText)
+bool DOMCSSNamespace::supports(Document& document, const std::string& conditionText)
 {
     CSSParserContext context(document);
     CSSParser parser(context);
     return parser.parseSupportsCondition(conditionText);
 }
 
-String DOMCSSNamespace::escape(const String& ident)
+String DOMCSSNamespace::escape(const std::string& ident)
 {
     StringBuilder builder;
     serializeIdentifier(ident, builder);

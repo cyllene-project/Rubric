@@ -32,7 +32,7 @@ namespace WebCore {
 
 class CSSNamedImageValue final : public CSSImageGeneratorValue {
 public:
-    static Ref<CSSNamedImageValue> create(const String& name)
+    static Ref<CSSNamedImageValue> create(const std::string& name)
     {
         return adoptRef(*new CSSNamedImageValue(name));
     }
@@ -47,7 +47,7 @@ public:
     bool equals(const CSSNamedImageValue&) const;
 
 private:
-    explicit CSSNamedImageValue(const String& name)
+    explicit CSSNamedImageValue(const std::string& name)
         : CSSImageGeneratorValue(NamedImageClass)
         , m_name(name)
     {

@@ -37,20 +37,20 @@ class SVGFontFaceElement;
 
 class CSSFontFaceSrcValue final : public CSSValue {
 public:
-    static Ref<CSSFontFaceSrcValue> create(const String& resource, LoadedFromOpaqueSource loadedFromOpaqueSource)
+    static Ref<CSSFontFaceSrcValue> create(const std::string& resource, LoadedFromOpaqueSource loadedFromOpaqueSource)
     {
         return adoptRef(*new CSSFontFaceSrcValue(resource, false, loadedFromOpaqueSource));
     }
-    static Ref<CSSFontFaceSrcValue> createLocal(const String& resource)
+    static Ref<CSSFontFaceSrcValue> createLocal(const std::string& resource)
     {
         return adoptRef(*new CSSFontFaceSrcValue(resource, true, LoadedFromOpaqueSource::No));
     }
 
-    const String& resource() const { return m_resource; }
-    const String& format() const { return m_format; }
+    const std::string& resource() const { return m_resource; }
+    const std::string& format() const { return m_format; }
     bool isLocal() const { return m_isLocal; }
 
-    void setFormat(const String& format) { m_format = format; }
+    void setFormat(const std::string& format) { m_format = format; }
 
     bool isSupportedFormat() const;
 
@@ -71,7 +71,7 @@ public:
     bool equals(const CSSFontFaceSrcValue&) const;
 
 private:
-    CSSFontFaceSrcValue(const String& resource, bool local, LoadedFromOpaqueSource loadedFromOpaqueSource)
+    CSSFontFaceSrcValue(const std::string& resource, bool local, LoadedFromOpaqueSource loadedFromOpaqueSource)
         : CSSValue(FontFaceSrcClass)
         , m_resource(resource)
         , m_isLocal(local)

@@ -57,7 +57,7 @@ public:
     Ref<CSSPrimitiveValue> createIdentifierValue(CSSPropertyID identifier);
     Ref<CSSPrimitiveValue> createColorValue(const Color&);
     Ref<CSSPrimitiveValue> createValue(double value, CSSPrimitiveValue::UnitType);
-    Ref<CSSPrimitiveValue> createValue(const String& value, CSSPrimitiveValue::UnitType type) { return CSSPrimitiveValue::create(value, type); }
+    Ref<CSSPrimitiveValue> createValue(const std::string& value, CSSPrimitiveValue::UnitType type) { return CSSPrimitiveValue::create(value, type); }
     Ref<CSSPrimitiveValue> createValue(const Length& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
     Ref<CSSPrimitiveValue> createValue(const LengthSize& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
     template<typename T> static Ref<CSSPrimitiveValue> createValue(T&& value) { return CSSPrimitiveValue::create(std::forward<T>(value)); }

@@ -44,7 +44,7 @@ public:
     {
         return adoptRef(*new MediaQuerySet);
     }
-    static Ref<MediaQuerySet> create(const String& mediaString, MediaQueryParserContext = MediaQueryParserContext());
+    static Ref<MediaQuerySet> create(const std::string& mediaString, MediaQueryParserContext = MediaQueryParserContext());
 
     ~MediaQuerySet();
 
@@ -54,7 +54,7 @@ public:
 
     void addMediaQuery(MediaQuery&&);
 
-    const Vector<MediaQuery>& queryVector() const { return m_queries; }
+    const std::vector<MediaQuery>& queryVector() const { return m_queries; }
 
     int lastLine() const { return m_lastLine; }
     void setLastLine(int lastLine) { m_lastLine = lastLine; }
@@ -67,11 +67,11 @@ public:
 
 private:
     MediaQuerySet();
-    MediaQuerySet(const String& mediaQuery);
+    MediaQuerySet(const std::string& mediaQuery);
     MediaQuerySet(const MediaQuerySet&);
 
     int m_lastLine { 0 };
-    Vector<MediaQuery> m_queries;
+    std::vector<MediaQuery> m_queries;
 };
 
 class MediaList final : public RefCounted<MediaList> {
@@ -89,8 +89,8 @@ public:
 
     unsigned length() const { return m_mediaQueries->queryVector().size(); }
     std::string item(unsigned index) const;
-    ExceptionOr<void> deleteMedium(const String& oldMedium);
-    void appendMedium(const String& newMedium);
+    ExceptionOr<void> deleteMedium(const std::string& oldMedium);
+    void appendMedium(const std::string& newMedium);
 
     std::string mediaText() const { return m_mediaQueries->mediaText(); }
     ExceptionOr<void> setMediaText(const String&);

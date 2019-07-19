@@ -83,7 +83,7 @@ static Ref<CSSPrimitiveValue> buildSerializablePositionOffset(CSSPrimitiveValue*
     return cssValuePool.createValue(Pair::create(cssValuePool.createValue(side), WTFMove(amount)));
 }
 
-static String buildCircleString(const String& radius, const String& centerX, const String& centerY)
+static String buildCircleString(const std::string& radius, const std::string& centerX, const std::string& centerY)
 {
     char opening[] = "circle(";
     char at[] = "at";
@@ -131,7 +131,7 @@ bool CSSBasicShapeCircle::equals(const CSSBasicShape& shape) const
         && compareCSSValuePtr(m_radius, other.m_radius);
 }
 
-static String buildEllipseString(const String& radiusX, const String& radiusY, const String& centerX, const String& centerY)
+static String buildEllipseString(const std::string& radiusX, const std::string& radiusY, const std::string& centerX, const std::string& centerY)
 {
     char opening[] = "ellipse(";
     char at[] = "at";
@@ -204,7 +204,7 @@ CSSBasicShapePath::CSSBasicShapePath(std::unique_ptr<SVGPathByteStream>&& pathDa
 {
 }
 
-static String buildPathString(const WindRule& windRule, const String& path, const String& box)
+static String buildPathString(const WindRule& windRule, const std::string& path, const std::string& box)
 {
     StringBuilder result;
     if (windRule == WindRule::EvenOdd)
@@ -240,7 +240,7 @@ bool CSSBasicShapePath::equals(const CSSBasicShape& otherShape) const
     return windRule() == otherShapePath.windRule() && pathData() == otherShapePath.pathData();
 }
 
-static String buildPolygonString(const WindRule& windRule, const Vector<String>& points)
+static String buildPolygonString(const WindRule& windRule, const std::vector<String>& points)
 {
     ASSERT(!(points.size() % 2));
 
@@ -281,7 +281,7 @@ static String buildPolygonString(const WindRule& windRule, const Vector<String>&
 
 String CSSBasicShapePolygon::cssText() const
 {
-    Vector<String> points;
+    std::vector<String> points;
     points.reserveInitialCapacity(m_values.size());
 
     for (auto& shapeValue : m_values)
@@ -295,10 +295,10 @@ bool CSSBasicShapePolygon::equals(const CSSBasicShape& shape) const
     if (!is<CSSBasicShapePolygon>(shape))
         return false;
 
-    return compareCSSValueVector<CSSPrimitiveValue>(m_values, downcast<CSSBasicShapePolygon>(shape).m_values);
+    return compareCSSValuestd::vector<CSSPrimitiveValue>(m_values, downcast<CSSBasicShapePolygon>(shape).m_values);
 }
 
-static bool buildInsetRadii(Vector<String>& radii, const String& topLeftRadius, const String& topRightRadius, const String& bottomRightRadius, const String& bottomLeftRadius)
+static bool buildInsetRadii(std::vector<String>& radii, const std::string& topLeftRadius, const std::string& topRightRadius, const std::string& bottomRightRadius, const std::string& bottomLeftRadius)
 {
     bool showBottomLeft = topRightRadius != bottomLeftRadius;
     bool showBottomRight = showBottomLeft || (bottomRightRadius != topLeftRadius);
@@ -315,11 +315,11 @@ static bool buildInsetRadii(Vector<String>& radii, const String& topLeftRadius, 
     return radii.size() == 1 && radii[0] == "0px";
 }
 
-static String buildInsetString(const String& top, const String& right, const String& bottom, const String& left,
-    const String& topLeftRadiusWidth, const String& topLeftRadiusHeight,
-    const String& topRightRadiusWidth, const String& topRightRadiusHeight,
-    const String& bottomRightRadiusWidth, const String& bottomRightRadiusHeight,
-    const String& bottomLeftRadiusWidth, const String& bottomLeftRadiusHeight)
+static String buildInsetString(const std::string& top, const std::string& right, const std::string& bottom, const std::string& left,
+    const std::string& topLeftRadiusWidth, const std::string& topLeftRadiusHeight,
+    const std::string& topRightRadiusWidth, const std::string& topRightRadiusHeight,
+    const std::string& bottomRightRadiusWidth, const std::string& bottomRightRadiusHeight,
+    const std::string& bottomLeftRadiusWidth, const std::string& bottomLeftRadiusHeight)
 {
     char opening[] = "inset(";
     char separator[] = " ";
@@ -345,10 +345,10 @@ static String buildInsetString(const String& top, const String& right, const Str
     }
 
     if (!topLeftRadiusWidth.isNull() && !topLeftRadiusHeight.isNull()) {
-        Vector<String> horizontalRadii;
+        std::vector<String> horizontalRadii;
         bool areDefaultCornerRadii = buildInsetRadii(horizontalRadii, topLeftRadiusWidth, topRightRadiusWidth, bottomRightRadiusWidth, bottomLeftRadiusWidth);
 
-        Vector<String> verticalRadii;
+        std::vector<String> verticalRadii;
         areDefaultCornerRadii &= buildInsetRadii(verticalRadii, topLeftRadiusHeight, topRightRadiusHeight, bottomRightRadiusHeight, bottomLeftRadiusHeight);
 
         if (!areDefaultCornerRadii) {

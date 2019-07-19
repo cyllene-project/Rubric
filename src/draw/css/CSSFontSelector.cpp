@@ -370,7 +370,7 @@ void CSSFontSelector::beginLoadingFontSoon(CachedFont& font)
 
 void CSSFontSelector::beginLoadTimerFired()
 {
-    Vector<CachedResourceHandle<CachedFont>> fontsToBeginLoading;
+    std::vector<CachedResourceHandle<CachedFont>> fontsToBeginLoading;
     fontsToBeginLoading.swap(m_fontsToBeginLoading);
 
     // CSSFontSelector could get deleted via beginLoadIfNeeded() or loadDone() unless protected.

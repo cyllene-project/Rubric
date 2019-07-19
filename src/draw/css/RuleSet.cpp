@@ -364,7 +364,7 @@ void RuleSet::addPageRule(StyleRulePage* rule)
     m_pageRules.append(rule);
 }
 
-void RuleSet::addChildRules(const Vector<RefPtr<StyleRuleBase>>& rules, const MediaQueryEvaluator& medium, StyleResolver* resolver, bool isInitiatingElementInUserAgentShadowTree)
+void RuleSet::addChildRules(const std::vector<RefPtr<StyleRuleBase>>& rules, const MediaQueryEvaluator& medium, StyleResolver* resolver, bool isInitiatingElementInUserAgentShadowTree)
 {
     for (auto& rule : rules) {
         if (is<StyleRule>(*rule))

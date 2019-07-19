@@ -57,7 +57,7 @@ static inline bool isCSSTokenizerIdentifier(const CharacterType* characters, uns
 }
 
 // "ident" from the CSS tokenizer, minus backslash-escape sequences
-static bool isCSSTokenizerIdentifier(const String& string)
+static bool isCSSTokenizerIdentifier(const std::string& string)
 {
     unsigned length = string.length();
 
@@ -82,7 +82,7 @@ static void serializeCharacterAsCodePoint(UChar32 c, StringBuilder& appendTo)
     appendTo.append(' ');
 }
 
-void serializeIdentifier(const String& identifier, StringBuilder& appendTo, bool skipStartChecks)
+void serializeIdentifier(const std::string& identifier, StringBuilder& appendTo, bool skipStartChecks)
 {
     bool isFirst = !skipStartChecks;
     bool isSecond = false;
@@ -117,7 +117,7 @@ void serializeIdentifier(const String& identifier, StringBuilder& appendTo, bool
     }
 }
 
-void serializeString(const String& string, StringBuilder& appendTo)
+void serializeString(const std::string& string, StringBuilder& appendTo)
 {
     appendTo.append('"');
 
@@ -137,19 +137,19 @@ void serializeString(const String& string, StringBuilder& appendTo)
     appendTo.append('"');
 }
 
-String serializeString(const String& string)
+String serializeString(const std::string& string)
 {
     StringBuilder builder;
     serializeString(string, builder);
     return builder.toString();
 }
 
-String serializeURL(const String& string)
+String serializeURL(const std::string& string)
 {
     return "url(" + serializeString(string) + ")";
 }
 
-String serializeAsStringOrCustomIdent(const String& string)
+String serializeAsStringOrCustomIdent(const std::string& string)
 {
     if (isCSSTokenizerIdentifier(string)) {
         StringBuilder builder;
@@ -159,7 +159,7 @@ String serializeAsStringOrCustomIdent(const String& string)
     return serializeString(string);
 }
     
-String serializeFontFamily(const String& string)
+String serializeFontFamily(const std::string& string)
 {
     return isCSSTokenizerIdentifier(string) ? string : serializeString(string);
 }

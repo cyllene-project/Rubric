@@ -35,12 +35,12 @@ class CSSVariableData;
 
 class CSSPaintImageValue final : public CSSImageGeneratorValue {
 public:
-    static Ref<CSSPaintImageValue> create(const String& name, Ref<CSSVariableData>&& arguments)
+    static Ref<CSSPaintImageValue> create(const std::string& name, Ref<CSSVariableData>&& arguments)
     {
         return adoptRef(*new CSSPaintImageValue(name, WTFMove(arguments)));
     }
 
-    const String& name() const { return m_name; }
+    const std::string& name() const { return m_name; }
 
     RefPtr<Image> image(RenderElement&, const FloatSize&);
 
@@ -56,14 +56,14 @@ public:
     void loadSubimages(CachedResourceLoader&, const ResourceLoaderOptions&) { }
 
 private:
-    CSSPaintImageValue(const String& name, Ref<CSSVariableData>&& arguments)
+    CSSPaintImageValue(const std::string& name, Ref<CSSVariableData>&& arguments)
         : CSSImageGeneratorValue(PaintImageClass)
         , m_name(name)
         , m_arguments(WTFMove(arguments))
     {
     }
 
-    const String m_name;
+    const std::string m_name;
     Ref<CSSVariableData> m_arguments;
 };
 

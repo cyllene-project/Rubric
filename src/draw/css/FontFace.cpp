@@ -53,7 +53,7 @@ static bool populateFontFaceWithArrayBuffer(CSSFontFace& fontFace, Ref<JSC::Arra
     return false;
 }
 
-ExceptionOr<Ref<FontFace>> FontFace::create(Document& document, const String& family, Source&& source, const Descriptors& descriptors)
+ExceptionOr<Ref<FontFace>> FontFace::create(Document& document, const std::string& family, Source&& source, const Descriptors& descriptors)
 {
     auto result = adoptRef(*new FontFace(document.fontSelector()));
 
@@ -142,13 +142,13 @@ FontFace::~FontFace()
     m_backing->removeClient(*this);
 }
 
-RefPtr<CSSValue> FontFace::parseString(const String& string, CSSPropertyID propertyID)
+RefPtr<CSSValue> FontFace::parseString(const std::string& string, CSSPropertyID propertyID)
 {
     // FIXME: Should use the Document to get the right parsing mode.
     return CSSParser::parseFontFaceDescriptor(propertyID, string, HTMLStandardMode);
 }
 
-ExceptionOr<void> FontFace::setFamily(const String& family)
+ExceptionOr<void> FontFace::setFamily(const std::string& family)
 {
     if (family.isEmpty())
         return Exception { SyntaxError };
@@ -163,7 +163,7 @@ ExceptionOr<void> FontFace::setFamily(const String& family)
     return { };
 }
 
-ExceptionOr<void> FontFace::setStyle(const String& style)
+ExceptionOr<void> FontFace::setStyle(const std::string& style)
 {
     if (style.isEmpty())
         return Exception { SyntaxError };
@@ -175,7 +175,7 @@ ExceptionOr<void> FontFace::setStyle(const String& style)
     return Exception { SyntaxError };
 }
 
-ExceptionOr<void> FontFace::setWeight(const String& weight)
+ExceptionOr<void> FontFace::setWeight(const std::string& weight)
 {
     if (weight.isEmpty())
         return Exception { SyntaxError };
@@ -187,7 +187,7 @@ ExceptionOr<void> FontFace::setWeight(const String& weight)
     return Exception { SyntaxError };
 }
 
-ExceptionOr<void> FontFace::setStretch(const String& stretch)
+ExceptionOr<void> FontFace::setStretch(const std::string& stretch)
 {
     if (stretch.isEmpty())
         return Exception { SyntaxError };
@@ -199,7 +199,7 @@ ExceptionOr<void> FontFace::setStretch(const String& stretch)
     return Exception { SyntaxError };
 }
 
-ExceptionOr<void> FontFace::setUnicodeRange(const String& unicodeRange)
+ExceptionOr<void> FontFace::setUnicodeRange(const std::string& unicodeRange)
 {
     if (unicodeRange.isEmpty())
         return Exception { SyntaxError };
@@ -212,7 +212,7 @@ ExceptionOr<void> FontFace::setUnicodeRange(const String& unicodeRange)
     return { };
 }
 
-ExceptionOr<void> FontFace::setVariant(const String& variant)
+ExceptionOr<void> FontFace::setVariant(const std::string& variant)
 {
     if (variant.isEmpty())
         return Exception { SyntaxError };
@@ -267,7 +267,7 @@ ExceptionOr<void> FontFace::setVariant(const String& variant)
     return { };
 }
 
-ExceptionOr<void> FontFace::setFeatureSettings(const String& featureSettings)
+ExceptionOr<void> FontFace::setFeatureSettings(const std::string& featureSettings)
 {
     if (featureSettings.isEmpty())
         return Exception { SyntaxError };
@@ -279,7 +279,7 @@ ExceptionOr<void> FontFace::setFeatureSettings(const String& featureSettings)
     return { };
 }
 
-ExceptionOr<void> FontFace::setDisplay(const String& display)
+ExceptionOr<void> FontFace::setDisplay(const std::string& display)
 {
     if (display.isEmpty())
         return Exception { SyntaxError };

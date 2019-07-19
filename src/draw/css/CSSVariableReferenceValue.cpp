@@ -44,9 +44,9 @@ String CSSVariableReferenceValue::customCSSText() const
     return m_stringValue;
 }
 
-static bool resolveTokenRange(CSSParserTokenRange, Vector<CSSParserToken>&, ApplyCascadedPropertyState&);
+static bool resolveTokenRange(CSSParserTokenRange, std::vector<CSSParserToken>&, ApplyCascadedPropertyState&);
 
-static bool resolveVariableFallback(CSSParserTokenRange range, Vector<CSSParserToken>& result, ApplyCascadedPropertyState& state)
+static bool resolveVariableFallback(CSSParserTokenRange range, std::vector<CSSParserToken>& result, ApplyCascadedPropertyState& state)
 {
     if (range.atEnd())
         return false;
@@ -55,7 +55,7 @@ static bool resolveVariableFallback(CSSParserTokenRange range, Vector<CSSParserT
     return resolveTokenRange(range, result, state);
 }
 
-static bool resolveVariableReference(CSSParserTokenRange range, Vector<CSSParserToken>& result, ApplyCascadedPropertyState& state)
+static bool resolveVariableReference(CSSParserTokenRange range, std::vector<CSSParserToken>& result, ApplyCascadedPropertyState& state)
 {
     auto& registeredProperties = state.styleResolver->document().getCSSRegisteredCustomPropertySet();
     auto& style = *state.styleResolver->style();
@@ -69,7 +69,7 @@ static bool resolveVariableReference(CSSParserTokenRange range, Vector<CSSParser
     state.styleResolver->applyCascadedCustomProperty(variableName, state);
 
     // Apply fallback to detect cycles
-    Vector<CSSParserToken> fallbackResult;
+    std::vector<CSSParserToken> fallbackResult;
     bool fallbackReturn = resolveVariableFallback(CSSParserTokenRange(range), fallbackResult, state);
 
     auto* property = style.getCustomProperty(variableName);
@@ -92,7 +92,7 @@ static bool resolveVariableReference(CSSParserTokenRange range, Vector<CSSParser
     return true;
 }
 
-static bool resolveTokenRange(CSSParserTokenRange range, Vector<CSSParserToken>& result, ApplyCascadedPropertyState& state)
+static bool resolveTokenRange(CSSParserTokenRange range, std::vector<CSSParserToken>& result, ApplyCascadedPropertyState& state)
 {
     bool success = true;
     while (!range.atEnd()) {
@@ -106,7 +106,7 @@ static bool resolveTokenRange(CSSParserTokenRange range, Vector<CSSParserToken>&
 
 RefPtr<CSSVariableData> CSSVariableReferenceValue::resolveVariableReferences(ApplyCascadedPropertyState& state) const
 {
-    Vector<CSSParserToken> resolvedTokens;
+    std::vector<CSSParserToken> resolvedTokens;
     CSSParserTokenRange range = m_data->tokenRange();
 
     if (!resolveTokenRange(range, resolvedTokens, state))

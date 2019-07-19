@@ -172,7 +172,7 @@ ALWAYS_INLINE bool containslanguageSubtagMatchingRange(StringView language, Stri
     return false;
 }
 
-ALWAYS_INLINE bool matchesLangPseudoClass(const Element& element, const Vector<AtomString>& argumentList)
+ALWAYS_INLINE bool matchesLangPseudoClass(const Element& element, const std::vector<AtomString>& argumentList)
 {
     AtomString language;
 #if ENABLE(VIDEO_TRACK)

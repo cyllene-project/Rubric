@@ -55,7 +55,7 @@ protected:
     }
     
 private:
-    Vector<Ref<DeprecatedCSSOMValue>, 4> m_values;
+    std::vector<Ref<DeprecatedCSSOMValue>, 4> m_values;
 };
 
 } // namespace WebCore

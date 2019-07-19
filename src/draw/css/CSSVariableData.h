@@ -49,7 +49,7 @@ public:
 
     CSSParserTokenRange tokenRange() { return m_tokens; }
 
-    const Vector<CSSParserToken>& tokens() const { return m_tokens; }
+    const std::vector<CSSParserToken>& tokens() const { return m_tokens; }
 
     bool operator==(const CSSVariableData& other) const;
 
@@ -58,7 +58,7 @@ private:
     template<typename CharacterType> void updateTokens(const CSSParserTokenRange&);
 
     std::string m_backingString;
-    Vector<CSSParserToken> m_tokens;
+    std::vector<CSSParserToken> m_tokens;
 
     // FIXME-NEWPARSER: We want to cache StyleProperties once we support @apply.
 };

@@ -113,20 +113,20 @@ MediaQueryEvaluator::MediaQueryEvaluator(bool mediaFeatureResult)
 {
 }
 
-MediaQueryEvaluator::MediaQueryEvaluator(const String& acceptedMediaType, bool mediaFeatureResult)
+MediaQueryEvaluator::MediaQueryEvaluator(const std::string& acceptedMediaType, bool mediaFeatureResult)
     : m_mediaType(acceptedMediaType)
     , m_fallbackResult(mediaFeatureResult)
 {
 }
 
-MediaQueryEvaluator::MediaQueryEvaluator(const String& acceptedMediaType, const Document& document, const RenderStyle* style)
+MediaQueryEvaluator::MediaQueryEvaluator(const std::string& acceptedMediaType, const Document& document, const RenderStyle* style)
     : m_mediaType(acceptedMediaType)
     , m_document(makeWeakPtr(document))
     , m_style(style)
 {
 }
 
-bool MediaQueryEvaluator::mediaTypeMatch(const String& mediaTypeToMatch) const
+bool MediaQueryEvaluator::mediaTypeMatch(const std::string& mediaTypeToMatch) const
 {
     return mediaTypeToMatch.isEmpty()
         || equalLettersIgnoringASCIICase(mediaTypeToMatch, "all")
@@ -191,7 +191,7 @@ bool MediaQueryEvaluator::evaluate(const MediaQuerySet& querySet, StyleResolver*
     return result;
 }
 
-bool MediaQueryEvaluator::evaluate(const MediaQuerySet& querySet, Vector<MediaQueryResult>& viewportDependentResults, Vector<MediaQueryResult>& appearanceDependentResults) const
+bool MediaQueryEvaluator::evaluate(const MediaQuerySet& querySet, std::vector<MediaQueryResult>& viewportDependentResults, std::vector<MediaQueryResult>& appearanceDependentResults) const
 {
     auto& queries = querySet.queryVector();
     if (!queries.size())
@@ -875,7 +875,7 @@ bool MediaQueryEvaluator::evaluate(const MediaQueryExpression& expression) const
     return function(expression.value(), { m_style, document.documentElement()->renderStyle(), document.renderView(), 1, false }, *frame, NoPrefix);
 }
 
-bool MediaQueryEvaluator::mediaAttributeMatches(Document& document, const String& attributeValue)
+bool MediaQueryEvaluator::mediaAttributeMatches(Document& document, const std::string& attributeValue)
 {
     ASSERT(document.renderView());
     auto mediaQueries = MediaQuerySet::create(attributeValue, MediaQueryParserContext(document));

@@ -36,12 +36,12 @@
 
 namespace WebCore {
 
-Ref<StyleRuleImport> StyleRuleImport::create(const String& href, Ref<MediaQuerySet>&& media)
+Ref<StyleRuleImport> StyleRuleImport::create(const std::string& href, Ref<MediaQuerySet>&& media)
 {
     return adoptRef(*new StyleRuleImport(href, WTFMove(media)));
 }
 
-StyleRuleImport::StyleRuleImport(const String& href, Ref<MediaQuerySet>&& media)
+StyleRuleImport::StyleRuleImport(const std::string& href, Ref<MediaQuerySet>&& media)
     : StyleRuleBase(Import)
     , m_parentStyleSheet(0)
     , m_styleSheetClient(this)
@@ -62,7 +62,7 @@ StyleRuleImport::~StyleRuleImport()
         m_cachedSheet->removeClient(m_styleSheetClient);
 }
 
-void StyleRuleImport::setCSSStyleSheet(const String& href, const URL& baseURL, const String& charset, const CachedCSSStyleSheet* cachedStyleSheet)
+void StyleRuleImport::setCSSStyleSheet(const std::string& href, const URL& baseURL, const std::string& charset, const CachedCSSStyleSheet* cachedStyleSheet)
 {
     if (m_styleSheet)
         m_styleSheet->clearOwnerRule();

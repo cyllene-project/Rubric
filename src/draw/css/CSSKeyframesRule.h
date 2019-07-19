@@ -43,8 +43,8 @@ public:
     
     ~StyleRuleKeyframes();
     
-    const Vector<Ref<StyleRuleKeyframe>>& keyframes() const;
-    const Vector<Ref<StyleRuleKeyframe>>* keyframesWithoutDeferredParsing() const
+    const std::vector<Ref<StyleRuleKeyframe>>& keyframes() const;
+    const std::vector<Ref<StyleRuleKeyframe>>* keyframesWithoutDeferredParsing() const
     {
         return !m_deferredRules ? &m_keyframes : nullptr;
     }
@@ -56,7 +56,7 @@ public:
     const AtomString& name() const { return m_name; }
     void setName(const AtomString& name) { m_name = name; }
 
-    size_t findKeyframeIndex(const String& key) const;
+    size_t findKeyframeIndex(const std::string& key) const;
 
     Ref<StyleRuleKeyframes> copy() const { return adoptRef(*new StyleRuleKeyframes(*this)); }
 
@@ -67,7 +67,7 @@ private:
 
     void parseDeferredRulesIfNeeded() const;
     
-    mutable Vector<Ref<StyleRuleKeyframe>> m_keyframes;
+    mutable std::vector<Ref<StyleRuleKeyframe>> m_keyframes;
     AtomString m_name;
     
     mutable std::unique_ptr<DeferredStyleGroupRuleList> m_deferredRules;
@@ -88,10 +88,10 @@ public:
 
     CSSRuleList& cssRules();
 
-    void insertRule(const String& rule);
-    void appendRule(const String& rule);
-    void deleteRule(const String& key);
-    CSSKeyframeRule* findRule(const String& key);
+    void insertRule(const std::string& rule);
+    void appendRule(const std::string& rule);
+    void deleteRule(const std::string& key);
+    CSSKeyframeRule* findRule(const std::string& key);
 
     // For IndexedGetter and CSSRuleList.
     unsigned length() const;
@@ -101,7 +101,7 @@ private:
     CSSKeyframesRule(StyleRuleKeyframes&, CSSStyleSheet* parent);
 
     Ref<StyleRuleKeyframes> m_keyframesRule;
-    mutable Vector<RefPtr<CSSKeyframeRule>> m_childRuleCSSOMWrappers;
+    mutable std::vector<RefPtr<CSSKeyframeRule>> m_childRuleCSSOMWrappers;
     mutable std::unique_ptr<CSSRuleList> m_ruleListCSSOMWrapper;
 };
 

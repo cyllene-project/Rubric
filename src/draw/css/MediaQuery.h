@@ -38,14 +38,14 @@ class MediaQuery {
 public:
     enum Restrictor { Only, Not, None };
 
-    MediaQuery(Restrictor, const String& mediaType, Vector<MediaQueryExpression>&&);
+    MediaQuery(Restrictor, const std::string& mediaType, std::vector<MediaQueryExpression>&&);
 
     Restrictor restrictor() const { return m_restrictor; }
-    const Vector<MediaQueryExpression>& expressions() const { return m_expressions; }
-    const String& mediaType() const { return m_mediaType; }
+    const std::vector<MediaQueryExpression>& expressions() const { return m_expressions; }
+    const std::string& mediaType() const { return m_mediaType; }
     bool ignored() const { return m_ignored; }
 
-    const String& cssText() const;
+    const std::string& cssText() const;
 
     bool operator==(const MediaQuery& other) const;
 
@@ -56,7 +56,7 @@ private:
 
     std::string m_mediaType;
     mutable String m_serializationCache;
-    Vector<MediaQueryExpression> m_expressions;
+    std::vector<MediaQueryExpression> m_expressions;
     Restrictor m_restrictor;
     bool m_ignored { false };
 };

@@ -72,7 +72,7 @@ print GPERF << "EOF";
 
 #include \"CSSValueKeywords.h\"
 
-IGNORE_WARNINGS_BEGIN(\"implicit-fallthrough\")
+//IGNORE_WARNINGS_BEGIN(\"implicit-fallthrough\")
 
 // Older versions of gperf like to use the `register` keyword.
 #define register
@@ -125,19 +125,19 @@ const char* getValueName(unsigned short id)
     return valueList[id];
 }
 
-const AtomString& getValueNameAtomString(CSSValueID id)
+const std::atomic<std::string>& getValueNameAtomString(CSSValueID id)
 {
     if (id < firstCSSValueKeyword || id > lastCSSValueKeyword)
         return nullAtom();
 
-    static AtomString* valueKeywordStrings = new AtomString[numCSSValueKeywords]; // Leaked intentionally.
-    AtomString& valueKeywordString = valueKeywordStrings[id];
+    static std::atomic<std::string>* valueKeywordStrings = new AtomString[numCSSValueKeywords]; // Leaked intentionally.
+    std::atomic<std::string>& valueKeywordString = valueKeywordStrings[id];
     if (valueKeywordString.isNull())
         valueKeywordString = getValueName(id);
     return valueKeywordString;
 }
 
-String getValueNameString(CSSValueID id)
+std::string getValueNameString(CSSValueID id)
 {
     // We share the StringImpl with the AtomStrings.
     return getValueNameAtomString(id).string();
@@ -145,7 +145,7 @@ String getValueNameString(CSSValueID id)
 
 } // namespace WebCore
 
-IGNORE_WARNINGS_END
+//IGNORE_WARNINGS_END
 EOF
 close GPERF;
 
@@ -158,6 +158,7 @@ print HEADER << "EOF";
 
 #include <string>
 #include <atomic>
+#include <assert.h>
 
 namespace WebCore {
 
@@ -193,7 +194,7 @@ std::string getValueNameString(CSSValueID id);
 
 inline CSSValueID convertToCSSValueID(int value)
 {
-    ASSERT(value >= firstCSSValueKeyword && value <= lastCSSValueKeyword);
+    assert(value >= firstCSSValueKeyword && value <= lastCSSValueKeyword);
     return static_cast<CSSValueID>(value);
 }
 

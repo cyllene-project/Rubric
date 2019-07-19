@@ -78,7 +78,7 @@ bool MediaQueryMatcher::evaluate(const MediaQuerySet& media)
     return MediaQueryEvaluator { mediaType(), *m_document, style.get() }.evaluate(media);
 }
 
-RefPtr<MediaQueryList> MediaQueryMatcher::matchMedia(const String& query)
+RefPtr<MediaQueryList> MediaQueryMatcher::matchMedia(const std::string& query)
 {
     if (!m_document)
         return nullptr;
@@ -122,7 +122,7 @@ void MediaQueryMatcher::styleResolverChanged()
     LOG_WITH_STREAM(MediaQueries, stream << "MediaQueryMatcher::styleResolverChanged " << m_document->url());
 
     MediaQueryEvaluator evaluator { mediaType(), *m_document, style.get() };
-    Vector<Listener> listeners;
+    std::vector<Listener> listeners;
     listeners.reserveInitialCapacity(m_listeners.size());
     for (auto& listener : m_listeners)
         listeners.uncheckedAppend({ listener.listener.copyRef(), listener.query.copyRef() });

@@ -51,7 +51,7 @@ public:
     };
     
     using Source = Variant<String, RefPtr<JSC::ArrayBuffer>, RefPtr<JSC::ArrayBufferView>>;
-    static ExceptionOr<Ref<FontFace>> create(Document&, const String& family, Source&&, const Descriptors&);
+    static ExceptionOr<Ref<FontFace>> create(Document&, const std::string& family, Source&&, const Descriptors&);
     static Ref<FontFace> create(CSSFontFace&);
     virtual ~FontFace();
 

@@ -61,7 +61,7 @@ RefPtr<Image> CSSPaintImageValue::image(RenderElement& renderElement, const Floa
         return nullptr;
 
     // FIXME: Check if argument list matches syntax.
-    Vector<String> arguments;
+    std::vector<String> arguments;
     CSSParserTokenRange localRange(m_arguments->tokenRange());
 
     while (!localRange.atEnd()) {

@@ -56,8 +56,8 @@ public:
 
     RefPtr<CSSValue> propertyValue(CSSPropertyID, EUpdateLayout = UpdateLayout);
     RefPtr<CSSValue> valueForPropertyInStyle(const RenderStyle&, CSSPropertyID, RenderElement* = nullptr);
-    std::string customPropertyText(const String& propertyName);
-    RefPtr<CSSValue> customPropertyValue(const String& propertyName);
+    std::string customPropertyText(const std::string& propertyName);
+    RefPtr<CSSValue> customPropertyValue(const std::string& propertyName);
 
     // Helper methods for HTML editing.
     Ref<MutableStyleProperties> copyPropertiesInSet(const CSSPropertyID* set, unsigned length);
@@ -87,7 +87,7 @@ private:
     RenderElement* styledRenderer() const;
 
     RefPtr<CSSValue> svgPropertyValue(CSSPropertyID);
-    Ref<CSSValue> adjustSVGPaintForCurrentColor(SVGPaintType, const String& url, const Color&, const Color& currentColor) const;
+    Ref<CSSValue> adjustSVGPaintForCurrentColor(SVGPaintType, const std::string& url, const Color&, const Color& currentColor) const;
     static Ref<CSSValue> valueForShadow(const ShadowData*, CSSPropertyID, const RenderStyle&, AdjustPixelValuesForComputedStyle = AdjustPixelValues);
     Ref<CSSPrimitiveValue> currentColorOrValidColor(const RenderStyle*, const Color&) const;
 
@@ -120,18 +120,18 @@ private:
     CSSRule* parentRule() const final;
     unsigned length() const final;
     std::string item(unsigned index) const final;
-    RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const String& propertyName) final;
-    std::string getPropertyValue(const String& propertyName) final;
-    std::string getPropertyPriority(const String& propertyName) final;
-    std::string getPropertyShorthand(const String& propertyName) final;
-    bool isPropertyImplicit(const String& propertyName) final;
-    ExceptionOr<void> setProperty(const String& propertyName, const String& value, const String& priority) final;
-    ExceptionOr<String> removeProperty(const String& propertyName) final;
+    RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) final;
+    std::string getPropertyValue(const std::string& propertyName) final;
+    std::string getPropertyPriority(const std::string& propertyName) final;
+    std::string getPropertyShorthand(const std::string& propertyName) final;
+    bool isPropertyImplicit(const std::string& propertyName) final;
+    ExceptionOr<void> setProperty(const std::string& propertyName, const std::string& value, const std::string& priority) final;
+    ExceptionOr<String> removeProperty(const std::string& propertyName) final;
     std::string cssText() const final;
     ExceptionOr<void> setCssText(const String&) final;
     RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) final;
     std::string getPropertyValueInternal(CSSPropertyID) final;
-    ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const String& value, bool important) final;
+    ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) final;
     Ref<MutableStyleProperties> copyProperties() const final;
 
     RefPtr<CSSValue> getPropertyCSSValue(CSSPropertyID, EUpdateLayout = UpdateLayout) const;

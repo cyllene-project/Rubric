@@ -74,7 +74,7 @@ private:
     float m_bestFitImageScaleFactor { 1 };
     float m_deviceScaleFactor { 1 };
 
-    Vector<ImageWithScale> m_imagesInSet;
+    std::vector<ImageWithScale> m_imagesInSet;
     LoadedFromOpaqueSource m_loadedFromOpaqueSource { LoadedFromOpaqueSource::No };
 };
 

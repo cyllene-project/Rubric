@@ -52,7 +52,7 @@ ExceptionOr<float> DeprecatedCSSOMPrimitiveValue::getFloatValue(unsigned short u
     return m_value->getFloatValue(unitType);
 }
 
-ExceptionOr<void> DeprecatedCSSOMPrimitiveValue::setStringValue(unsigned short stringType, const String& stringValue)
+ExceptionOr<void> DeprecatedCSSOMPrimitiveValue::setStringValue(unsigned short stringType, const std::string& stringValue)
 {
     return m_value->setStringValue(stringType, stringValue);
 }

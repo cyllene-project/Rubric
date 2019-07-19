@@ -239,7 +239,7 @@ void StyleResolver::addCurrentSVGFontFaceRules()
 #endif
 }
 
-void StyleResolver::appendAuthorStyleSheets(const Vector<RefPtr<CSSStyleSheet>>& styleSheets)
+void StyleResolver::appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& styleSheets)
 {
     m_ruleSets.appendAuthorStyleSheets(styleSheets, &m_mediaQueryEvaluator, m_inspectorCSSOMWrappers, this);
 
@@ -274,11 +274,11 @@ void StyleResolver::sweepMatchedPropertiesCache()
     // Look for cache entries containing a style declaration with a single ref and remove them.
     // This may happen when an element attribute mutation causes it to generate a new inlineStyle()
     // or presentationAttributeStyle(), potentially leaving this cache with the last ref on the old one.
-    Vector<unsigned, 16> toRemove;
+    std::vector<unsigned, 16> toRemove;
     MatchedPropertiesCache::iterator it = m_matchedPropertiesCache.begin();
     MatchedPropertiesCache::iterator end = m_matchedPropertiesCache.end();
     for (; it != end; ++it) {
-        Vector<MatchedProperties>& matchedProperties = it->value.matchedProperties;
+        std::vector<MatchedProperties>& matchedProperties = it->value.matchedProperties;
         for (size_t i = 0; i < matchedProperties.size(); ++i) {
             if (matchedProperties[i].properties->hasOneRef()) {
                 toRemove.append(it->key);
@@ -456,7 +456,7 @@ std::unique_ptr<RenderStyle> StyleResolver::styleForKeyframe(const RenderStyle* 
     return state.takeStyle();
 }
 
-bool StyleResolver::isAnimationNameValid(const String& name)
+bool StyleResolver::isAnimationNameValid(const std::string& name)
 {
     return m_keyframesRuleMap.find(AtomString(name).impl()) != m_keyframesRuleMap.end();
 }
@@ -478,7 +478,7 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
     const StyleRuleKeyframes* keyframesRule = it->value.get();
 
     auto* keyframes = &keyframesRule->keyframes();
-    Vector<Ref<StyleRuleKeyframe>> newKeyframesIfNecessary;
+    std::vector<Ref<StyleRuleKeyframe>> newKeyframesIfNecessary;
 
     bool hasDuplicateKeys = false;
     HashSet<double> keyframeKeys;
@@ -1228,12 +1228,12 @@ void StyleResolver::updateFont()
     m_state.setFontDirty(false);
 }
 
-Vector<RefPtr<StyleRule>> StyleResolver::styleRulesForElement(const Element* element, unsigned rulesToInclude)
+std::vector<RefPtr<StyleRule>> StyleResolver::styleRulesForElement(const Element* element, unsigned rulesToInclude)
 {
     return pseudoStyleRulesForElement(element, PseudoId::None, rulesToInclude);
 }
 
-Vector<RefPtr<StyleRule>> StyleResolver::pseudoStyleRulesForElement(const Element* element, PseudoId pseudoId, unsigned rulesToInclude)
+std::vector<RefPtr<StyleRule>> StyleResolver::pseudoStyleRulesForElement(const Element* element, PseudoId pseudoId, unsigned rulesToInclude)
 {
     if (!element)
         return { };
@@ -1379,7 +1379,7 @@ void StyleResolver::invalidateMatchedPropertiesCache()
 
 void StyleResolver::clearCachedPropertiesAffectedByViewportUnits()
 {
-    Vector<unsigned, 16> toRemove;
+    std::vector<unsigned, 16> toRemove;
     for (auto& cacheKeyValue : m_matchedPropertiesCache) {
         if (cacheKeyValue.value.renderStyle->hasViewportUnits())
             toRemove.append(cacheKeyValue.key);
@@ -2215,12 +2215,12 @@ inline StyleResolver::CascadedProperties::Property& StyleResolver::CascadedPrope
     return m_properties[id];
 }
 
-inline bool StyleResolver::CascadedProperties::hasCustomProperty(const String& name) const
+inline bool StyleResolver::CascadedProperties::hasCustomProperty(const std::string& name) const
 {
     return m_customProperties.contains(name);
 }
 
-inline StyleResolver::CascadedProperties::Property StyleResolver::CascadedProperties::customProperty(const String& name) const
+inline StyleResolver::CascadedProperties::Property StyleResolver::CascadedProperties::customProperty(const std::string& name) const
 {
     return m_customProperties.get(name);
 }
@@ -2353,7 +2353,7 @@ void StyleResolver::CascadedProperties::addImportantMatches(const MatchResult& m
         int index;
         Style::ScopeOrdinal ordinal;
     };
-    Vector<IndexAndOrdinal> shadowTreeMatches;
+    std::vector<IndexAndOrdinal> shadowTreeMatches;
 
     for (int i = startIndex; i <= endIndex; ++i) {
         const MatchedProperties& matchedProperties = matchResult.matchedProperties()[i];
@@ -2419,7 +2419,7 @@ void StyleResolver::CascadedProperties::Property::apply(StyleResolver& resolver,
     state.setApplyPropertyToVisitedLinkStyle(false);
 }
 
-void StyleResolver::applyCascadedCustomProperty(const String& name, ApplyCascadedPropertyState& state)
+void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCascadedPropertyState& state)
 {
     if (state.appliedCustomProperties.contains(name) || !state.cascade->customProperties().contains(name))
         return;

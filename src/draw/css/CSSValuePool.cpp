@@ -117,7 +117,7 @@ Ref<CSSPrimitiveValue> CSSValuePool::createValue(double value, CSSPrimitiveValue
     }
 }
 
-Ref<CSSPrimitiveValue> CSSValuePool::createFontFamilyValue(const String& familyName, FromSystemFontID fromSystemFontID)
+Ref<CSSPrimitiveValue> CSSValuePool::createFontFamilyValue(const std::string& familyName, FromSystemFontID fromSystemFontID)
 {
     // Remove one entry at random if the cache grows too large.
     // FIXME: Use TinyLRUCache instead?

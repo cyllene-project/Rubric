@@ -88,7 +88,7 @@ public:
 
     const VariantValue& value() const { return m_value; }
 
-    Vector<CSSParserToken> tokens() const;
+    std::vector<CSSParserToken> tokens() const;
     bool equals(const CSSCustomPropertyValue& other) const;
 
 private:

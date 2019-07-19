@@ -43,7 +43,7 @@ struct DOMPointInit;
 class DOMMatrixReadOnly : public ScriptWrappable, public RefCounted<DOMMatrixReadOnly> {
     WTF_MAKE_ISO_ALLOCATED(DOMMatrixReadOnly);
 public:
-    static ExceptionOr<Ref<DOMMatrixReadOnly>> create(ScriptExecutionContext&, Optional<Variant<String, Vector<double>>>&&);
+    static ExceptionOr<Ref<DOMMatrixReadOnly>> create(ScriptExecutionContext&, Optional<Variant<String, std::vector<double>>>&&);
 
     enum class Is2D { No, Yes };
     static Ref<DOMMatrixReadOnly> create(const TransformationMatrix& matrix, Is2D is2D)
@@ -92,7 +92,7 @@ public:
     bool isIdentity() const;
 
     ExceptionOr<void> setMatrixValue(const String&);
-    ExceptionOr<void> setMatrixValue(const Vector<double>&);
+    ExceptionOr<void> setMatrixValue(const std::vector<double>&);
 
     Ref<DOMMatrix> translate(double tx = 0, double ty = 0, double tz = 0);
     ExceptionOr<Ref<DOMMatrix>> multiply(DOMMatrixInit&& other) const;

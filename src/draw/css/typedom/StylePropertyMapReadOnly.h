@@ -39,10 +39,10 @@ class TypedOMCSSStyleValue;
 class StylePropertyMapReadOnly : public RefCounted<StylePropertyMapReadOnly> {
 public:
     virtual ~StylePropertyMapReadOnly() = default;
-    virtual RefPtr<TypedOMCSSStyleValue> get(const String& property) const = 0;
+    virtual RefPtr<TypedOMCSSStyleValue> get(const std::string& property) const = 0;
 
     static RefPtr<TypedOMCSSStyleValue> reifyValue(CSSValue*, Document&, Element* = nullptr);
-    static RefPtr<TypedOMCSSStyleValue> customPropertyValueOrDefault(const String& name, Document&, CSSValue*, Element* = nullptr);
+    static RefPtr<TypedOMCSSStyleValue> customPropertyValueOrDefault(const std::string& name, Document&, CSSValue*, Element* = nullptr);
 };
 
 } // namespace WebCore

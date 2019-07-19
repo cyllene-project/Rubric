@@ -49,7 +49,7 @@ typedef FontTaggedSettings<int> FontFeatureSettings;
 class CSSFontFaceSource final : public CachedFontClient {
 
 public:
-    CSSFontFaceSource(CSSFontFace& owner, const String& familyNameOrURI, CachedFont* = nullptr, SVGFontFaceElement* = nullptr, RefPtr<JSC::ArrayBufferView>&& = nullptr);
+    CSSFontFaceSource(CSSFontFace& owner, const std::string& familyNameOrURI, CachedFont* = nullptr, SVGFontFaceElement* = nullptr, RefPtr<JSC::ArrayBufferView>&& = nullptr);
     virtual ~CSSFontFaceSource();
 
     //                      => Success

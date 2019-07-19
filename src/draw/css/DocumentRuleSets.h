@@ -39,7 +39,7 @@ class MediaQueryEvaluator;
 struct InvalidationRuleSet {
     MatchElement matchElement;
     std::unique_ptr<RuleSet> ruleSet;
-    Vector<const CSSSelector*> invalidationSelectors;
+    std::vector<const CSSSelector*> invalidationSelectors;
 
 
 };
@@ -57,8 +57,8 @@ public:
     RuleSet* sibling() const { return m_siblingRuleSet.get(); }
     RuleSet* uncommonAttribute() const { return m_uncommonAttributeRuleSet.get(); }
 
-    const Vector<InvalidationRuleSet>* classInvalidationRuleSets(const AtomString& className) const;
-    const Vector<InvalidationRuleSet>* attributeInvalidationRuleSets(const AtomString& attributeName) const;
+    const std::vector<InvalidationRuleSet>* classInvalidationRuleSets(const AtomString& className) const;
+    const std::vector<InvalidationRuleSet>* attributeInvalidationRuleSets(const AtomString& attributeName) const;
 
     bool hasComplexSelectorsForStyleAttribute() const;
 
@@ -68,7 +68,7 @@ public:
     void initializeUserStyle();
 
     void resetAuthorStyle();
-    void appendAuthorStyleSheets(const Vector<RefPtr<CSSStyleSheet>>&, MediaQueryEvaluator*, InspectorCSSOMWrappers&, StyleResolver*);
+    void appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&, MediaQueryEvaluator*, InspectorCSSOMWrappers&, StyleResolver*);
 
     void resetUserAgentMediaQueryStyle();
 
@@ -76,7 +76,7 @@ public:
 
 private:
     void collectFeatures() const;
-    void collectRulesFromUserStyleSheets(const Vector<RefPtr<CSSStyleSheet>>&, RuleSet& userStyle, const MediaQueryEvaluator&, StyleResolver&);
+    void collectRulesFromUserStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&, RuleSet& userStyle, const MediaQueryEvaluator&, StyleResolver&);
     void updateUserAgentMediaQueryStyleIfNeeded() const;
 
     std::unique_ptr<RuleSet> m_authorStyle;
@@ -87,8 +87,8 @@ private:
     mutable RuleFeatureSet m_features;
     mutable std::unique_ptr<RuleSet> m_siblingRuleSet;
     mutable std::unique_ptr<RuleSet> m_uncommonAttributeRuleSet;
-    mutable HashMap<AtomString, std::unique_ptr<Vector<InvalidationRuleSet>>> m_classInvalidationRuleSets;
-    mutable HashMap<AtomString, std::unique_ptr<Vector<InvalidationRuleSet>>> m_attributeInvalidationRuleSets;
+    mutable HashMap<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>> m_classInvalidationRuleSets;
+    mutable HashMap<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>> m_attributeInvalidationRuleSets;
 
     mutable Optional<bool> m_cachedHasComplexSelectorsForStyleAttribute;
 

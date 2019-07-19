@@ -16,7 +16,20 @@ namespace rubric {
         URL(const URL&, const std::string &);
 
         bool empty() const noexcept;
+
+        std::string url;
     };
 }
+
+namespace std {
+    template<> struct hash<rubric::URL> {
+        typedef rubric::URL argument_type;
+        typedef std::size_t result_type;
+        result_type operator()(argument_type const& s) const noexcept  {
+            return std::hash<std::string>{}(s.url);
+        }
+    };
+}
+
 
 #endif //RUBRIC_URL_H

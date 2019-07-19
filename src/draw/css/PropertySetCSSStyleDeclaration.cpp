@@ -163,7 +163,7 @@ String PropertySetCSSStyleDeclaration::cssText() const
     return m_propertySet->asText();
 }
 
-ExceptionOr<void> PropertySetCSSStyleDeclaration::setCssText(const String& text)
+ExceptionOr<void> PropertySetCSSStyleDeclaration::setCssText(const std::string& text)
 {
     StyleAttributeMutationScope mutationScope(this);
     if (!willMutate())
@@ -177,7 +177,7 @@ ExceptionOr<void> PropertySetCSSStyleDeclaration::setCssText(const String& text)
     return { };
 }
 
-RefPtr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue(const String& propertyName)
+RefPtr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue(const std::string& propertyName)
 {
     if (isCustomPropertyName(propertyName)) {
         RefPtr<CSSValue> value = m_propertySet->getCustomPropertyCSSValue(propertyName);
@@ -192,7 +192,7 @@ RefPtr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue
     return wrapForDeprecatedCSSOM(getPropertyCSSValueInternal(propertyID).get());
 }
 
-String PropertySetCSSStyleDeclaration::getPropertyValue(const String& propertyName)
+String PropertySetCSSStyleDeclaration::getPropertyValue(const std::string& propertyName)
 {
     if (isCustomPropertyName(propertyName))
         return m_propertySet->getCustomPropertyValue(propertyName);
@@ -203,7 +203,7 @@ String PropertySetCSSStyleDeclaration::getPropertyValue(const String& propertyNa
     return getPropertyValueInternal(propertyID);
 }
 
-String PropertySetCSSStyleDeclaration::getPropertyPriority(const String& propertyName)
+String PropertySetCSSStyleDeclaration::getPropertyPriority(const std::string& propertyName)
 {
     if (isCustomPropertyName(propertyName))
         return m_propertySet->customPropertyIsImportant(propertyName) ? "important"_s : emptyString();
@@ -214,7 +214,7 @@ String PropertySetCSSStyleDeclaration::getPropertyPriority(const String& propert
     return m_propertySet->propertyIsImportant(propertyID) ? "important"_s : emptyString();
 }
 
-String PropertySetCSSStyleDeclaration::getPropertyShorthand(const String& propertyName)
+String PropertySetCSSStyleDeclaration::getPropertyShorthand(const std::string& propertyName)
 {
     CSSPropertyID propertyID = cssPropertyID(propertyName);
     if (!propertyID)
@@ -222,7 +222,7 @@ String PropertySetCSSStyleDeclaration::getPropertyShorthand(const String& proper
     return m_propertySet->getPropertyShorthand(propertyID);
 }
 
-bool PropertySetCSSStyleDeclaration::isPropertyImplicit(const String& propertyName)
+bool PropertySetCSSStyleDeclaration::isPropertyImplicit(const std::string& propertyName)
 {
     CSSPropertyID propertyID = cssPropertyID(propertyName);
     if (!propertyID)
@@ -230,7 +230,7 @@ bool PropertySetCSSStyleDeclaration::isPropertyImplicit(const String& propertyNa
     return m_propertySet->isPropertyImplicit(propertyID);
 }
 
-ExceptionOr<void> PropertySetCSSStyleDeclaration::setProperty(const String& propertyName, const String& value, const String& priority)
+ExceptionOr<void> PropertySetCSSStyleDeclaration::setProperty(const std::string& propertyName, const std::string& value, const std::string& priority)
 {
     StyleAttributeMutationScope mutationScope(this);
 
@@ -271,7 +271,7 @@ ExceptionOr<void> PropertySetCSSStyleDeclaration::setProperty(const String& prop
     return { };
 }
 
-ExceptionOr<String> PropertySetCSSStyleDeclaration::removeProperty(const String& propertyName)
+ExceptionOr<String> PropertySetCSSStyleDeclaration::removeProperty(const std::string& propertyName)
 {
     StyleAttributeMutationScope mutationScope(this);
     CSSPropertyID propertyID = cssPropertyID(propertyName);
@@ -307,7 +307,7 @@ String PropertySetCSSStyleDeclaration::getPropertyValueInternal(CSSPropertyID pr
     return String();
 }
 
-ExceptionOr<bool> PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropertyID propertyID, const String& value, bool important)
+ExceptionOr<bool> PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropertyID propertyID, const std::string& value, bool important)
 { 
     StyleAttributeMutationScope mutationScope(this);
     if (!willMutate())

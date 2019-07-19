@@ -117,9 +117,9 @@ public:
     std::string getPropertyShorthand(CSSPropertyID) const;
     bool isPropertyImplicit(CSSPropertyID) const;
 
-    RefPtr<CSSValue> getCustomPropertyCSSValue(const String& propertyName) const;
-    std::string getCustomPropertyValue(const String& propertyName) const;
-    bool customPropertyIsImportant(const String& propertyName) const;
+    RefPtr<CSSValue> getCustomPropertyCSSValue(const std::string& propertyName) const;
+    std::string getCustomPropertyValue(const std::string& propertyName) const;
+    bool customPropertyIsImportant(const std::string& propertyName) const;
 
     Ref<MutableStyleProperties> copyBlockProperties() const;
 
@@ -153,7 +153,7 @@ protected:
     { }
 
     int findPropertyIndex(CSSPropertyID) const;
-    int findCustomPropertyIndex(const String& propertyName) const;
+    int findCustomPropertyIndex(const std::string& propertyName) const;
 
 private:
     std::string getShorthandValue(const StylePropertyShorthand&) const;
@@ -185,7 +185,7 @@ public:
     const CSSValue** valueArray() const;
     const StylePropertyMetadata* metadataArray() const;
     int findPropertyIndex(CSSPropertyID) const;
-    int findCustomPropertyIndex(const String& propertyName) const;
+    int findCustomPropertyIndex(const std::string& propertyName) const;
     
     void* m_storage;
 
@@ -220,8 +220,8 @@ public:
     bool addParsedProperty(const CSSProperty&);
 
     // These expand shorthand properties into multiple properties.
-    bool setProperty(CSSPropertyID, const String& value, bool important, CSSParserContext);
-    bool setProperty(CSSPropertyID, const String& value, bool important = false);
+    bool setProperty(CSSPropertyID, const std::string& value, bool important, CSSParserContext);
+    bool setProperty(CSSPropertyID, const std::string& value, bool important = false);
     void setProperty(CSSPropertyID, RefPtr<CSSValue>&&, bool important = false);
 
     // These do not. FIXME: This is too messy, we can do better.
@@ -236,19 +236,19 @@ public:
     void mergeAndOverrideOnConflict(const StyleProperties&);
 
     void clear();
-    bool parseDeclaration(const String& styleDeclaration, CSSParserContext);
+    bool parseDeclaration(const std::string& styleDeclaration, CSSParserContext);
 
     CSSStyleDeclaration& ensureCSSStyleDeclaration();
     CSSStyleDeclaration& ensureInlineCSSStyleDeclaration(StyledElement& parentElement);
 
     int findPropertyIndex(CSSPropertyID) const;
-    int findCustomPropertyIndex(const String& propertyName) const;
+    int findCustomPropertyIndex(const std::string& propertyName) const;
     
-    Vector<CSSProperty, 4> m_propertyVector;
+    std::vector<CSSProperty, 4> m_propertyVector;
 
     // Methods for querying and altering CSS custom properties.
-    //bool setCustomProperty(const Document*, const String& propertyName, const String& value, bool important, CSSParserContext);
-    bool removeCustomProperty(const String& propertyName, String* returnText = nullptr);
+    //bool setCustomProperty(const Document*, const std::string& propertyName, const std::string& value, bool important, CSSParserContext);
+    bool removeCustomProperty(const std::string& propertyName, String* returnText = nullptr);
 
 private:
     explicit MutableStyleProperties(CSSParserMode);
@@ -273,7 +273,7 @@ public:
 private:
     DeferredStyleProperties(const CSSParserTokenRange&, CSSDeferredParser&);
     
-    Vector<CSSParserToken> m_tokens;
+    std::vector<CSSParserToken> m_tokens;
     Ref<CSSDeferredParser> m_parser;
 };
 
@@ -322,7 +322,7 @@ inline int StyleProperties::findPropertyIndex(CSSPropertyID propertyID) const
     return downcast<ImmutableStyleProperties>(*this).findPropertyIndex(propertyID);
 }
 
-inline int StyleProperties::findCustomPropertyIndex(const String& propertyName) const
+inline int StyleProperties::findCustomPropertyIndex(const std::string& propertyName) const
 {
     if (is<MutableStyleProperties>(*this))
         return downcast<MutableStyleProperties>(*this).findCustomPropertyIndex(propertyName);

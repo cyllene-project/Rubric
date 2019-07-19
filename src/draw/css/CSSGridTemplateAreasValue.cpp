@@ -49,7 +49,7 @@ CSSGridTemplateAreasValue::CSSGridTemplateAreasValue(const NamedGridAreaMap& gri
 
 static String stringForPosition(const NamedGridAreaMap& gridAreaMap, size_t row, size_t column)
 {
-    Vector<String> candidates;
+    std::vector<String> candidates;
 
     for (const auto& it : gridAreaMap) {
         const GridArea& area = it.value;

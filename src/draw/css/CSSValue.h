@@ -21,6 +21,7 @@
 #pragma once
 
 #include "CSSPropertyNames.h"
+#include <functional>
 
 namespace WebCore {
 
@@ -32,7 +33,7 @@ class StyleSheetContents;
 
 enum CSSPropertyID : uint16_t;
 
-class CSSValue : public RefCounted<CSSValue> {
+class CSSValue {
 public:
     enum Type {
         CSS_INHERIT = 0,
@@ -116,7 +117,7 @@ public:
 
     Ref<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
 
-    bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
+    bool traverseSubresources(const std::function<bool (const CachedResource&)>& handler) const;
 
     // What properties does this value rely on (eg, font-size for em units)
     void collectDirectComputationalDependencies(HashSet<CSSPropertyID>&) const;
@@ -241,7 +242,7 @@ friend class CSSValueList;
 };
 
 template<typename CSSValueType>
-inline bool compareCSSValueVector(const Vector<Ref<CSSValueType>>& firstVector, const Vector<Ref<CSSValueType>>& secondVector)
+inline bool compareCSSValueVector(const std::vector<Ref<CSSValueType>>& firstVector, const std::vector<Ref<CSSValueType>>& secondVector)
 {
     size_t size = firstVector.size();
     if (size != secondVector.size())

@@ -67,7 +67,7 @@ String CSSPageRule::selectorText() const
     return text.toString();
 }
 
-void CSSPageRule::setSelectorText(const String& selectorText)
+void CSSPageRule::setSelectorText(const std::string& selectorText)
 {
     CSSParser parser(parserContext());
     CSSSelectorList selectorList;

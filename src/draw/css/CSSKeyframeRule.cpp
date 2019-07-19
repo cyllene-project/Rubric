@@ -40,7 +40,7 @@ StyleRuleKeyframe::StyleRuleKeyframe(Ref<StyleProperties>&& properties)
 {
 }
 
-StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<Vector<double>> keys, Ref<StyleProperties>&& properties)
+StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<std::vector<double>> keys, Ref<StyleProperties>&& properties)
     : StyleRuleBase(Keyframe)
     , m_properties(WTFMove(properties))
     , m_keys(*keys)
@@ -70,7 +70,7 @@ String StyleRuleKeyframe::keyText() const
     return keyText.toString();
 }
     
-bool StyleRuleKeyframe::setKeyText(const String& keyText)
+bool StyleRuleKeyframe::setKeyText(const std::string& keyText)
 {
     ASSERT(!keyText.isNull());
     auto keys = CSSParser::parseKeyframeKeyList(keyText);

@@ -33,7 +33,7 @@ class ScriptExecutionContext;
 
 class DOMMatrix : public DOMMatrixReadOnly {
 public:
-    static ExceptionOr<Ref<DOMMatrix>> create(ScriptExecutionContext&, Optional<Variant<String, Vector<double>>>&&);
+    static ExceptionOr<Ref<DOMMatrix>> create(ScriptExecutionContext&, Optional<Variant<String, std::vector<double>>>&&);
 
     static Ref<DOMMatrix> create(const TransformationMatrix& matrix, Is2D is2D)
     {

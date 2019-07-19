@@ -42,7 +42,7 @@ public:
         return adoptRef(*new StyleRuleKeyframe(WTFMove(properties)));
     }
 
-    static Ref<StyleRuleKeyframe> create(std::unique_ptr<Vector<double>> keys, Ref<StyleProperties>&& properties)
+    static Ref<StyleRuleKeyframe> create(std::unique_ptr<std::vector<double>> keys, Ref<StyleProperties>&& properties)
     {
         return adoptRef(*new StyleRuleKeyframe(WTFMove(keys), WTFMove(properties)));
     }
@@ -57,7 +57,7 @@ public:
         m_keys.append(key);
     }
 
-    const Vector<double>& keys() const { return m_keys; };
+    const std::vector<double>& keys() const { return m_keys; };
 
     const StyleProperties& properties() const { return m_properties; }
     MutableStyleProperties& mutableProperties();
@@ -66,10 +66,10 @@ public:
 
 private:
     explicit StyleRuleKeyframe(Ref<StyleProperties>&&);
-    StyleRuleKeyframe(std::unique_ptr<Vector<double>>, Ref<StyleProperties>&&);
+    StyleRuleKeyframe(std::unique_ptr<std::vector<double>>, Ref<StyleProperties>&&);
 
     Ref<StyleProperties> m_properties;
-    Vector<double> m_keys;
+    std::vector<double> m_keys;
 };
 
 class CSSKeyframeRule final : public CSSRule {
@@ -80,7 +80,7 @@ public:
     void reattach(StyleRuleBase&) final;
 
     std::string keyText() const { return m_keyframe->keyText(); }
-    void setKeyText(const String& text) { m_keyframe->setKeyText(text); }
+    void setKeyText(const std::string& text) { m_keyframe->setKeyText(text); }
 
     CSSStyleDeclaration& style();
 

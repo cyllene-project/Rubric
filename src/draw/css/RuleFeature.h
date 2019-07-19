@@ -60,11 +60,11 @@ struct RuleFeatureSet {
     HashSet<AtomString> attributeCanonicalLocalNamesInRules;
     HashSet<AtomString> attributeLocalNamesInRules;
     HashSet<AtomString> contentAttributeNamesInRules;
-    Vector<RuleFeature> siblingRules;
-    Vector<RuleFeature> uncommonAttributeRules;
+    std::vector<RuleFeature> siblingRules;
+    std::vector<RuleFeature> uncommonAttributeRules;
     
-    HashMap<AtomString, std::unique_ptr<Vector<RuleFeature>>> classRules;
-    HashMap<AtomString, std::unique_ptr<Vector<RuleFeature>>> attributeRules;
+    HashMap<AtomString, std::unique_ptr<std::vector<RuleFeature>>> classRules;
+    HashMap<AtomString, std::unique_ptr<std::vector<RuleFeature>>> attributeRules;
     HashSet<AtomString> classesAffectingHost;
     HashSet<AtomString> attributesAffectingHost;
 
@@ -78,8 +78,8 @@ private:
     struct SelectorFeatures {
         bool hasSiblingSelector { false };
 
-        Vector<std::pair<AtomString, MatchElement>, 32> classes;
-        Vector<std::pair<const CSSSelector*, MatchElement>, 32> attributes;
+        std::vector<std::pair<AtomString, MatchElement>, 32> classes;
+        std::vector<std::pair<const CSSSelector*, MatchElement>, 32> attributes;
     };
     void recursivelyCollectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, MatchElement = MatchElement::Subject);
 };

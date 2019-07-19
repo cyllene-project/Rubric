@@ -291,7 +291,7 @@ CSSPrimitiveValue::CSSPrimitiveValue(double num, UnitType type)
     m_value.num = num;
 }
 
-CSSPrimitiveValue::CSSPrimitiveValue(const String& string, UnitType type)
+CSSPrimitiveValue::CSSPrimitiveValue(const std::string& string, UnitType type)
     : CSSValue(PrimitiveClass)
 {
     ASSERT(isStringType(type));

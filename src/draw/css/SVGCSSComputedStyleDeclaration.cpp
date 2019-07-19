@@ -49,7 +49,7 @@ static RefPtr<CSSPrimitiveValue> glyphOrientationToCSSPrimitiveValue(GlyphOrient
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-static Ref<CSSValue> strokeDashArrayToCSSValueList(const Vector<SVGLengthValue>& dashes)
+static Ref<CSSValue> strokeDashArrayToCSSValueList(const std::vector<SVGLengthValue>& dashes)
 {
     if (dashes.isEmpty())
         return CSSPrimitiveValue::createIdentifier(CSSValueNone);
@@ -61,7 +61,7 @@ static Ref<CSSValue> strokeDashArrayToCSSValueList(const Vector<SVGLengthValue>&
     return list;
 }
 
-Ref<CSSValue> ComputedStyleExtractor::adjustSVGPaintForCurrentColor(SVGPaintType paintType, const String& url, const Color& color, const Color& currentColor) const
+Ref<CSSValue> ComputedStyleExtractor::adjustSVGPaintForCurrentColor(SVGPaintType paintType, const std::string& url, const Color& color, const Color& currentColor) const
 {
     if (paintType >= SVGPaintType::URINone) {
         auto values = CSSValueList::createSpaceSeparated();

@@ -102,7 +102,7 @@ public:
     static RefPtr<ShapeValue> convertShapeValue(StyleResolver&, CSSValue&);
 
     static GridTrackSize convertGridTrackSize(StyleResolver&, const CSSValue&);
-    static Vector<GridTrackSize> convertGridTrackSizeList(StyleResolver&, const CSSValue&);
+    static std::vector<GridTrackSize> convertGridTrackSizeList(StyleResolver&, const CSSValue&);
     static Optional<GridPosition> convertGridPosition(StyleResolver&, const CSSValue&);
     static GridAutoFlow convertGridAutoFlow(StyleResolver&, const CSSValue&);
     static Optional<Length> convertWordSpacing(StyleResolver&, const CSSValue&);
@@ -120,8 +120,8 @@ public:
     static FontSelectionValue convertFontStyle(StyleResolver&, const CSSValue&);
     static FontVariationSettings convertFontVariationSettings(StyleResolver&, const CSSValue&);
     static SVGLengthValue convertSVGLengthValue(StyleResolver&, const CSSValue&);
-    static Vector<SVGLengthValue> convertSVGLengthVector(StyleResolver&, const CSSValue&);
-    static Vector<SVGLengthValue> convertStrokeDashArray(StyleResolver&, const CSSValue&);
+    static std::vector<SVGLengthValue> convertSVGLengthVector(StyleResolver&, const CSSValue&);
+    static std::vector<SVGLengthValue> convertStrokeDashArray(StyleResolver&, const CSSValue&);
     static PaintOrder convertPaintOrder(StyleResolver&, const CSSValue&);
     static float convertOpacity(StyleResolver&, const CSSValue&);
     static String convertSVGURIReference(StyleResolver&, const CSSValue&);
@@ -321,7 +321,7 @@ inline Length StyleBuilderConverter::convertTo100PercentMinusLength(const Length
         return Length(100 - length.value(), Percent);
     
     // Turn this into a calc expression: calc(100% - length)
-    Vector<std::unique_ptr<CalcExpressionNode>> lengths;
+    std::vector<std::unique_ptr<CalcExpressionNode>> lengths;
     lengths.reserveInitialCapacity(2);
     lengths.uncheckedAppend(std::make_unique<CalcExpressionLength>(Length(100, Percent)));
     lengths.uncheckedAppend(std::make_unique<CalcExpressionLength>(length));
@@ -658,11 +658,11 @@ inline Ref<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, cons
 {
     if (is<CSSPrimitiveValue>(value)) {
         ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
-        return QuotesData::create(Vector<std::pair<String, String>>());
+        return QuotesData::create(std::vector<std::pair<String, String>>());
     }
 
     auto& list = downcast<CSSValueList>(value);
-    Vector<std::pair<String, String>> quotes;
+    std::vector<std::pair<String, String>> quotes;
     quotes.reserveInitialCapacity(list.length() / 2);
     for (unsigned i = 0; i < list.length(); i += 2) {
         const CSSValue* first = list.itemWithoutBoundsCheck(i);
@@ -903,9 +903,9 @@ static void createGridLineNamesList(const CSSValue& value, unsigned currentNamed
 
     for (auto& namedGridLineValue : downcast<CSSGridLineNamesValue>(value)) {
         std::string namedGridLine = downcast<CSSPrimitiveValue>(namedGridLineValue.get()).stringValue();
-        auto result = namedGridLines.add(namedGridLine, Vector<unsigned>());
+        auto result = namedGridLines.add(namedGridLine, std::vector<unsigned>());
         result.iterator->value.append(currentNamedGridLine);
-        auto orderedResult = orderedNamedGridLines.add(currentNamedGridLine, Vector<String>());
+        auto orderedResult = orderedNamedGridLines.add(currentNamedGridLine, std::vector<String>());
         orderedResult.iterator->value.append(namedGridLine);
     }
 }
@@ -916,10 +916,10 @@ struct StyleBuilderConverter::TracksData {
 public:
     TracksData() = default;
 
-    Vector<GridTrackSize> m_trackSizes;
+    std::vector<GridTrackSize> m_trackSizes;
     NamedGridLinesMap m_namedGridLines;
     OrderedNamedGridLinesMap m_orderedNamedGridLines;
-    Vector<GridTrackSize> m_autoRepeatTrackSizes;
+    std::vector<GridTrackSize> m_autoRepeatTrackSizes;
     NamedGridLinesMap m_autoRepeatNamedGridLines;
     OrderedNamedGridLinesMap m_autoRepeatOrderedNamedGridLines;
     unsigned m_autoRepeatInsertionPoint { RenderStyle::initialGridAutoRepeatInsertionPoint() };
@@ -1037,23 +1037,23 @@ inline void StyleBuilderConverter::createImplicitNamedGridLinesFromGridArea(cons
     for (auto& area : namedGridAreas) {
         GridSpan areaSpan = direction == ForRows ? area.value.rows : area.value.columns;
         {
-            auto& startVector = namedGridLines.add(area.key + "-start", Vector<unsigned>()).iterator->value;
+            auto& startVector = namedGridLines.add(area.key + "-start", std::vector<unsigned>()).iterator->value;
             startVector.append(areaSpan.startLine());
             std::sort(startVector.begin(), startVector.end());
         }
         {
-            auto& endVector = namedGridLines.add(area.key + "-end", Vector<unsigned>()).iterator->value;
+            auto& endVector = namedGridLines.add(area.key + "-end", std::vector<unsigned>()).iterator->value;
             endVector.append(areaSpan.endLine());
             std::sort(endVector.begin(), endVector.end());
         }
     }
 }
 
-inline Vector<GridTrackSize> StyleBuilderConverter::convertGridTrackSizeList(StyleResolver& styleResolver, const CSSValue& value)
+inline std::vector<GridTrackSize> StyleBuilderConverter::convertGridTrackSizeList(StyleResolver& styleResolver, const CSSValue& value)
 {
     ASSERT(value.isValueList());
     auto& valueList = downcast<CSSValueList>(value);
-    Vector<GridTrackSize> trackSizes;
+    std::vector<GridTrackSize> trackSizes;
     trackSizes.reserveInitialCapacity(valueList.length());
     for (auto& currValue : valueList) {
         ASSERT(!currValue->isGridLineNamesValue());
@@ -1325,11 +1325,11 @@ inline SVGLengthValue StyleBuilderConverter::convertSVGLengthValue(StyleResolver
     return SVGLengthValue::fromCSSPrimitiveValue(downcast<CSSPrimitiveValue>(value));
 }
 
-inline Vector<SVGLengthValue> StyleBuilderConverter::convertSVGLengthVector(StyleResolver& styleResolver, const CSSValue& value)
+inline std::vector<SVGLengthValue> StyleBuilderConverter::convertSVGLengthVector(StyleResolver& styleResolver, const CSSValue& value)
 {
     auto& valueList = downcast<CSSValueList>(value);
 
-    Vector<SVGLengthValue> svgLengths;
+    std::vector<SVGLengthValue> svgLengths;
     svgLengths.reserveInitialCapacity(valueList.length());
     for (auto& item : valueList)
         svgLengths.uncheckedAppend(convertSVGLengthValue(styleResolver, item));
@@ -1337,7 +1337,7 @@ inline Vector<SVGLengthValue> StyleBuilderConverter::convertSVGLengthVector(Styl
     return svgLengths;
 }
 
-inline Vector<SVGLengthValue> StyleBuilderConverter::convertStrokeDashArray(StyleResolver& styleResolver, const CSSValue& value)
+inline std::vector<SVGLengthValue> StyleBuilderConverter::convertStrokeDashArray(StyleResolver& styleResolver, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
         ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);

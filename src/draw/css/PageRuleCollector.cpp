@@ -65,7 +65,7 @@ void PageRuleCollector::matchAllPageRules(int pageIndex)
 {
     const bool isLeft = isLeftPage(pageIndex);
     const bool isFirst = isFirstPage(pageIndex);
-    const String page = pageName(pageIndex);
+    const std::string page = pageName(pageIndex);
     
     matchPageRules(CSSDefaultStyleSheets::defaultPrintStyle, isLeft, isFirst, page);
     matchPageRules(m_ruleSets.userStyle(), isLeft, isFirst, page);
@@ -74,12 +74,12 @@ void PageRuleCollector::matchAllPageRules(int pageIndex)
         matchPageRules(&m_ruleSets.authorStyle(), isLeft, isFirst, page);
 }
 
-void PageRuleCollector::matchPageRules(RuleSet* rules, bool isLeftPage, bool isFirstPage, const String& pageName)
+void PageRuleCollector::matchPageRules(RuleSet* rules, bool isLeftPage, bool isFirstPage, const std::string& pageName)
 {
     if (!rules)
         return;
 
-    Vector<StyleRulePage*> matchedPageRules;
+    std::vector<StyleRulePage*> matchedPageRules;
     matchPageRulesForList(matchedPageRules, rules->pageRules(), isLeftPage, isFirstPage, pageName);
     if (matchedPageRules.isEmpty())
         return;
@@ -90,7 +90,7 @@ void PageRuleCollector::matchPageRules(RuleSet* rules, bool isLeftPage, bool isF
         m_result.addMatchedProperties(matchedPageRules[i]->properties());
 }
 
-static bool checkPageSelectorComponents(const CSSSelector* selector, bool isLeftPage, bool isFirstPage, const String& pageName)
+static bool checkPageSelectorComponents(const CSSSelector* selector, bool isLeftPage, bool isFirstPage, const std::string& pageName)
 {
     for (const CSSSelector* component = selector; component; component = component->tagHistory()) {
         if (component->match() == CSSSelector::Tag) {
@@ -110,7 +110,7 @@ static bool checkPageSelectorComponents(const CSSSelector* selector, bool isLeft
     return true;
 }
 
-void PageRuleCollector::matchPageRulesForList(Vector<StyleRulePage*>& matchedRules, const Vector<StyleRulePage*>& rules, bool isLeftPage, bool isFirstPage, const String& pageName)
+void PageRuleCollector::matchPageRulesForList(std::vector<StyleRulePage*>& matchedRules, const std::vector<StyleRulePage*>& rules, bool isLeftPage, bool isFirstPage, const std::string& pageName)
 {
     for (unsigned i = 0; i < rules.size(); ++i) {
         StyleRulePage* rule = rules[i];

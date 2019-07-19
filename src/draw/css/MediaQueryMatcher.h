@@ -67,7 +67,7 @@ private:
     std::string mediaType() const;
 
     WeakPtr<Document> m_document;
-    Vector<Listener> m_listeners;
+    std::vector<Listener> m_listeners;
 
     // This value is incremented at style selector changes.
     // It is used to avoid evaluating queries more then once and to make sure

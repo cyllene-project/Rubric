@@ -42,7 +42,7 @@ struct MediaQueryParserContext;
 class MediaQueryExpression {
 
 public:
-    explicit MediaQueryExpression(const String& mediaFeature, CSSParserTokenRange&, MediaQueryParserContext&);
+    explicit MediaQueryExpression(const std::string& mediaFeature, CSSParserTokenRange&, MediaQueryParserContext&);
 
     const AtomString& mediaFeature() const;
     CSSValue* value() const;

@@ -1008,8 +1008,8 @@ Ref<CSSValue> ComputedStyleExtractor::valueForFilter(const RenderStyle& style, c
 
     auto list = CSSValueList::createSpaceSeparated();
 
-    Vector<RefPtr<FilterOperation>>::const_iterator end = filterOperations.operations().end();
-    for (Vector<RefPtr<FilterOperation>>::const_iterator it = filterOperations.operations().begin(); it != end; ++it) {
+    std::vector<RefPtr<FilterOperation>>::const_iterator end = filterOperations.operations().end();
+    for (std::vector<RefPtr<FilterOperation>>::const_iterator it = filterOperations.operations().begin(); it != end; ++it) {
         FilterOperation& filterOperation = **it;
 
         if (filterOperation.type() == FilterOperation::REFERENCE) {
@@ -2659,7 +2659,7 @@ inline static bool isFlexOrGrid(ContainerNode* element)
     return element && element->computedStyle() && element->computedStyle()->isDisplayFlexibleOrGridBox();
 }
 
-RefPtr<CSSValue> ComputedStyleExtractor::customPropertyValue(const String& propertyName)
+RefPtr<CSSValue> ComputedStyleExtractor::customPropertyValue(const std::string& propertyName)
 {
     Element* styledElement = this->styledElement();
     if (!styledElement)
@@ -2698,7 +2698,7 @@ RefPtr<CSSValue> ComputedStyleExtractor::customPropertyValue(const String& prope
     });
 }
 
-String ComputedStyleExtractor::customPropertyText(const String& propertyName)
+String ComputedStyleExtractor::customPropertyText(const std::string& propertyName)
 {
     RefPtr<CSSValue> propertyValue = customPropertyValue(propertyName);
     return propertyValue ? propertyValue->cssText() : emptyString();
@@ -4339,7 +4339,7 @@ Ref<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesForGridShorthand(c
 
 Ref<MutableStyleProperties> ComputedStyleExtractor::copyPropertiesInSet(const CSSPropertyID* set, unsigned length)
 {
-    Vector<CSSProperty, 256> list;
+    std::vector<CSSProperty, 256> list;
     list.reserveInitialCapacity(length);
     for (unsigned i = 0; i < length; ++i) {
         if (auto value = propertyValue(set[i]))
@@ -4353,7 +4353,7 @@ CSSRule* CSSComputedStyleDeclaration::parentRule() const
     return nullptr;
 }
 
-RefPtr<DeprecatedCSSOMValue> CSSComputedStyleDeclaration::getPropertyCSSValue(const String& propertyName)
+RefPtr<DeprecatedCSSOMValue> CSSComputedStyleDeclaration::getPropertyCSSValue(const std::string& propertyName)
 {
     if (isCustomPropertyName(propertyName)) {
         auto value = ComputedStyleExtractor(m_element.ptr(), m_allowVisitedStyle, m_pseudoElementSpecifier).customPropertyValue(propertyName);
@@ -4371,7 +4371,7 @@ RefPtr<DeprecatedCSSOMValue> CSSComputedStyleDeclaration::getPropertyCSSValue(co
     return value->createDeprecatedCSSOMWrapper(*this);
 }
 
-String CSSComputedStyleDeclaration::getPropertyValue(const String &propertyName)
+String CSSComputedStyleDeclaration::getPropertyValue(const std::string &propertyName)
 {
     if (isCustomPropertyName(propertyName))
         return ComputedStyleExtractor(m_element.ptr(), m_allowVisitedStyle, m_pseudoElementSpecifier).customPropertyText(propertyName);

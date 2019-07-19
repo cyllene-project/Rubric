@@ -65,7 +65,7 @@ public:
 
     CSSFontFace* lookUpByCSSConnection(StyleRuleFontFace&);
 
-    ExceptionOr<bool> check(const String& font, const String& text);
+    ExceptionOr<bool> check(const std::string& font, const std::string& text);
 
     CSSSegmentedFontFace* fontFace(FontSelectionRequest, const AtomString& family);
 
@@ -74,7 +74,7 @@ public:
 
     bool hasActiveFontFaces() { return status() == Status::Loading; }
 
-    ExceptionOr<Vector<std::reference_wrapper<CSSFontFace>>> matchingFacesExcludingPreinstalledFonts(const String& font, const String& text);
+    ExceptionOr<std::vector<std::reference_wrapper<CSSFontFace>>> matchingFacesExcludingPreinstalledFonts(const std::string& font, const std::string& text);
 
     // CSSFontFace::Client needs to be able to be held in a RefPtr.
     void ref() final { RefCounted::ref(); }
@@ -111,9 +111,9 @@ private:
     using FontSelectionHashMap = HashMap<FontSelectionKey, RefPtr<CSSSegmentedFontFace>, FontSelectionKeyHash, FontSelectionKeyHashTraits>;
 
     // m_faces should hold all the same fonts as the ones inside inside m_facesLookupTable.
-    Vector<Ref<CSSFontFace>> m_faces; // We should investigate moving m_faces to FontFaceSet and making it reference FontFaces. This may clean up the font loading design.
-    HashMap<String, Vector<Ref<CSSFontFace>>, ASCIICaseInsensitiveHash> m_facesLookupTable;
-    HashMap<String, Vector<Ref<CSSFontFace>>, ASCIICaseInsensitiveHash> m_locallyInstalledFacesLookupTable;
+    std::vector<Ref<CSSFontFace>> m_faces; // We should investigate moving m_faces to FontFaceSet and making it reference FontFaces. This may clean up the font loading design.
+    HashMap<String, std::vector<Ref<CSSFontFace>>, ASCIICaseInsensitiveHash> m_facesLookupTable;
+    HashMap<String, std::vector<Ref<CSSFontFace>>, ASCIICaseInsensitiveHash> m_locallyInstalledFacesLookupTable;
     HashMap<String, FontSelectionHashMap, ASCIICaseInsensitiveHash> m_cache;
     HashMap<StyleRuleFontFace*, CSSFontFace*> m_constituentCSSConnections;
     size_t m_facesPartitionIndex { 0 }; // All entries in m_faces before this index are CSS-connected.

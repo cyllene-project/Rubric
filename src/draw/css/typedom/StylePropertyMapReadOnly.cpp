@@ -57,7 +57,7 @@ RefPtr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::reifyValue(CSSValue* valu
     return TypedOMCSSUnparsedValue::create(value->cssText());
 }
 
-RefPtr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::customPropertyValueOrDefault(const String& name, Document& document, CSSValue* inputValue, Element* element)
+RefPtr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::customPropertyValueOrDefault(const std::string& name, Document& document, CSSValue* inputValue, Element* element)
 {
     if (!inputValue) {
         auto* registered = document.getCSSRegisteredCustomPropertySet().get(name);

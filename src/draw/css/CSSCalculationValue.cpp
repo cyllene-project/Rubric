@@ -48,8 +48,8 @@ enum ParseState {
 
 namespace WebCore {
 
-static RefPtr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode&, const RenderStyle&);
-static RefPtr<CSSCalcExpressionNode> createCSS(const Length&, const RenderStyle&);
+static std::shared_ptr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode&, const RenderStyle&);
+static std::shared_ptr<CSSCalcExpressionNode> createCSS(const Length&, const RenderStyle&);
 
 static CalculationCategory unitCategory(CSSPrimitiveValue::UnitType type)
 {
@@ -189,12 +189,12 @@ double CSSCalcValue::computeLengthPx(const CSSToLengthConversionData& conversion
 class CSSCalcPrimitiveValue final : public CSSCalcExpressionNode {
 
 public:
-    static Ref<CSSCalcPrimitiveValue> create(Ref<CSSPrimitiveValue>&& value, bool isInteger)
+    static std::reference_wrapper<CSSCalcPrimitiveValue> create(std::reference_wrapper<CSSPrimitiveValue>&& value, bool isInteger)
     {
-        return adoptRef(*new CSSCalcPrimitiveValue(WTFMove(value), isInteger));
+        return adoptRef(*new CSSCalcPrimitiveValue(std::move(value), isInteger));
     }
 
-    static RefPtr<CSSCalcPrimitiveValue> create(double value, CSSPrimitiveValue::UnitType type, bool isInteger)
+    static std::shared_ptr<CSSCalcPrimitiveValue> create(double value, CSSPrimitiveValue::UnitType type, bool isInteger)
     {
         if (!std::isfinite(value))
             return nullptr;
@@ -265,12 +265,12 @@ private:
         return 0;
     }
 
-    void collectDirectComputationalDependencies(HashSet<CSSPropertyID>& values) const final
+    void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const final
     {
         m_value->collectDirectComputationalDependencies(values);
     }
 
-    void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>& values) const final
+    void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const final
     {
         m_value->collectDirectRootComputationalDependencies(values);
     }
@@ -290,13 +290,13 @@ private:
     }
 
 private:
-    explicit CSSCalcPrimitiveValue(Ref<CSSPrimitiveValue>&& value, bool isInteger)
+    explicit CSSCalcPrimitiveValue(std::reference_wrapper<CSSPrimitiveValue>&& value, bool isInteger)
         : CSSCalcExpressionNode(unitCategory((CSSPrimitiveValue::UnitType)value->primitiveType()), isInteger)
-        , m_value(WTFMove(value))
+        , m_value(std::move(value))
     {
     }
 
-    Ref<CSSPrimitiveValue> m_value;
+    std::reference_wrapper<CSSPrimitiveValue> m_value;
 };
 
 static const CalculationCategory addSubtractResult[static_cast<unsigned>(CalculationCategory::Angle)][static_cast<unsigned>(CalculationCategory::Angle)] = {
@@ -312,8 +312,8 @@ static CalculationCategory determineCategory(const CSSCalcExpressionNode& leftSi
 {
     CalculationCategory leftCategory = leftSide.category();
     CalculationCategory rightCategory = rightSide.category();
-    ASSERT(leftCategory < CalculationCategory::Other);
-    ASSERT(rightCategory < CalculationCategory::Other);
+    assert(leftCategory < CalculationCategory::Other);
+    assert(rightCategory < CalculationCategory::Other);
 
     switch (op) {
     case CalcOperator::Add:
@@ -372,7 +372,7 @@ static inline bool isIntegerResult(CalcOperator op, const CSSCalcExpressionNode&
     return op != CalcOperator::Divide && leftSide.isInteger() && rightSide.isInteger();
 }
 
-static inline bool isIntegerResult(CalcOperator op, const std::vector<Ref<CSSCalcExpressionNode>>& nodes)
+static inline bool isIntegerResult(CalcOperator op, const std::vector<std::reference_wrapper<CSSCalcExpressionNode>>& nodes)
 {
     // Performs W3C spec's type checking for calc integers.
     // http://www.w3.org/TR/css3-values/#calc-type-checking
@@ -395,13 +395,13 @@ static bool isSamePair(CalculationCategory a, CalculationCategory b, Calculation
 class CSSCalcOperation final : public CSSCalcExpressionNode {
 
 public:
-    static RefPtr<CSSCalcOperation> create(CalcOperator op, RefPtr<CSSCalcExpressionNode>&& leftSide, RefPtr<CSSCalcExpressionNode>&& rightSide)
+    static std::shared_ptr<CSSCalcOperation> create(CalcOperator op, std::shared_ptr<CSSCalcExpressionNode>&& leftSide, std::shared_ptr<CSSCalcExpressionNode>&& rightSide)
     {
         if (!leftSide || !rightSide)
             return nullptr;
 
-        ASSERT(leftSide->category() < CalculationCategory::Other);
-        ASSERT(rightSide->category() < CalculationCategory::Other);
+        assert(leftSide->category() < CalculationCategory::Other);
+        assert(rightSide->category() < CalculationCategory::Other);
 
         auto newCategory = determineCategory(*leftSide, *rightSide, op);
         if (newCategory == CalculationCategory::Other)
@@ -410,15 +410,15 @@ public:
         return adoptRef(new CSSCalcOperation(newCategory, op, leftSide.releaseNonNull(), rightSide.releaseNonNull()));
     }
 
-    static RefPtr<CSSCalcOperation> createMinOrMax(CalcOperator op, std::vector<Ref<CSSCalcExpressionNode>>&& values, CalculationCategory destinationCategory)
+    static std::shared_ptr<CSSCalcOperation> createMinOrMax(CalcOperator op, std::vector<std::reference_wrapper<CSSCalcExpressionNode>>&& values, CalculationCategory destinationCategory)
     {
-        ASSERT(op == CalcOperator::Min || op == CalcOperator::Max);
+        assert(op == CalcOperator::Min || op == CalcOperator::Max);
 
         Optional<CalculationCategory> category = WTF::nullopt;
         for (auto& value : values) {
             auto valueCategory = resolvedTypeForMinOrMax(value->category(), destinationCategory);
 
-            ASSERT(valueCategory < CalculationCategory::Other);
+            assert(valueCategory < CalculationCategory::Other);
             if (!category) {
                 if (valueCategory == CalculationCategory::Other)
                     return nullptr;
@@ -438,18 +438,18 @@ public:
             }
         }
 
-        return adoptRef(new CSSCalcOperation(category.value(), op, WTFMove(values)));
+        return adoptRef(new CSSCalcOperation(category.value(), op, std::move(values)));
     }
 
-    static RefPtr<CSSCalcExpressionNode> createSimplified(CalcOperator op, RefPtr<CSSCalcExpressionNode>&& leftSide, RefPtr<CSSCalcExpressionNode>&& rightSide)
+    static std::shared_ptr<CSSCalcExpressionNode> createSimplified(CalcOperator op, std::shared_ptr<CSSCalcExpressionNode>&& leftSide, std::shared_ptr<CSSCalcExpressionNode>&& rightSide)
     {
         if (!leftSide || !rightSide)
             return nullptr;
 
         auto leftCategory = leftSide->category();
         auto rightCategory = rightSide->category();
-        ASSERT(leftCategory < CalculationCategory::Other);
-        ASSERT(rightCategory < CalculationCategory::Other);
+        assert(leftCategory < CalculationCategory::Other);
+        assert(rightCategory < CalculationCategory::Other);
 
         bool isInteger = isIntegerResult(op, *leftSide, *rightSide);
 
@@ -480,7 +480,7 @@ public:
             }
         } else {
             // Simplify multiplying or dividing by a number for simplifiable types.
-            ASSERT(op == CalcOperator::Multiply || op == CalcOperator::Divide);
+            assert(op == CalcOperator::Multiply || op == CalcOperator::Divide);
             auto* numberSide = getNumberSide(*leftSide, *rightSide);
             if (!numberSide)
                 return create(op, leftSide.releaseNonNull(), rightSide.releaseNonNull());
@@ -517,9 +517,9 @@ private:
             auto node = child->createCalcExpression(conversionData);
             if (!node)
                 return nullptr;
-            nodes.uncheckedAppend(WTFMove(node));
+            nodes.uncheckedAppend(std::move(node));
         }
-        return std::make_unique<CalcExpressionOperation>(WTFMove(nodes), m_operator);
+        return std::make_unique<CalcExpressionOperation>(std::move(nodes), m_operator);
     }
 
     double doubleValue() const final
@@ -538,19 +538,19 @@ private:
         return evaluate(doubleValues);
     }
 
-    void collectDirectComputationalDependencies(HashSet<CSSPropertyID>& values) const final
+    void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const final
     {
         for (auto& child : m_children)
             child->collectDirectComputationalDependencies(values);
     }
 
-    void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>& values) const final
+    void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const final
     {
         for (auto& child : m_children)
             child->collectDirectRootComputationalDependencies(values);
     }
 
-    static String buildCssText(std::vector<String> childExpressions, CalcOperator op)
+    static String buildCssText(std::vector<std::string> childExpressions, CalcOperator op)
     {
         StringBuilder result;
         result.append('(');
@@ -559,7 +559,7 @@ private:
         case CalcOperator::Subtract:
         case CalcOperator::Multiply:
         case CalcOperator::Divide:
-            ASSERT(childExpressions.size() == 2);
+            assert(childExpressions.size() == 2);
             result.append(childExpressions[0]);
             result.append(' ');
             result.append(static_cast<char>(op));
@@ -568,7 +568,7 @@ private:
             break;
         case CalcOperator::Min:
         case CalcOperator::Max:
-            ASSERT(!childExpressions.isEmpty());
+            assert(!childExpressions.isEmpty());
             const char* functionName = op == CalcOperator::Min ? "min(" : "max(";
             result.append(functionName);
             result.append(childExpressions[0]);
@@ -586,7 +586,7 @@ private:
 
     std::string customCSSText() const final
     {
-        std::vector<String> cssTexts;
+        std::vector<std::string> cssTexts;
         for (auto& child : m_children)
             cssTexts.append(child->customCSSText());
         return buildCssText(cssTexts, m_operator);
@@ -617,7 +617,7 @@ private:
         case CalculationCategory::Number:
 #if !ASSERT_DISABLED
             for (auto& child : m_children)
-                ASSERT(child->category() == CalculationCategory::Number);
+                assert(child->category() == CalculationCategory::Number);
 #endif
             return CSSPrimitiveValue::CSS_NUMBER;
         case CalculationCategory::Length:
@@ -652,19 +652,19 @@ private:
         return CSSPrimitiveValue::CSS_UNKNOWN;
     }
 
-    CSSCalcOperation(CalculationCategory category, CalcOperator op, Ref<CSSCalcExpressionNode>&& leftSide, Ref<CSSCalcExpressionNode>&& rightSide)
+    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::reference_wrapper<CSSCalcExpressionNode>&& leftSide, std::reference_wrapper<CSSCalcExpressionNode>&& rightSide)
         : CSSCalcExpressionNode(category, isIntegerResult(op, leftSide.get(), rightSide.get()))
         , m_operator(op)
     {
         m_children.reserveInitialCapacity(2);
-        m_children.uncheckedAppend(WTFMove(leftSide));
-        m_children.uncheckedAppend(WTFMove(rightSide));
+        m_children.uncheckedAppend(std::move(leftSide));
+        m_children.uncheckedAppend(std::move(rightSide));
     }
 
-    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::vector<Ref<CSSCalcExpressionNode>>&& children)
+    CSSCalcOperation(CalculationCategory category, CalcOperator op, std::vector<std::reference_wrapper<CSSCalcExpressionNode>>&& children)
         : CSSCalcExpressionNode(category, isIntegerResult(op, children))
         , m_operator(op)
-        , m_children(WTFMove(children))
+        , m_children(std::move(children))
     {
     }
 
@@ -686,16 +686,16 @@ private:
     {
         switch (op) {
         case CalcOperator::Add:
-            ASSERT(children.size() == 2);
+            assert(children.size() == 2);
             return children[0] + children[1];
         case CalcOperator::Subtract:
-            ASSERT(children.size() == 2);
+            assert(children.size() == 2);
             return children[0] - children[1];
         case CalcOperator::Multiply:
-            ASSERT(children.size() == 2);
+            assert(children.size() == 2);
             return children[0] * children[1];
         case CalcOperator::Divide:
-            ASSERT(children.size() == 1 || children.size() == 2);
+            assert(children.size() == 1 || children.size() == 2);
             if (children.size() == 1)
                 return std::numeric_limits<double>::quiet_NaN();
             return children[0] / children[1];
@@ -721,7 +721,7 @@ private:
     }
 
     const CalcOperator m_operator;
-    std::vector<Ref<CSSCalcExpressionNode>> m_children;
+    std::vector<std::reference_wrapper<CSSCalcExpressionNode>> m_children;
 };
 
 static ParseState checkDepthAndIndex(int* depth, CSSParserTokenRange tokens)
@@ -740,7 +740,7 @@ public:
         : m_destinationCategory(destinationCategory)
     { }
 
-    RefPtr<CSSCalcExpressionNode> parseCalc(CSSParserTokenRange tokens, CSSValueID function)
+    std::shared_ptr<CSSCalcExpressionNode> parseCalc(CSSParserTokenRange tokens, CSSValueID function)
     {
         Value result;
         tokens.consumeWhitespace();
@@ -756,7 +756,7 @@ public:
     
 private:
     struct Value {
-        RefPtr<CSSCalcExpressionNode> value;
+        std::shared_ptr<CSSCalcExpressionNode> value;
     };
     
     char operatorValue(const CSSParserToken& token)
@@ -824,7 +824,7 @@ private:
             if (!parseValueTerm(tokens, depth, &rhs))
                 return false;
             
-            result->value = CSSCalcOperation::createSimplified(static_cast<CalcOperator>(operatorCharacter), WTFMove(result->value), WTFMove(rhs.value));
+            result->value = CSSCalcOperation::createSimplified(static_cast<CalcOperator>(operatorCharacter), std::move(result->value), std::move(rhs.value));
 
             if (!result->value)
                 return false;
@@ -856,7 +856,7 @@ private:
             if (!parseValueMultiplicativeExpression(tokens, depth, &rhs))
                 return false;
             
-            result->value = CSSCalcOperation::createSimplified(static_cast<CalcOperator>(operatorCharacter), WTFMove(result->value), WTFMove(rhs.value));
+            result->value = CSSCalcOperation::createSimplified(static_cast<CalcOperator>(operatorCharacter), std::move(result->value), std::move(rhs.value));
             if (!result->value)
                 return false;
         }
@@ -875,7 +875,7 @@ private:
         if (!parseValueExpression(tokens, depth, &value))
             return false;
 
-        std::vector<Ref<CSSCalcExpressionNode>> nodes;
+        std::vector<std::reference_wrapper<CSSCalcExpressionNode>> nodes;
         nodes.append(value.value.releaseNonNull());
 
         while (!tokens.atEnd()) {
@@ -890,7 +890,7 @@ private:
             nodes.append(value.value.releaseNonNull());
         }
 
-        result->value = CSSCalcOperation::createMinOrMax(op, WTFMove(nodes), m_destinationCategory);
+        result->value = CSSCalcOperation::createMinOrMax(op, std::move(nodes), m_destinationCategory);
         return result->value;
     }
 
@@ -902,13 +902,13 @@ private:
     CalculationCategory m_destinationCategory;
 };
 
-static inline RefPtr<CSSCalcOperation> createBlendHalf(const Length& length, const RenderStyle& style, float progress)
+static inline std::shared_ptr<CSSCalcOperation> createBlendHalf(const Length& length, const RenderStyle& style, float progress)
 {
     return CSSCalcOperation::create(CalcOperator::Multiply, createCSS(length, style),
         CSSCalcPrimitiveValue::create(CSSPrimitiveValue::create(progress, CSSPrimitiveValue::CSS_NUMBER), !progress || progress == 1));
 }
 
-static RefPtr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode& node, const RenderStyle& style)
+static std::shared_ptr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode& node, const RenderStyle& style)
 {
     switch (node.type()) {
     case CalcExpressionNodeType::Number: {
@@ -922,7 +922,7 @@ static RefPtr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode& node, c
         auto& operationChildren = operationNode.children();
         CalcOperator op = operationNode.getOperator();
         if (op == CalcOperator::Min || op == CalcOperator::Max) {
-            std::vector<Ref<CSSCalcExpressionNode>> values;
+            std::vector<std::reference_wrapper<CSSCalcExpressionNode>> values;
             values.reserveInitialCapacity(operationChildren.size());
             for (auto& child : operationChildren) {
                 auto cssNode = createCSS(*child, style);
@@ -930,7 +930,7 @@ static RefPtr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode& node, c
                     return nullptr;
                 values.uncheckedAppend(*cssNode);
             }
-            return CSSCalcOperation::createMinOrMax(operationNode.getOperator(), WTFMove(values), CalculationCategory::Other);
+            return CSSCalcOperation::createMinOrMax(operationNode.getOperator(), std::move(values), CalculationCategory::Other);
         }
 
         if (operationChildren.size() == 2)
@@ -950,7 +950,7 @@ static RefPtr<CSSCalcExpressionNode> createCSS(const CalcExpressionNode& node, c
     return nullptr;
 }
 
-static RefPtr<CSSCalcExpressionNode> createCSS(const Length& length, const RenderStyle& style)
+static std::shared_ptr<CSSCalcExpressionNode> createCSS(const Length& length, const RenderStyle& style)
 {
     switch (length.type()) {
     case Percent:
@@ -972,7 +972,7 @@ static RefPtr<CSSCalcExpressionNode> createCSS(const Length& length, const Rende
     return nullptr;
 }
 
-RefPtr<CSSCalcValue> CSSCalcValue::create(CSSValueID function, const CSSParserTokenRange& tokens, CalculationCategory destinationCategory, ValueRange range)
+std::shared_ptr<CSSCalcValue> CSSCalcValue::create(CSSValueID function, const CSSParserTokenRange& tokens, CalculationCategory destinationCategory, ValueRange range)
 {
     CSSCalcExpressionNodeParser parser(destinationCategory);
     auto expression = parser.parseCalc(tokens, function);
@@ -981,7 +981,7 @@ RefPtr<CSSCalcValue> CSSCalcValue::create(CSSValueID function, const CSSParserTo
     return adoptRef(new CSSCalcValue(expression.releaseNonNull(), range != ValueRangeAll));
 }
     
-RefPtr<CSSCalcValue> CSSCalcValue::create(const CalculationValue& value, const RenderStyle& style)
+std::shared_ptr<CSSCalcValue> CSSCalcValue::create(const CalculationValue& value, const RenderStyle& style)
 {
     auto expression = createCSS(value.expression(), style);
     if (!expression)

@@ -57,7 +57,7 @@ public:
     bool hasAnyMatchingRules(const RuleSet*);
 
     StyleResolver::MatchResult& matchedResult();
-    const std::vector<RefPtr<StyleRule>>& matchedRuleList() const;
+    const std::vector<std::shared_ptr<StyleRule>>& matchedRuleList() const;
 
     bool hasMatchedRules() const { return !m_matchedRules.isEmpty(); }
     void clearMatchedRules();
@@ -102,7 +102,7 @@ private:
     std::vector<MatchedRule, 64> m_matchedRules;
 
     // Output.
-    std::vector<RefPtr<StyleRule>> m_matchedRuleList;
+    std::vector<std::shared_ptr<StyleRule>> m_matchedRuleList;
     bool m_didMatchUncommonAttributeSelector { false };
     StyleResolver::MatchResult m_result;
     Style::Relations m_styleRelations;

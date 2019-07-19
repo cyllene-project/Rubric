@@ -36,17 +36,17 @@
 
 namespace WebCore {
 
-Ref<StyleRuleImport> StyleRuleImport::create(const std::string& href, Ref<MediaQuerySet>&& media)
+Ref<StyleRuleImport> StyleRuleImport::create(const std::string& href, std::reference_wrapper<MediaQuerySet>&& media)
 {
-    return adoptRef(*new StyleRuleImport(href, WTFMove(media)));
+    return adoptRef(*new StyleRuleImport(href, std::move(media)));
 }
 
-StyleRuleImport::StyleRuleImport(const std::string& href, Ref<MediaQuerySet>&& media)
+StyleRuleImport::StyleRuleImport(const std::string& href, std::reference_wrapper<MediaQuerySet>&& media)
     : StyleRuleBase(Import)
     , m_parentStyleSheet(0)
     , m_styleSheetClient(this)
     , m_strHref(href)
-    , m_mediaQueries(WTFMove(media))
+    , m_mediaQueries(std::move(media))
     , m_cachedSheet(0)
     , m_loading(false)
 {
@@ -142,14 +142,14 @@ void StyleRuleImport::requestStyleSheet()
         };
         options.loadedFromOpaqueSource = m_parentStyleSheet->isContentOpaque() ? LoadedFromOpaqueSource::Yes : LoadedFromOpaqueSource::No;
 
-        request.setOptions(WTFMove(options));
+        request.setOptions(std::move(options));
 
-        m_cachedSheet = document->cachedResourceLoader().requestUserCSSStyleSheet(*page, WTFMove(request));
+        m_cachedSheet = document->cachedResourceLoader().requestUserCSSStyleSheet(*page, std::move(request));
     } else {
         auto options = request.options();
         options.loadedFromOpaqueSource = m_parentStyleSheet->isContentOpaque() ? LoadedFromOpaqueSource::Yes : LoadedFromOpaqueSource::No;
-        request.setOptions(WTFMove(options));
-        m_cachedSheet = document->cachedResourceLoader().requestCSSStyleSheet(WTFMove(request)).value_or(nullptr);
+        request.setOptions(std::move(options));
+        m_cachedSheet = document->cachedResourceLoader().requestCSSStyleSheet(std::move(request)).value_or(nullptr);
     }
     if (m_cachedSheet) {
         // if the import rule is issued dynamically, the sheet may be

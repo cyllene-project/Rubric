@@ -41,7 +41,7 @@ CSSPropertyID StylePropertyMetadata::shorthandID() const
         return CSSPropertyInvalid;
 
     auto shorthands = matchingShorthandsForLonghand(static_cast<CSSPropertyID>(m_propertyID));
-    ASSERT(shorthands.size() && m_indexInShorthandsVector >= 0 && m_indexInShorthandsVector < shorthands.size());
+    assert(shorthands.size() && m_indexInShorthandsVector >= 0 && m_indexInShorthandsVector < shorthands.size());
     return shorthands[m_indexInShorthandsVector].id();
 }
 
@@ -49,7 +49,7 @@ void CSSProperty::wrapValueInCommaSeparatedList()
 {
     auto list = CSSValueList::createCommaSeparated();
     list.get().append(m_value.releaseNonNull());
-    m_value = WTFMove(list);
+    m_value = std::move(list);
 }
 
 static CSSPropertyID resolveToPhysicalProperty(TextDirection direction, WritingMode writingMode, LogicalBoxSide logicalSide, const StylePropertyShorthand& shorthand)

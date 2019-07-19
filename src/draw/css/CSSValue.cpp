@@ -119,13 +119,13 @@ bool CSSValue::traverseSubresources(const WTF::Function<bool (const CachedResour
     return false;
 }
 
-void CSSValue::collectDirectComputationalDependencies(HashSet<CSSPropertyID>& values) const
+void CSSValue::collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const
 {
     if (is<CSSPrimitiveValue>(*this))
         downcast<CSSPrimitiveValue>(*this).collectDirectComputationalDependencies(values);
 }
 
-void CSSValue::collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>& values) const
+void CSSValue::collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const
 {
     if (is<CSSPrimitiveValue>(*this))
         downcast<CSSPrimitiveValue>(*this).collectDirectRootComputationalDependencies(values);

@@ -32,10 +32,10 @@ namespace WebCore {
 
 class StyleMedia final : public RefCounted<StyleMedia>, public DOMWindowProperty {
 public:
-    static Ref<StyleMedia> create(DOMWindow& window) { return adoptRef(*new StyleMedia(window)); }
+    static std::reference_wrapper<StyleMedia> create(DOMWindow& window) { return adoptRef(*new StyleMedia(window)); }
 
     std::string type() const;
-    bool matchMedium(const String&) const;
+    bool matchMedium(const std::string&) const;
 
 private:
     explicit StyleMedia(DOMWindow&);

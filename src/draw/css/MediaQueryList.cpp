@@ -27,18 +27,18 @@
 
 namespace WebCore {
 
-inline MediaQueryList::MediaQueryList(MediaQueryMatcher& matcher, Ref<MediaQuerySet>&& media, bool matches)
+inline MediaQueryList::MediaQueryList(MediaQueryMatcher& matcher, std::reference_wrapper<MediaQuerySet>&& media, bool matches)
     : m_matcher(matcher)
-    , m_media(WTFMove(media))
+    , m_media(std::move(media))
     , m_evaluationRound(m_matcher->evaluationRound())
     , m_changeRound(m_evaluationRound - 1) // Any value that is not the same as m_evaluationRound would do.
     , m_matches(matches)
 {
 }
 
-Ref<MediaQueryList> MediaQueryList::create(MediaQueryMatcher& matcher, Ref<MediaQuerySet>&& media, bool matches)
+Ref<MediaQueryList> MediaQueryList::create(MediaQueryMatcher& matcher, std::reference_wrapper<MediaQuerySet>&& media, bool matches)
 {
-    return adoptRef(*new MediaQueryList(matcher, WTFMove(media), matches));
+    return adoptRef(*new MediaQueryList(matcher, std::move(media), matches));
 }
 
 MediaQueryList::~MediaQueryList() = default;
@@ -48,7 +48,7 @@ String MediaQueryList::media() const
     return m_media->mediaText();
 }
 
-void MediaQueryList::addListener(RefPtr<MediaQueryListListener>&& listener)
+void MediaQueryList::addListener(std::shared_ptr<MediaQueryListListener>&& listener)
 {
     if (!listener)
         return;
@@ -56,7 +56,7 @@ void MediaQueryList::addListener(RefPtr<MediaQueryListListener>&& listener)
     m_matcher->addListener(listener.releaseNonNull(), *this);
 }
 
-void MediaQueryList::removeListener(RefPtr<MediaQueryListListener>&& listener)
+void MediaQueryList::removeListener(std::shared_ptr<MediaQueryListListener>&& listener)
 {
     if (!listener)
         return;

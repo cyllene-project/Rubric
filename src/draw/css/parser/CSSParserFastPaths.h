@@ -32,7 +32,7 @@
 #include "CSSParserMode.h"
 #include "CSSPropertyNames.h"
 #include "CSSValueKeywords.h"
-
+#include <memory>
 
 namespace WebCore {
 

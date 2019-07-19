@@ -135,8 +135,8 @@ public:
     static void applyValueStrokeWidth(StyleResolver&, CSSValue&);
     static void applyValueStrokeColor(StyleResolver&, CSSValue&);
 
-    static void applyInitialCustomProperty(StyleResolver&, const CSSRegisteredCustomProperty*, const AtomString& name);
-    static void applyInheritCustomProperty(StyleResolver&, const CSSRegisteredCustomProperty*, const AtomString& name);
+    static void applyInitialCustomProperty(StyleResolver&, const CSSRegisteredCustomProperty*, const std::atomic<std::string>& name);
+    static void applyInheritCustomProperty(StyleResolver&, const CSSRegisteredCustomProperty*, const std::atomic<std::string>& name);
     static void applyValueCustomProperty(StyleResolver&, const CSSRegisteredCustomProperty*, CSSCustomPropertyValue&);
 
 private:
@@ -223,12 +223,12 @@ inline void StyleBuilderCustom::applyValueZoom(StyleResolver& styleResolver, CSS
 }
 inline Length StyleBuilderCustom::mmLength(double mm)
 {
-    Ref<CSSPrimitiveValue> value(CSSPrimitiveValue::create(mm, CSSPrimitiveValue::CSS_MM));
+    std::reference_wrapper<CSSPrimitiveValue> value(CSSPrimitiveValue::create(mm, CSSPrimitiveValue::CSS_MM));
     return value.get().computeLength<Length>(CSSToLengthConversionData());
 }
 inline Length StyleBuilderCustom::inchLength(double inch)
 {
-    Ref<CSSPrimitiveValue> value(CSSPrimitiveValue::create(inch, CSSPrimitiveValue::CSS_IN));
+    std::reference_wrapper<CSSPrimitiveValue> value(CSSPrimitiveValue::create(inch, CSSPrimitiveValue::CSS_IN));
     return value.get().computeLength<Length>(CSSToLengthConversionData());
 }
 bool StyleBuilderCustom::getPageSizeFromName(CSSPrimitiveValue* pageSizeName, CSSPrimitiveValue* pageOrientation, Length& width, Length& height)
@@ -425,7 +425,7 @@ inline void StyleBuilderCustom::applyValueSize(StyleResolver& styleResolver, CSS
         return;
     }
     styleResolver.style()->setPageSizeType(pageSizeType);
-    styleResolver.style()->setPageSize({ WTFMove(width), WTFMove(height) });
+    styleResolver.style()->setPageSize({ std::move(width), std::move(height) });
 }
 
 inline void StyleBuilderCustom::applyInheritTextIndent(StyleResolver& styleResolver)
@@ -460,7 +460,7 @@ inline void StyleBuilderCustom::applyValueTextIndent(StyleResolver& styleResolve
     if (lengthOrPercentageValue.isUndefined())
         return;
 
-    styleResolver.style()->setTextIndent(WTFMove(lengthOrPercentageValue));
+    styleResolver.style()->setTextIndent(std::move(lengthOrPercentageValue));
     styleResolver.style()->setTextIndentLine(textIndentLineValue);
     styleResolver.style()->setTextIndentType(textIndentTypeValue);
 }
@@ -648,8 +648,8 @@ inline void StyleBuilderCustom::applyValueLineHeight(StyleResolver& styleResolve
             computedLineHeight = StyleBuilderConverter::convertLineHeight(styleResolver, value, multiplier).value();
     }
 
-    styleResolver.style()->setLineHeight(WTFMove(computedLineHeight));
-    styleResolver.style()->setSpecifiedLineHeight(WTFMove(lineHeight.value()));
+    styleResolver.style()->setLineHeight(std::move(computedLineHeight));
+    styleResolver.style()->setSpecifiedLineHeight(std::move(lineHeight.value()));
 }
 
 inline void StyleBuilderCustom::applyInheritOutlineStyle(StyleResolver& styleResolver)
@@ -697,10 +697,10 @@ inline void StyleBuilderCustom::applyValueClip(StyleResolver& styleResolver, CSS
         auto right = rect->right()->convertToLength<FixedIntegerConversion | PercentConversion | AutoConversion>(conversionData);
         auto bottom = rect->bottom()->convertToLength<FixedIntegerConversion | PercentConversion | AutoConversion>(conversionData);
         auto left = rect->left()->convertToLength<FixedIntegerConversion | PercentConversion | AutoConversion>(conversionData);
-        styleResolver.style()->setClip(WTFMove(top), WTFMove(right), WTFMove(bottom), WTFMove(left));
+        styleResolver.style()->setClip(std::move(top), std::move(right), std::move(bottom), std::move(left));
         styleResolver.style()->setHasClip(true);
     } else {
-        ASSERT(primitiveValue.valueID() == CSSValueAuto);
+        assert(primitiveValue.valueID() == CSSValueAuto);
         applyInitialClip(styleResolver);
     }
 }
@@ -714,7 +714,7 @@ inline void StyleBuilderCustom::applyValueWebkitLocale(StyleResolver& styleResol
         fontDescription.setLocale(nullAtom());
     else
         fontDescription.setLocale(primitiveValue.stringValue());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueWritingMode(StyleResolver& styleResolver, CSSValue& value)
@@ -763,7 +763,7 @@ template<CSSPropertyID property>
 inline void StyleBuilderCustom::applyTextOrBoxShadowValue(StyleResolver& styleResolver, CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         if (property == CSSPropertyTextShadow)
             styleResolver.style()->setTextShadow(nullptr);
         else
@@ -787,9 +787,9 @@ inline void StyleBuilderCustom::applyTextOrBoxShadowValue(StyleResolver& styleRe
             color = styleResolver.style()->color();
         auto shadowData = std::make_unique<ShadowData>(IntPoint(x, y), blur, spread, shadowStyle, property == CSSPropertyWebkitBoxShadow, color.isValid() ? color : Color::transparent);
         if (property == CSSPropertyTextShadow)
-            styleResolver.style()->setTextShadow(WTFMove(shadowData), !isFirstEntry); // add to the list if this is not the first entry
+            styleResolver.style()->setTextShadow(std::move(shadowData), !isFirstEntry); // add to the list if this is not the first entry
         else
-            styleResolver.style()->setBoxShadow(WTFMove(shadowData), !isFirstEntry); // add to the list if this is not the first entry
+            styleResolver.style()->setBoxShadow(std::move(shadowData), !isFirstEntry); // add to the list if this is not the first entry
         isFirstEntry = false;
     }
 }
@@ -852,7 +852,7 @@ inline void StyleBuilderCustom::applyInitialFontFamily(StyleResolver& styleResol
     if (!initialDesc.firstFamily().isEmpty())
         fontDescription.setFamilies(initialDesc.families());
 
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInheritFontFamily(StyleResolver& styleResolver)
@@ -862,7 +862,7 @@ inline void StyleBuilderCustom::applyInheritFontFamily(StyleResolver& styleResol
 
     fontDescription.setFamilies(parentFontDescription.families());
     fontDescription.setIsSpecifiedFont(parentFontDescription.isSpecifiedFont());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueFontFamily(StyleResolver& styleResolver, CSSValue& value)
@@ -939,7 +939,7 @@ inline void StyleBuilderCustom::applyValueFontFamily(StyleResolver& styleResolve
             styleResolver.setFontSize(fontDescription, Style::fontSizeForKeyword(sizeIdentifier, !oldFamilyUsedFixedDefaultSize, styleResolver.document()));
     }
 
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline bool StyleBuilderCustom::isValidDisplayValue(StyleResolver& styleResolver, DisplayType display)
@@ -1013,7 +1013,7 @@ inline void StyleBuilderCustom::applyValueWebkitAspectRatio(StyleResolver& style
         if (primitiveValue.valueID() == CSSValueFromIntrinsic)
             return styleResolver.style()->setAspectRatioType(AspectRatioType::FromIntrinsic);
 
-        ASSERT(primitiveValue.valueID() == CSSValueAuto);
+        assert(primitiveValue.valueID() == CSSValueAuto);
         return styleResolver.style()->setAspectRatioType(AspectRatioType::Auto);
     }
 
@@ -1041,7 +1041,7 @@ inline void StyleBuilderCustom::applyValueWebkitTextEmphasisStyle(StyleResolver&
 {
     if (is<CSSValueList>(value)) {
         auto& list = downcast<CSSValueList>(value);
-        ASSERT(list.length() == 2);
+        assert(list.length() == 2);
 
         for (auto& item : list) {
             CSSPrimitiveValue& value = downcast<CSSPrimitiveValue>(item.get());
@@ -1320,7 +1320,7 @@ inline void StyleBuilderCustom::applyValueContent(StyleResolver& styleResolver, 
             else
                 const_cast<RenderStyle*>(styleResolver.parentStyle())->setHasAttrContent();
             QualifiedName attr(nullAtom(), contentValue.stringValue().impl(), nullAtom());
-            const AtomString& value = styleResolver.element()->getAttribute(attr);
+            const std::atomic<std::string>& value = styleResolver.element()->getAttribute(attr);
             styleResolver.style()->setContent(value.isNull() ? emptyAtom() : value.impl(), didSet);
             didSet = true;
             // Register the fact that the attribute value affects the style.
@@ -1332,7 +1332,7 @@ inline void StyleBuilderCustom::applyValueContent(StyleResolver& styleResolver, 
             if (listStyleIdent != CSSValueNone)
                 listStyleType = static_cast<ListStyleType>(listStyleIdent - CSSValueDisc);
             auto counter = std::make_unique<CounterContent>(counterValue->identifier(), listStyleType, counterValue->separator());
-            styleResolver.style()->setContent(WTFMove(counter), didSet);
+            styleResolver.style()->setContent(std::move(counter), didSet);
             didSet = true;
         } else {
             switch (contentValue.valueID()) {
@@ -1369,7 +1369,7 @@ inline void StyleBuilderCustom::applyInheritFontVariantLigatures(StyleResolver& 
     fontDescription.setVariantDiscretionaryLigatures(styleResolver.parentFontDescription().variantDiscretionaryLigatures());
     fontDescription.setVariantHistoricalLigatures(styleResolver.parentFontDescription().variantHistoricalLigatures());
     fontDescription.setVariantContextualAlternates(styleResolver.parentFontDescription().variantContextualAlternates());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInitialFontVariantLigatures(StyleResolver& styleResolver)
@@ -1379,7 +1379,7 @@ inline void StyleBuilderCustom::applyInitialFontVariantLigatures(StyleResolver& 
     fontDescription.setVariantDiscretionaryLigatures(FontVariantLigatures::Normal);
     fontDescription.setVariantHistoricalLigatures(FontVariantLigatures::Normal);
     fontDescription.setVariantContextualAlternates(FontVariantLigatures::Normal);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueFontVariantLigatures(StyleResolver& styleResolver, CSSValue& value)
@@ -1390,7 +1390,7 @@ inline void StyleBuilderCustom::applyValueFontVariantLigatures(StyleResolver& st
     fontDescription.setVariantDiscretionaryLigatures(variantLigatures.discretionaryLigatures);
     fontDescription.setVariantHistoricalLigatures(variantLigatures.historicalLigatures);
     fontDescription.setVariantContextualAlternates(variantLigatures.contextualAlternates);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInheritFontVariantNumeric(StyleResolver& styleResolver)
@@ -1401,7 +1401,7 @@ inline void StyleBuilderCustom::applyInheritFontVariantNumeric(StyleResolver& st
     fontDescription.setVariantNumericFraction(styleResolver.parentFontDescription().variantNumericFraction());
     fontDescription.setVariantNumericOrdinal(styleResolver.parentFontDescription().variantNumericOrdinal());
     fontDescription.setVariantNumericSlashedZero(styleResolver.parentFontDescription().variantNumericSlashedZero());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInitialFontVariantNumeric(StyleResolver& styleResolver)
@@ -1412,7 +1412,7 @@ inline void StyleBuilderCustom::applyInitialFontVariantNumeric(StyleResolver& st
     fontDescription.setVariantNumericFraction(FontVariantNumericFraction::Normal);
     fontDescription.setVariantNumericOrdinal(FontVariantNumericOrdinal::Normal);
     fontDescription.setVariantNumericSlashedZero(FontVariantNumericSlashedZero::Normal);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueFontVariantNumeric(StyleResolver& styleResolver, CSSValue& value)
@@ -1424,7 +1424,7 @@ inline void StyleBuilderCustom::applyValueFontVariantNumeric(StyleResolver& styl
     fontDescription.setVariantNumericFraction(variantNumeric.fraction);
     fontDescription.setVariantNumericOrdinal(variantNumeric.ordinal);
     fontDescription.setVariantNumericSlashedZero(variantNumeric.slashedZero);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInheritFontVariantEastAsian(StyleResolver& styleResolver)
@@ -1433,7 +1433,7 @@ inline void StyleBuilderCustom::applyInheritFontVariantEastAsian(StyleResolver& 
     fontDescription.setVariantEastAsianVariant(styleResolver.parentFontDescription().variantEastAsianVariant());
     fontDescription.setVariantEastAsianWidth(styleResolver.parentFontDescription().variantEastAsianWidth());
     fontDescription.setVariantEastAsianRuby(styleResolver.parentFontDescription().variantEastAsianRuby());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInitialFontVariantEastAsian(StyleResolver& styleResolver)
@@ -1442,7 +1442,7 @@ inline void StyleBuilderCustom::applyInitialFontVariantEastAsian(StyleResolver& 
     fontDescription.setVariantEastAsianVariant(FontVariantEastAsianVariant::Normal);
     fontDescription.setVariantEastAsianWidth(FontVariantEastAsianWidth::Normal);
     fontDescription.setVariantEastAsianRuby(FontVariantEastAsianRuby::Normal);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueFontVariantEastAsian(StyleResolver& styleResolver, CSSValue& value)
@@ -1452,7 +1452,7 @@ inline void StyleBuilderCustom::applyValueFontVariantEastAsian(StyleResolver& st
     fontDescription.setVariantEastAsianVariant(variantEastAsian.variant);
     fontDescription.setVariantEastAsianWidth(variantEastAsian.width);
     fontDescription.setVariantEastAsianRuby(variantEastAsian.ruby);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInitialFontSize(StyleResolver& styleResolver)
@@ -1465,7 +1465,7 @@ inline void StyleBuilderCustom::applyInitialFontSize(StyleResolver& styleResolve
 
     fontDescription.setKeywordSizeFromIdentifier(CSSValueMedium);
     styleResolver.setFontSize(fontDescription, size);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInheritFontSize(StyleResolver& styleResolver)
@@ -1479,7 +1479,7 @@ inline void StyleBuilderCustom::applyInheritFontSize(StyleResolver& styleResolve
     auto fontDescription = styleResolver.style()->fontDescription();
     fontDescription.setKeywordSize(parentFontDescription.keywordSize());
     styleResolver.setFontSize(fontDescription, size);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 // When the CSS keyword "larger" is used, this function will attempt to match within the keyword
@@ -1521,7 +1521,7 @@ inline void StyleBuilderCustom::applyInitialFontStyle(StyleResolver& styleResolv
     auto fontDescription = styleResolver.fontDescription();
     fontDescription.setItalic(FontCascadeDescription::initialItalic());
     fontDescription.setFontStyleAxis(FontCascadeDescription::initialFontStyleAxis());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInheritFontStyle(StyleResolver& styleResolver)
@@ -1529,7 +1529,7 @@ inline void StyleBuilderCustom::applyInheritFontStyle(StyleResolver& styleResolv
     auto fontDescription = styleResolver.fontDescription();
     fontDescription.setItalic(styleResolver.parentFontDescription().italic());
     fontDescription.setFontStyleAxis(styleResolver.parentFontDescription().fontStyleAxis());
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueFontStyle(StyleResolver& styleResolver, CSSValue& value)
@@ -1538,7 +1538,7 @@ inline void StyleBuilderCustom::applyValueFontStyle(StyleResolver& styleResolver
     auto fontDescription = styleResolver.fontDescription();
     fontDescription.setItalic(StyleBuilderConverter::convertFontStyleFromValue(fontStyleValue));
     fontDescription.setFontStyleAxis(fontStyleValue.fontStyleValue->valueID() == CSSValueItalic ? FontStyleAxis::ital : FontStyleAxis::slnt);
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyValueFontSize(StyleResolver& styleResolver, CSSValue& value)
@@ -1602,7 +1602,7 @@ inline void StyleBuilderCustom::applyValueFontSize(StyleResolver& styleResolver,
         return;
 
     styleResolver.setFontSize(fontDescription, std::min(maximumAllowedFontSize, size));
-    styleResolver.setFontDescription(WTFMove(fontDescription));
+    styleResolver.setFontDescription(std::move(fontDescription));
 }
 
 inline void StyleBuilderCustom::applyInitialGridTemplateAreas(StyleResolver& styleResolver)
@@ -1622,7 +1622,7 @@ inline void StyleBuilderCustom::applyInheritGridTemplateAreas(StyleResolver& sty
 inline void StyleBuilderCustom::applyValueGridTemplateAreas(StyleResolver& styleResolver, CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return;
     }
 
@@ -1717,7 +1717,7 @@ void StyleBuilderCustom::applyValueAlt(StyleResolver& styleResolver, CSSValue& v
             const_cast<RenderStyle*>(styleResolver.parentStyle())->setUnique();
 
         QualifiedName attr(nullAtom(), primitiveValue.stringValue(), nullAtom());
-        const AtomString& value = styleResolver.element()->getAttribute(attr);
+        const std::atomic<std::string>& value = styleResolver.element()->getAttribute(attr);
         styleResolver.style()->setContentAltText(value.isNull() ? emptyAtom() : value);
 
         // Register the fact that the attribute value affects the style.
@@ -1729,7 +1729,7 @@ void StyleBuilderCustom::applyValueAlt(StyleResolver& styleResolver, CSSValue& v
 inline void StyleBuilderCustom::applyValueWillChange(StyleResolver& styleResolver, CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueAuto);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueAuto);
         styleResolver.style()->setWillChange(nullptr);
         return;
     }
@@ -1752,7 +1752,7 @@ inline void StyleBuilderCustom::applyValueWillChange(StyleResolver& styleResolve
             break;
         }
     }
-    styleResolver.style()->setWillChange(WTFMove(willChange));
+    styleResolver.style()->setWillChange(std::move(willChange));
 }
 
 inline void StyleBuilderCustom::applyValueStrokeWidth(StyleResolver& styleResolver, CSSValue& value)
@@ -1771,7 +1771,7 @@ inline void StyleBuilderCustom::applyValueStrokeColor(StyleResolver& styleResolv
     styleResolver.style()->setHasExplicitlySetStrokeColor(true);
 }
 
-inline void StyleBuilderCustom::applyInitialCustomProperty(StyleResolver& styleResolver, const CSSRegisteredCustomProperty* registered, const AtomString& name)
+inline void StyleBuilderCustom::applyInitialCustomProperty(StyleResolver& styleResolver, const CSSRegisteredCustomProperty* registered, const std::atomic<std::string>& name)
 {
     if (registered && registered->initialValue()) {
         auto initialValue = registered->initialValueCopy();
@@ -1783,7 +1783,7 @@ inline void StyleBuilderCustom::applyInitialCustomProperty(StyleResolver& styleR
     applyValueCustomProperty(styleResolver, registered, invalid.get());
 }
 
-inline void StyleBuilderCustom::applyInheritCustomProperty(StyleResolver& styleResolver, const CSSRegisteredCustomProperty* registered, const AtomString& name)
+inline void StyleBuilderCustom::applyInheritCustomProperty(StyleResolver& styleResolver, const CSSRegisteredCustomProperty* registered, const std::atomic<std::string>& name)
 {
     auto* parentValue = styleResolver.parentStyle() ? styleResolver.parentStyle()->inheritedCustomProperties().get(name) : nullptr;
     if (parentValue && !(registered && !registered->inherits))
@@ -1794,7 +1794,7 @@ inline void StyleBuilderCustom::applyInheritCustomProperty(StyleResolver& styleR
 
 inline void StyleBuilderCustom::applyValueCustomProperty(StyleResolver& styleResolver, const CSSRegisteredCustomProperty* registered, CSSCustomPropertyValue& value)
 {
-    ASSERT(value.isResolved());
+    assert(value.isResolved());
     const auto& name = value.name();
 
     if (!registered || registered->inherits)

@@ -48,37 +48,37 @@ public:
     virtual StyledElement* parentElement() const { return nullptr; }
     virtual CSSRule* parentRule() const = 0;
     virtual String cssText() const = 0;
-    virtual ExceptionOr<void> setCssText(const String&) = 0;
+    virtual ExceptionOr<void> setCssText(const std::string&) = 0;
     virtual unsigned length() const = 0;
     virtual String item(unsigned index) const = 0;
-    virtual RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) = 0;
+    virtual std::shared_ptr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) = 0;
     virtual String getPropertyValue(const std::string& propertyName) = 0;
     virtual String getPropertyPriority(const std::string& propertyName) = 0;
     virtual String getPropertyShorthand(const std::string& propertyName) = 0;
     virtual bool isPropertyImplicit(const std::string& propertyName) = 0;
     virtual ExceptionOr<void> setProperty(const std::string& propertyName, const std::string& value, const std::string& priority) = 0;
-    virtual ExceptionOr<String> removeProperty(const std::string& propertyName) = 0;
+    virtual ExceptionOr<std::string> removeProperty(const std::string& propertyName) = 0;
 
     std::string cssFloat();
-    ExceptionOr<void> setCssFloat(const String&);
+    ExceptionOr<void> setCssFloat(const std::string&);
 
     // CSSPropertyID versions of the CSSOM functions to support bindings and editing.
     // Use the non-virtual methods in the concrete subclasses when possible.
     // The CSSValue returned by this function should not be exposed to the web as it may be used by multiple documents at the same time.
-    virtual RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) = 0;
+    virtual std::shared_ptr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) = 0;
     virtual String getPropertyValueInternal(CSSPropertyID) = 0;
     virtual ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) = 0;
 
-    virtual Ref<MutableStyleProperties> copyProperties() const = 0;
+    virtual std::reference_wrapper<MutableStyleProperties> copyProperties() const = 0;
 
     virtual CSSStyleSheet* parentStyleSheet() const { return nullptr; }
 
     // Bindings support.
-    Optional<Variant<String, double>> namedItem(const AtomString&);
-    ExceptionOr<void> setNamedItem(const AtomString& name, String value, bool& propertySupported);
+    Optional<Variant<String, double>> namedItem(const std::atomic<std::string>&);
+    ExceptionOr<void> setNamedItem(const std::atomic<std::string>& name, String value, bool& propertySupported);
     std::vector<AtomString> supportedPropertyNames() const;
 
-    static CSSPropertyID getCSSPropertyIDFromJavaScriptPropertyName(const AtomString&);
+    static CSSPropertyID getCSSPropertyIDFromJavaScriptPropertyName(const std::atomic<std::string>&);
 protected:
     CSSStyleDeclaration() = default;
 };

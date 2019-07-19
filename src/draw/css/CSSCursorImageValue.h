@@ -36,9 +36,9 @@ class SVGElement;
 
 class CSSCursorImageValue final : public CSSValue {
 public:
-    static Ref<CSSCursorImageValue> create(Ref<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
+    static std::reference_wrapper<CSSCursorImageValue> create(std::reference_wrapper<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
     {
-        return adoptRef(*new CSSCursorImageValue(WTFMove(imageValue), hasHotSpot, hotSpot, loadedFromOpaqueSource));
+        return adoptRef(*new CSSCursorImageValue(std::move(imageValue), hasHotSpot, hotSpot, loadedFromOpaqueSource));
     }
 
     ~CSSCursorImageValue();
@@ -66,16 +66,16 @@ public:
     void cursorElementChanged(SVGCursorElement&);
 
 private:
-    CSSCursorImageValue(Ref<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource);
+    CSSCursorImageValue(std::reference_wrapper<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource);
 
     SVGCursorElement* updateCursorElement(const Document&);
 
     URL m_originalURL;
-    Ref<CSSValue> m_imageValue;
+    std::reference_wrapper<CSSValue> m_imageValue;
 
     bool m_hasHotSpot;
     IntPoint m_hotSpot;
-    HashSet<SVGCursorElement*> m_cursorElements;
+    std::unordered_set<SVGCursorElement*> m_cursorElements;
     LoadedFromOpaqueSource m_loadedFromOpaqueSource { LoadedFromOpaqueSource::No };
 };
 

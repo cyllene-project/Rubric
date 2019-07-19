@@ -30,7 +30,7 @@ class StyleRuleImport;
 
 class CSSImportRule final : public CSSRule {
 public:
-    static Ref<CSSImportRule> create(StyleRuleImport& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSImportRule(rule, sheet)); }
+    static std::reference_wrapper<CSSImportRule> create(StyleRuleImport& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSImportRule(rule, sheet)); }
 
     virtual ~CSSImportRule();
 
@@ -45,9 +45,9 @@ private:
     std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    Ref<StyleRuleImport> m_importRule;
-    mutable RefPtr<MediaList> m_mediaCSSOMWrapper;
-    mutable RefPtr<CSSStyleSheet> m_styleSheetCSSOMWrapper;
+    std::reference_wrapper<StyleRuleImport> m_importRule;
+    mutable std::shared_ptr<MediaList> m_mediaCSSOMWrapper;
+    mutable std::shared_ptr<CSSStyleSheet> m_styleSheetCSSOMWrapper;
 };
 
 } // namespace WebCore

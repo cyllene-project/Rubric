@@ -49,7 +49,7 @@ CSSGroupingRule::CSSGroupingRule(StyleRuleGroup& groupRule, CSSStyleSheet* paren
 
 CSSGroupingRule::~CSSGroupingRule()
 {
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
     for (unsigned i = 0; i < m_childRuleCSSOMWrappers.size(); ++i) {
         if (m_childRuleCSSOMWrappers[i])
             m_childRuleCSSOMWrappers[i]->setParentRule(0);
@@ -58,7 +58,7 @@ CSSGroupingRule::~CSSGroupingRule()
 
 ExceptionOr<unsigned> CSSGroupingRule::insertRule(const std::string& ruleString, unsigned index)
 {
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
 
     if (index > m_groupRule->childRules().size()) {
         // IndexSizeError: Raised if the specified index is not a valid insertion point.
@@ -66,7 +66,7 @@ ExceptionOr<unsigned> CSSGroupingRule::insertRule(const std::string& ruleString,
     }
 
     CSSStyleSheet* styleSheet = parentStyleSheet();
-    RefPtr<StyleRuleBase> newRule = CSSParser::parseRule(parserContext(), styleSheet ? &styleSheet->contents() : nullptr, ruleString);
+    std::shared_ptr<StyleRuleBase> newRule = CSSParser::parseRule(parserContext(), styleSheet ? &styleSheet->contents() : nullptr, ruleString);
     if (!newRule) {
         // SyntaxError: Raised if the specified rule has a syntax error and is unparsable.
         return Exception { SyntaxError };
@@ -86,13 +86,13 @@ ExceptionOr<unsigned> CSSGroupingRule::insertRule(const std::string& ruleString,
 
     m_groupRule->wrapperInsertRule(index, newRule.releaseNonNull());
 
-    m_childRuleCSSOMWrappers.insert(index, RefPtr<CSSRule>());
+    m_childRuleCSSOMWrappers.insert(index, std::shared_ptr<CSSRule>());
     return index;
 }
 
 ExceptionOr<void> CSSGroupingRule::deleteRule(unsigned index)
 {
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
 
     if (index >= m_groupRule->childRules().size()) {
         // IndexSizeError: Raised if the specified index does not correspond to a
@@ -130,8 +130,8 @@ CSSRule* CSSGroupingRule::item(unsigned index) const
 { 
     if (index >= length())
         return nullptr;
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
-    RefPtr<CSSRule>& rule = m_childRuleCSSOMWrappers[index];
+    assert(m_childRuleCSSOMWrappers.size() == m_groupRule->childRules().size());
+    std::shared_ptr<CSSRule>& rule = m_childRuleCSSOMWrappers[index];
     if (!rule)
         rule = m_groupRule->childRules()[index]->createCSSOMWrapper(const_cast<CSSGroupingRule*>(this));
     return rule.get();

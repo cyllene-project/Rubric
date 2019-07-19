@@ -47,7 +47,7 @@ String CSSPaintImageValue::customCSSText() const
     return result.toString();
 }
 
-RefPtr<Image> CSSPaintImageValue::image(RenderElement& renderElement, const FloatSize& size)
+std::shared_ptr<Image> CSSPaintImageValue::image(RenderElement& renderElement, const FloatSize& size)
 {
     if (size.isEmpty())
         return nullptr;
@@ -61,7 +61,7 @@ RefPtr<Image> CSSPaintImageValue::image(RenderElement& renderElement, const Floa
         return nullptr;
 
     // FIXME: Check if argument list matches syntax.
-    std::vector<String> arguments;
+    std::vector<std::string> arguments;
     CSSParserTokenRange localRange(m_arguments->tokenRange());
 
     while (!localRange.atEnd()) {

@@ -40,7 +40,7 @@ public:
     CSSSelectorList(CSSSelectorList&&) = default;
     explicit CSSSelectorList(std::vector<std::unique_ptr<CSSParserSelector>>&&);
     explicit CSSSelectorList(UniqueArray<CSSSelector>&& array)
-        : m_selectorArray(WTFMove(array)) { }
+        : m_selectorArray(std::move(array)) { }
 
     bool isValid() const { return !!m_selectorArray; }
     const CSSSelector* first() const { return m_selectorArray.get(); }

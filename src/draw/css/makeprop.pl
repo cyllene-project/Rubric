@@ -89,7 +89,7 @@ my %nameToAliases;
 for my $name (@allNames) {
     my $value = $propertiesHashRef->{$name};
     my $valueType = ref($value);
-    
+
     if ($valueType eq "HASH") {
         removeInactiveCodegenProperties($name, \%$value);
         if (isPropertyEnabled($name, $value)) {
@@ -103,7 +103,7 @@ for my $name (@allNames) {
 sub matchEnableFlags($)
 {
     my ($enable_flag) = @_;
-    
+
     if (exists($defines{$enable_flag})) {
         return 1;
     }
@@ -111,7 +111,7 @@ sub matchEnableFlags($)
     if (substr($enable_flag, 0, 1) eq "!" && !exists($defines{substr($enable_flag, 1)})) {
         return 1;
     }
-    
+
     return 0;
 }
 
@@ -122,7 +122,7 @@ sub removeInactiveCodegenProperties($$)
     if (!exists($propertyValue->{"codegen-properties"})) {
         return;
     }
-    
+
     my $codegen_properties = $propertyValue->{"codegen-properties"};
     my $valueType = ref($codegen_properties);
 
@@ -147,7 +147,7 @@ sub removeInactiveCodegenProperties($$)
 
         $matching_codegen_options = $entry;
     }
-    
+
     $propertyValue->{"codegen-properties"} = $matching_codegen_options;
 }
 
@@ -158,7 +158,7 @@ sub isPropertyEnabled($$)
     if (!exists($propertyValue->{"codegen-properties"})) {
         return 1;
     }
-    
+
     my $codegen_properties = $propertyValue->{"codegen-properties"};
     if ($codegen_properties->{"skip-codegen"}) {
         return 0;
@@ -246,11 +246,11 @@ print GPERF << "EOF";
 #include <string>
 #include <atomic>
 #include <assert.h>
-
+#include <cstring>
 #include <frozen/unordered_map.h>
 #include <frozen/string.h>
 
-using namespace WebCore;
+namespace WebCore {
 
 // Using std::numeric_limits<uint16_t>::max() here would be cleaner,
 // but is not possible due to missing constexpr support in MSVC 2013.
@@ -296,10 +296,10 @@ bool isEnabledCSSProperty(const CSSPropertyID id) {
 
 const char* getPropertyName(CSSPropertyID id) {
     if (id < firstCSSProperty)
-        return 0;
+        return nullptr;
     int index = id - firstCSSProperty;
     if (index >= numCSSProperties)
-        return 0;
+        return nullptr;
     return propertyNames[index].first.data();
 }
 
@@ -311,18 +311,18 @@ const std::atomic<std::string>& getPropertyNameAtomString(CSSPropertyID id) {
     if (index >= numCSSProperties)
         return nullAtom;
 
-    static std::atomic<std::string>* propertyStrings = new AtomString[numCSSProperties]; // Intentionally never destroyed.
-    std::atomic<std::string>& propertyString = propertyStrings[index];
-    if (propertyString.isNull()) {
-        const char* propertyName = propertyNameStrings[index];
-        propertyString = AtomString(propertyName, strlen(propertyName), AtomString::ConstructFromLiteral);
+    static std::atomic<std::string> propertyStrings[numCSSProperties]; // Intentionally never destroyed.
+    auto & propertyString = propertyStrings[index];
+    if (propertyString.load(std::memory_order_relaxed).empty()) {
+        const char* propertyName = propertyNames[index].first.data();
+        propertyString.store(propertyName);
     }
     return propertyString;
 }
 
 std::string getPropertyNameString(CSSPropertyID id) {
     // We share the StringImpl with the AtomStrings.
-    return getPropertyNameAtomString(id).string();
+    return getPropertyNameAtomString(id).load(std::memory_order_relaxed);
 }
 
 std::string getJSPropertyName(CSSPropertyID id) {
@@ -338,7 +338,7 @@ std::string getJSPropertyName(CSSPropertyID id) {
             char nextCharacter = *propertyNamePointer++;
             if (!nextCharacter)
                 break;
-            character = (propertyNamePointer - 2 != cssPropertyName) ? toASCIIUpper(nextCharacter) : nextCharacter;
+            character = (propertyNamePointer - 2 != cssPropertyName) ? toupper(nextCharacter) : nextCharacter;
         }
         *resultPointer++ = character;
     }
@@ -375,7 +375,7 @@ for my $name (@names) {
         next;
     }
     print GPERF "    case CSSPropertyID::CSSProperty" . $nameToId{$name} . ":\n";
-    print GPERF "        return { \"" . join("\"_s, \"", @{$nameToAliases{$name}}) . "\"_s };\n";
+    print GPERF "        return { \"" . join("\", \"", @{$nameToAliases{$name}}) . "\" };\n";
 }
 
 print GPERF << "EOF";
@@ -431,8 +431,8 @@ print HEADER "const CSSPropertyID lastHighPriorityProperty = CSSProperty" . $nam
 
 print HEADER << "EOF";
 
-bool isInternalCSSProperty(const CSSPropertyID);
-bool isEnabledCSSProperty(const CSSPropertyID);
+bool isInternalCSSProperty(CSSPropertyID);
+bool isEnabledCSSProperty(CSSPropertyID);
 const char* getPropertyName(CSSPropertyID);
 const std::atomic<std::string>& getPropertyNameAtomString(CSSPropertyID id);
 std::string getPropertyNameString(CSSPropertyID id);
@@ -824,7 +824,7 @@ sub generateInitialValueSetter {
   } elsif (exists $propertiesWithStyleBuilderOptions{$name}{"font-property"}) {
     $setterContent .= $indent . "    auto fontDescription = styleResolver.fontDescription();\n";
     $setterContent .= $indent . "    fontDescription." . $setter . "(FontCascadeDescription::" . $initial . "());\n";
-    $setterContent .= $indent . "    styleResolver.setFontDescription(WTFMove(fontDescription));\n";
+    $setterContent .= $indent . "    styleResolver.setFontDescription(std::move(fontDescription));\n";
   } elsif (exists $propertiesWithStyleBuilderOptions{$name}{"fill-layer-property"}) {
     $setterContent .= generateFillLayerPropertyInitialValueSetter($name, $indent . "    ");
   } else {
@@ -868,7 +868,7 @@ sub generateInheritValueSetter {
   } elsif (exists $propertiesWithStyleBuilderOptions{$name}{"font-property"}) {
     $setterContent .= $indent . "    auto fontDescription = styleResolver.fontDescription();\n";
     $setterContent .= $indent . "    fontDescription." . $setter . "(styleResolver.parentFontDescription()." . $getter . "());\n";
-    $setterContent .= $indent . "    styleResolver.setFontDescription(WTFMove(fontDescription));\n";
+    $setterContent .= $indent . "    styleResolver.setFontDescription(std::move(fontDescription));\n";
     $didCallSetValue = 1;
   } elsif (exists $propertiesWithStyleBuilderOptions{$name}{"fill-layer-property"}) {
     $setterContent .= generateFillLayerPropertyInheritValueSetter($name, $indent . "    ");
@@ -895,7 +895,7 @@ sub generateValueSetter {
     $convertedValue = "StyleBuilderConverter::convert" . $propertiesWithStyleBuilderOptions{$name}{"converter"} . "(styleResolver, value)";
   } elsif (exists($propertiesWithStyleBuilderOptions{$name}{"conditional-converter"})) {
     $setterContent .= $indent . "    auto convertedValue = StyleBuilderConverter::convert" . $propertiesWithStyleBuilderOptions{$name}{"conditional-converter"} . "(styleResolver, value);\n";
-    $convertedValue = "WTFMove(convertedValue.value())";
+    $convertedValue = "std::move(convertedValue.value())";
   } else {
     $convertedValue = "downcast<CSSPrimitiveValue>(value)";
   }
@@ -922,7 +922,7 @@ sub generateValueSetter {
   } elsif (exists $propertiesWithStyleBuilderOptions{$name}{"font-property"}) {
     $setterContent .= $indent . "    auto fontDescription = styleResolver.fontDescription();\n";
     $setterContent .= $indent . "    fontDescription." . $setter . "(" . $convertedValue . ");\n";
-    $setterContent .= $indent . "    styleResolver.setFontDescription(WTFMove(fontDescription));\n";
+    $setterContent .= $indent . "    styleResolver.setFontDescription(std::move(fontDescription));\n";
     $didCallSetValue = 1;
   } elsif (exists $propertiesWithStyleBuilderOptions{$name}{"fill-layer-property"}) {
     $setterContent .= generateFillLayerPropertyValueSetter($name, $indent . "    ");
@@ -999,7 +999,7 @@ EOF
 foreach my $name (@names) {
   print STYLEBUILDER "    case CSSProperty" . $nameToId{$name} . ":\n";
   if (exists $propertiesWithStyleBuilderOptions{$name}{"longhands"}) {
-    print STYLEBUILDER "        ASSERT(isShorthandCSSProperty(property));\n";
+    print STYLEBUILDER "        assert(isShorthandCSSProperty(property));\n";
     print STYLEBUILDER "        ASSERT_NOT_REACHED();\n";
   } elsif (!exists $propertiesWithStyleBuilderOptions{$name}{"skip-builder"}) {
     print STYLEBUILDER "        if (isInitial)\n";

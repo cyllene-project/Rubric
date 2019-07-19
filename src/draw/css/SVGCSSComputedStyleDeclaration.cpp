@@ -31,7 +31,7 @@
 
 namespace WebCore {
 
-static RefPtr<CSSPrimitiveValue> glyphOrientationToCSSPrimitiveValue(GlyphOrientation orientation)
+static std::shared_ptr<CSSPrimitiveValue> glyphOrientationToCSSPrimitiveValue(GlyphOrientation orientation)
 {
     switch (orientation) {
     case GlyphOrientation::Degrees0:
@@ -49,7 +49,7 @@ static RefPtr<CSSPrimitiveValue> glyphOrientationToCSSPrimitiveValue(GlyphOrient
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-static Ref<CSSValue> strokeDashArrayToCSSValueList(const std::vector<SVGLengthValue>& dashes)
+static std::reference_wrapper<CSSValue> strokeDashArrayToCSSValueList(const std::vector<SVGLengthValue>& dashes)
 {
     if (dashes.isEmpty())
         return CSSPrimitiveValue::createIdentifier(CSSValueNone);
@@ -82,7 +82,7 @@ Ref<CSSValue> ComputedStyleExtractor::adjustSVGPaintForCurrentColor(SVGPaintType
     return CSSPrimitiveValue::create(color);
 }
 
-RefPtr<CSSValue> ComputedStyleExtractor::svgPropertyValue(CSSPropertyID propertyID)
+std::shared_ptr<CSSValue> ComputedStyleExtractor::svgPropertyValue(CSSPropertyID propertyID)
 {
     if (!m_element)
         return nullptr;
@@ -173,7 +173,7 @@ RefPtr<CSSValue> ComputedStyleExtractor::svgPropertyValue(CSSPropertyID property
     case CSSPropertyGlyphOrientationHorizontal:
         return glyphOrientationToCSSPrimitiveValue(svgStyle.glyphOrientationHorizontal());
     case CSSPropertyGlyphOrientationVertical: {
-        if (RefPtr<CSSPrimitiveValue> value = glyphOrientationToCSSPrimitiveValue(svgStyle.glyphOrientationVertical()))
+        if (std::shared_ptr<CSSPrimitiveValue> value = glyphOrientationToCSSPrimitiveValue(svgStyle.glyphOrientationVertical()))
             return value;
 
         if (svgStyle.glyphOrientationVertical() == GlyphOrientation::Auto)

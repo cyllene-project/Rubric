@@ -482,7 +482,7 @@ static CSSValueID valueForRepeatRule(int rule)
     }
 }
 
-static Ref<CSSPrimitiveValue> valueForImageSliceSide(const Length& length)
+static std::reference_wrapper<CSSPrimitiveValue> valueForImageSliceSide(const Length& length)
 {
     // These values can be percentages, numbers, or while an animation of mixed types is in progress,
     // a calculation that combines a percentage and a number.
@@ -494,19 +494,19 @@ static Ref<CSSPrimitiveValue> valueForImageSliceSide(const Length& length)
     // Calculating the actual length currently in use would require most of the code from RenderBoxModelObject::paintNinePieceImage.
     // And even if we could do that, it's not clear if that's exactly what we'd want during animation.
     // FIXME: For now, just return 0.
-    ASSERT(length.isCalculated());
+    assert(length.isCalculated());
     return CSSValuePool::singleton().createValue(0, CSSPrimitiveValue::CSS_NUMBER);
 }
 
-static Ref<CSSBorderImageSliceValue> valueForNinePieceImageSlice(const NinePieceImage& image)
+static std::reference_wrapper<CSSBorderImageSliceValue> valueForNinePieceImageSlice(const NinePieceImage& image)
 {
     auto& slices = image.imageSlices();
 
-    RefPtr<CSSPrimitiveValue> top = valueForImageSliceSide(slices.top());
+    std::shared_ptr<CSSPrimitiveValue> top = valueForImageSliceSide(slices.top());
 
-    RefPtr<CSSPrimitiveValue> right;
-    RefPtr<CSSPrimitiveValue> bottom;
-    RefPtr<CSSPrimitiveValue> left;
+    std::shared_ptr<CSSPrimitiveValue> right;
+    std::shared_ptr<CSSPrimitiveValue> bottom;
+    std::shared_ptr<CSSPrimitiveValue> left;
 
     if (slices.right() == slices.top() && slices.bottom() == slices.top() && slices.left() == slices.top()) {
         right = top;
@@ -529,20 +529,20 @@ static Ref<CSSBorderImageSliceValue> valueForNinePieceImageSlice(const NinePiece
     }
 
     auto quad = Quad::create();
-    quad->setTop(WTFMove(top));
-    quad->setRight(WTFMove(right));
-    quad->setBottom(WTFMove(bottom));
-    quad->setLeft(WTFMove(left));
+    quad->setTop(std::move(top));
+    quad->setRight(std::move(right));
+    quad->setBottom(std::move(bottom));
+    quad->setLeft(std::move(left));
 
-    return CSSBorderImageSliceValue::create(CSSValuePool::singleton().createValue(WTFMove(quad)), image.fill());
+    return CSSBorderImageSliceValue::create(CSSValuePool::singleton().createValue(std::move(quad)), image.fill());
 }
 
-static Ref<CSSPrimitiveValue> valueForNinePieceImageQuad(const LengthBox& box)
+static std::reference_wrapper<CSSPrimitiveValue> valueForNinePieceImageQuad(const LengthBox& box)
 {
-    RefPtr<CSSPrimitiveValue> top;
-    RefPtr<CSSPrimitiveValue> right;
-    RefPtr<CSSPrimitiveValue> bottom;
-    RefPtr<CSSPrimitiveValue> left;
+    std::shared_ptr<CSSPrimitiveValue> top;
+    std::shared_ptr<CSSPrimitiveValue> right;
+    std::shared_ptr<CSSPrimitiveValue> bottom;
+    std::shared_ptr<CSSPrimitiveValue> left;
 
     auto& cssValuePool = CSSValuePool::singleton();
 
@@ -582,80 +582,80 @@ static Ref<CSSPrimitiveValue> valueForNinePieceImageQuad(const LengthBox& box)
     }
 
     auto quad = Quad::create();
-    quad->setTop(WTFMove(top));
-    quad->setRight(WTFMove(right));
-    quad->setBottom(WTFMove(bottom));
-    quad->setLeft(WTFMove(left));
+    quad->setTop(std::move(top));
+    quad->setRight(std::move(right));
+    quad->setBottom(std::move(bottom));
+    quad->setLeft(std::move(left));
 
-    return cssValuePool.createValue(WTFMove(quad));
+    return cssValuePool.createValue(std::move(quad));
 }
 
-static Ref<CSSValue> valueForNinePieceImageRepeat(const NinePieceImage& image)
+static std::reference_wrapper<CSSValue> valueForNinePieceImageRepeat(const NinePieceImage& image)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto horizontalRepeat = cssValuePool.createIdentifierValue(valueForRepeatRule(image.horizontalRule()));
-    RefPtr<CSSPrimitiveValue> verticalRepeat;
+    std::shared_ptr<CSSPrimitiveValue> verticalRepeat;
     if (image.horizontalRule() == image.verticalRule())
         verticalRepeat = horizontalRepeat.copyRef();
     else
         verticalRepeat = cssValuePool.createIdentifierValue(valueForRepeatRule(image.verticalRule()));
-    return cssValuePool.createValue(Pair::create(WTFMove(horizontalRepeat), WTFMove(verticalRepeat)));
+    return cssValuePool.createValue(Pair::create(std::move(horizontalRepeat), std::move(verticalRepeat)));
 }
 
-static Ref<CSSValue> valueForNinePieceImage(const NinePieceImage& image)
+static std::reference_wrapper<CSSValue> valueForNinePieceImage(const NinePieceImage& image)
 {
     if (!image.hasImage())
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
 
     // Image first.
-    RefPtr<CSSValue> imageValue;
+    std::shared_ptr<CSSValue> imageValue;
     if (image.image())
         imageValue = image.image()->cssValue();
 
     // Create the image slice.
-    RefPtr<CSSBorderImageSliceValue> imageSlices = valueForNinePieceImageSlice(image);
+    std::shared_ptr<CSSBorderImageSliceValue> imageSlices = valueForNinePieceImageSlice(image);
 
     // Create the border area slices.
-    RefPtr<CSSValue> borderSlices = valueForNinePieceImageQuad(image.borderSlices());
+    std::shared_ptr<CSSValue> borderSlices = valueForNinePieceImageQuad(image.borderSlices());
 
     // Create the border outset.
-    RefPtr<CSSValue> outset = valueForNinePieceImageQuad(image.outset());
+    std::shared_ptr<CSSValue> outset = valueForNinePieceImageQuad(image.outset());
 
     // Create the repeat rules.
-    RefPtr<CSSValue> repeat = valueForNinePieceImageRepeat(image);
+    std::shared_ptr<CSSValue> repeat = valueForNinePieceImageRepeat(image);
 
-    return createBorderImageValue(WTFMove(imageValue), WTFMove(imageSlices), WTFMove(borderSlices), WTFMove(outset), WTFMove(repeat));
+    return createBorderImageValue(std::move(imageValue), std::move(imageSlices), std::move(borderSlices), std::move(outset), std::move(repeat));
 }
 
-inline static Ref<CSSPrimitiveValue> zoomAdjustedPixelValue(double value, const RenderStyle& style)
+inline static std::reference_wrapper<CSSPrimitiveValue> zoomAdjustedPixelValue(double value, const RenderStyle& style)
 {
     return CSSValuePool::singleton().createValue(adjustFloatForAbsoluteZoom(value, style), CSSPrimitiveValue::CSS_PX);
 }
 
-inline static Ref<CSSPrimitiveValue> zoomAdjustedNumberValue(double value, const RenderStyle& style)
+inline static std::reference_wrapper<CSSPrimitiveValue> zoomAdjustedNumberValue(double value, const RenderStyle& style)
 {
     return CSSValuePool::singleton().createValue(value / style.effectiveZoom(), CSSPrimitiveValue::CSS_NUMBER);
 }
 
-static Ref<CSSValue> zoomAdjustedPixelValueForLength(const Length& length, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> zoomAdjustedPixelValueForLength(const Length& length, const RenderStyle& style)
 {
     if (length.isFixed())
         return zoomAdjustedPixelValue(length.value(), style);
     return CSSValuePool::singleton().createValue(length, style);
 }
 
-static Ref<CSSValue> valueForReflection(const StyleReflection* reflection, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> valueForReflection(const StyleReflection* reflection, const RenderStyle& style)
 {
     if (!reflection)
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
 
-    RefPtr<CSSPrimitiveValue> offset;
+    std::shared_ptr<CSSPrimitiveValue> offset;
     if (reflection->offset().isPercentOrCalculated())
         offset = CSSValuePool::singleton().createValue(reflection->offset().percent(), CSSPrimitiveValue::CSS_PERCENTAGE);
     else
         offset = zoomAdjustedPixelValue(reflection->offset().value(), style);
 
-    RefPtr<CSSPrimitiveValue> direction;
+    std::shared_ptr<CSSPrimitiveValue> direction;
     switch (reflection->direction()) {
     case ReflectionBelow:
         direction = CSSValuePool::singleton().createIdentifierValue(CSSValueBelow);
@@ -674,7 +674,7 @@ static Ref<CSSValue> valueForReflection(const StyleReflection* reflection, const
     return CSSReflectValue::create(direction.releaseNonNull(), offset.releaseNonNull(), valueForNinePieceImage(reflection->mask()));
 }
 
-static Ref<CSSValueList> createPositionListForLayer(CSSPropertyID propertyID, const FillLayer& layer, const RenderStyle& style)
+static std::reference_wrapper<CSSValueList> createPositionListForLayer(CSSPropertyID propertyID, const FillLayer& layer, const RenderStyle& style)
 {
     auto list = CSSValueList::createSpaceSeparated();
     if (layer.isBackgroundXOriginSet()) {
@@ -683,7 +683,7 @@ static Ref<CSSValueList> createPositionListForLayer(CSSPropertyID propertyID, co
     }
     list->append(zoomAdjustedPixelValueForLength(layer.xPosition(), style));
     if (layer.isBackgroundYOriginSet()) {
-        ASSERT(propertyID == CSSPropertyBackgroundPosition || propertyID == CSSPropertyWebkitMaskPosition);
+        assert(propertyID == CSSPropertyBackgroundPosition || propertyID == CSSPropertyWebkitMaskPosition);
         list->append(CSSValuePool::singleton().createValue(layer.backgroundYOrigin()));
     }
     list->append(zoomAdjustedPixelValueForLength(layer.yPosition(), style));
@@ -766,7 +766,7 @@ static LayoutUnit getOffsetUsedStyleOutOfFlowPositioned(RenderBlock& container, 
     return 0;
 }
 
-static RefPtr<CSSValue> positionOffsetValue(const RenderStyle& style, CSSPropertyID propertyID, RenderObject* renderer)
+static std::shared_ptr<CSSValue> positionOffsetValue(const RenderStyle& style, CSSPropertyID propertyID, RenderObject* renderer)
 {
     auto offset = getOffsetComputedLength(style, propertyID);
 
@@ -783,7 +783,7 @@ static RefPtr<CSSValue> positionOffsetValue(const RenderStyle& style, CSSPropert
         if (propertyID == CSSPropertyTop || propertyID == CSSPropertyBottom)
             isVerticalProperty = true;
         else {
-            ASSERT(propertyID == CSSPropertyLeft || propertyID == CSSPropertyRight);
+            assert(propertyID == CSSPropertyLeft || propertyID == CSSPropertyRight);
             isVerticalProperty = false;
         }
         LayoutUnit containingBlockSize;
@@ -829,7 +829,7 @@ Ref<CSSPrimitiveValue> ComputedStyleExtractor::currentColorOrValidColor(const Re
     return CSSValuePool::singleton().createColorValue(color);
 }
 
-static Ref<CSSPrimitiveValue> percentageOrZoomAdjustedValue(Length length, const RenderStyle& style)
+static std::reference_wrapper<CSSPrimitiveValue> percentageOrZoomAdjustedValue(Length length, const RenderStyle& style)
 {
     if (length.isPercent())
         return CSSValuePool::singleton().createValue(length.percent(), CSSPrimitiveValue::CSS_PERCENTAGE);
@@ -837,7 +837,7 @@ static Ref<CSSPrimitiveValue> percentageOrZoomAdjustedValue(Length length, const
     return zoomAdjustedPixelValue(valueForLength(length, 0), style);
 }
 
-static Ref<CSSPrimitiveValue> autoOrZoomAdjustedValue(Length length, const RenderStyle& style)
+static std::reference_wrapper<CSSPrimitiveValue> autoOrZoomAdjustedValue(Length length, const RenderStyle& style)
 {
     if (length.isAuto())
         return CSSValuePool::singleton().createIdentifierValue(CSSValueAuto);
@@ -845,7 +845,7 @@ static Ref<CSSPrimitiveValue> autoOrZoomAdjustedValue(Length length, const Rende
     return zoomAdjustedPixelValue(valueForLength(length, 0), style);
 }
 
-static Ref<CSSValueList> borderRadiusCornerValues(const LengthSize& radius, const RenderStyle& style)
+static std::reference_wrapper<CSSValueList> borderRadiusCornerValues(const LengthSize& radius, const RenderStyle& style)
 {
     auto list = CSSValueList::createSpaceSeparated();
     list->append(percentageOrZoomAdjustedValue(radius.width, style));
@@ -853,14 +853,14 @@ static Ref<CSSValueList> borderRadiusCornerValues(const LengthSize& radius, cons
     return list;
 }
 
-static Ref<CSSValue> borderRadiusCornerValue(const LengthSize& radius, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> borderRadiusCornerValue(const LengthSize& radius, const RenderStyle& style)
 {
     if (radius.width == radius.height)
         return percentageOrZoomAdjustedValue(radius.width, style);
     return borderRadiusCornerValues(radius, style);
 }
 
-static Ref<CSSValueList> borderRadiusShorthandValue(const RenderStyle& style)
+static std::reference_wrapper<CSSValueList> borderRadiusShorthandValue(const RenderStyle& style)
 {
     auto list = CSSValueList::createSlashSeparated();
     bool showHorizontalBottomLeft = style.borderTopRightRadius().width != style.borderBottomLeftRadius().width;
@@ -885,7 +885,7 @@ static Ref<CSSValueList> borderRadiusShorthandValue(const RenderStyle& style)
     if (showHorizontalBottomLeft)
         horizontalRadii->append(*bottomLeftRadius->item(0));
 
-    list->append(WTFMove(horizontalRadii));
+    list->append(std::move(horizontalRadii));
 
     auto verticalRadiiList = CSSValueList::createSpaceSeparated();
     verticalRadiiList->append(*topLeftRadius->item(1));
@@ -897,7 +897,7 @@ static Ref<CSSValueList> borderRadiusShorthandValue(const RenderStyle& style)
         verticalRadiiList->append(*bottomLeftRadius->item(1));
 
     if (!verticalRadiiList->equals(downcast<CSSValueList>(*list->item(0))))
-        list->append(WTFMove(verticalRadiiList));
+        list->append(std::move(verticalRadiiList));
 
     return list;
 }
@@ -911,9 +911,9 @@ static LayoutRect sizingBox(RenderObject& renderer)
     return box.style().boxSizing() == BoxSizing::BorderBox ? box.borderBoxRect() : box.computedCSSContentBoxRect();
 }
 
-static Ref<CSSFunctionValue> matrixTransformValue(const TransformationMatrix& transform, const RenderStyle& style)
+static std::reference_wrapper<CSSFunctionValue> matrixTransformValue(const TransformationMatrix& transform, const RenderStyle& style)
 {
-    RefPtr<CSSFunctionValue> transformValue;
+    std::shared_ptr<CSSFunctionValue> transformValue;
     auto& cssValuePool = CSSValuePool::singleton();
     if (transform.isAffine()) {
         transformValue = CSSFunctionValue::create(CSSValueMatrix);
@@ -951,7 +951,7 @@ static Ref<CSSFunctionValue> matrixTransformValue(const TransformationMatrix& tr
     return transformValue.releaseNonNull();
 }
 
-static Ref<CSSValue> computedTransform(RenderObject* renderer, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> computedTransform(RenderObject* renderer, const RenderStyle& style)
 {
     // Inline renderers do not support transforms.
     if (!renderer || is<RenderInline>(*renderer) || !style.hasTransform())
@@ -971,12 +971,12 @@ static Ref<CSSValue> computedTransform(RenderObject* renderer, const RenderStyle
     return list;
 }
 
-static inline Ref<CSSPrimitiveValue> adjustLengthForZoom(double length, const RenderStyle& style, AdjustPixelValuesForComputedStyle adjust)
+static inline std::reference_wrapper<CSSPrimitiveValue> adjustLengthForZoom(double length, const RenderStyle& style, AdjustPixelValuesForComputedStyle adjust)
 {
     return adjust == AdjustPixelValues ? zoomAdjustedPixelValue(length, style) : CSSValuePool::singleton().createValue(length, CSSPrimitiveValue::CSS_PX);
 }
 
-static inline Ref<CSSPrimitiveValue> adjustLengthForZoom(const Length& length, const RenderStyle& style, AdjustPixelValuesForComputedStyle adjust)
+static inline std::reference_wrapper<CSSPrimitiveValue> adjustLengthForZoom(const Length& length, const RenderStyle& style, AdjustPixelValuesForComputedStyle adjust)
 {
     return adjust == AdjustPixelValues ? zoomAdjustedPixelValue(length.value(), style) : CSSValuePool::singleton().createValue(length);
 }
@@ -992,10 +992,10 @@ Ref<CSSValue> ComputedStyleExtractor::valueForShadow(const ShadowData* shadow, C
         auto x = adjustLengthForZoom(currShadowData->x(), style, adjust);
         auto y = adjustLengthForZoom(currShadowData->y(), style, adjust);
         auto blur = adjustLengthForZoom(currShadowData->radius(), style, adjust);
-        auto spread = propertyID == CSSPropertyTextShadow ? RefPtr<CSSPrimitiveValue>() : adjustLengthForZoom(currShadowData->spread(), style, adjust);
-        auto style = propertyID == CSSPropertyTextShadow || currShadowData->style() == Normal ? RefPtr<CSSPrimitiveValue>() : cssValuePool.createIdentifierValue(CSSValueInset);
+        auto spread = propertyID == CSSPropertyTextShadow ? std::shared_ptr<CSSPrimitiveValue>() : adjustLengthForZoom(currShadowData->spread(), style, adjust);
+        auto style = propertyID == CSSPropertyTextShadow || currShadowData->style() == Normal ? std::shared_ptr<CSSPrimitiveValue>() : cssValuePool.createIdentifierValue(CSSValueInset);
         auto color = cssValuePool.createColorValue(currShadowData->color());
-        list->prepend(CSSShadowValue::create(WTFMove(x), WTFMove(y), WTFMove(blur), WTFMove(spread), WTFMove(style), WTFMove(color)));
+        list->prepend(CSSShadowValue::create(std::move(x), std::move(y), std::move(blur), std::move(spread), std::move(style), std::move(color)));
     }
     return list;
 }
@@ -1008,15 +1008,15 @@ Ref<CSSValue> ComputedStyleExtractor::valueForFilter(const RenderStyle& style, c
 
     auto list = CSSValueList::createSpaceSeparated();
 
-    std::vector<RefPtr<FilterOperation>>::const_iterator end = filterOperations.operations().end();
-    for (std::vector<RefPtr<FilterOperation>>::const_iterator it = filterOperations.operations().begin(); it != end; ++it) {
+    std::vector<std::shared_ptr<FilterOperation>>::const_iterator end = filterOperations.operations().end();
+    for (std::vector<std::shared_ptr<FilterOperation>>::const_iterator it = filterOperations.operations().begin(); it != end; ++it) {
         FilterOperation& filterOperation = **it;
 
         if (filterOperation.type() == FilterOperation::REFERENCE) {
             ReferenceFilterOperation& referenceOperation = downcast<ReferenceFilterOperation>(filterOperation);
             list->append(cssValuePool.createValue(referenceOperation.url(), CSSPrimitiveValue::CSS_URI));
         } else {
-            RefPtr<CSSFunctionValue> filterValue;
+            std::shared_ptr<CSSFunctionValue> filterValue;
             switch (filterOperation.type()) {
             case FilterOperation::GRAYSCALE: {
                 filterValue = CSSFunctionValue::create(CSSValueGrayscale);
@@ -1086,7 +1086,7 @@ Ref<CSSValue> ComputedStyleExtractor::valueForFilter(const RenderStyle& style, c
     return list;
 }
 
-static Ref<CSSValue> specifiedValueForGridTrackBreadth(const GridLength& trackBreadth, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> specifiedValueForGridTrackBreadth(const GridLength& trackBreadth, const RenderStyle& style)
 {
     if (!trackBreadth.isLength())
         return CSSValuePool::singleton().createValue(trackBreadth.flex(), CSSPrimitiveValue::CSS_FR);
@@ -1097,7 +1097,7 @@ static Ref<CSSValue> specifiedValueForGridTrackBreadth(const GridLength& trackBr
     return zoomAdjustedPixelValueForLength(trackBreadthLength, style);
 }
 
-static Ref<CSSValue> specifiedValueForGridTrackSize(const GridTrackSize& trackSize, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> specifiedValueForGridTrackSize(const GridTrackSize& trackSize, const RenderStyle& style)
 {
     switch (trackSize.type()) {
     case LengthTrackSizing:
@@ -1108,7 +1108,7 @@ static Ref<CSSValue> specifiedValueForGridTrackSize(const GridTrackSize& trackSi
         return fitContentTrackSize;
     }
     default:
-        ASSERT(trackSize.type() == MinMaxTrackSizing);
+        assert(trackSize.type() == MinMaxTrackSizing);
         if (trackSize.minTrackBreadth().isAuto() && trackSize.maxTrackBreadth().isFlex())
             return CSSValuePool::singleton().createValue(trackSize.maxTrackBreadth().flex(), CSSPrimitiveValue::CSS_FR);
 
@@ -1161,13 +1161,13 @@ void OrderedNamedLinesCollector::appendLines(CSSGridLineNamesValue& lineNamesVal
 
 void OrderedNamedLinesCollector::collectLineNamesForIndex(CSSGridLineNamesValue& lineNamesValue, unsigned i) const
 {
-    ASSERT(!isEmpty());
+    assert(!isEmpty());
     if (m_orderedNamedAutoRepeatGridLines.isEmpty() || i < m_insertionPoint) {
         appendLines(lineNamesValue, i, NamedLines);
         return;
     }
 
-    ASSERT(m_autoRepeatTotalTracks);
+    assert(m_autoRepeatTotalTracks);
 
     if (i > m_insertionPoint + m_autoRepeatTotalTracks) {
         appendLines(lineNamesValue, i - (m_autoRepeatTotalTracks - 1), NamedLines);
@@ -1200,10 +1200,10 @@ static void addValuesForNamedGridLinesAtIndex(OrderedNamedLinesCollector& collec
     auto lineNames = CSSGridLineNamesValue::create();
     collector.collectLineNamesForIndex(lineNames.get(), i);
     if (lineNames->length())
-        list.append(WTFMove(lineNames));
+        list.append(std::move(lineNames));
 }
 
-static Ref<CSSValueList> valueForGridTrackSizeList(GridTrackSizingDirection direction, const RenderStyle& style)
+static std::reference_wrapper<CSSValueList> valueForGridTrackSizeList(GridTrackSizingDirection direction, const RenderStyle& style)
 {
     auto& autoTrackSizes = direction == ForColumns ? style.gridAutoColumns() : style.gridAutoRows();
 
@@ -1213,7 +1213,7 @@ static Ref<CSSValueList> valueForGridTrackSizeList(GridTrackSizingDirection dire
     return list;
 }
 
-static Ref<CSSValue> valueForGridTrackList(GridTrackSizingDirection direction, RenderObject* renderer, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> valueForGridTrackList(GridTrackSizingDirection direction, RenderObject* renderer, const RenderStyle& style)
 {
     bool isRowAxis = direction == ForColumns;
     bool isRenderGrid = is<RenderGrid>(renderer);
@@ -1260,7 +1260,7 @@ static Ref<CSSValue> valueForGridTrackList(GridTrackSizingDirection direction, R
     return list;
 }
 
-static Ref<CSSValue> valueForGridPosition(const GridPosition& position)
+static std::reference_wrapper<CSSValue> valueForGridPosition(const GridPosition& position)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     if (position.isAuto())
@@ -1281,7 +1281,7 @@ static Ref<CSSValue> valueForGridPosition(const GridPosition& position)
     return list;
 }
 
-static Ref<CSSValue> createTransitionPropertyValue(const Animation& animation)
+static std::reference_wrapper<CSSValue> createTransitionPropertyValue(const Animation& animation)
 {
     switch (animation.animationMode()) {
     case Animation::AnimateNone:
@@ -1297,7 +1297,7 @@ static Ref<CSSValue> createTransitionPropertyValue(const Animation& animation)
     return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
 }
 
-static Ref<CSSValueList> transitionPropertyValue(const AnimationList* animationList)
+static std::reference_wrapper<CSSValueList> transitionPropertyValue(const AnimationList* animationList)
 {
     auto list = CSSValueList::createCommaSeparated();
     if (animationList) {
@@ -1310,7 +1310,7 @@ static Ref<CSSValueList> transitionPropertyValue(const AnimationList* animationL
 
 #if ENABLE(CSS_SCROLL_SNAP)
 
-static Ref<CSSValueList> valueForScrollSnapType(const ScrollSnapType& type)
+static std::reference_wrapper<CSSValueList> valueForScrollSnapType(const ScrollSnapType& type)
 {
     auto value = CSSValueList::createSpaceSeparated();
     if (type.strictness == ScrollSnapStrictness::None)
@@ -1322,7 +1322,7 @@ static Ref<CSSValueList> valueForScrollSnapType(const ScrollSnapType& type)
     return value;
 }
 
-static Ref<CSSValueList> valueForScrollSnapAlignment(const ScrollSnapAlign& alignment)
+static std::reference_wrapper<CSSValueList> valueForScrollSnapAlignment(const ScrollSnapAlign& alignment)
 {
     auto value = CSSValueList::createSpaceSeparated();
     value->append(CSSPrimitiveValue::create(alignment.x));
@@ -1332,7 +1332,7 @@ static Ref<CSSValueList> valueForScrollSnapAlignment(const ScrollSnapAlign& alig
 
 #endif
 
-static Ref<CSSValue> willChangePropertyValue(const WillChangeData* willChangeData)
+static std::reference_wrapper<CSSValue> willChangePropertyValue(const WillChangeData* willChangeData)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     if (!willChangeData || !willChangeData->numFeatures())
@@ -1375,7 +1375,7 @@ static inline void appendLigaturesValue(CSSValueList& list, FontVariantLigatures
     ASSERT_NOT_REACHED();
 }
 
-static Ref<CSSValue> fontVariantLigaturesPropertyValue(FontVariantLigatures common, FontVariantLigatures discretionary, FontVariantLigatures historical, FontVariantLigatures contextualAlternates)
+static std::reference_wrapper<CSSValue> fontVariantLigaturesPropertyValue(FontVariantLigatures common, FontVariantLigatures discretionary, FontVariantLigatures historical, FontVariantLigatures contextualAlternates)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     if (common == FontVariantLigatures::No && discretionary == FontVariantLigatures::No && historical == FontVariantLigatures::No && contextualAlternates == FontVariantLigatures::No)
@@ -1391,7 +1391,7 @@ static Ref<CSSValue> fontVariantLigaturesPropertyValue(FontVariantLigatures comm
     return valueList;
 }
 
-static Ref<CSSValue> fontVariantPositionPropertyValue(FontVariantPosition position)
+static std::reference_wrapper<CSSValue> fontVariantPositionPropertyValue(FontVariantPosition position)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     CSSValueID valueID = CSSValueNormal;
@@ -1408,7 +1408,7 @@ static Ref<CSSValue> fontVariantPositionPropertyValue(FontVariantPosition positi
     return cssValuePool.createIdentifierValue(valueID);
 }
 
-static Ref<CSSValue> fontVariantCapsPropertyValue(FontVariantCaps caps)
+static std::reference_wrapper<CSSValue> fontVariantCapsPropertyValue(FontVariantCaps caps)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     CSSValueID valueID = CSSValueNormal;
@@ -1437,7 +1437,7 @@ static Ref<CSSValue> fontVariantCapsPropertyValue(FontVariantCaps caps)
     return cssValuePool.createIdentifierValue(valueID);
 }
 
-static Ref<CSSValue> fontVariantNumericPropertyValue(FontVariantNumericFigure figure, FontVariantNumericSpacing spacing, FontVariantNumericFraction fraction, FontVariantNumericOrdinal ordinal, FontVariantNumericSlashedZero slashedZero)
+static std::reference_wrapper<CSSValue> fontVariantNumericPropertyValue(FontVariantNumericFigure figure, FontVariantNumericSpacing spacing, FontVariantNumericFraction fraction, FontVariantNumericOrdinal ordinal, FontVariantNumericSlashedZero slashedZero)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     if (figure == FontVariantNumericFigure::Normal && spacing == FontVariantNumericSpacing::Normal && fraction == FontVariantNumericFraction::Normal && ordinal == FontVariantNumericOrdinal::Normal && slashedZero == FontVariantNumericSlashedZero::Normal)
@@ -1485,7 +1485,7 @@ static Ref<CSSValue> fontVariantNumericPropertyValue(FontVariantNumericFigure fi
     return valueList;
 }
 
-static Ref<CSSValue> fontVariantAlternatesPropertyValue(FontVariantAlternates alternates)
+static std::reference_wrapper<CSSValue> fontVariantAlternatesPropertyValue(FontVariantAlternates alternates)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     CSSValueID valueID = CSSValueNormal;
@@ -1499,7 +1499,7 @@ static Ref<CSSValue> fontVariantAlternatesPropertyValue(FontVariantAlternates al
     return cssValuePool.createIdentifierValue(valueID);
 }
 
-static Ref<CSSValue> fontVariantEastAsianPropertyValue(FontVariantEastAsianVariant variant, FontVariantEastAsianWidth width, FontVariantEastAsianRuby ruby)
+static std::reference_wrapper<CSSValue> fontVariantEastAsianPropertyValue(FontVariantEastAsianVariant variant, FontVariantEastAsianWidth width, FontVariantEastAsianRuby ruby)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     if (variant == FontVariantEastAsianVariant::Normal && width == FontVariantEastAsianWidth::Normal && ruby == FontVariantEastAsianRuby::Normal)
@@ -1546,7 +1546,7 @@ static Ref<CSSValue> fontVariantEastAsianPropertyValue(FontVariantEastAsianVaria
     return valueList;
 }
 
-static Ref<CSSValueList> delayValue(const AnimationList* animationList)
+static std::reference_wrapper<CSSValueList> delayValue(const AnimationList* animationList)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto list = CSSValueList::createCommaSeparated();
@@ -1560,7 +1560,7 @@ static Ref<CSSValueList> delayValue(const AnimationList* animationList)
     return list;
 }
 
-static Ref<CSSValueList> durationValue(const AnimationList* animationList)
+static std::reference_wrapper<CSSValueList> durationValue(const AnimationList* animationList)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto list = CSSValueList::createCommaSeparated();
@@ -1574,7 +1574,7 @@ static Ref<CSSValueList> durationValue(const AnimationList* animationList)
     return list;
 }
 
-static Ref<CSSValue> createTimingFunctionValue(const TimingFunction& timingFunction)
+static std::reference_wrapper<CSSValue> createTimingFunctionValue(const TimingFunction& timingFunction)
 {
     switch (timingFunction.type()) {
     case TimingFunction::CubicBezierFunction: {
@@ -1592,7 +1592,7 @@ static Ref<CSSValue> createTimingFunctionValue(const TimingFunction& timingFunct
                 valueId = CSSValueEaseOut;
                 break;
             default:
-                ASSERT(function.timingFunctionPreset() == CubicBezierTimingFunction::EaseInOut);
+                assert(function.timingFunctionPreset() == CubicBezierTimingFunction::EaseInOut);
                 valueId = CSSValueEaseInOut;
                 break;
             }
@@ -1609,12 +1609,12 @@ static Ref<CSSValue> createTimingFunctionValue(const TimingFunction& timingFunct
         return CSSSpringTimingFunctionValue::create(function.mass(), function.stiffness(), function.damping(), function.initialVelocity());
     }
     default:
-        ASSERT(timingFunction.type() == TimingFunction::LinearFunction);
+        assert(timingFunction.type() == TimingFunction::LinearFunction);
         return CSSValuePool::singleton().createIdentifierValue(CSSValueLinear);
     }
 }
 
-static Ref<CSSValueList> timingFunctionValue(const AnimationList* animationList)
+static std::reference_wrapper<CSSValueList> timingFunctionValue(const AnimationList* animationList)
 {
     auto list = CSSValueList::createCommaSeparated();
     if (animationList) {
@@ -1626,7 +1626,7 @@ static Ref<CSSValueList> timingFunctionValue(const AnimationList* animationList)
     return list;
 }
 
-static Ref<CSSValue> createLineBoxContainValue(unsigned lineBoxContain)
+static std::reference_wrapper<CSSValue> createLineBoxContainValue(unsigned lineBoxContain)
 {
     if (!lineBoxContain)
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
@@ -1682,7 +1682,7 @@ void CSSComputedStyleDeclaration::ref()
 
 void CSSComputedStyleDeclaration::deref()
 {
-    ASSERT(m_refCount);
+    assert(m_refCount);
     if (!--m_refCount)
         delete this;
 }
@@ -1703,12 +1703,12 @@ String CSSComputedStyleDeclaration::cssText() const
     return result.toString();
 }
 
-ExceptionOr<void> CSSComputedStyleDeclaration::setCssText(const String&)
+ExceptionOr<void> CSSComputedStyleDeclaration::setCssText(const std::string&)
 {
     return Exception { NoModificationAllowedError };
 }
 
-RefPtr<CSSPrimitiveValue> ComputedStyleExtractor::getFontSizeCSSValuePreferringKeyword()
+std::shared_ptr<CSSPrimitiveValue> ComputedStyleExtractor::getFontSizeCSSValuePreferringKeyword()
 {
     if (!m_element)
         return nullptr;
@@ -1736,7 +1736,7 @@ bool ComputedStyleExtractor::useFixedFontDefaultSize()
     return style->fontDescription().useFixedDefaultSize();
 }
 
-static CSSValueID identifierForFamily(const AtomString& family)
+static CSSValueID identifierForFamily(const std::atomic<std::string>& family)
 {
     if (family == cursiveFamily)
         return CSSValueCursive;
@@ -1755,7 +1755,7 @@ static CSSValueID identifierForFamily(const AtomString& family)
     return CSSValueInvalid;
 }
 
-static Ref<CSSPrimitiveValue> valueForFamily(const AtomString& family)
+static std::reference_wrapper<CSSPrimitiveValue> valueForFamily(const std::atomic<std::string>& family)
 {
     if (CSSValueID familyIdentifier = identifierForFamily(family))
         return CSSValuePool::singleton().createIdentifierValue(familyIdentifier);
@@ -1763,7 +1763,7 @@ static Ref<CSSPrimitiveValue> valueForFamily(const AtomString& family)
 }
 
 #if ENABLE(POINTER_EVENTS)
-static Ref<CSSValue> touchActionFlagsToCSSValue(OptionSet<TouchAction> touchActions)
+static std::reference_wrapper<CSSValue> touchActionFlagsToCSSValue(OptionSet<TouchAction> touchActions)
 {
     auto& cssValuePool = CSSValuePool::singleton();
 
@@ -1788,7 +1788,7 @@ static Ref<CSSValue> touchActionFlagsToCSSValue(OptionSet<TouchAction> touchActi
 }
 #endif
 
-static Ref<CSSValue> renderTextDecorationFlagsToCSSValue(OptionSet<TextDecoration> textDecoration)
+static std::reference_wrapper<CSSValue> renderTextDecorationFlagsToCSSValue(OptionSet<TextDecoration> textDecoration)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     // Blink value is ignored.
@@ -1809,7 +1809,7 @@ static Ref<CSSValue> renderTextDecorationFlagsToCSSValue(OptionSet<TextDecoratio
     return list;
 }
 
-static Ref<CSSValue> renderTextDecorationStyleFlagsToCSSValue(TextDecorationStyle textDecorationStyle)
+static std::reference_wrapper<CSSValue> renderTextDecorationStyleFlagsToCSSValue(TextDecorationStyle textDecorationStyle)
 {
     switch (textDecorationStyle) {
     case TextDecorationStyle::Solid:
@@ -1828,7 +1828,7 @@ static Ref<CSSValue> renderTextDecorationStyleFlagsToCSSValue(TextDecorationStyl
     return CSSValuePool::singleton().createExplicitInitialValue();
 }
 
-static Ref<CSSValue> renderTextDecorationSkipFlagsToCSSValue(OptionSet<TextDecorationSkip> textDecorationSkip)
+static std::reference_wrapper<CSSValue> renderTextDecorationSkipFlagsToCSSValue(OptionSet<TextDecorationSkip> textDecorationSkip)
 {
     // FIXME: This should probably return a CSSValueList with the set of all TextDecorationSkips.
     switch (static_cast<TextDecorationSkip>(textDecorationSkip.toRaw())) {
@@ -1846,28 +1846,28 @@ static Ref<CSSValue> renderTextDecorationSkipFlagsToCSSValue(OptionSet<TextDecor
     return CSSValuePool::singleton().createExplicitInitialValue();
 }
 
-static Ref<CSSValue> textUnderlineOffsetToCSSValue(const TextUnderlineOffset& textUnderlineOffset)
+static std::reference_wrapper<CSSValue> textUnderlineOffsetToCSSValue(const TextUnderlineOffset& textUnderlineOffset)
 {
     if (textUnderlineOffset.isAuto())
         return CSSValuePool::singleton().createIdentifierValue(CSSValueAuto);
-    ASSERT(textUnderlineOffset.isLength());
+    assert(textUnderlineOffset.isLength());
     return CSSValuePool::singleton().createValue(textUnderlineOffset.lengthValue(), CSSPrimitiveValue::CSS_PX);
 }
 
-static Ref<CSSValue> textDecorationThicknessToCSSValue(const TextDecorationThickness& textDecorationThickness)
+static std::reference_wrapper<CSSValue> textDecorationThicknessToCSSValue(const TextDecorationThickness& textDecorationThickness)
 {
     if (textDecorationThickness.isAuto())
         return CSSValuePool::singleton().createIdentifierValue(CSSValueAuto);
     if (textDecorationThickness.isFromFont())
         return CSSValuePool::singleton().createIdentifierValue(CSSValueFromFont);
-    ASSERT(textDecorationThickness.isLength());
+    assert(textDecorationThickness.isLength());
     return CSSValuePool::singleton().createValue(textDecorationThickness.lengthValue(), CSSPrimitiveValue::CSS_PX);
 }
 
-static Ref<CSSValue> renderEmphasisPositionFlagsToCSSValue(OptionSet<TextEmphasisPosition> textEmphasisPosition)
+static std::reference_wrapper<CSSValue> renderEmphasisPositionFlagsToCSSValue(OptionSet<TextEmphasisPosition> textEmphasisPosition)
 {
-    ASSERT(!((textEmphasisPosition & TextEmphasisPosition::Over) && (textEmphasisPosition & TextEmphasisPosition::Under)));
-    ASSERT(!((textEmphasisPosition & TextEmphasisPosition::Left) && (textEmphasisPosition & TextEmphasisPosition::Right)));
+    assert(!((textEmphasisPosition & TextEmphasisPosition::Over) && (textEmphasisPosition & TextEmphasisPosition::Under)));
+    assert(!((textEmphasisPosition & TextEmphasisPosition::Left) && (textEmphasisPosition & TextEmphasisPosition::Right)));
     auto& cssValuePool = CSSValuePool::singleton();
     auto list = CSSValueList::createSpaceSeparated();
     if (textEmphasisPosition & TextEmphasisPosition::Over)
@@ -1883,7 +1883,7 @@ static Ref<CSSValue> renderEmphasisPositionFlagsToCSSValue(OptionSet<TextEmphasi
     return list;
 }
 
-static Ref<CSSValue> speakAsToCSSValue(OptionSet<SpeakAs> speakAs)
+static std::reference_wrapper<CSSValue> speakAsToCSSValue(OptionSet<SpeakAs> speakAs)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto list = CSSValueList::createSpaceSeparated();
@@ -1900,7 +1900,7 @@ static Ref<CSSValue> speakAsToCSSValue(OptionSet<SpeakAs> speakAs)
     return list;
 }
     
-static Ref<CSSValue> hangingPunctuationToCSSValue(OptionSet<HangingPunctuation> hangingPunctuation)
+static std::reference_wrapper<CSSValue> hangingPunctuationToCSSValue(OptionSet<HangingPunctuation> hangingPunctuation)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto list = CSSValueList::createSpaceSeparated();
@@ -1917,7 +1917,7 @@ static Ref<CSSValue> hangingPunctuationToCSSValue(OptionSet<HangingPunctuation> 
     return list;
 }
     
-static Ref<CSSValue> fillRepeatToCSSValue(FillRepeat xRepeat, FillRepeat yRepeat)
+static std::reference_wrapper<CSSValue> fillRepeatToCSSValue(FillRepeat xRepeat, FillRepeat yRepeat)
 {
     // For backwards compatibility, if both values are equal, just return one of them. And
     // if the two values are equivalent to repeat-x or repeat-y, just return the shorthand.
@@ -1935,18 +1935,18 @@ static Ref<CSSValue> fillRepeatToCSSValue(FillRepeat xRepeat, FillRepeat yRepeat
     return list;
 }
 
-static Ref<CSSValue> fillSourceTypeToCSSValue(MaskSourceType type)
+static std::reference_wrapper<CSSValue> fillSourceTypeToCSSValue(MaskSourceType type)
 {
     switch (type) {
     case MaskSourceType::Alpha:
         return CSSValuePool::singleton().createValue(CSSValueAlpha);
     default:
-        ASSERT(type == MaskSourceType::Luminance);
+        assert(type == MaskSourceType::Luminance);
         return CSSValuePool::singleton().createValue(CSSValueLuminance);
     }
 }
 
-static Ref<CSSValue> fillSizeToCSSValue(const FillSize& fillSize, const RenderStyle& style)
+static std::reference_wrapper<CSSValue> fillSizeToCSSValue(const FillSize& fillSize, const RenderStyle& style)
 {
     if (fillSize.type == FillSizeType::Contain)
         return CSSValuePool::singleton().createIdentifierValue(CSSValueContain);
@@ -1963,12 +1963,12 @@ static Ref<CSSValue> fillSizeToCSSValue(const FillSize& fillSize, const RenderSt
     return list;
 }
 
-static Ref<CSSValue> altTextToCSSValue(const RenderStyle& style)
+static std::reference_wrapper<CSSValue> altTextToCSSValue(const RenderStyle& style)
 {
     return CSSValuePool::singleton().createValue(style.contentAltText(), CSSPrimitiveValue::CSS_STRING);
 }
     
-static Ref<CSSValueList> contentToCSSValue(const RenderStyle& style)
+static std::reference_wrapper<CSSValueList> contentToCSSValue(const RenderStyle& style)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto list = CSSValueList::createSpaceSeparated();
@@ -1983,7 +1983,7 @@ static Ref<CSSValueList> contentToCSSValue(const RenderStyle& style)
     return list;
 }
 
-static Ref<CSSValue> counterToCSSValue(const RenderStyle& style, CSSPropertyID propertyID)
+static std::reference_wrapper<CSSValue> counterToCSSValue(const RenderStyle& style, CSSPropertyID propertyID)
 {
     auto* map = style.counterDirectives();
     if (!map)
@@ -2001,14 +2001,14 @@ static Ref<CSSValue> counterToCSSValue(const RenderStyle& style, CSSPropertyID p
 
 static void logUnimplementedPropertyID(CSSPropertyID propertyID)
 {
-    static NeverDestroyed<HashSet<CSSPropertyID>> propertyIDSet;
+    static NeverDestroyed<std::unordered_set<CSSPropertyID>> propertyIDSet;
     if (!propertyIDSet.get().add(propertyID).isNewEntry)
         return;
 
     LOG_ERROR("WebKit does not yet implement getComputedStyle for '%s'.", getPropertyName(propertyID));
 }
 
-static Ref<CSSValueList> fontFamilyListFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSValueList> fontFamilyListFromStyle(const RenderStyle& style)
 {
     auto list = CSSValueList::createCommaSeparated();
     for (unsigned i = 0; i < style.fontCascade().familyCount(); ++i)
@@ -2016,14 +2016,14 @@ static Ref<CSSValueList> fontFamilyListFromStyle(const RenderStyle& style)
     return list;
 }
 
-static Ref<CSSValue> fontFamilyFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSValue> fontFamilyFromStyle(const RenderStyle& style)
 {
     if (style.fontCascade().familyCount() == 1)
         return valueForFamily(style.fontCascade().familyAt(0));
     return fontFamilyListFromStyle(style);
 }
 
-static Ref<CSSPrimitiveValue> lineHeightFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSPrimitiveValue> lineHeightFromStyle(const RenderStyle& style)
 {
     Length length = style.lineHeight();
     if (length.isNegative()) // If true, line-height not set; use the font's line spacing.
@@ -2038,7 +2038,7 @@ static Ref<CSSPrimitiveValue> lineHeightFromStyle(const RenderStyle& style)
     return zoomAdjustedPixelValue(floatValueForLength(length, 0), style);
 }
 
-static Ref<CSSPrimitiveValue> fontSizeFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSPrimitiveValue> fontSizeFromStyle(const RenderStyle& style)
 {
     return zoomAdjustedPixelValue(style.fontDescription().computedSize(), style);
 }
@@ -2055,7 +2055,7 @@ Ref<CSSPrimitiveValue> ComputedStyleExtractor::fontWeightFromStyleValue(FontSele
     return fontNonKeywordWeightFromStyleValue(weight);
 }
 
-static Ref<CSSPrimitiveValue> fontWeightFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSPrimitiveValue> fontWeightFromStyle(const RenderStyle& style)
 {
     return ComputedStyleExtractor::fontWeightFromStyleValue(style.fontDescription().weight());
 }
@@ -2072,7 +2072,7 @@ Ref<CSSPrimitiveValue> ComputedStyleExtractor::fontStretchFromStyleValue(FontSel
     return fontNonKeywordStretchFromStyleValue(stretch);
 }
 
-static Ref<CSSPrimitiveValue> fontStretchFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSPrimitiveValue> fontStretchFromStyle(const RenderStyle& style)
 {
     return ComputedStyleExtractor::fontStretchFromStyleValue(style.fontDescription().stretch());
 }
@@ -2089,12 +2089,12 @@ Ref<CSSFontStyleValue> ComputedStyleExtractor::fontStyleFromStyleValue(Optional<
     return fontNonKeywordStyleFromStyleValue(italic.value());
 }
 
-static Ref<CSSFontStyleValue> fontStyleFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSFontStyleValue> fontStyleFromStyle(const RenderStyle& style)
 {
     return ComputedStyleExtractor::fontStyleFromStyleValue(style.fontDescription().italic(), style.fontDescription().fontStyleAxis());
 }
 
-static Ref<CSSValue> fontVariantFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSValue> fontVariantFromStyle(const RenderStyle& style)
 {
     if (style.fontDescription().variantSettings().isAllNormal())
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNormal);
@@ -2281,7 +2281,7 @@ static Ref<CSSValue> fontVariantFromStyle(const RenderStyle& style)
     return list;
 }
 
-static Ref<CSSValue> fontSynthesisFromStyle(const RenderStyle& style)
+static std::reference_wrapper<CSSValue> fontSynthesisFromStyle(const RenderStyle& style)
 {
     if (style.fontDescription().fontSynthesis() == FontSynthesisNone)
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
@@ -2300,7 +2300,7 @@ typedef const Length& (RenderStyle::*RenderStyleLengthGetter)() const;
 typedef LayoutUnit (RenderBoxModelObject::*RenderBoxComputedCSSValueGetter)() const;
 
 template<RenderStyleLengthGetter lengthGetter, RenderBoxComputedCSSValueGetter computedCSSValueGetter>
-static RefPtr<CSSValue> zoomAdjustedPaddingOrMarginPixelValue(const RenderStyle& style, RenderObject* renderer)
+static std::shared_ptr<CSSValue> zoomAdjustedPaddingOrMarginPixelValue(const RenderStyle& style, RenderObject* renderer)
 {
     Length unzoomzedLength = (style.*lengthGetter)();
     if (!is<RenderBox>(renderer) || unzoomzedLength.isFixed())
@@ -2466,7 +2466,7 @@ static bool isImplicitlyInheritedGridOrFlexProperty(CSSPropertyID propertyID)
 // http://www.w3.org/TR/CSS21/cascade.html#used-value
 // http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleDeclaration
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle#Notes
-RefPtr<CSSValue> CSSComputedStyleDeclaration::getPropertyCSSValue(CSSPropertyID propertyID, EUpdateLayout updateLayout) const
+std::shared_ptr<CSSValue> CSSComputedStyleDeclaration::getPropertyCSSValue(CSSPropertyID propertyID, EUpdateLayout updateLayout) const
 {
     return ComputedStyleExtractor(m_element.ptr(), m_allowVisitedStyle, m_pseudoElementSpecifier).propertyValue(propertyID, updateLayout);
 }
@@ -2542,7 +2542,7 @@ static inline const RenderStyle* computeRenderStyleForProperty(Element& element,
     return element.computedStyle(element.isPseudoElement() ? PseudoId::None : pseudoElementSpecifier);
 }
 
-static Ref<CSSValue> shapePropertyValue(const RenderStyle& style, const ShapeValue* shapeValue)
+static std::reference_wrapper<CSSValue> shapePropertyValue(const RenderStyle& style, const ShapeValue* shapeValue)
 {
     if (!shapeValue)
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
@@ -2556,7 +2556,7 @@ static Ref<CSSValue> shapePropertyValue(const RenderStyle& style, const ShapeVal
         return CSSValuePool::singleton().createIdentifierValue(CSSValueNone);
     }
 
-    ASSERT(shapeValue->type() == ShapeValue::Type::Shape);
+    assert(shapeValue->type() == ShapeValue::Type::Shape);
 
     auto list = CSSValueList::createSpaceSeparated();
     list->append(valueForBasicShape(style, *shapeValue->shape()));
@@ -2565,7 +2565,7 @@ static Ref<CSSValue> shapePropertyValue(const RenderStyle& style, const ShapeVal
     return list;
 }
 
-static Ref<CSSValueList> valueForItemPositionWithOverflowAlignment(const StyleSelfAlignmentData& data)
+static std::reference_wrapper<CSSValueList> valueForItemPositionWithOverflowAlignment(const StyleSelfAlignmentData& data)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto result = CSSValueList::createSpaceSeparated();
@@ -2584,11 +2584,11 @@ static Ref<CSSValueList> valueForItemPositionWithOverflowAlignment(const StyleSe
         else
             result->append(cssValuePool.createValue(data.position()));
     }
-    ASSERT(result->length() <= 2);
+    assert(result->length() <= 2);
     return result;
 }
 
-static Ref<CSSValueList> valueForContentPositionAndDistributionWithOverflowAlignment(const StyleContentAlignmentData& data)
+static std::reference_wrapper<CSSValueList> valueForContentPositionAndDistributionWithOverflowAlignment(const StyleContentAlignmentData& data)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     auto result = CSSValueList::createSpaceSeparated();
@@ -2614,12 +2614,12 @@ static Ref<CSSValueList> valueForContentPositionAndDistributionWithOverflowAlign
         result->append(cssValuePool.createValue(data.position()));
     }
 
-    ASSERT(result->length() > 0);
-    ASSERT(result->length() <= 3);
+    assert(result->length() > 0);
+    assert(result->length() <= 3);
     return result;
 }
 
-static Ref<CSSValue> paintOrder(PaintOrder paintOrder)
+static std::reference_wrapper<CSSValue> paintOrder(PaintOrder paintOrder)
 {
     if (paintOrder == PaintOrder::Normal)
         return CSSPrimitiveValue::createIdentifier(CSSValueNormal);
@@ -2659,7 +2659,7 @@ inline static bool isFlexOrGrid(ContainerNode* element)
     return element && element->computedStyle() && element->computedStyle()->isDisplayFlexibleOrGridBox();
 }
 
-RefPtr<CSSValue> ComputedStyleExtractor::customPropertyValue(const std::string& propertyName)
+std::shared_ptr<CSSValue> ComputedStyleExtractor::customPropertyValue(const std::string& propertyName)
 {
     Element* styledElement = this->styledElement();
     if (!styledElement)
@@ -2684,27 +2684,27 @@ RefPtr<CSSValue> ComputedStyleExtractor::customPropertyValue(const std::string& 
     if (!value)
         return nullptr;
 
-    return WTF::switchOn(value->value(), [&](const Ref<CSSVariableReferenceValue>&) {
+    return WTF::switchOn(value->value(), [&](const std::reference_wrapper<CSSVariableReferenceValue>&) {
         ASSERT_NOT_REACHED();
-        return RefPtr<CSSValue>();
+        return std::shared_ptr<CSSValue>();
     }, [&](const CSSValueID&) {
         return CSSCustomPropertyValue::create(*value);
-    }, [&](const Ref<CSSVariableData>&) {
+    }, [&](const std::reference_wrapper<CSSVariableData>&) {
         return CSSCustomPropertyValue::create(*value);
     }, [&](const Length& value) {
         return zoomAdjustedPixelValueForLength(value, *style);
-    }, [&](const Ref<StyleImage>&) {
+    }, [&](const std::reference_wrapper<StyleImage>&) {
         return CSSCustomPropertyValue::create(*value);
     });
 }
 
 String ComputedStyleExtractor::customPropertyText(const std::string& propertyName)
 {
-    RefPtr<CSSValue> propertyValue = customPropertyValue(propertyName);
+    std::shared_ptr<CSSValue> propertyValue = customPropertyValue(propertyName);
     return propertyValue ? propertyValue->cssText() : emptyString();
 }
 
-static Ref<CSSFontValue> fontShorthandValueForSelectionProperties(const FontDescription& fontDescription)
+static std::reference_wrapper<CSSFontValue> fontShorthandValueForSelectionProperties(const FontDescription& fontDescription)
 {
     auto computedFont = CSSFontValue::create();
 
@@ -2737,7 +2737,7 @@ static Ref<CSSFontValue> fontShorthandValueForSelectionProperties(const FontDesc
     return computedFont;
 }
 
-RefPtr<CSSValue> ComputedStyleExtractor::propertyValue(CSSPropertyID propertyID, EUpdateLayout updateLayout)
+std::shared_ptr<CSSValue> ComputedStyleExtractor::propertyValue(CSSPropertyID propertyID, EUpdateLayout updateLayout)
 {
     auto* styledElement = this->styledElement();
     if (!styledElement)
@@ -2783,7 +2783,7 @@ RefPtr<CSSValue> ComputedStyleExtractor::propertyValue(CSSPropertyID propertyID,
     return valueForPropertyInStyle(*style, propertyID, renderer);
 }
 
-RefPtr<CSSValue> ComputedStyleExtractor::valueForPropertyInStyle(const RenderStyle& style, CSSPropertyID propertyID, RenderElement* renderer)
+std::shared_ptr<CSSValue> ComputedStyleExtractor::valueForPropertyInStyle(const RenderStyle& style, CSSPropertyID propertyID, RenderElement* renderer)
 {
     auto& cssValuePool = CSSValuePool::singleton();
     propertyID = CSSProperty::resolveDirectionAwareProperty(propertyID, style.direction(), style.writingMode());
@@ -3033,7 +3033,7 @@ RefPtr<CSSValue> ComputedStyleExtractor::valueForPropertyInStyle(const RenderSty
         case CSSPropertyTabSize:
             return cssValuePool.createValue(style.tabSize().widthInPixels(1.0), style.tabSize().isSpaces() ? CSSPrimitiveValue::CSS_NUMBER : CSSPrimitiveValue::CSS_PX);
         case CSSPropertyCursor: {
-            RefPtr<CSSValueList> list;
+            std::shared_ptr<CSSValueList> list;
             auto* cursors = style.cursors();
             if (cursors && cursors->size() > 0) {
                 list = CSSValueList::createCommaSeparated();
@@ -3043,7 +3043,7 @@ RefPtr<CSSValue> ComputedStyleExtractor::valueForPropertyInStyle(const RenderSty
             }
             auto value = cssValuePool.createValue(style.cursor());
             if (list) {
-                list->append(WTFMove(value));
+                list->append(std::move(value));
                 return list;
             }
             return value;
@@ -3140,7 +3140,7 @@ case CSSPropertyFontVariationSettings: {
 #endif
         case CSSPropertyGridAutoFlow: {
             auto list = CSSValueList::createSpaceSeparated();
-            ASSERT(style.isGridAutoFlowDirectionRow() || style.isGridAutoFlowDirectionColumn());
+            assert(style.isGridAutoFlowDirectionRow() || style.isGridAutoFlowDirectionColumn());
             if (style.isGridAutoFlowDirectionRow())
                 list->append(cssValuePool.createIdentifierValue(CSSValueRow));
             else
@@ -3187,7 +3187,7 @@ case CSSPropertyFontVariationSettings: {
             return getCSSPropertyValuesForGridShorthand(gridRowShorthand());
         case CSSPropertyGridTemplateAreas:
             if (!style.namedGridAreaRowCount()) {
-                ASSERT(!style.namedGridAreaColumnCount());
+                assert(!style.namedGridAreaColumnCount());
                 return cssValuePool.createIdentifierValue(CSSValueNone);
             }
             return CSSGridTemplateAreasValue::create(style.namedGridArea(), style.namedGridAreaRowCount(), style.namedGridAreaColumnCount());
@@ -3444,7 +3444,7 @@ case CSSPropertyFontVariationSettings: {
             // getPropertyCSSValue() returns CSSValueList.
             if (style.textIndentLine() == TextIndentLine::EachLine || style.textIndentType() == TextIndentType::Hanging) {
                 auto list = CSSValueList::createSpaceSeparated();
-                list->append(WTFMove(textIndent));
+                list->append(std::move(textIndent));
                 if (style.textIndentLine() == TextIndentLine::EachLine)
                     list->append(cssValuePool.createIdentifierValue(CSSValueWebkitEachLine));
                 if (style.textIndentType() == TextIndentType::Hanging)
@@ -3707,7 +3707,7 @@ case CSSPropertyFontVariationSettings: {
         case CSSPropertyWebkitInitialLetter: {
             auto drop = !style.initialLetterDrop() ? cssValuePool.createIdentifierValue(CSSValueNormal) : cssValuePool.createValue(style.initialLetterDrop(), CSSPrimitiveValue::CSS_NUMBER);
             auto size = !style.initialLetterHeight() ? cssValuePool.createIdentifierValue(CSSValueNormal) : cssValuePool.createValue(style.initialLetterHeight(), CSSPrimitiveValue::CSS_NUMBER);
-            return cssValuePool.createValue(Pair::create(WTFMove(drop), WTFMove(size)));
+            return cssValuePool.createValue(Pair::create(std::move(drop), std::move(size)));
         }
         case CSSPropertyWebkitMarginBottomCollapse:
         case CSSPropertyWebkitMarginAfterCollapse:
@@ -3774,7 +3774,7 @@ case CSSPropertyFontVariationSettings: {
             rect->setRight(autoOrZoomAdjustedValue(style.clip().right(), style));
             rect->setBottom(autoOrZoomAdjustedValue(style.clip().bottom(), style));
             rect->setLeft(autoOrZoomAdjustedValue(style.clip().left(), style));
-            return cssValuePool.createValue(WTFMove(rect));
+            return cssValuePool.createValue(std::move(rect));
         }
         case CSSPropertySpeakAs:
             return speakAsToCSSValue(style.speakAs());
@@ -3822,7 +3822,7 @@ case CSSPropertyFontVariationSettings: {
                     list->append(cssValuePool.createValue(animation.duration(), CSSPrimitiveValue::CSS_S));
                     list->append(createTimingFunctionValue(*animation.timingFunction()));
                     list->append(cssValuePool.createValue(animation.delay(), CSSPrimitiveValue::CSS_S));
-                    transitionsList->append(WTFMove(list));
+                    transitionsList->append(std::move(list));
                 }
                 return transitionsList;
             }
@@ -4038,7 +4038,7 @@ case CSSPropertyFontVariationSettings: {
                 list->append(cssValuePool.createIdentifierValue(CSSValueDark));
             if (!colorScheme.allowsTransformations())
                 list->append(cssValuePool.createIdentifierValue(CSSValueOnly));
-            ASSERT(list->length());
+            assert(list->length());
             return list;
         }
 #endif
@@ -4262,7 +4262,7 @@ bool ComputedStyleExtractor::propertyMatches(CSSPropertyID propertyID, const CSS
             }
         }
     }
-    RefPtr<CSSValue> computedValue = propertyValue(propertyID);
+    std::shared_ptr<CSSValue> computedValue = propertyValue(propertyID);
     return computedValue && value && computedValue->equals(*value);
 }
 
@@ -4279,7 +4279,7 @@ Ref<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesForShorthandProper
     return list;
 }
 
-RefPtr<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesFor2SidesShorthand(const StylePropertyShorthand& shorthand)
+std::shared_ptr<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesFor2SidesShorthand(const StylePropertyShorthand& shorthand)
 {
     auto list = CSSValueList::createSpaceSeparated();
 
@@ -4300,7 +4300,7 @@ RefPtr<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesFor2SidesShorth
     return list;
 }
 
-RefPtr<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesFor4SidesShorthand(const StylePropertyShorthand& shorthand)
+std::shared_ptr<CSSValueList> ComputedStyleExtractor::getCSSPropertyValuesFor4SidesShorthand(const StylePropertyShorthand& shorthand)
 {
     auto list = CSSValueList::createSpaceSeparated();
 
@@ -4343,7 +4343,7 @@ Ref<MutableStyleProperties> ComputedStyleExtractor::copyPropertiesInSet(const CS
     list.reserveInitialCapacity(length);
     for (unsigned i = 0; i < length; ++i) {
         if (auto value = propertyValue(set[i]))
-            list.append(CSSProperty(set[i], WTFMove(value), false));
+            list.append(CSSProperty(set[i], std::move(value), false));
     }
     return MutableStyleProperties::create(list.data(), list.size());
 }
@@ -4353,7 +4353,7 @@ CSSRule* CSSComputedStyleDeclaration::parentRule() const
     return nullptr;
 }
 
-RefPtr<DeprecatedCSSOMValue> CSSComputedStyleDeclaration::getPropertyCSSValue(const std::string& propertyName)
+std::shared_ptr<DeprecatedCSSOMValue> CSSComputedStyleDeclaration::getPropertyCSSValue(const std::string& propertyName)
 {
     if (isCustomPropertyName(propertyName)) {
         auto value = ComputedStyleExtractor(m_element.ptr(), m_allowVisitedStyle, m_pseudoElementSpecifier).customPropertyValue(propertyName);
@@ -4382,33 +4382,33 @@ String CSSComputedStyleDeclaration::getPropertyValue(const std::string &property
     return getPropertyValue(propertyID);
 }
 
-String CSSComputedStyleDeclaration::getPropertyPriority(const String&)
+String CSSComputedStyleDeclaration::getPropertyPriority(const std::string&)
 {
     // All computed styles have a priority of not "important".
     return emptyString(); // FIXME: Should this sometimes be null instead of empty, to match a normal style declaration?
 }
 
-String CSSComputedStyleDeclaration::getPropertyShorthand(const String&)
+String CSSComputedStyleDeclaration::getPropertyShorthand(const std::string&)
 {
     return emptyString(); // FIXME: Should this sometimes be null instead of empty, to match a normal style declaration?
 }
 
-bool CSSComputedStyleDeclaration::isPropertyImplicit(const String&)
+bool CSSComputedStyleDeclaration::isPropertyImplicit(const std::string&)
 {
     return false;
 }
 
-ExceptionOr<void> CSSComputedStyleDeclaration::setProperty(const String&, const String&, const String&)
+ExceptionOr<void> CSSComputedStyleDeclaration::setProperty(const std::string&, const std::string&, const std::string&)
 {
     return Exception { NoModificationAllowedError };
 }
 
-ExceptionOr<String> CSSComputedStyleDeclaration::removeProperty(const String&)
+ExceptionOr<std::string> CSSComputedStyleDeclaration::removeProperty(const std::string&)
 {
     return Exception { NoModificationAllowedError };
 }
     
-RefPtr<CSSValue> CSSComputedStyleDeclaration::getPropertyCSSValueInternal(CSSPropertyID propertyID)
+std::shared_ptr<CSSValue> CSSComputedStyleDeclaration::getPropertyCSSValueInternal(CSSPropertyID propertyID)
 {
     return getPropertyCSSValue(propertyID);
 }
@@ -4418,7 +4418,7 @@ String CSSComputedStyleDeclaration::getPropertyValueInternal(CSSPropertyID prope
     return getPropertyValue(propertyID);
 }
 
-ExceptionOr<bool> CSSComputedStyleDeclaration::setPropertyInternal(CSSPropertyID, const String&, bool)
+ExceptionOr<bool> CSSComputedStyleDeclaration::setPropertyInternal(CSSPropertyID, const std::string&, bool)
 {
     return Exception { NoModificationAllowedError };
 }

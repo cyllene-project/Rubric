@@ -41,7 +41,7 @@
 namespace WebCore {
 
 
-RefPtr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::reifyValue(CSSValue* value, Document& document, Element*)
+std::shared_ptr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::reifyValue(CSSValue* value, Document& document, Element*)
 {
     if (!value)
         return nullptr;
@@ -57,7 +57,7 @@ RefPtr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::reifyValue(CSSValue* valu
     return TypedOMCSSUnparsedValue::create(value->cssText());
 }
 
-RefPtr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::customPropertyValueOrDefault(const std::string& name, Document& document, CSSValue* inputValue, Element* element)
+std::shared_ptr<TypedOMCSSStyleValue> StylePropertyMapReadOnly::customPropertyValueOrDefault(const std::string& name, Document& document, CSSValue* inputValue, Element* element)
 {
     if (!inputValue) {
         auto* registered = document.getCSSRegisteredCustomPropertySet().get(name);

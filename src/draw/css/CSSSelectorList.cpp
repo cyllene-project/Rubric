@@ -51,7 +51,7 @@ CSSSelectorList::CSSSelectorList(std::vector<std::unique_ptr<CSSParserSelector>>
         for (CSSParserSelector* selector = selectorVector[i].get(); selector; selector = selector->tagHistory())
             ++flattenedSize;
     }
-    ASSERT(flattenedSize);
+    assert(flattenedSize);
     m_selectorArray = makeUniqueArray<CSSSelector>(flattenedSize);
     size_t arrayIndex = 0;
     for (size_t i = 0; i < selectorVector.size(); ++i) {
@@ -66,14 +66,14 @@ CSSSelectorList::CSSSelectorList(std::vector<std::unique_ptr<CSSParserSelector>>
                 operator delete (currentSelector);
             }
             current = current->tagHistory();
-            ASSERT(!m_selectorArray[arrayIndex].isLastInSelectorList());
+            assert(!m_selectorArray[arrayIndex].isLastInSelectorList());
             if (current)
                 m_selectorArray[arrayIndex].setNotLastInTagHistory();
             ++arrayIndex;
         }
-        ASSERT(m_selectorArray[arrayIndex - 1].isLastInTagHistory());
+        assert(m_selectorArray[arrayIndex - 1].isLastInTagHistory());
     }
-    ASSERT(flattenedSize == arrayIndex);
+    assert(flattenedSize == arrayIndex);
     m_selectorArray[arrayIndex - 1].setLastInSelectorList();
 }
 
@@ -121,7 +121,7 @@ void CSSSelectorList::buildSelectorsText(StringBuilder& stringBuilder) const
 template <typename Functor>
 static bool forEachTagSelector(Functor& functor, const CSSSelector* selector)
 {
-    ASSERT(selector);
+    assert(selector);
 
     do {
         if (functor(selector))

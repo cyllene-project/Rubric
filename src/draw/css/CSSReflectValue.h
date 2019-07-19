@@ -33,9 +33,9 @@ class CSSPrimitiveValue;
 
 class CSSReflectValue final : public CSSValue {
 public:
-    static Ref<CSSReflectValue> create(Ref<CSSPrimitiveValue>&& direction, Ref<CSSPrimitiveValue>&& offset, RefPtr<CSSValue>&& mask)
+    static std::reference_wrapper<CSSReflectValue> create(std::reference_wrapper<CSSPrimitiveValue>&& direction, std::reference_wrapper<CSSPrimitiveValue>&& offset, std::shared_ptr<CSSValue>&& mask)
     {
-        return adoptRef(*new CSSReflectValue(WTFMove(direction), WTFMove(offset), WTFMove(mask)));
+        return adoptRef(*new CSSReflectValue(std::move(direction), std::move(offset), std::move(mask)));
     }
 
     CSSPrimitiveValue& direction() { return m_direction.get(); }
@@ -49,17 +49,17 @@ public:
     bool equals(const CSSReflectValue&) const;
 
 private:
-    CSSReflectValue(Ref<CSSPrimitiveValue>&& direction, Ref<CSSPrimitiveValue>&& offset, RefPtr<CSSValue>&& mask)
+    CSSReflectValue(std::reference_wrapper<CSSPrimitiveValue>&& direction, std::reference_wrapper<CSSPrimitiveValue>&& offset, std::shared_ptr<CSSValue>&& mask)
         : CSSValue(ReflectClass)
-        , m_direction(WTFMove(direction))
-        , m_offset(WTFMove(offset))
-        , m_mask(WTFMove(mask))
+        , m_direction(std::move(direction))
+        , m_offset(std::move(offset))
+        , m_mask(std::move(mask))
     {
     }
 
-    Ref<CSSPrimitiveValue> m_direction;
-    Ref<CSSPrimitiveValue> m_offset;
-    RefPtr<CSSValue> m_mask;
+    std::reference_wrapper<CSSPrimitiveValue> m_direction;
+    std::reference_wrapper<CSSPrimitiveValue> m_offset;
+    std::shared_ptr<CSSValue> m_mask;
 };
 
 } // namespace WebCore

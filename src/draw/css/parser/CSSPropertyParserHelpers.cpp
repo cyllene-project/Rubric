@@ -70,7 +70,7 @@ bool consumeSlashIncludingWhitespace(CSSParserTokenRange& range)
 
 CSSParserTokenRange consumeFunction(CSSParserTokenRange& range)
 {
-    ASSERT(range.peek().type() == FunctionToken);
+    assert(range.peek().type() == FunctionToken);
     CSSParserTokenRange contents = range.consumeBlock();
     range.consumeWhitespace();
     contents.consumeWhitespace();
@@ -515,7 +515,7 @@ StringView consumeUrlAsStringView(CSSParserTokenRange& range)
         const CSSParserToken& next = urlArgs.consumeIncludingWhitespace();
         if (next.type() == BadStringToken || !urlArgs.atEnd())
             return StringView();
-        ASSERT(next.type() == StringToken);
+        assert(next.type() == StringToken);
         range = urlRange;
         range.consumeWhitespace();
         return next.value();
@@ -543,7 +543,7 @@ static int clampRGBComponent(const CSSPrimitiveValue& value)
 
 static Color parseRGBParameters(CSSParserTokenRange& range)
 {
-    ASSERT(range.peek().functionId() == CSSValueRgb || range.peek().functionId() == CSSValueRgba);
+    assert(range.peek().functionId() == CSSValueRgb || range.peek().functionId() == CSSValueRgba);
     Color result;
     CSSParserTokenRange args = consumeFunction(range);
     std::shared_ptr<CSSPrimitiveValue> colorParameter = consumeNumber(args, ValueRangeAll);
@@ -614,7 +614,7 @@ static Color parseRGBParameters(CSSParserTokenRange& range)
 
 static Color parseHSLParameters(CSSParserTokenRange& range, CSSParserMode cssParserMode)
 {
-    ASSERT(range.peek().functionId() == CSSValueHsl || range.peek().functionId() == CSSValueHsla);
+    assert(range.peek().functionId() == CSSValueHsl || range.peek().functionId() == CSSValueHsla);
     CSSParserTokenRange args = consumeFunction(range);
     auto hslValue = consumeAngle(args, cssParserMode, UnitlessQuirk::Forbid);
     double angleInDegrees;
@@ -666,7 +666,7 @@ static Color parseHSLParameters(CSSParserTokenRange& range, CSSParserMode cssPar
 
 static Color parseColorFunctionParameters(CSSParserTokenRange& range)
 {
-    ASSERT(range.peek().functionId() == CSSValueColor);
+    assert(range.peek().functionId() == CSSValueColor);
     CSSParserTokenRange args = consumeFunction(range);
 
     ColorSpace colorSpace;
@@ -827,7 +827,7 @@ static bool positionFromTwoValues(CSSPrimitiveValue& value1, CSSPrimitiveValue& 
 
 namespace CSSPropertyParserHelpersInternal {
 template<typename... Args>
-static Ref<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
+static std::reference_wrapper<CSSPrimitiveValue> createPrimitiveValuePair(Args&&... args)
 {
     return CSSValuePool::singleton().createValue(Pair::create(std::forward<Args>(args)...));
 }
@@ -860,7 +860,7 @@ static bool positionFromThreeOrFourValues(CSSPrimitiveValue** values, std::share
                 return false;
             resultX = result;
         } else {
-            ASSERT(id == CSSValueTop || id == CSSValueBottom);
+            assert(id == CSSValueTop || id == CSSValueBottom);
             if (resultY)
                 return false;
             resultY = result;
@@ -868,7 +868,7 @@ static bool positionFromThreeOrFourValues(CSSPrimitiveValue** values, std::share
     }
 
     if (center) {
-        ASSERT(resultX || resultY);
+        assert(resultX || resultY);
         if (resultX && resultY)
             return false;
         if (!resultX)
@@ -877,7 +877,7 @@ static bool positionFromThreeOrFourValues(CSSPrimitiveValue** values, std::share
             resultY = center;
     }
 
-    ASSERT(resultX && resultY);
+    assert(resultX && resultY);
     return true;
 }
 
@@ -968,7 +968,7 @@ static bool consumeDeprecatedGradientColorStop(CSSParserTokenRange& range, CSSGr
     if (id == CSSValueFrom || id == CSSValueTo) {
         position = (id == CSSValueFrom) ? 0 : 1;
     } else {
-        ASSERT(id == CSSValueColorStop);
+        assert(id == CSSValueColorStop);
         if (auto percentValue = consumePercent(args, ValueRangeAll))
             position = percentValue->doubleValue() / 100.0;
         else if (!consumeNumberRaw(args, position))
@@ -1456,7 +1456,7 @@ static std::shared_ptr<CSSValue> consumeImageSet(CSSParserTokenRange& range, con
             return nullptr;
         if (token.value() != "x")
             return nullptr;
-        ASSERT(token.unitType() == CSSPrimitiveValue::UnitType::CSS_UNKNOWN);
+        assert(token.unitType() == CSSPrimitiveValue::UnitType::CSS_UNKNOWN);
         double imageScaleFactor = token.numericValue();
         if (imageScaleFactor <= 0)
             return nullptr;

@@ -35,14 +35,14 @@ class CSSStyleSheet;
 
 class StyleSheetList final : public RefCounted<StyleSheetList> {
 public:
-    static Ref<StyleSheetList> create(Document& document) { return adoptRef(*new StyleSheetList(document)); }
-    static Ref<StyleSheetList> create(ShadowRoot& shadowRoot) { return adoptRef(*new StyleSheetList(shadowRoot)); }
+    static std::reference_wrapper<StyleSheetList> create(Document& document) { return adoptRef(*new StyleSheetList(document)); }
+    static std::reference_wrapper<StyleSheetList> create(ShadowRoot& shadowRoot) { return adoptRef(*new StyleSheetList(shadowRoot)); }
     ~StyleSheetList();
 
     unsigned length() const;
     StyleSheet* item(unsigned index);
 
-    CSSStyleSheet* namedItem(const AtomString&) const;
+    CSSStyleSheet* namedItem(const std::atomic<std::string>&) const;
     std::vector<AtomString> supportedPropertyNames();
 
     Node* ownerNode() const;
@@ -52,11 +52,11 @@ public:
 private:
     StyleSheetList(Document&);
     StyleSheetList(ShadowRoot&);
-    const std::vector<RefPtr<StyleSheet>>& styleSheets() const;
+    const std::vector<std::shared_ptr<StyleSheet>>& styleSheets() const;
 
     WeakPtr<Document> m_document;
     ShadowRoot* m_shadowRoot { nullptr };
-    std::vector<RefPtr<StyleSheet>> m_detachedStyleSheets;
+    std::vector<std::shared_ptr<StyleSheet>> m_detachedStyleSheets;
 };
 
 } // namespace WebCore

@@ -74,9 +74,9 @@ static TextStream& operator<<(TextStream& ts, MediaFeaturePrefix op)
 #endif
 
 typedef bool (*MediaQueryFunction)(CSSValue*, const CSSToLengthConversionData&, Frame&, MediaFeaturePrefix);
-typedef HashMap<AtomStringImpl*, MediaQueryFunction> MediaQueryFunctionMap;
+typedef std::unordered_map<AtomStringImpl*, MediaQueryFunction> MediaQueryFunctionMap;
 
-static bool isAccessibilitySettingsDependent(const AtomString& mediaFeature)
+static bool isAccessibilitySettingsDependent(const std::atomic<std::string>& mediaFeature)
 {
     return mediaFeature == MediaFeatureNames::invertedColors
         || mediaFeature == MediaFeatureNames::maxMonochrome
@@ -85,7 +85,7 @@ static bool isAccessibilitySettingsDependent(const AtomString& mediaFeature)
         || mediaFeature == MediaFeatureNames::prefersReducedMotion;
 }
 
-static bool isViewportDependent(const AtomString& mediaFeature)
+static bool isViewportDependent(const std::atomic<std::string>& mediaFeature)
 {
     return mediaFeature == MediaFeatureNames::width
         || mediaFeature == MediaFeatureNames::height
@@ -99,7 +99,7 @@ static bool isViewportDependent(const AtomString& mediaFeature)
         || mediaFeature == MediaFeatureNames::maxAspectRatio;
 }
 
-static bool isAppearanceDependent(const AtomString& mediaFeature)
+static bool isAppearanceDependent(const std::atomic<std::string>& mediaFeature)
 {
     return mediaFeature == MediaFeatureNames::prefersDarkInterface
 #if ENABLE(DARK_MODE_CSS)
@@ -136,9 +136,9 @@ bool MediaQueryEvaluator::mediaTypeMatch(const std::string& mediaTypeToMatch) co
 bool MediaQueryEvaluator::mediaTypeMatchSpecific(const char* mediaTypeToMatch) const
 {
     // Like mediaTypeMatch, but without the special cases for "" and "all".
-    ASSERT(mediaTypeToMatch);
-    ASSERT(mediaTypeToMatch[0] != '\0');
-    ASSERT(!equalLettersIgnoringASCIICase(StringView(mediaTypeToMatch), "all"));
+    assert(mediaTypeToMatch);
+    assert(mediaTypeToMatch[0] != '\0');
+    assert(!equalLettersIgnoringASCIICase(StringView(mediaTypeToMatch), "all"));
     return equalIgnoringASCIICase(m_mediaType, mediaTypeToMatch);
 }
 
@@ -877,7 +877,7 @@ bool MediaQueryEvaluator::evaluate(const MediaQueryExpression& expression) const
 
 bool MediaQueryEvaluator::mediaAttributeMatches(Document& document, const std::string& attributeValue)
 {
-    ASSERT(document.renderView());
+    assert(document.renderView());
     auto mediaQueries = MediaQuerySet::create(attributeValue, MediaQueryParserContext(document));
     return MediaQueryEvaluator { "screen", document, &document.renderView()->style() }.evaluate(mediaQueries.get());
 }

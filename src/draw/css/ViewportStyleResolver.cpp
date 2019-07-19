@@ -44,7 +44,7 @@ namespace WebCore {
 ViewportStyleResolver::ViewportStyleResolver(Document* document)
     : m_document(document ? makeWeakPtr(*document) : nullptr)
 {
-    ASSERT(m_document);
+    assert(m_document);
 }
 
 ViewportStyleResolver::~ViewportStyleResolver() = default;
@@ -103,7 +103,7 @@ float ViewportStyleResolver::getViewportArgumentValue(CSSPropertyID id) const
     if (id == CSSPropertyUserZoom)
         defaultValue = 1;
 
-    RefPtr<CSSValue> value = m_propertySet->getPropertyCSSValue(id);
+    std::shared_ptr<CSSValue> value = m_propertySet->getPropertyCSSValue(id);
     if (!is<CSSPrimitiveValue>(value))
         return defaultValue;
 
@@ -120,11 +120,11 @@ float ViewportStyleResolver::getViewportArgumentValue(CSSPropertyID id) const
         switch (id) {
         case CSSPropertyMaxHeight:
         case CSSPropertyMinHeight:
-            ASSERT(m_document->initialViewportSize().height() > 0);
+            assert(m_document->initialViewportSize().height() > 0);
             return percentValue * m_document->initialViewportSize().height();
         case CSSPropertyMaxWidth:
         case CSSPropertyMinWidth:
-            ASSERT(m_document->initialViewportSize().width() > 0);
+            assert(m_document->initialViewportSize().width() > 0);
             return percentValue * m_document->initialViewportSize().width();
         case CSSPropertyMaxZoom:
         case CSSPropertyMinZoom:

@@ -138,7 +138,7 @@ bool MediaQuerySet::remove(const std::string& queryStringToRemove)
 
 void MediaQuerySet::addMediaQuery(MediaQuery&& mediaQuery)
 {
-    m_queries.append(WTFMove(mediaQuery));
+    m_queries.append(std::move(mediaQuery));
 }
 
 String MediaQuerySet::mediaText() const
@@ -216,7 +216,7 @@ void MediaList::appendMedium(const std::string& medium)
 
 void MediaList::reattach(MediaQuerySet* mediaQueries)
 {
-    ASSERT(mediaQueries);
+    assert(mediaQueries);
     m_mediaQueries = mediaQueries;
 }
 
@@ -224,11 +224,11 @@ void MediaList::reattach(MediaQuerySet* mediaQueries)
 
 static void addResolutionWarningMessageToConsole(Document& document, const std::string& serializedExpression, const CSSPrimitiveValue& value)
 {
-    static NeverDestroyed<String> mediaQueryMessage(MAKE_STATIC_STRING_IMPL("Consider using 'dppx' units instead of '%replacementUnits%', as in CSS '%replacementUnits%' means dots-per-CSS-%lengthUnit%, not dots-per-physical-%lengthUnit%, so does not correspond to the actual '%replacementUnits%' of a screen. In media query expression: "));
-    static NeverDestroyed<String> mediaValueDPI(MAKE_STATIC_STRING_IMPL("dpi"));
-    static NeverDestroyed<String> mediaValueDPCM(MAKE_STATIC_STRING_IMPL("dpcm"));
-    static NeverDestroyed<String> lengthUnitInch(MAKE_STATIC_STRING_IMPL("inch"));
-    static NeverDestroyed<String> lengthUnitCentimeter(MAKE_STATIC_STRING_IMPL("centimeter"));
+    static NeverDestroyed<std::string> mediaQueryMessage(MAKE_STATIC_STRING_IMPL("Consider using 'dppx' units instead of '%replacementUnits%', as in CSS '%replacementUnits%' means dots-per-CSS-%lengthUnit%, not dots-per-physical-%lengthUnit%, so does not correspond to the actual '%replacementUnits%' of a screen. In media query expression: "));
+    static NeverDestroyed<std::string> mediaValueDPI(MAKE_STATIC_STRING_IMPL("dpi"));
+    static NeverDestroyed<std::string> mediaValueDPCM(MAKE_STATIC_STRING_IMPL("dpcm"));
+    static NeverDestroyed<std::string> lengthUnitInch(MAKE_STATIC_STRING_IMPL("inch"));
+    static NeverDestroyed<std::string> lengthUnitCentimeter(MAKE_STATIC_STRING_IMPL("centimeter"));
 
     std::string message;
     if (value.isDotsPerInch())

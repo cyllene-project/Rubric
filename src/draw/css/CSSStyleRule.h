@@ -31,12 +31,12 @@ class StyleRule;
 
 class CSSStyleRule final : public CSSRule {
 public:
-    static Ref<CSSStyleRule> create(StyleRule& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSStyleRule(rule, sheet)); }
+    static std::reference_wrapper<CSSStyleRule> create(StyleRule& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSStyleRule(rule, sheet)); }
 
     virtual ~CSSStyleRule();
 
     std::string selectorText() const;
-    void setSelectorText(const String&);
+    void setSelectorText(const std::string&);
 
     CSSStyleDeclaration& style();
 
@@ -52,8 +52,8 @@ private:
 
     std::string generateSelectorText() const;
 
-    Ref<StyleRule> m_styleRule;
-    RefPtr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
+    std::reference_wrapper<StyleRule> m_styleRule;
+    std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
 };
 
 } // namespace WebCore

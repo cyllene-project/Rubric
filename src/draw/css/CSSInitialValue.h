@@ -26,11 +26,11 @@ namespace WebCore {
 
 class CSSInitialValue final : public CSSValue {
 public:
-    static Ref<CSSInitialValue> createExplicit()
+    static std::reference_wrapper<CSSInitialValue> createExplicit()
     {
         return adoptRef(*new CSSInitialValue(/* implicit */ false));
     }
-    static Ref<CSSInitialValue> createImplicit()
+    static std::reference_wrapper<CSSInitialValue> createImplicit()
     {
         return adoptRef(*new CSSInitialValue(/* implicit */ true));
     }

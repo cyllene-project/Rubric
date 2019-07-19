@@ -104,9 +104,9 @@ void CSSFilterImageValue::loadSubimages(CachedResourceLoader& cachedResourceLoad
     m_filterSubimageObserver.setReady(true);
 }
 
-RefPtr<Image> CSSFilterImageValue::image(RenderElement* renderer, const FloatSize& size)
+std::shared_ptr<Image> CSSFilterImageValue::image(RenderElement* renderer, const FloatSize& size)
 {
-    ASSERT(renderer);
+    assert(renderer);
 
     if (size.isEmpty())
         return nullptr;
@@ -132,7 +132,7 @@ RefPtr<Image> CSSFilterImageValue::image(RenderElement* renderer, const FloatSiz
     texture->context().drawImage(*image, imageRect);
 
     auto cssFilter = CSSFilter::create();
-    cssFilter->setSourceImage(WTFMove(texture));
+    cssFilter->setSourceImage(std::move(texture));
     cssFilter->setSourceImageRect(imageRect);
     cssFilter->setFilterRegion(imageRect);
     if (!cssFilter->build(*renderer, m_filterOperations, FilterConsumer::FilterFunction))

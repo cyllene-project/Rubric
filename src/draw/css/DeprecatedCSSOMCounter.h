@@ -33,7 +33,7 @@ namespace WebCore {
 
 class DeprecatedCSSOMCounter final : public RefCounted<DeprecatedCSSOMCounter> {
 public:
-    static Ref<DeprecatedCSSOMCounter> create(const Counter& counter, CSSStyleDeclaration& owner)
+    static std::reference_wrapper<DeprecatedCSSOMCounter> create(const Counter& counter, CSSStyleDeclaration& owner)
     {
         return adoptRef(*new DeprecatedCSSOMCounter(counter, owner));
     }
@@ -50,9 +50,9 @@ private:
     {
     }
     
-    Ref<DeprecatedCSSOMPrimitiveValue> m_identifier;
-    Ref<DeprecatedCSSOMPrimitiveValue> m_listStyle;
-    Ref<DeprecatedCSSOMPrimitiveValue> m_separator;
+    std::reference_wrapper<DeprecatedCSSOMPrimitiveValue> m_identifier;
+    std::reference_wrapper<DeprecatedCSSOMPrimitiveValue> m_listStyle;
+    std::reference_wrapper<DeprecatedCSSOMPrimitiveValue> m_separator;
 };
 
 } // namespace WebCore

@@ -35,7 +35,7 @@ namespace WebCore {
 class TypedOMCSSUnitValue final : public TypedOMCSSNumericValue {
     WTF_MAKE_ISO_ALLOCATED(TypedOMCSSUnitValue);
 public:
-    static Ref<TypedOMCSSUnitValue> create(double value, const std::string& unit)
+    static std::reference_wrapper<TypedOMCSSUnitValue> create(double value, const std::string& unit)
     {
         return adoptRef(*new TypedOMCSSUnitValue(value, unit));
     }

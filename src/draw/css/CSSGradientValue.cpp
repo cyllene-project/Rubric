@@ -41,7 +41,7 @@
 
 namespace WebCore {
 
-static inline Ref<Gradient> createGradient(CSSGradientValue& value, RenderElement& renderer, FloatSize size)
+static inline std::reference_wrapper<Gradient> createGradient(CSSGradientValue& value, RenderElement& renderer, FloatSize size)
 {
     if (is<CSSLinearGradientValue>(value))
         return downcast<CSSLinearGradientValue>(value).createGradient(renderer, size);
@@ -50,7 +50,7 @@ static inline Ref<Gradient> createGradient(CSSGradientValue& value, RenderElemen
     return downcast<CSSConicGradientValue>(value).createGradient(renderer, size);
 }
 
-RefPtr<Image> CSSGradientValue::image(RenderElement& renderer, const FloatSize& size)
+std::shared_ptr<Image> CSSGradientValue::image(RenderElement& renderer, const FloatSize& size)
 {
     if (size.isEmpty())
         return nullptr;
@@ -78,7 +78,7 @@ static inline bool compareStops(const CSSGradientColorStop& a, const CSSGradient
 
 void CSSGradientValue::sortStopsIfNeeded()
 {
-    ASSERT(m_gradientType == CSSDeprecatedLinearGradient || m_gradientType == CSSDeprecatedRadialGradient);
+    assert(m_gradientType == CSSDeprecatedLinearGradient || m_gradientType == CSSDeprecatedRadialGradient);
     if (!m_stopsSorted) {
         if (m_stops.size())
             std::stable_sort(m_stops.begin(), m_stops.end(), compareStops);
@@ -93,13 +93,13 @@ struct GradientStop {
     bool isMidpoint { false };
 };
 
-static inline Ref<CSSGradientValue> clone(CSSGradientValue& value)
+static inline std::reference_wrapper<CSSGradientValue> clone(CSSGradientValue& value)
 {
     if (is<CSSLinearGradientValue>(value))
         return downcast<CSSLinearGradientValue>(value).clone();
     if (is<CSSRadialGradientValue>(value))
         return downcast<CSSRadialGradientValue>(value).clone();
-    ASSERT(is<CSSConicGradientValue>(value));
+    assert(is<CSSConicGradientValue>(value));
     return downcast<CSSConicGradientValue>(value).clone();
 }
 
@@ -348,7 +348,7 @@ Gradient::ColorStopVector CSSGradientValue::computeStops(GradientAdapter& gradie
                 if (positionValue.isLength())
                     length = positionValue.computeLength<float>(conversionData);
                 else {
-                    Ref<CalculationValue> calculationValue { positionValue.cssCalcValue()->createCalculationValue(conversionData) };
+                    std::reference_wrapper<CalculationValue> calculationValue { positionValue.cssCalcValue()->createCalculationValue(conversionData) };
                     length = calculationValue->evaluate(gradientLength);
                 }
                 stops[i].offset = (gradientLength > 0) ? length / gradientLength : 0;
@@ -386,7 +386,7 @@ Gradient::ColorStopVector CSSGradientValue::computeStops(GradientAdapter& gradie
         }
     }
 
-    ASSERT(stops[0].specified && stops[numStops - 1].specified);
+    assert(stops[0].specified && stops[numStops - 1].specified);
 
     // If any color-stop still does not have a position, then, for each run of adjacent
     // color-stops without positions, set their positions so that they are evenly spaced
@@ -594,22 +594,22 @@ static float positionFromValue(const CSSPrimitiveValue* value, const CSSToLength
         return origin + sign * value->floatValue() / 100.f * edgeDistance;
 
     if (value->isCalculatedPercentageWithLength()) {
-        Ref<CalculationValue> calculationValue { value->cssCalcValue()->createCalculationValue(conversionData) };
+        std::reference_wrapper<CalculationValue> calculationValue { value->cssCalcValue()->createCalculationValue(conversionData) };
         return origin + sign * calculationValue->evaluate(edgeDistance);
     }
     
     switch (value->valueID()) {
     case CSSValueTop:
-        ASSERT(!isHorizontal);
+        assert(!isHorizontal);
         return 0;
     case CSSValueLeft:
-        ASSERT(isHorizontal);
+        assert(isHorizontal);
         return 0;
     case CSSValueBottom:
-        ASSERT(!isHorizontal);
+        assert(!isHorizontal);
         return size.height();
     case CSSValueRight:
-        ASSERT(isHorizontal);
+        assert(isHorizontal);
         return size.width();
     case CSSValueCenter:
         return origin + sign * .5f * edgeDistance;
@@ -846,7 +846,7 @@ static void endPointsFromAngle(float angleDeg, const FloatSize& size, FloatPoint
 
 Ref<Gradient> CSSLinearGradientValue::createGradient(RenderElement& renderer, const FloatSize& size)
 {
-    ASSERT(!size.isEmpty());
+    assert(!size.isEmpty());
 
     CSSToLengthConversionData conversionData(&renderer.style(), renderer.document().documentElement()->renderStyle(), &renderer.view());
 
@@ -905,8 +905,8 @@ Ref<Gradient> CSSLinearGradientValue::createGradient(RenderElement& renderer, co
     LinearGradientAdapter adapter { data };
     auto stops = computeStops(adapter, conversionData, renderer.style(), 1);
 
-    auto gradient = Gradient::create(WTFMove(data));
-    gradient->setSortedColorStops(WTFMove(stops));
+    auto gradient = Gradient::create(std::move(data));
+    gradient->setSortedColorStops(std::move(stops));
     return gradient;
 }
 
@@ -1186,7 +1186,7 @@ static inline float horizontalEllipseRadius(const FloatSize& p, float aspectRati
 // FIXME: share code with the linear version
 Ref<Gradient> CSSRadialGradientValue::createGradient(RenderElement& renderer, const FloatSize& size)
 {
-    ASSERT(!size.isEmpty());
+    assert(!size.isEmpty());
 
     CSSToLengthConversionData conversionData(&renderer.style(), renderer.document().documentElement()->renderStyle(), &renderer.view());
 
@@ -1322,8 +1322,8 @@ Ref<Gradient> CSSRadialGradientValue::createGradient(RenderElement& renderer, co
     RadialGradientAdapter adapter { data };
     auto stops = computeStops(adapter, conversionData, renderer.style(), maxExtent);
 
-    auto gradient = Gradient::create(WTFMove(data));
-    gradient->setSortedColorStops(WTFMove(stops));
+    auto gradient = Gradient::create(std::move(data));
+    gradient->setSortedColorStops(std::move(stops));
     return gradient;
 }
 
@@ -1424,7 +1424,7 @@ String CSSConicGradientValue::customCSSText() const
 
 Ref<Gradient> CSSConicGradientValue::createGradient(RenderElement& renderer, const FloatSize& size)
 {
-    ASSERT(!size.isEmpty());
+    assert(!size.isEmpty());
 
     CSSToLengthConversionData conversionData(&renderer.style(), renderer.document().documentElement()->renderStyle(), &renderer.view());
 
@@ -1442,8 +1442,8 @@ Ref<Gradient> CSSConicGradientValue::createGradient(RenderElement& renderer, con
     ConicGradientAdapter adapter;
     auto stops = computeStops(adapter, conversionData, renderer.style(), 1);
 
-    auto gradient = Gradient::create(WTFMove(data));
-    gradient->setSortedColorStops(WTFMove(stops));
+    auto gradient = Gradient::create(std::move(data));
+    gradient->setSortedColorStops(std::move(stops));
     return gradient;
 }
 

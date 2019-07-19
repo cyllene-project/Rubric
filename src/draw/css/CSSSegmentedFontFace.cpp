@@ -44,11 +44,11 @@ CSSSegmentedFontFace::~CSSSegmentedFontFace()
         face->removeClient(*this);
 }
 
-void CSSSegmentedFontFace::appendFontFace(Ref<CSSFontFace>&& fontFace)
+void CSSSegmentedFontFace::appendFontFace(std::reference_wrapper<CSSFontFace>&& fontFace)
 {
     m_cache.clear();
     fontFace->addClient(*this);
-    m_fontFaces.append(WTFMove(fontFace));
+    m_fontFaces.append(std::move(fontFace));
 }
 
 void CSSSegmentedFontFace::fontLoaded(CSSFontFace&)
@@ -58,7 +58,7 @@ void CSSSegmentedFontFace::fontLoaded(CSSFontFace&)
 
 class CSSFontAccessor final : public FontAccessor {
 public:
-    static Ref<CSSFontAccessor> create(CSSFontFace& fontFace, const FontDescription& fontDescription, bool syntheticBold, bool syntheticItalic)
+    static std::reference_wrapper<CSSFontAccessor> create(CSSFontFace& fontFace, const FontDescription& fontDescription, bool syntheticBold, bool syntheticItalic)
     {
         return adoptRef(*new CSSFontAccessor(fontFace, fontDescription, syntheticBold, syntheticItalic));
     }
@@ -88,17 +88,17 @@ private:
         return m_result && m_result.value() && m_result.value()->isInterstitial();
     }
 
-    mutable Optional<RefPtr<Font>> m_result; // Caches nullptr too
-    mutable Ref<CSSFontFace> m_fontFace;
+    mutable Optional<std::shared_ptr<Font>> m_result; // Caches nullptr too
+    mutable std::reference_wrapper<CSSFontFace> m_fontFace;
     FontDescription m_fontDescription;
     bool m_syntheticBold;
     bool m_syntheticItalic;
 };
 
-static void appendFont(FontRanges& ranges, Ref<FontAccessor>&& fontAccessor, const std::vector<CSSFontFace::UnicodeRange>& unicodeRanges)
+static void appendFont(FontRanges& ranges, std::reference_wrapper<FontAccessor>&& fontAccessor, const std::vector<CSSFontFace::UnicodeRange>& unicodeRanges)
 {
     if (unicodeRanges.isEmpty()) {
-        ranges.appendRange({ 0, 0x7FFFFFFF, WTFMove(fontAccessor) });
+        ranges.appendRange({ 0, 0x7FFFFFFF, std::move(fontAccessor) });
         return;
     }
 
@@ -126,7 +126,7 @@ FontRanges CSSSegmentedFontFace::fontRanges(const FontDescription& fontDescripti
             auto fontAccessor = CSSFontAccessor::create(face, fontDescription, syntheticBold, syntheticItalic);
             if (result.isNull() && !fontAccessor->font(ExternalResourceDownloadPolicy::Forbid))
                 continue;
-            appendFont(result, WTFMove(fontAccessor), face->ranges());
+            appendFont(result, std::move(fontAccessor), face->ranges());
         }
     }
     return result;

@@ -38,7 +38,7 @@ namespace WebCore {
 // Salt to separate otherwise identical string hashes so a class-selector like .article won't match <article> elements.
 enum { TagNameSalt = 13, IdSalt = 17, ClassSalt = 19, AttributeSalt = 23 };
 
-static bool isExcludedAttribute(const AtomString& name)
+static bool isExcludedAttribute(const std::atomic<std::string>& name)
 {
     return name == HTMLNames::classAttr->localName() || name == HTMLNames::idAttr->localName() || name == HTMLNames::styleAttr->localName();
 }
@@ -88,8 +88,8 @@ void SelectorFilter::initializeParentStack(Element& parent)
 
 void SelectorFilter::pushParent(Element* parent)
 {
-    ASSERT(m_parentStack.isEmpty() || m_parentStack.last().element == parent->parentElement());
-    ASSERT(!m_parentStack.isEmpty() || !parent->parentElement());
+    assert(m_parentStack.isEmpty() || m_parentStack.last().element == parent->parentElement());
+    assert(!m_parentStack.isEmpty() || !parent->parentElement());
     m_parentStack.append(ParentStackFrame(parent));
     ParentStackFrame& parentFrame = m_parentStack.last();
     // Mix tags, class names and ids into some sort of weird bouillabaisse.
@@ -111,14 +111,14 @@ void SelectorFilter::pushParentInitializingIfNeeded(Element& parent)
 
 void SelectorFilter::popParent()
 {
-    ASSERT(!m_parentStack.isEmpty());
+    assert(!m_parentStack.isEmpty());
     const ParentStackFrame& parentFrame = m_parentStack.last();
     size_t count = parentFrame.identifierHashes.size();
     for (size_t i = 0; i < count; ++i)
         m_ancestorIdentifierFilter.remove(parentFrame.identifierHashes[i]);
     m_parentStack.removeLast();
     if (m_parentStack.isEmpty()) {
-        ASSERT(m_ancestorIdentifierFilter.likelyEmpty());
+        assert(m_ancestorIdentifierFilter.likelyEmpty());
         m_ancestorIdentifierFilter.clear();
     }
 }

@@ -39,50 +39,50 @@ class RenderStyle;
 
 class CSSCustomPropertyValue final : public CSSValue {
 public:
-    using VariantValue = Variant<Ref<CSSVariableReferenceValue>, CSSValueID, Ref<CSSVariableData>, Length, Ref<StyleImage>>;
+    using VariantValue = Variant<std::reference_wrapper<CSSVariableReferenceValue>, CSSValueID, std::reference_wrapper<CSSVariableData>, Length, std::reference_wrapper<StyleImage>>;
 
-    static Ref<CSSCustomPropertyValue> createUnresolved(const AtomString& name, Ref<CSSVariableReferenceValue>&& value)
+    static std::reference_wrapper<CSSCustomPropertyValue> createUnresolved(const std::atomic<std::string>& name, std::reference_wrapper<CSSVariableReferenceValue>&& value)
     {
-        return adoptRef(*new CSSCustomPropertyValue(name, { WTFMove(value) }));
+        return adoptRef(*new CSSCustomPropertyValue(name, { std::move(value) }));
     }
 
-    static Ref<CSSCustomPropertyValue> createUnresolved(const AtomString& name, CSSValueID value)
+    static std::reference_wrapper<CSSCustomPropertyValue> createUnresolved(const std::atomic<std::string>& name, CSSValueID value)
     {
         return adoptRef(*new CSSCustomPropertyValue(name, { value }));
     }
 
-    static Ref<CSSCustomPropertyValue> createWithID(const AtomString& name, CSSValueID id)
+    static std::reference_wrapper<CSSCustomPropertyValue> createWithID(const std::atomic<std::string>& name, CSSValueID id)
     {
-        ASSERT(id == CSSValueInherit || id == CSSValueInitial || id == CSSValueUnset || id == CSSValueRevert || id == CSSValueInvalid);
+        assert(id == CSSValueInherit || id == CSSValueInitial || id == CSSValueUnset || id == CSSValueRevert || id == CSSValueInvalid);
         return adoptRef(*new CSSCustomPropertyValue(name, { id }));
     }
 
-    static Ref<CSSCustomPropertyValue> createSyntaxAll(const AtomString& name, Ref<CSSVariableData>&& value)
+    static std::reference_wrapper<CSSCustomPropertyValue> createSyntaxAll(const std::atomic<std::string>& name, std::reference_wrapper<CSSVariableData>&& value)
     {
-        return adoptRef(*new CSSCustomPropertyValue(name, { WTFMove(value) }));
+        return adoptRef(*new CSSCustomPropertyValue(name, { std::move(value) }));
     }
     
-    static Ref<CSSCustomPropertyValue> createSyntaxLength(const AtomString& name, Length value)
+    static std::reference_wrapper<CSSCustomPropertyValue> createSyntaxLength(const std::atomic<std::string>& name, Length value)
     {
-        ASSERT(!value.isUndefined());
-        ASSERT(!value.isCalculated());
-        return adoptRef(*new CSSCustomPropertyValue(name, { WTFMove(value) }));
+        assert(!value.isUndefined());
+        assert(!value.isCalculated());
+        return adoptRef(*new CSSCustomPropertyValue(name, { std::move(value) }));
     }
 
-    static Ref<CSSCustomPropertyValue> createSyntaxImage(const AtomString& name, Ref<StyleImage>&& value)
+    static std::reference_wrapper<CSSCustomPropertyValue> createSyntaxImage(const std::atomic<std::string>& name, std::reference_wrapper<StyleImage>&& value)
     {
-        return adoptRef(*new CSSCustomPropertyValue(name, { WTFMove(value) }));
+        return adoptRef(*new CSSCustomPropertyValue(name, { std::move(value) }));
     }
 
-    static Ref<CSSCustomPropertyValue> create(const CSSCustomPropertyValue& other)
+    static std::reference_wrapper<CSSCustomPropertyValue> create(const CSSCustomPropertyValue& other)
     {
         return adoptRef(*new CSSCustomPropertyValue(other));
     }
     
     std::string customCSSText() const;
 
-    const AtomString& name() const { return m_name; }
-    bool isResolved() const  { return !WTF::holds_alternative<Ref<CSSVariableReferenceValue>>(m_value); }
+    const std::atomic<std::string>& name() const { return m_name; }
+    bool isResolved() const  { return !WTF::holds_alternative<std::reference_wrapper<CSSVariableReferenceValue>>(m_value); }
     bool isUnset() const  { return WTF::holds_alternative<CSSValueID>(m_value) && WTF::get<CSSValueID>(m_value) == CSSValueUnset; }
     bool isInvalid() const  { return WTF::holds_alternative<CSSValueID>(m_value) && WTF::get<CSSValueID>(m_value) == CSSValueInvalid; }
 
@@ -92,10 +92,10 @@ public:
     bool equals(const CSSCustomPropertyValue& other) const;
 
 private:
-    CSSCustomPropertyValue(const AtomString& name, VariantValue&& value)
+    CSSCustomPropertyValue(const std::atomic<std::string>& name, VariantValue&& value)
         : CSSValue(CustomPropertyClass)
         , m_name(name)
-        , m_value(WTFMove(value))
+        , m_value(std::move(value))
         , m_serialized(false)
     {
     }
@@ -107,16 +107,16 @@ private:
         , m_stringValue(other.m_stringValue)
         , m_serialized(other.m_serialized)
     {
-        // No copy constructor for Ref<CSSVariableData>, so we have to do this ourselves
-        auto visitor = WTF::makeVisitor([&](const Ref<CSSVariableReferenceValue>& value) {
+        // No copy constructor for std::reference_wrapper<CSSVariableData>, so we have to do this ourselves
+        auto visitor = WTF::makeVisitor([&](const std::reference_wrapper<CSSVariableReferenceValue>& value) {
             m_value = value.copyRef();
         }, [&](const CSSValueID& value) {
             m_value = value;
-        }, [&](const Ref<CSSVariableData>& value) {
+        }, [&](const std::reference_wrapper<CSSVariableData>& value) {
             m_value = value.copyRef();
         }, [&](const Length& value) {
             m_value = value;
-        }, [&](const Ref<StyleImage>& value) {
+        }, [&](const std::reference_wrapper<StyleImage>& value) {
             m_value = value.copyRef();
         });
         WTF::visit(visitor, other.m_value);

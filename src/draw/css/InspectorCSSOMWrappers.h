@@ -49,11 +49,11 @@ private:
     void collect(ListType*);
 
     void collectFromStyleSheetContents(StyleSheetContents*);
-    void collectFromStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&);
-    void maybeCollectFromStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&);
+    void collectFromStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>&);
+    void maybeCollectFromStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>&);
 
-    HashMap<StyleRule*, RefPtr<CSSStyleRule>> m_styleRuleToCSSOMWrapperMap;
-    HashSet<RefPtr<CSSStyleSheet>> m_styleSheetCSSOMWrapperSet;
+    std::unordered_map<StyleRule*, std::shared_ptr<CSSStyleRule>> m_styleRuleToCSSOMWrapperMap;
+    std::unordered_set<std::shared_ptr<CSSStyleSheet>> m_styleSheetCSSOMWrapperSet;
 };
 
 } // namespace WebCore

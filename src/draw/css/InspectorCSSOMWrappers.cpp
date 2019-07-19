@@ -84,13 +84,13 @@ void InspectorCSSOMWrappers::collectFromStyleSheetContents(StyleSheetContents* s
     collect(styleSheetWrapper.ptr());
 }
 
-void InspectorCSSOMWrappers::collectFromStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& sheets)
+void InspectorCSSOMWrappers::collectFromStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>& sheets)
 {
     for (auto& sheet : sheets)
         collect(sheet.get());
 }
 
-void InspectorCSSOMWrappers::maybeCollectFromStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& sheets)
+void InspectorCSSOMWrappers::maybeCollectFromStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>& sheets)
 {
     for (auto& sheet : sheets) {
         if (!m_styleSheetCSSOMWrapperSet.contains(sheet.get())) {

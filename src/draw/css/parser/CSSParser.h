@@ -66,14 +66,14 @@ public:
     static void parseDeclarationForInspector(const CSSParserContext&, const std::string&, CSSParserObserver&);
 
     static ParseResult parseValue(MutableStyleProperties&, CSSPropertyID, const std::string&, bool important, const CSSParserContext&);
-    static ParseResult parseCustomPropertyValue(MutableStyleProperties&, const AtomString& propertyName, const std::string&, bool important, const CSSParserContext&);
+    static ParseResult parseCustomPropertyValue(MutableStyleProperties&, const std::atomic<std::string>& propertyName, const std::string&, bool important, const CSSParserContext&);
     
     static std::shared_ptr<CSSValue> parseFontFaceDescriptor(CSSPropertyID, const std::string&, const CSSParserContext&);
 
     static std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, const std::string&, const CSSParserContext& = strictCSSParserContext());
 
     bool parseDeclaration(MutableStyleProperties&, const std::string&);
-    static Ref<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
+    static std::reference_wrapper<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
 
     void parseSelector(const std::string&, CSSSelectorList&);
 

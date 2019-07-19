@@ -78,7 +78,7 @@ public:
     static short convertWebkitHyphenateLimitLines(StyleResolver&, const CSSValue&);
     template<CSSPropertyID> static NinePieceImage convertBorderImage(StyleResolver&, CSSValue&);
     template<CSSPropertyID> static NinePieceImage convertBorderMask(StyleResolver&, CSSValue&);
-    template<CSSPropertyID> static RefPtr<StyleImage> convertStyleImage(StyleResolver&, CSSValue&);
+    template<CSSPropertyID> static std::shared_ptr<StyleImage> convertStyleImage(StyleResolver&, CSSValue&);
     static TransformOperations convertTransform(StyleResolver&, const CSSValue&);
     static StyleColorScheme convertColorScheme(StyleResolver&, const CSSValue&);
     static String convertString(StyleResolver&, const CSSValue&);
@@ -86,20 +86,20 @@ public:
     static String convertStringOrNone(StyleResolver&, const CSSValue&);
     static OptionSet<TextEmphasisPosition> convertTextEmphasisPosition(StyleResolver&, const CSSValue&);
     static TextAlignMode convertTextAlign(StyleResolver&, const CSSValue&);
-    static RefPtr<ClipPathOperation> convertClipPath(StyleResolver&, const CSSValue&);
+    static std::shared_ptr<ClipPathOperation> convertClipPath(StyleResolver&, const CSSValue&);
     static Resize convertResize(StyleResolver&, const CSSValue&);
     static int convertMarqueeRepetition(StyleResolver&, const CSSValue&);
     static int convertMarqueeSpeed(StyleResolver&, const CSSValue&);
-    static Ref<QuotesData> convertQuotes(StyleResolver&, const CSSValue&);
+    static std::reference_wrapper<QuotesData> convertQuotes(StyleResolver&, const CSSValue&);
     static TextUnderlinePosition convertTextUnderlinePosition(StyleResolver&, const CSSValue&);
     static TextUnderlineOffset convertTextUnderlineOffset(StyleResolver&, const CSSValue&);
     static TextDecorationThickness convertTextDecorationThickness(StyleResolver&, const CSSValue&);
-    static RefPtr<StyleReflection> convertReflection(StyleResolver&, const CSSValue&);
+    static std::shared_ptr<StyleReflection> convertReflection(StyleResolver&, const CSSValue&);
     static IntSize convertInitialLetter(StyleResolver&, const CSSValue&);
     static float convertTextStrokeWidth(StyleResolver&, const CSSValue&);
     static LineBoxContain convertLineBoxContain(StyleResolver&, const CSSValue&);
     static OptionSet<TextDecorationSkip> convertTextDecorationSkip(StyleResolver&, const CSSValue&);
-    static RefPtr<ShapeValue> convertShapeValue(StyleResolver&, CSSValue&);
+    static std::shared_ptr<ShapeValue> convertShapeValue(StyleResolver&, CSSValue&);
 
     static GridTrackSize convertGridTrackSize(StyleResolver&, const CSSValue&);
     static std::vector<GridTrackSize> convertGridTrackSizeList(StyleResolver&, const CSSValue&);
@@ -307,8 +307,8 @@ inline LengthSize StyleBuilderConverter::convertRadius(StyleResolver& styleResol
     CSSToLengthConversionData conversionData = styleResolver.state().cssToLengthConversionData();
     LengthSize radius { convertToRadiusLength(conversionData, *pair->first()), convertToRadiusLength(conversionData, *pair->second()) };
 
-    ASSERT(!radius.width.isNegative());
-    ASSERT(!radius.height.isNegative());
+    assert(!radius.width.isNegative());
+    assert(!radius.height.isNegative());
     if (radius.width.isZero() || radius.height.isZero())
         return { { 0, Fixed }, { 0, Fixed } };
 
@@ -325,8 +325,8 @@ inline Length StyleBuilderConverter::convertTo100PercentMinusLength(const Length
     lengths.reserveInitialCapacity(2);
     lengths.uncheckedAppend(std::make_unique<CalcExpressionLength>(Length(100, Percent)));
     lengths.uncheckedAppend(std::make_unique<CalcExpressionLength>(length));
-    auto op = std::make_unique<CalcExpressionOperation>(WTFMove(lengths), CalcOperator::Subtract);
-    return Length(CalculationValue::create(WTFMove(op), ValueRangeAll));
+    auto op = std::make_unique<CalcExpressionOperation>(std::move(lengths), CalcOperator::Subtract);
+    return Length(CalculationValue::create(std::move(op), ValueRangeAll));
 }
 
 inline Length StyleBuilderConverter::convertPositionComponentX(StyleResolver& styleResolver, const CSSValue& value)
@@ -438,7 +438,7 @@ inline NinePieceImage StyleBuilderConverter::convertBorderMask(StyleResolver& st
 }
 
 template<CSSPropertyID>
-inline RefPtr<StyleImage> StyleBuilderConverter::convertStyleImage(StyleResolver& styleResolver, CSSValue& value)
+inline std::shared_ptr<StyleImage> StyleBuilderConverter::convertStyleImage(StyleResolver& styleResolver, CSSValue& value)
 {
     return styleResolver.styleImage(value);
 }
@@ -453,7 +453,7 @@ inline TransformOperations StyleBuilderConverter::convertTransform(StyleResolver
 
 inline void StyleBuilderConverter::updateColorScheme(const CSSPrimitiveValue& primitiveValue, StyleColorScheme& colorScheme)
 {
-    ASSERT(primitiveValue.isValueID());
+    assert(primitiveValue.isValueID());
 
     switch (primitiveValue.valueID()) {
     case CSSValueAuto:
@@ -512,7 +512,7 @@ inline String StyleBuilderConverter::convertStringOrNone(StyleResolver& styleRes
 
 inline OptionSet<TextEmphasisPosition> StyleBuilderConverter::valueToEmphasisPosition(const CSSPrimitiveValue& primitiveValue)
 {
-    ASSERT(primitiveValue.isValueID());
+    assert(primitiveValue.isValueID());
 
     switch (primitiveValue.valueID()) {
     case CSSValueOver:
@@ -545,7 +545,7 @@ inline OptionSet<TextEmphasisPosition> StyleBuilderConverter::convertTextEmphasi
 inline TextAlignMode StyleBuilderConverter::convertTextAlign(StyleResolver& styleResolver, const CSSValue& value)
 {
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
-    ASSERT(primitiveValue.isValueID());
+    assert(primitiveValue.isValueID());
 
     if (primitiveValue.valueID() != CSSValueWebkitMatchParent)
         return primitiveValue;
@@ -558,7 +558,7 @@ inline TextAlignMode StyleBuilderConverter::convertTextAlign(StyleResolver& styl
     return parentStyle->textAlign();
 }
 
-inline RefPtr<ClipPathOperation> StyleBuilderConverter::convertClipPath(StyleResolver& styleResolver, const CSSValue& value)
+inline std::shared_ptr<ClipPathOperation> StyleBuilderConverter::convertClipPath(StyleResolver& styleResolver, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
         auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
@@ -568,34 +568,34 @@ inline RefPtr<ClipPathOperation> StyleBuilderConverter::convertClipPath(StyleRes
             // FIXME: It doesn't work with external SVG references (see https://bugs.webkit.org/show_bug.cgi?id=126133)
             return ReferenceClipPathOperation::create(cssURLValue, url.fragmentIdentifier());
         }
-        ASSERT(primitiveValue.valueID() == CSSValueNone);
+        assert(primitiveValue.valueID() == CSSValueNone);
         return nullptr;
     }
 
     CSSBoxType referenceBox = CSSBoxType::BoxMissing;
-    RefPtr<ClipPathOperation> operation;
+    std::shared_ptr<ClipPathOperation> operation;
 
     for (auto& currentValue : downcast<CSSValueList>(value)) {
         auto& primitiveValue = downcast<CSSPrimitiveValue>(currentValue.get());
         if (primitiveValue.isShape()) {
-            ASSERT(!operation);
+            assert(!operation);
             operation = ShapeClipPathOperation::create(basicShapeForValue(styleResolver.state().cssToLengthConversionData(), *primitiveValue.shapeValue()));
         } else {
-            ASSERT(primitiveValue.valueID() == CSSValueContentBox
+            assert(primitiveValue.valueID() == CSSValueContentBox
                 || primitiveValue.valueID() == CSSValueBorderBox
                 || primitiveValue.valueID() == CSSValuePaddingBox
                 || primitiveValue.valueID() == CSSValueMarginBox
                 || primitiveValue.valueID() == CSSValueFillBox
                 || primitiveValue.valueID() == CSSValueStrokeBox
                 || primitiveValue.valueID() == CSSValueViewBox);
-            ASSERT(referenceBox == CSSBoxType::BoxMissing);
+            assert(referenceBox == CSSBoxType::BoxMissing);
             referenceBox = primitiveValue;
         }
     }
     if (operation)
         downcast<ShapeClipPathOperation>(*operation).setReferenceBox(referenceBox);
     else {
-        ASSERT(referenceBox != CSSBoxType::BoxMissing);
+        assert(referenceBox != CSSBoxType::BoxMissing);
         operation = BoxClipPathOperation::create(referenceBox);
     }
 
@@ -621,7 +621,7 @@ inline int StyleBuilderConverter::convertMarqueeRepetition(StyleResolver&, const
     if (primitiveValue.valueID() == CSSValueInfinite)
         return -1; // -1 means repeat forever.
 
-    ASSERT(primitiveValue.isNumber());
+    assert(primitiveValue.isNumber());
     return primitiveValue.intValue();
 }
 
@@ -648,16 +648,16 @@ inline int StyleBuilderConverter::convertMarqueeSpeed(StyleResolver&, const CSSV
         speed = primitiveValue.computeTime<int, CSSPrimitiveValue::Milliseconds>();
     else {
         // For scrollamount support.
-        ASSERT(primitiveValue.isNumber());
+        assert(primitiveValue.isNumber());
         speed = primitiveValue.intValue();
     }
     return speed;
 }
 
-inline Ref<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, const CSSValue& value)
+inline std::reference_wrapper<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return QuotesData::create(std::vector<std::pair<String, String>>());
     }
 
@@ -679,19 +679,19 @@ inline Ref<QuotesData> StyleBuilderConverter::convertQuotes(StyleResolver&, cons
 
 inline TextUnderlinePosition StyleBuilderConverter::convertTextUnderlinePosition(StyleResolver&, const CSSValue& value)
 {
-    ASSERT(is<CSSPrimitiveValue>(value));
+    assert(is<CSSPrimitiveValue>(value));
     return downcast<CSSPrimitiveValue>(value);
 }
 
 inline TextUnderlineOffset StyleBuilderConverter::convertTextUnderlineOffset(StyleResolver& styleResolver, const CSSValue& value)
 {
-    ASSERT(is<CSSPrimitiveValue>(value));
+    assert(is<CSSPrimitiveValue>(value));
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     switch (primitiveValue.valueID()) {
     case CSSValueAuto:
         return TextUnderlineOffset::createWithAuto();
     default:
-        ASSERT(primitiveValue.isLength());
+        assert(primitiveValue.isLength());
         auto computedLength = convertComputedLength<float>(styleResolver, primitiveValue);
         return TextUnderlineOffset::createWithLength(computedLength);
     }
@@ -699,7 +699,7 @@ inline TextUnderlineOffset StyleBuilderConverter::convertTextUnderlineOffset(Sty
 
 inline TextDecorationThickness StyleBuilderConverter::convertTextDecorationThickness(StyleResolver& styleResolver, const CSSValue& value)
 {
-    ASSERT(is<CSSPrimitiveValue>(value));
+    assert(is<CSSPrimitiveValue>(value));
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     switch (primitiveValue.valueID()) {
     case CSSValueAuto:
@@ -707,16 +707,16 @@ inline TextDecorationThickness StyleBuilderConverter::convertTextDecorationThick
     case CSSValueFromFont:
         return TextDecorationThickness::createFromFont();
     default:
-        ASSERT(primitiveValue.isLength());
+        assert(primitiveValue.isLength());
         auto computedLength = convertComputedLength<float>(styleResolver, primitiveValue);
         return TextDecorationThickness::createWithLength(computedLength);
     }
 }
 
-inline RefPtr<StyleReflection> StyleBuilderConverter::convertReflection(StyleResolver& styleResolver, const CSSValue& value)
+inline std::shared_ptr<StyleReflection> StyleBuilderConverter::convertReflection(StyleResolver& styleResolver, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return nullptr;
     }
 
@@ -742,9 +742,9 @@ inline IntSize StyleBuilderConverter::convertInitialLetter(StyleResolver&, const
         return IntSize();
 
     Pair* pair = primitiveValue.pairValue();
-    ASSERT(pair);
-    ASSERT(pair->first());
-    ASSERT(pair->second());
+    assert(pair);
+    assert(pair->first());
+    assert(pair->second());
 
     return IntSize(pair->first()->intValue(), pair->second()->intValue());
 }
@@ -763,7 +763,7 @@ inline float StyleBuilderConverter::convertTextStrokeWidth(StyleResolver& styleR
             result *= 3;
         else if (primitiveValue.valueID() == CSSValueThick)
             result *= 5;
-        Ref<CSSPrimitiveValue> emsValue(CSSPrimitiveValue::create(result, CSSPrimitiveValue::CSS_EMS));
+        std::reference_wrapper<CSSPrimitiveValue> emsValue(CSSPrimitiveValue::create(result, CSSPrimitiveValue::CSS_EMS));
         width = convertComputedLength<float>(styleResolver, emsValue);
         break;
     }
@@ -782,7 +782,7 @@ inline float StyleBuilderConverter::convertTextStrokeWidth(StyleResolver& styleR
 inline LineBoxContain StyleBuilderConverter::convertLineBoxContain(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return LineBoxContainNone;
     }
 
@@ -791,7 +791,7 @@ inline LineBoxContain StyleBuilderConverter::convertLineBoxContain(StyleResolver
 
 inline OptionSet<TextDecorationSkip> StyleBuilderConverter::valueToDecorationSkip(const CSSPrimitiveValue& primitiveValue)
 {
-    ASSERT(primitiveValue.isValueID());
+    assert(primitiveValue.isValueID());
 
     switch (primitiveValue.valueID()) {
     case CSSValueAuto:
@@ -826,17 +826,17 @@ static inline bool isImageShape(const CSSValue& value)
     return is<CSSImageValue>(value) || is<CSSImageSetValue>(value) || is<CSSImageGeneratorValue>(value);
 }
 
-inline RefPtr<ShapeValue> StyleBuilderConverter::convertShapeValue(StyleResolver& styleResolver, CSSValue& value)
+inline std::shared_ptr<ShapeValue> StyleBuilderConverter::convertShapeValue(StyleResolver& styleResolver, CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return nullptr;
     }
 
     if (isImageShape(value))
         return ShapeValue::create(styleResolver.styleImage(value).releaseNonNull());
 
-    RefPtr<BasicShape> shape;
+    std::shared_ptr<BasicShape> shape;
     CSSBoxType referenceBox = CSSBoxType::BoxMissing;
     for (auto& currentValue : downcast<CSSValueList>(value)) {
         auto& primitiveValue = downcast<CSSPrimitiveValue>(currentValue.get());
@@ -885,7 +885,7 @@ inline GridTrackSize StyleBuilderConverter::createGridTrackSize(const CSSValue& 
     if (is<CSSPrimitiveValue>(value))
         return GridTrackSize(createGridTrackBreadth(downcast<CSSPrimitiveValue>(value), styleResolver));
 
-    ASSERT(is<CSSFunctionValue>(value));
+    assert(is<CSSFunctionValue>(value));
     const auto& function = downcast<CSSFunctionValue>(value);
 
     if (function.length() == 1)
@@ -899,13 +899,13 @@ inline GridTrackSize StyleBuilderConverter::createGridTrackSize(const CSSValue& 
 
 static void createGridLineNamesList(const CSSValue& value, unsigned currentNamedGridLine, NamedGridLinesMap& namedGridLines, OrderedNamedGridLinesMap& orderedNamedGridLines)
 {
-    ASSERT(value.isGridLineNamesValue());
+    assert(value.isGridLineNamesValue());
 
     for (auto& namedGridLineValue : downcast<CSSGridLineNamesValue>(value)) {
         std::string namedGridLine = downcast<CSSPrimitiveValue>(namedGridLineValue.get()).stringValue();
         auto result = namedGridLines.add(namedGridLine, std::vector<unsigned>());
         result.iterator->value.append(currentNamedGridLine);
-        auto orderedResult = orderedNamedGridLines.add(currentNamedGridLine, std::vector<String>());
+        auto orderedResult = orderedNamedGridLines.add(currentNamedGridLine, std::vector<std::string>());
         orderedResult.iterator->value.append(namedGridLine);
     }
 }
@@ -947,10 +947,10 @@ inline bool StyleBuilderConverter::createGridTrackList(const CSSValue& value, Tr
 
     for (auto& currentValue : downcast<CSSValueList>(value)) {
         if (is<CSSGridAutoRepeatValue>(currentValue)) {
-            ASSERT(tracksData.m_autoRepeatTrackSizes.isEmpty());
+            assert(tracksData.m_autoRepeatTrackSizes.isEmpty());
             unsigned autoRepeatIndex = 0;
             CSSValueID autoRepeatID = downcast<CSSGridAutoRepeatValue>(currentValue.get()).autoRepeatID();
-            ASSERT(autoRepeatID == CSSValueAutoFill || autoRepeatID == CSSValueAutoFit);
+            assert(autoRepeatID == CSSValueAutoFill || autoRepeatID == CSSValueAutoFit);
             tracksData.m_autoRepeatType = autoRepeatID == CSSValueAutoFill ? AutoRepeatType::Fill : AutoRepeatType::Fit;
             for (auto& autoRepeatValue : downcast<CSSValueList>(currentValue.get())) {
                 if (is<CSSGridLineNamesValue>(autoRepeatValue)) {
@@ -978,7 +978,7 @@ inline bool StyleBuilderConverter::createGridTrackList(const CSSValue& value, Tr
 
     // The parser should have rejected any <track-list> without any <track-size> as
     // this is not conformant to the syntax.
-    ASSERT(!tracksData.m_trackSizes.isEmpty() || !tracksData.m_autoRepeatTrackSizes.isEmpty());
+    assert(!tracksData.m_trackSizes.isEmpty() || !tracksData.m_autoRepeatTrackSizes.isEmpty());
     return true;
 }
 
@@ -994,12 +994,12 @@ inline bool StyleBuilderConverter::createGridPosition(const CSSValue& value, Gri
             return true;
         }
 
-        ASSERT(primitiveValue.valueID() == CSSValueAuto);
+        assert(primitiveValue.valueID() == CSSValueAuto);
         return true;
     }
 
     auto& values = downcast<CSSValueList>(value);
-    ASSERT(values.length());
+    assert(values.length());
 
     auto it = values.begin();
     const CSSPrimitiveValue* currentValue = &downcast<CSSPrimitiveValue>(it->get());
@@ -1023,7 +1023,7 @@ inline bool StyleBuilderConverter::createGridPosition(const CSSValue& value, Gri
         ++it;
     }
 
-    ASSERT(it == values.end());
+    assert(it == values.end());
     if (isSpanPosition)
         position.setSpanPosition(gridLineNumber ? gridLineNumber : 1, gridLineName);
     else
@@ -1051,14 +1051,14 @@ inline void StyleBuilderConverter::createImplicitNamedGridLinesFromGridArea(cons
 
 inline std::vector<GridTrackSize> StyleBuilderConverter::convertGridTrackSizeList(StyleResolver& styleResolver, const CSSValue& value)
 {
-    ASSERT(value.isValueList());
+    assert(value.isValueList());
     auto& valueList = downcast<CSSValueList>(value);
     std::vector<GridTrackSize> trackSizes;
     trackSizes.reserveInitialCapacity(valueList.length());
     for (auto& currValue : valueList) {
-        ASSERT(!currValue->isGridLineNamesValue());
-        ASSERT(!currValue->isGridAutoRepeatValue());
-        ASSERT(!currValue->isGridIntegerRepeatValue());
+        assert(!currValue->isGridLineNamesValue());
+        assert(!currValue->isGridAutoRepeatValue());
+        assert(!currValue->isGridIntegerRepeatValue());
         trackSizes.uncheckedAppend(convertGridTrackSize(styleResolver, currValue));
     }
     return trackSizes;
@@ -1194,7 +1194,7 @@ inline Optional<FilterOperations> StyleBuilderConverter::convertFilterOperations
 inline FontFeatureSettings StyleBuilderConverter::convertFontFeatureSettings(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
         return { };
     }
 
@@ -1208,13 +1208,13 @@ inline FontFeatureSettings StyleBuilderConverter::convertFontFeatureSettings(Sty
 
 inline FontSelectionValue StyleBuilderConverter::convertFontWeightFromValue(const CSSValue& value)
 {
-    ASSERT(is<CSSPrimitiveValue>(value));
+    assert(is<CSSPrimitiveValue>(value));
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
 
     if (primitiveValue.isNumber())
         return FontSelectionValue::clampFloat(primitiveValue.floatValue());
 
-    ASSERT(primitiveValue.isValueID());
+    assert(primitiveValue.isValueID());
     switch (primitiveValue.valueID()) {
     case CSSValueNormal:
         return normalWeightValue();
@@ -1231,13 +1231,13 @@ inline FontSelectionValue StyleBuilderConverter::convertFontWeightFromValue(cons
 
 inline FontSelectionValue StyleBuilderConverter::convertFontStretchFromValue(const CSSValue& value)
 {
-    ASSERT(is<CSSPrimitiveValue>(value));
+    assert(is<CSSPrimitiveValue>(value));
     const auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
 
     if (primitiveValue.isPercentage())
         return FontSelectionValue::clampFloat(primitiveValue.floatValue());
 
-    ASSERT(primitiveValue.isValueID());
+    assert(primitiveValue.isValueID());
     if (auto value = fontStretchValue(primitiveValue.valueID()))
         return value.value();
     ASSERT_NOT_REACHED();
@@ -1247,7 +1247,7 @@ inline FontSelectionValue StyleBuilderConverter::convertFontStretchFromValue(con
 // The input value needs to parsed and valid, this function returns WTF::nullopt if the input was "normal".
 inline Optional<FontSelectionValue> StyleBuilderConverter::convertFontStyleFromValue(const CSSValue& value)
 {
-    ASSERT(is<CSSFontStyleValue>(value));
+    assert(is<CSSFontStyleValue>(value));
     const auto& fontStyleValue = downcast<CSSFontStyleValue>(value);
 
     auto valueID = fontStyleValue.fontStyleValue->valueID();
@@ -1255,7 +1255,7 @@ inline Optional<FontSelectionValue> StyleBuilderConverter::convertFontStyleFromV
         return WTF::nullopt;
     if (valueID == CSSValueItalic)
         return italicValue();
-    ASSERT(valueID == CSSValueOblique);
+    assert(valueID == CSSValueOblique);
     if (auto* obliqueValue = fontStyleValue.obliqueValue.get())
         return FontSelectionValue(obliqueValue->value<float>(CSSPrimitiveValue::CSS_DEG));
     return italicValue();
@@ -1263,7 +1263,7 @@ inline Optional<FontSelectionValue> StyleBuilderConverter::convertFontStyleFromV
 
 inline FontSelectionValue StyleBuilderConverter::convertFontWeight(StyleResolver& styleResolver, const CSSValue& value)
 {
-    ASSERT(is<CSSPrimitiveValue>(value));
+    assert(is<CSSPrimitiveValue>(value));
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
     if (primitiveValue.isValueID()) {
         auto valueID = primitiveValue.valueID();
@@ -1283,7 +1283,7 @@ inline FontSelectionValue StyleBuilderConverter::convertFontStretch(StyleResolve
 inline FontVariationSettings StyleBuilderConverter::convertFontVariationSettings(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
         return { };
     }
 
@@ -1340,7 +1340,7 @@ inline std::vector<SVGLengthValue> StyleBuilderConverter::convertSVGLengthVector
 inline std::vector<SVGLengthValue> StyleBuilderConverter::convertStrokeDashArray(StyleResolver& styleResolver, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return SVGRenderStyle::initialStrokeDashArray();
     }
 
@@ -1350,7 +1350,7 @@ inline std::vector<SVGLengthValue> StyleBuilderConverter::convertStrokeDashArray
 inline PaintOrder StyleBuilderConverter::convertPaintOrder(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
         return PaintOrder::Normal;
     }
 
@@ -1481,12 +1481,12 @@ inline Optional<Length> StyleBuilderConverter::convertLineHeight(StyleResolver& 
 inline FontSynthesis StyleBuilderConverter::convertFontSynthesis(StyleResolver&, const CSSValue& value)
 {
     if (is<CSSPrimitiveValue>(value)) {
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNone);
         return FontSynthesisNone;
     }
 
     FontSynthesis result = FontSynthesisNone;
-    ASSERT(is<CSSValueList>(value));
+    assert(is<CSSValueList>(value));
     for (const CSSValue& v : downcast<CSSValueList>(value)) {
         switch (downcast<CSSPrimitiveValue>(v).valueID()) {
         case CSSValueWeight:

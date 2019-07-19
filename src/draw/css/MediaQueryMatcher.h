@@ -40,15 +40,15 @@ class RenderStyle;
 
 class MediaQueryMatcher final : public RefCounted<MediaQueryMatcher> {
 public:
-    static Ref<MediaQueryMatcher> create(Document& document) { return adoptRef(*new MediaQueryMatcher(document)); }
+    static std::reference_wrapper<MediaQueryMatcher> create(Document& document) { return adoptRef(*new MediaQueryMatcher(document)); }
     ~MediaQueryMatcher();
 
     void documentDestroyed();
 
-    void addListener(Ref<MediaQueryListListener>&&, MediaQueryList&);
+    void addListener(std::reference_wrapper<MediaQueryListListener>&&, MediaQueryList&);
     void removeListener(MediaQueryListListener&, MediaQueryList&);
 
-    RefPtr<MediaQueryList> matchMedia(const String&);
+    std::shared_ptr<MediaQueryList> matchMedia(const std::string&);
 
     unsigned evaluationRound() const { return m_evaluationRound; }
 
@@ -58,8 +58,8 @@ public:
 
 private:
     struct Listener {
-        Ref<MediaQueryListListener> listener;
-        Ref<MediaQueryList> query;
+        std::reference_wrapper<MediaQueryListListener> listener;
+        std::reference_wrapper<MediaQueryList> query;
     };
 
     explicit MediaQueryMatcher(Document&);

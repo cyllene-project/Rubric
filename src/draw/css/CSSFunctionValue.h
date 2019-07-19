@@ -32,7 +32,7 @@ namespace WebCore {
 
 class CSSFunctionValue final : public CSSValueList {
 public:
-    static Ref<CSSFunctionValue> create(CSSValueID name)
+    static std::reference_wrapper<CSSFunctionValue> create(CSSValueID name)
     {
         return adoptRef(*new CSSFunctionValue(name));
     }

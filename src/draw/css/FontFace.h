@@ -50,19 +50,19 @@ public:
         std::string display;
     };
     
-    using Source = Variant<String, RefPtr<JSC::ArrayBuffer>, RefPtr<JSC::ArrayBufferView>>;
-    static ExceptionOr<Ref<FontFace>> create(Document&, const std::string& family, Source&&, const Descriptors&);
-    static Ref<FontFace> create(CSSFontFace&);
+    using Source = Variant<String, std::shared_ptr<JSC::ArrayBuffer>, std::shared_ptr<JSC::ArrayBufferView>>;
+    static ExceptionOr<std::reference_wrapper<FontFace>> create(Document&, const std::string& family, Source&&, const Descriptors&);
+    static std::reference_wrapper<FontFace> create(CSSFontFace&);
     virtual ~FontFace();
 
-    ExceptionOr<void> setFamily(const String&);
-    ExceptionOr<void> setStyle(const String&);
-    ExceptionOr<void> setWeight(const String&);
-    ExceptionOr<void> setStretch(const String&);
-    ExceptionOr<void> setUnicodeRange(const String&);
-    ExceptionOr<void> setVariant(const String&);
-    ExceptionOr<void> setFeatureSettings(const String&);
-    ExceptionOr<void> setDisplay(const String&);
+    ExceptionOr<void> setFamily(const std::string&);
+    ExceptionOr<void> setStyle(const std::string&);
+    ExceptionOr<void> setWeight(const std::string&);
+    ExceptionOr<void> setStretch(const std::string&);
+    ExceptionOr<void> setUnicodeRange(const std::string&);
+    ExceptionOr<void> setVariant(const std::string&);
+    ExceptionOr<void> setFeatureSettings(const std::string&);
+    ExceptionOr<void> setDisplay(const std::string&);
 
     std::string family() const;
     std::string style() const;
@@ -84,7 +84,7 @@ public:
 
     CSSFontFace& backing() { return m_backing; }
 
-    static RefPtr<CSSValue> parseString(const String&, CSSPropertyID);
+    static std::shared_ptr<CSSValue> parseString(const std::string&, CSSPropertyID);
 
     void fontStateChanged(CSSFontFace&, CSSFontFace::Status oldState, CSSFontFace::Status newState) final;
 
@@ -98,7 +98,7 @@ private:
     // Callback for LoadedPromise.
     FontFace& loadedPromiseResolve();
 
-    Ref<CSSFontFace> m_backing;
+    std::reference_wrapper<CSSFontFace> m_backing;
     LoadedPromise m_loadedPromise;
 };
 

@@ -59,7 +59,7 @@ protected:
     virtual CSSParserContext cssParserContext() const;
 
     MutableStyleProperties* m_propertySet;
-    std::unique_ptr<HashMap<CSSValue*, WeakPtr<DeprecatedCSSOMValue>>> m_cssomValueWrappers;
+    std::unique_ptr<std::unordered_map<CSSValue*, WeakPtr<DeprecatedCSSOMValue>>> m_cssomValueWrappers;
 
 private:
     void ref() override;
@@ -68,22 +68,22 @@ private:
     CSSRule* parentRule() const override { return nullptr; }
     unsigned length() const final;
     std::string item(unsigned index) const final;
-    RefPtr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) final;
+    std::shared_ptr<DeprecatedCSSOMValue> getPropertyCSSValue(const std::string& propertyName) final;
     std::string getPropertyValue(const std::string& propertyName) final;
     std::string getPropertyPriority(const std::string& propertyName) final;
     std::string getPropertyShorthand(const std::string& propertyName) final;
     bool isPropertyImplicit(const std::string& propertyName) final;
     ExceptionOr<void> setProperty(const std::string& propertyName, const std::string& value, const std::string& priority) final;
-    ExceptionOr<String> removeProperty(const std::string& propertyName) final;
+    ExceptionOr<std::string> removeProperty(const std::string& propertyName) final;
     std::string cssText() const final;
-    ExceptionOr<void> setCssText(const String&) final;
-    RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) final;
+    ExceptionOr<void> setCssText(const std::string&) final;
+    std::shared_ptr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) final;
     std::string getPropertyValueInternal(CSSPropertyID) final;
     ExceptionOr<bool> setPropertyInternal(CSSPropertyID, const std::string& value, bool important) final;
     
-    Ref<MutableStyleProperties> copyProperties() const final;
+    std::reference_wrapper<MutableStyleProperties> copyProperties() const final;
 
-    RefPtr<DeprecatedCSSOMValue> wrapForDeprecatedCSSOM(CSSValue*);
+    std::shared_ptr<DeprecatedCSSOMValue> wrapForDeprecatedCSSOM(CSSValue*);
     
     virtual bool willMutate() WARN_UNUSED_RETURN { return true; }
     virtual void didMutate(MutationType) { }
@@ -92,7 +92,7 @@ private:
 class StyleRuleCSSStyleDeclaration final : public PropertySetCSSStyleDeclaration {
     WTF_MAKE_ISO_ALLOCATED(StyleRuleCSSStyleDeclaration);
 public:
-    static Ref<StyleRuleCSSStyleDeclaration> create(MutableStyleProperties& propertySet, CSSRule& parentRule)
+    static std::reference_wrapper<StyleRuleCSSStyleDeclaration> create(MutableStyleProperties& propertySet, CSSRule& parentRule)
     {
         return adoptRef(*new StyleRuleCSSStyleDeclaration(propertySet, parentRule));
     }

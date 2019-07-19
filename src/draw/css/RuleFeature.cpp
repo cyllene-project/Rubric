@@ -94,7 +94,7 @@ MatchElement RuleFeatureSet::computeNextMatchElement(MatchElement matchElement, 
 
 MatchElement RuleFeatureSet::computeSubSelectorMatchElement(MatchElement matchElement, const CSSSelector& selector)
 {
-    ASSERT(selector.selectorList());
+    assert(selector.selectorList());
 
     if (selector.match() == CSSSelector::PseudoClass) {
         auto type = selector.pseudoClassType();
@@ -217,7 +217,7 @@ void RuleFeatureSet::add(const RuleFeatureSet& other)
     usesFirstLetterRules = usesFirstLetterRules || other.usesFirstLetterRules;
 }
 
-void RuleFeatureSet::registerContentAttribute(const AtomString& attributeName)
+void RuleFeatureSet::registerContentAttribute(const std::atomic<std::string>& attributeName)
 {
     contentAttributeNamesInRules.add(attributeName.convertToASCIILowercase());
     attributeCanonicalLocalNamesInRules.add(attributeName);

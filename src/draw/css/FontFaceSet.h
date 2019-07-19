@@ -38,8 +38,8 @@ class DOMException;
 class FontFaceSet final : public RefCounted<FontFaceSet>, private CSSFontFaceSetClient, public EventTargetWithInlineData, private  ActiveDOMObject {
     WTF_MAKE_ISO_ALLOCATED(FontFaceSet);
 public:
-    static Ref<FontFaceSet> create(Document&, const std::vector<RefPtr<FontFace>>& initialFaces);
-    static Ref<FontFaceSet> create(Document&, CSSFontFaceSet& backing);
+    static std::reference_wrapper<FontFaceSet> create(Document&, const std::vector<std::shared_ptr<FontFace>>& initialFaces);
+    static std::reference_wrapper<FontFaceSet> create(Document&, CSSFontFaceSet& backing);
     virtual ~FontFaceSet();
 
     bool has(FontFace&) const;
@@ -63,10 +63,10 @@ public:
     class Iterator {
     public:
         explicit Iterator(FontFaceSet&);
-        RefPtr<FontFace> next();
+        std::shared_ptr<FontFace> next();
 
     private:
-        Ref<FontFaceSet> m_target;
+        std::reference_wrapper<FontFaceSet> m_target;
         size_t m_index { 0 }; // FIXME: There needs to be a mechanism to handle when fonts are added or removed from the middle of the FontFaceSet.
     };
     Iterator createIterator() { return Iterator(*this); }
@@ -76,9 +76,9 @@ public:
 
 private:
     struct PendingPromise : RefCounted<PendingPromise> {
-        static Ref<PendingPromise> create(LoadPromise&& promise)
+        static std::reference_wrapper<PendingPromise> create(LoadPromise&& promise)
         {
-            return adoptRef(*new PendingPromise(WTFMove(promise)));
+            return adoptRef(*new PendingPromise(std::move(promise)));
         }
         ~PendingPromise();
 
@@ -86,12 +86,12 @@ private:
         PendingPromise(LoadPromise&&);
 
     public:
-        std::vector<Ref<FontFace>> faces;
+        std::vector<std::reference_wrapper<FontFace>> faces;
         LoadPromise promise;
         bool hasReachedTerminalState { false };
     };
 
-    FontFaceSet(Document&, const std::vector<RefPtr<FontFace>>&);
+    FontFaceSet(Document&, const std::vector<std::shared_ptr<FontFace>>&);
     FontFaceSet(Document&, CSSFontFaceSet&);
 
     // CSSFontFaceSetClient
@@ -112,8 +112,8 @@ private:
     // Callback for ReadyPromise.
     FontFaceSet& readyPromiseResolve();
 
-    Ref<CSSFontFaceSet> m_backing;
-    HashMap<RefPtr<FontFace>, std::vector<Ref<PendingPromise>>> m_pendingPromises;
+    std::reference_wrapper<CSSFontFaceSet> m_backing;
+    std::unordered_map<std::shared_ptr<FontFace>, std::vector<std::reference_wrapper<PendingPromise>>> m_pendingPromises;
     ReadyPromise m_readyPromise;
 };
 

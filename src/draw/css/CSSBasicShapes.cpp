@@ -47,10 +47,10 @@ static String serializePositionOffset(const Pair& offset, const Pair& other)
     return offset.cssText();
 }
 
-static Ref<CSSPrimitiveValue> buildSerializablePositionOffset(CSSPrimitiveValue* offset, CSSValueID defaultSide)
+static std::reference_wrapper<CSSPrimitiveValue> buildSerializablePositionOffset(CSSPrimitiveValue* offset, CSSValueID defaultSide)
 {
     CSSValueID side = defaultSide;
-    RefPtr<CSSPrimitiveValue> amount;
+    std::shared_ptr<CSSPrimitiveValue> amount;
 
     if (!offset)
         side = CSSValueCenter;
@@ -80,7 +80,7 @@ static Ref<CSSPrimitiveValue> buildSerializablePositionOffset(CSSPrimitiveValue*
         side = defaultSide;
     }
 
-    return cssValuePool.createValue(Pair::create(cssValuePool.createValue(side), WTFMove(amount)));
+    return cssValuePool.createValue(Pair::create(cssValuePool.createValue(side), std::move(amount)));
 }
 
 static String buildCircleString(const std::string& radius, const std::string& centerX, const std::string& centerY)
@@ -108,8 +108,8 @@ static String buildCircleString(const std::string& radius, const std::string& ce
 
 String CSSBasicShapeCircle::cssText() const
 {
-    Ref<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
-    Ref<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
+    std::reference_wrapper<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
+    std::reference_wrapper<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
 
     std::string radius;
     if (m_radius && m_radius->valueID() != CSSValueClosestSide)
@@ -165,8 +165,8 @@ static String buildEllipseString(const std::string& radiusX, const std::string& 
 
 String CSSBasicShapeEllipse::cssText() const
 {
-    Ref<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
-    Ref<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
+    std::reference_wrapper<CSSPrimitiveValue> normalizedCX = buildSerializablePositionOffset(m_centerX.get(), CSSValueLeft);
+    std::reference_wrapper<CSSPrimitiveValue> normalizedCY = buildSerializablePositionOffset(m_centerY.get(), CSSValueTop);
 
     std::string radiusX;
     std::string radiusY;
@@ -200,7 +200,7 @@ bool CSSBasicShapeEllipse::equals(const CSSBasicShape& shape) const
 }
 
 CSSBasicShapePath::CSSBasicShapePath(std::unique_ptr<SVGPathByteStream>&& pathData)
-    : m_byteStream(WTFMove(pathData))
+    : m_byteStream(std::move(pathData))
 {
 }
 
@@ -240,9 +240,9 @@ bool CSSBasicShapePath::equals(const CSSBasicShape& otherShape) const
     return windRule() == otherShapePath.windRule() && pathData() == otherShapePath.pathData();
 }
 
-static String buildPolygonString(const WindRule& windRule, const std::vector<String>& points)
+static String buildPolygonString(const WindRule& windRule, const std::vector<std::string>& points)
 {
-    ASSERT(!(points.size() % 2));
+    assert(!(points.size() % 2));
 
     StringBuilder result;
     char evenOddOpening[] = "polygon(evenodd, ";
@@ -281,7 +281,7 @@ static String buildPolygonString(const WindRule& windRule, const std::vector<Str
 
 String CSSBasicShapePolygon::cssText() const
 {
-    std::vector<String> points;
+    std::vector<std::string> points;
     points.reserveInitialCapacity(m_values.size());
 
     for (auto& shapeValue : m_values)
@@ -298,7 +298,7 @@ bool CSSBasicShapePolygon::equals(const CSSBasicShape& shape) const
     return compareCSSValuestd::vector<CSSPrimitiveValue>(m_values, downcast<CSSBasicShapePolygon>(shape).m_values);
 }
 
-static bool buildInsetRadii(std::vector<String>& radii, const std::string& topLeftRadius, const std::string& topRightRadius, const std::string& bottomRightRadius, const std::string& bottomLeftRadius)
+static bool buildInsetRadii(std::vector<std::string>& radii, const std::string& topLeftRadius, const std::string& topRightRadius, const std::string& bottomRightRadius, const std::string& bottomLeftRadius)
 {
     bool showBottomLeft = topRightRadius != bottomLeftRadius;
     bool showBottomRight = showBottomLeft || (bottomRightRadius != topLeftRadius);
@@ -345,10 +345,10 @@ static String buildInsetString(const std::string& top, const std::string& right,
     }
 
     if (!topLeftRadiusWidth.isNull() && !topLeftRadiusHeight.isNull()) {
-        std::vector<String> horizontalRadii;
+        std::vector<std::string> horizontalRadii;
         bool areDefaultCornerRadii = buildInsetRadii(horizontalRadii, topLeftRadiusWidth, topRightRadiusWidth, bottomRightRadiusWidth, bottomLeftRadiusWidth);
 
-        std::vector<String> verticalRadii;
+        std::vector<std::string> verticalRadii;
         areDefaultCornerRadii &= buildInsetRadii(verticalRadii, topLeftRadiusHeight, topRightRadiusHeight, bottomRightRadiusHeight, bottomLeftRadiusHeight);
 
         if (!areDefaultCornerRadii) {

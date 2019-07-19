@@ -232,14 +232,14 @@ void StyleResolver::addCurrentSVGFontFaceRules()
 {
 #if ENABLE(SVG_FONTS)
     if (m_document.svgExtensions()) {
-        const HashSet<SVGFontFaceElement*>& svgFontFaceElements = m_document.svgExtensions()->svgFontFaceElements();
+        const std::unordered_set<SVGFontFaceElement*>& svgFontFaceElements = m_document.svgExtensions()->svgFontFaceElements();
         for (auto* svgFontFaceElement : svgFontFaceElements)
             m_document.fontSelector().addFontFaceRule(svgFontFaceElement->fontFaceRule(), svgFontFaceElement->isInUserAgentShadowTree());
     }
 #endif
 }
 
-void StyleResolver::appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& styleSheets)
+void StyleResolver::appendAuthorStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>& styleSheets)
 {
     m_ruleSets.appendAuthorStyleSheets(styleSheets, &m_mediaQueryEvaluator, m_inspectorCSSOMWrappers, this);
 
@@ -252,10 +252,10 @@ void StyleResolver::appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleShe
 }
 
 // This is a simplified style setting function for keyframe styles
-void StyleResolver::addKeyframeStyle(Ref<StyleRuleKeyframes>&& rule)
+void StyleResolver::addKeyframeStyle(std::reference_wrapper<StyleRuleKeyframes>&& rule)
 {
     AtomString s(rule->name());
-    m_keyframesRuleMap.set(s.impl(), WTFMove(rule));
+    m_keyframesRuleMap.set(s.impl(), std::move(rule));
 }
 
 StyleResolver::~StyleResolver()
@@ -319,13 +319,13 @@ inline void StyleResolver::State::updateConversionData()
 
 inline void StyleResolver::State::setStyle(std::unique_ptr<RenderStyle> style)
 {
-    m_style = WTFMove(style);
+    m_style = std::move(style);
     updateConversionData();
 }
 
 inline void StyleResolver::State::setParentStyle(std::unique_ptr<RenderStyle> parentStyle)
 {
-    m_ownedParentStyle = WTFMove(parentStyle);
+    m_ownedParentStyle = std::move(parentStyle);
     m_parentStyle = m_ownedParentStyle.get();
 }
 
@@ -398,7 +398,7 @@ ElementStyle StyleResolver::styleForElement(const Element& element, const Render
 
     state.clear(); // Clear out for the next resolve.
 
-    return { state.takeStyle(), WTFMove(elementStyleRelations) };
+    return { state.takeStyle(), std::move(elementStyleRelations) };
 }
 
 std::unique_ptr<RenderStyle> StyleResolver::styleForKeyframe(const RenderStyle* elementStyle, const StyleRuleKeyframe* keyframe, KeyframeValue& keyframeValue)
@@ -408,7 +408,7 @@ std::unique_ptr<RenderStyle> StyleResolver::styleForKeyframe(const RenderStyle* 
     MatchResult result;
     result.addMatchedProperties(keyframe->properties());
 
-    ASSERT(!m_state.style());
+    assert(!m_state.style());
 
     State& state = m_state;
 
@@ -478,10 +478,10 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
     const StyleRuleKeyframes* keyframesRule = it->value.get();
 
     auto* keyframes = &keyframesRule->keyframes();
-    std::vector<Ref<StyleRuleKeyframe>> newKeyframesIfNecessary;
+    std::vector<std::reference_wrapper<StyleRuleKeyframe>> newKeyframesIfNecessary;
 
     bool hasDuplicateKeys = false;
-    HashSet<double> keyframeKeys;
+    std::unordered_set<double> keyframeKeys;
     for (auto& keyframe : *keyframes) {
         for (auto key : keyframe->keys()) {
             if (!keyframeKeys.add(key)) {
@@ -493,11 +493,11 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
             break;
     }
 
-    // FIXME: If HashMaps could have Ref<> as value types, we wouldn't need
+    // FIXME: If HashMaps could have std::reference_wrapper<> as value types, we wouldn't need
     // to copy the HashMap into a Vector.
     if (hasDuplicateKeys) {
         // Merge duplicate key times.
-        HashMap<double, RefPtr<StyleRuleKeyframe>> keyframesMap;
+        std::unordered_map<double, std::shared_ptr<StyleRuleKeyframe>> keyframesMap;
 
         for (auto& originalKeyframe : keyframesRule->keyframes()) {
             for (auto key : originalKeyframe->keys()) {
@@ -529,7 +529,7 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
             keyframeValue.setKey(key);
             if (auto timingFunctionCSSValue = keyframe->properties().getPropertyCSSValue(CSSPropertyAnimationTimingFunction))
                 keyframeValue.setTimingFunction(TimingFunction::createFromCSSValue(*timingFunctionCSSValue.get()));
-            list.insert(WTFMove(keyframeValue));
+            list.insert(std::move(keyframeValue));
         }
     }
 
@@ -543,7 +543,7 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
         }
         KeyframeValue keyframeValue(0, nullptr);
         keyframeValue.setStyle(styleForKeyframe(elementStyle, zeroPercentKeyframe, keyframeValue));
-        list.insert(WTFMove(keyframeValue));
+        list.insert(std::move(keyframeValue));
     }
 
     // If the 100% keyframe is missing, create it (but only if there is at least one other keyframe).
@@ -555,7 +555,7 @@ void StyleResolver::keyframeStylesForAnimation(const Element& element, const Ren
         }
         KeyframeValue keyframeValue(1, nullptr);
         keyframeValue.setStyle(styleForKeyframe(elementStyle, hundredPercentKeyframe, keyframeValue));
-        list.insert(WTFMove(keyframeValue));
+        list.insert(std::move(keyframeValue));
     }
 }
 
@@ -587,7 +587,7 @@ std::unique_ptr<RenderStyle> StyleResolver::pseudoStyleForElement(const Element&
         collector.matchAuthorRules(false);
     }
 
-    ASSERT(!collector.matchedPseudoElementIds());
+    assert(!collector.matchedPseudoElementIds());
 
     if (collector.matchedResult().matchedProperties().isEmpty())
         return nullptr;
@@ -759,7 +759,7 @@ void StyleResolver::adjustStyleForInterCharacterRuby()
 static bool hasEffectiveDisplayNoneForDisplayContents(const Element& element)
 {
     // https://drafts.csswg.org/css-display-3/#unbox-html
-    static NeverDestroyed<HashSet<AtomString>> tagNames = [] {
+    static NeverDestroyed<std::unordered_set<AtomString>> tagNames = [] {
         static const HTMLQualifiedName* const tagList[] = {
             &brTag.get(),
             &wbrTag.get(),
@@ -779,7 +779,7 @@ static bool hasEffectiveDisplayNoneForDisplayContents(const Element& element)
             &textareaTag.get(),
             &selectTag.get(),
         };
-        HashSet<AtomString> set;
+        std::unordered_set<AtomString> set;
         for (auto& name : tagList)
             set.add(name->localName());
         return set;
@@ -916,7 +916,7 @@ void StyleResolver::adjustRenderStyleForTextAutosizing(RenderStyle& style, const
         return;
 
     fontDescription.setComputedSize(adjustedFontSize);
-    style.setFontDescription(WTFMove(fontDescription));
+    style.setFontDescription(std::move(fontDescription));
     style.fontCascade().update(&document().fontSelector());
     adjustLineHeightIfNeeded(adjustedFontSize);
 }
@@ -1207,7 +1207,7 @@ static void checkForOrientationChange(RenderStyle& style)
     auto newFontDescription = fontDescription;
     newFontDescription.setNonCJKGlyphOrientation(glyphOrientation);
     newFontDescription.setOrientation(fontOrientation);
-    style.setFontDescription(WTFMove(newFontDescription));
+    style.setFontDescription(std::move(newFontDescription));
 }
 
 void StyleResolver::updateFont()
@@ -1228,12 +1228,12 @@ void StyleResolver::updateFont()
     m_state.setFontDirty(false);
 }
 
-std::vector<RefPtr<StyleRule>> StyleResolver::styleRulesForElement(const Element* element, unsigned rulesToInclude)
+std::vector<std::shared_ptr<StyleRule>> StyleResolver::styleRulesForElement(const Element* element, unsigned rulesToInclude)
 {
     return pseudoStyleRulesForElement(element, PseudoId::None, rulesToInclude);
 }
 
-std::vector<RefPtr<StyleRule>> StyleResolver::pseudoStyleRulesForElement(const Element* element, PseudoId pseudoId, unsigned rulesToInclude)
+std::vector<std::shared_ptr<StyleRule>> StyleResolver::pseudoStyleRulesForElement(const Element* element, PseudoId pseudoId, unsigned rulesToInclude)
 {
     if (!element)
         return { };
@@ -1337,7 +1337,7 @@ bool operator!=(const StyleResolver::MatchedProperties& a, const StyleResolver::
 
 const StyleResolver::MatchedPropertiesCacheItem* StyleResolver::findFromMatchedPropertiesCache(unsigned hash, const MatchResult& matchResult)
 {
-    ASSERT(hash);
+    assert(hash);
 
     MatchedPropertiesCache::iterator it = m_matchedPropertiesCache.find(hash);
     if (it == m_matchedPropertiesCache.end())
@@ -1365,11 +1365,11 @@ void StyleResolver::addToMatchedPropertiesCache(const RenderStyle* style, const 
         m_matchedPropertiesCacheSweepTimer.startOneShot(matchedDeclarationCacheSweepTime);
     }
 
-    ASSERT(hash);
+    assert(hash);
     // Note that we don't cache the original RenderStyle instance. It may be further modified.
     // The RenderStyle in the cache is really just a holder for the substructures and never used as-is.
     MatchedPropertiesCacheItem cacheItem(matchResult, style, parentStyle);
-    m_matchedPropertiesCache.add(hash, WTFMove(cacheItem));
+    m_matchedPropertiesCache.add(hash, std::move(cacheItem));
 }
 
 void StyleResolver::invalidateMatchedPropertiesCache()
@@ -1544,7 +1544,7 @@ void StyleResolver::applyMatchedProperties(const MatchResult& matchResult, const
     // so to preserve behavior, we queue them up during cascade and flush here.
     cascade.applyDeferredProperties(*this, applyState);
 
-    ASSERT(!state.fontDirty());
+    assert(!state.fontDirty());
 
     if (cacheItem || !cacheHash)
         return;
@@ -1557,7 +1557,7 @@ void StyleResolver::applyPropertyToStyle(CSSPropertyID id, CSSValue* value, std:
 {
     m_state = State();
     m_state.setParentStyle(RenderStyle::clonePtr(*style));
-    m_state.setStyle(WTFMove(style));
+    m_state.setStyle(std::move(style));
     applyPropertyToCurrentStyle(id, value);
 }
 
@@ -1690,7 +1690,7 @@ bool StyleResolver::useSVGZoomRulesForLength() const
 
 StyleResolver::CascadedProperties* StyleResolver::cascadedPropertiesForRollback(const MatchResult& matchResult)
 {
-    ASSERT(cascadeLevel() != CascadeLevel::UserAgentLevel);
+    assert(cascadeLevel() != CascadeLevel::UserAgentLevel);
 
     TextDirection direction;
     WritingMode writingMode;
@@ -1738,7 +1738,7 @@ void StyleResolver::applyProperty(CSSPropertyID id, CSSValue* value, ApplyCascad
 
     State& state = m_state;
 
-    RefPtr<CSSValue> valueToApply = value;
+    std::shared_ptr<CSSValue> valueToApply = value;
     if (value->hasVariableReferences()) {
         valueToApply = resolvedVariableValue(id, *value, applyState);
         // If appliedProperties already has this id, then we detected a cycle, and this value should be unset.
@@ -1752,7 +1752,7 @@ void StyleResolver::applyProperty(CSSPropertyID id, CSSValue* value, ApplyCascad
 
     if (CSSProperty::isDirectionAwareProperty(id)) {
         CSSPropertyID newId = CSSProperty::resolveDirectionAwareProperty(id, state.style()->direction(), state.style()->writingMode());
-        ASSERT(newId != id);
+        assert(newId != id);
         return applyProperty(newId, valueToApply.get(), applyState, linkMatchMask);
     }
 
@@ -1764,7 +1764,7 @@ void StyleResolver::applyProperty(CSSPropertyID id, CSSValue* value, ApplyCascad
 
     if (id == CSSPropertyCustom) {
         customPropertyValue = &downcast<CSSCustomPropertyValue>(*valueToApply);
-        ASSERT(customPropertyValue->isResolved());
+        assert(customPropertyValue->isResolved());
         if (WTF::holds_alternative<CSSValueID>(customPropertyValue->value()))
             customPropertyValueID = WTF::get<CSSValueID>(customPropertyValue->value());
         auto& name = customPropertyValue->name();
@@ -1784,7 +1784,7 @@ void StyleResolver::applyProperty(CSSPropertyID id, CSSValue* value, ApplyCascad
             // Fetch the correct rollback object from the state, building it if necessary.
             // This requires having the original MatchResult available.
             auto* rollback = cascadedPropertiesForRollback(*matchResult);
-            ASSERT(rollback);
+            assert(rollback);
 
             // With the cascade built, we need to obtain the property and apply it. If the property is
             // not present, then we behave like "unset." Otherwise we apply the property instead of
@@ -1814,7 +1814,7 @@ void StyleResolver::applyProperty(CSSPropertyID id, CSSValue* value, ApplyCascad
             isInitial = true;
     }
 
-    ASSERT(!isInherit || !isInitial); // isInherit -> !isInitial && isInitial -> !isInherit
+    assert(!isInherit || !isInitial); // isInherit -> !isInitial && isInitial -> !isInherit
 
     if (!state.applyPropertyToRegularStyle() && (!state.applyPropertyToVisitedLinkStyle() || !isValidVisitedLinkProperty(id))) {
         // Limit the properties that can be applied to only the ones honored by :visited.
@@ -1841,13 +1841,13 @@ void StyleResolver::applyProperty(CSSPropertyID id, CSSValue* value, ApplyCascad
     StyleBuilder::applyProperty(id, *this, *valueToApply, isInitial, isInherit, customPropertyRegistered);
 }
 
-RefPtr<CSSValue> StyleResolver::resolvedVariableValue(CSSPropertyID propID, const CSSValue& value, ApplyCascadedPropertyState& state) const
+std::shared_ptr<CSSValue> StyleResolver::resolvedVariableValue(CSSPropertyID propID, const CSSValue& value, ApplyCascadedPropertyState& state) const
 {
     CSSParser parser(document());
     return parser.parseValueWithVariableReferences(propID, value, state);
 }
 
-RefPtr<StyleImage> StyleResolver::styleImage(CSSValue& value)
+std::shared_ptr<StyleImage> StyleResolver::styleImage(CSSValue& value)
 {
     if (is<CSSImageGeneratorValue>(value)) {
         if (is<CSSGradientValue>(value))
@@ -1877,7 +1877,7 @@ void StyleResolver::checkForTextSizeAdjust(RenderStyle& style)
         newFontDescription.setComputedSize(newFontDescription.specifiedSize() * style.textSizeAdjust().multiplier());
     else
         newFontDescription.setComputedSize(newFontDescription.specifiedSize());
-    style.setFontDescription(WTFMove(newFontDescription));
+    style.setFontDescription(std::move(newFontDescription));
 }
 #endif
 
@@ -1892,7 +1892,7 @@ void StyleResolver::checkForZoomChange(RenderStyle& style, const RenderStyle* pa
     const auto& childFont = style.fontDescription();
     auto newFontDescription = childFont;
     setFontSize(newFontDescription, childFont.specifiedSize());
-    style.setFontDescription(WTFMove(newFontDescription));
+    style.setFontDescription(std::move(newFontDescription));
 }
 
 void StyleResolver::checkForGenericFamilyChange(RenderStyle& style, const RenderStyle* parentStyle)
@@ -1923,7 +1923,7 @@ void StyleResolver::checkForGenericFamilyChange(RenderStyle& style, const Render
 
     auto newFontDescription = childFont;
     setFontSize(newFontDescription, size);
-    style.setFontDescription(WTFMove(newFontDescription));
+    style.setFontDescription(std::move(newFontDescription));
 }
 
 void StyleResolver::initializeFontStyle()
@@ -1935,7 +1935,7 @@ void StyleResolver::initializeFontStyle()
     setFontSize(fontDescription, Style::fontSizeForKeyword(CSSValueMedium, false, document()));
     fontDescription.setShouldAllowUserInstalledFonts(settings().shouldAllowUserInstalledFonts() ? AllowUserInstalledFonts::Yes : AllowUserInstalledFonts::No);
     fontDescription.setShouldAllowDesignSystemUIFonts(settings().shouldAllowDesignSystemUIFonts());
-    setFontDescription(WTFMove(fontDescription));
+    setFontDescription(std::move(fontDescription));
 }
 
 void StyleResolver::setFontSize(FontCascadeDescription& fontDescription, float size)
@@ -2064,7 +2064,7 @@ static FilterOperation::OperationType filterOperationForType(CSSValueID type)
 bool StyleResolver::createFilterOperations(const CSSValue& inValue, FilterOperations& outOperations)
 {
     State& state = m_state;
-    ASSERT(outOperations.isEmpty());
+    assert(outOperations.isEmpty());
 
     if (is<CSSPrimitiveValue>(inValue)) {
         auto& primitiveValue = downcast<CSSPrimitiveValue>(inValue);
@@ -2087,7 +2087,7 @@ bool StyleResolver::createFilterOperations(const CSSValue& inValue, FilterOperat
             URL url = document().completeURL(cssUrl);
 
             auto operation = ReferenceFilterOperation::create(cssUrl, url.fragmentIdentifier());
-            operations.operations().append(WTFMove(operation));
+            operations.operations().append(std::move(operation));
             continue;
         }
 
@@ -2206,7 +2206,7 @@ StyleResolver::CascadedProperties::CascadedProperties(TextDirection direction, W
 
 inline bool StyleResolver::CascadedProperties::hasProperty(CSSPropertyID id) const
 {
-    ASSERT(id < m_propertyIsPresent.size());
+    assert(id < m_propertyIsPresent.size());
     return m_propertyIsPresent[id];
 }
 
@@ -2227,7 +2227,7 @@ inline StyleResolver::CascadedProperties::Property StyleResolver::CascadedProper
 
 void StyleResolver::CascadedProperties::setPropertyInternal(Property& property, CSSPropertyID id, CSSValue& cssValue, unsigned linkMatchType, CascadeLevel cascadeLevel, Style::ScopeOrdinal styleScopeOrdinal)
 {
-    ASSERT(linkMatchType <= SelectorChecker::MatchAll);
+    assert(linkMatchType <= SelectorChecker::MatchAll);
     property.id = id;
     property.level = cascadeLevel;
     property.styleScopeOrdinal = styleScopeOrdinal;
@@ -2244,10 +2244,10 @@ void StyleResolver::CascadedProperties::set(CSSPropertyID id, CSSValue& cssValue
     if (CSSProperty::isDirectionAwareProperty(id))
         id = CSSProperty::resolveDirectionAwareProperty(id, m_direction, m_writingMode);
 
-    ASSERT(!shouldApplyPropertyInParseOrder(id));
+    assert(!shouldApplyPropertyInParseOrder(id));
 
     auto& property = m_properties[id];
-    ASSERT(id < m_propertyIsPresent.size());
+    assert(id < m_propertyIsPresent.size());
     if (id == CSSPropertyCustom) {
         m_propertyIsPresent.set(id);
         const auto& customValue = downcast<CSSCustomPropertyValue>(cssValue);
@@ -2274,8 +2274,8 @@ void StyleResolver::CascadedProperties::set(CSSPropertyID id, CSSValue& cssValue
 
 void StyleResolver::CascadedProperties::setDeferred(CSSPropertyID id, CSSValue& cssValue, unsigned linkMatchType, CascadeLevel cascadeLevel, Style::ScopeOrdinal styleScopeOrdinal)
 {
-    ASSERT(!CSSProperty::isDirectionAwareProperty(id));
-    ASSERT(shouldApplyPropertyInParseOrder(id));
+    assert(!CSSProperty::isDirectionAwareProperty(id));
+    assert(shouldApplyPropertyInParseOrder(id));
 
     Property property;
     memset(property.cssValue, 0, sizeof(property.cssValue));
@@ -2307,7 +2307,7 @@ void StyleResolver::CascadedProperties::addMatch(const MatchResult& matchResult,
         if (inheritedOnly && !current.isInherited()) {
             // We apply the inherited properties only when using the property cache.
             // A match with a value that is explicitely inherited should never have been cached.
-            ASSERT(!current.value()->isInheritedValue());
+            assert(!current.value()->isInheritedValue());
             continue;
         }
         CSSPropertyID propertyID = current.id();
@@ -2433,7 +2433,7 @@ void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCa
         if (index != SelectorChecker::MatchDefault && this->state().style()->insideLink() == InsideLink::NotInside)
             continue;
 
-        Ref<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
+        std::reference_wrapper<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
 
         if (inCycle) {
             state.appliedCustomProperties.add(name); // Make sure we do not try to apply this property again while resolving it.
@@ -2442,8 +2442,8 @@ void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCa
 
         state.inProgressPropertiesCustom.add(name);
 
-        if (WTF::holds_alternative<Ref<CSSVariableReferenceValue>>(valueToApply->value())) {
-            RefPtr<CSSValue> parsedValue = resolvedVariableValue(CSSPropertyCustom, valueToApply.get(), state);
+        if (WTF::holds_alternative<std::reference_wrapper<CSSVariableReferenceValue>>(valueToApply->value())) {
+            std::shared_ptr<CSSValue> parsedValue = resolvedVariableValue(CSSPropertyCustom, valueToApply.get(), state);
 
             if (state.appliedCustomProperties.contains(name))
                 return; // There was a cycle and the value was reset, so bail.
@@ -2482,9 +2482,9 @@ void StyleResolver::applyCascadedCustomProperty(const std::string& name, ApplyCa
         if (index != SelectorChecker::MatchDefault && this->state().style()->insideLink() == InsideLink::NotInside)
             continue;
 
-        Ref<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
+        std::reference_wrapper<CSSCustomPropertyValue> valueToApply = CSSCustomPropertyValue::create(downcast<CSSCustomPropertyValue>(*property.cssValue[index]));
 
-        if (inCycle && WTF::holds_alternative<Ref<CSSVariableReferenceValue>>(valueToApply->value())) {
+        if (inCycle && WTF::holds_alternative<std::reference_wrapper<CSSVariableReferenceValue>>(valueToApply->value())) {
             // Resolve this value so that we reset its dependencies.
             resolvedVariableValue(CSSPropertyCustom, valueToApply.get(), state);
         }
@@ -2505,9 +2505,9 @@ inline void StyleResolver::applyCascadedPropertiesImpl(int firstProperty, int la
         CSSPropertyID propertyID = static_cast<CSSPropertyID>(id);
         if (!state.cascade->hasProperty(propertyID))
             continue;
-        ASSERT(propertyID != CSSPropertyCustom);
+        assert(propertyID != CSSPropertyCustom);
         auto& property = state.cascade->property(propertyID);
-        ASSERT(!shouldApplyPropertyInParseOrder(propertyID));
+        assert(!shouldApplyPropertyInParseOrder(propertyID));
 
         if (TrackCycles == CustomPropertyCycleTracking::Disabled) {
             // If we don't have any custom properties, then there can't be any cycles.
@@ -2518,7 +2518,7 @@ inline void StyleResolver::applyCascadedPropertiesImpl(int firstProperty, int la
                 // So this value should be unset.
                 state.appliedProperties.set(propertyID);
                 // This property is in a cycle, and only the root of the call stack will have firstProperty != lastProperty.
-                ASSERT(firstProperty == lastProperty);
+                assert(firstProperty == lastProperty);
                 continue;
             }
 

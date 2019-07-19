@@ -48,13 +48,13 @@ CSSParserTokenRange CSSParserTokenRange::makeSubRange(const CSSParserToken* firs
         first = m_last;
     if (last == &eofToken())
         last = m_last;
-    ASSERT(first <= last);
+    assert(first <= last);
     return CSSParserTokenRange(first, last);
 }
 
 CSSParserTokenRange CSSParserTokenRange::consumeBlock()
 {
-    ASSERT(peek().getBlockType() == CSSParserToken::BlockStart);
+    assert(peek().getBlockType() == CSSParserToken::BlockStart);
     const CSSParserToken* start = &peek() + 1;
     unsigned nestingLevel = 0;
     do {
@@ -72,7 +72,7 @@ CSSParserTokenRange CSSParserTokenRange::consumeBlock()
 
 CSSParserTokenRange CSSParserTokenRange::consumeBlockCheckingForEditability(StyleSheetContents* styleSheet)
 {
-    ASSERT(peek().getBlockType() == CSSParserToken::BlockStart);
+    assert(peek().getBlockType() == CSSParserToken::BlockStart);
     const auto* start = &peek() + 1;
     unsigned nestingLevel = 0;
     do {

@@ -64,7 +64,7 @@ bool CSSValueList::hasValue(CSSValue* val) const
 
 Ref<CSSValueList> CSSValueList::copy()
 {
-    RefPtr<CSSValueList> newList;
+    std::shared_ptr<CSSValueList> newList;
     switch (m_valueListSeparator) {
     case SpaceSeparator:
         newList = createSpaceSeparated();

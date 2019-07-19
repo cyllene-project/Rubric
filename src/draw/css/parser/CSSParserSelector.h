@@ -46,11 +46,11 @@ public:
 
     std::unique_ptr<CSSSelector> releaseSelector() { return std::move(m_selector); }
 
-    void setValue(const AtomString& value, bool matchLowerCase = false) { m_selector->setValue(value, matchLowerCase); }
+    void setValue(const std::atomic<std::string>& value, bool matchLowerCase = false) { m_selector->setValue(value, matchLowerCase); }
 
     void setAttribute(const QualifiedName& value, bool convertToLowercase, CSSSelector::AttributeMatchType type) { m_selector->setAttribute(value, convertToLowercase, type); }
     
-    void setArgument(const AtomString& value) { m_selector->setArgument(value); }
+    void setArgument(const std::atomic<std::string>& value) { m_selector->setArgument(value); }
     void setNth(int a, int b) { m_selector->setNth(a, b); }
     void setMatch(CSSSelector::Match value) { m_selector->setMatch(value); }
     void setRelation(CSSSelector::RelationType value) { m_selector->setRelation(value); }

@@ -38,7 +38,7 @@ namespace WebCore {
 class TypedOMCSSImageValue final : public TypedOMCSSStyleValue {
     WTF_MAKE_ISO_ALLOCATED(TypedOMCSSImageValue);
 public:
-    static Ref<TypedOMCSSImageValue> create(CSSImageValue& cssValue, Document& document)
+    static std::reference_wrapper<TypedOMCSSImageValue> create(CSSImageValue& cssValue, Document& document)
     {
         return adoptRef(*new TypedOMCSSImageValue(cssValue, document));
     }
@@ -57,7 +57,7 @@ private:
 
     bool isImageValue() final { return true; }
 
-    Ref<CSSImageValue> m_cssValue;
+    std::reference_wrapper<CSSImageValue> m_cssValue;
     WeakPtr<Document> m_document;
 };
 

@@ -36,16 +36,16 @@
 
 namespace WebCore {
 
-StyleRuleKeyframes::StyleRuleKeyframes(const AtomString& name)
+StyleRuleKeyframes::StyleRuleKeyframes(const std::atomic<std::string>& name)
     : StyleRuleBase(Keyframes)
     , m_name(name)
 {
 }
 
-StyleRuleKeyframes::StyleRuleKeyframes(const AtomString& name, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
+StyleRuleKeyframes::StyleRuleKeyframes(const std::atomic<std::string>& name, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
     : StyleRuleBase(Keyframes)
     , m_name(name)
-    , m_deferredRules(WTFMove(deferredRules))
+    , m_deferredRules(std::move(deferredRules))
 {
     
 }
@@ -70,23 +70,23 @@ void StyleRuleKeyframes::parseDeferredRulesIfNeeded() const
     m_deferredRules = nullptr;
 }
 
-const std::vector<Ref<StyleRuleKeyframe>>& StyleRuleKeyframes::keyframes() const
+const std::vector<std::reference_wrapper<StyleRuleKeyframe>>& StyleRuleKeyframes::keyframes() const
 {
     parseDeferredRulesIfNeeded();
     return m_keyframes;
 }
 
-void StyleRuleKeyframes::parserAppendKeyframe(RefPtr<StyleRuleKeyframe>&& keyframe)
+void StyleRuleKeyframes::parserAppendKeyframe(std::shared_ptr<StyleRuleKeyframe>&& keyframe)
 {
     if (!keyframe)
         return;
     m_keyframes.append(keyframe.releaseNonNull());
 }
 
-void StyleRuleKeyframes::wrapperAppendKeyframe(Ref<StyleRuleKeyframe>&& keyframe)
+void StyleRuleKeyframes::wrapperAppendKeyframe(std::reference_wrapper<StyleRuleKeyframe>&& keyframe)
 {
     parseDeferredRulesIfNeeded();
-    m_keyframes.append(WTFMove(keyframe));
+    m_keyframes.append(std::move(keyframe));
 }
 
 void StyleRuleKeyframes::wrapperRemoveKeyframe(unsigned index)
@@ -121,7 +121,7 @@ CSSKeyframesRule::CSSKeyframesRule(StyleRuleKeyframes& keyframesRule, CSSStyleSh
 
 CSSKeyframesRule::~CSSKeyframesRule()
 {
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
 
     for (unsigned i = 0; i < m_childRuleCSSOMWrappers.size(); ++i) {
         if (m_childRuleCSSOMWrappers[i])
@@ -138,10 +138,10 @@ void CSSKeyframesRule::setName(const std::string& name)
 
 void CSSKeyframesRule::appendRule(const std::string& ruleText)
 {
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
 
     CSSParser parser(parserContext());
-    RefPtr<StyleRuleKeyframe> keyframe = parser.parseKeyframeRule(ruleText);
+    std::shared_ptr<StyleRuleKeyframe> keyframe = parser.parseKeyframeRule(ruleText);
     if (!keyframe)
         return;
 
@@ -163,7 +163,7 @@ void CSSKeyframesRule::insertRule(const std::string& ruleText)
 
 void CSSKeyframesRule::deleteRule(const std::string& s)
 {
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
 
     size_t i = m_keyframesRule->findKeyframeIndex(s);
     if (i == notFound)
@@ -210,7 +210,7 @@ CSSKeyframeRule* CSSKeyframesRule::item(unsigned index) const
 { 
     if (index >= length())
         return nullptr;
-    ASSERT(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
+    assert(m_childRuleCSSOMWrappers.size() == m_keyframesRule->keyframes().size());
     auto& rule = m_childRuleCSSOMWrappers[index];
     if (!rule)
         rule = adoptRef(*new CSSKeyframeRule(m_keyframesRule->keyframes()[index], const_cast<CSSKeyframesRule*>(this)));

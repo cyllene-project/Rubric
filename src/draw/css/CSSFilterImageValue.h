@@ -44,16 +44,16 @@ class StyleResolver;
 class CSSFilterImageValue final : public CSSImageGeneratorValue {
     friend class FilterSubimageObserverProxy;
 public:
-    static Ref<CSSFilterImageValue> create(Ref<CSSValue>&& imageValue, Ref<CSSValue>&& filterValue)
+    static std::reference_wrapper<CSSFilterImageValue> create(std::reference_wrapper<CSSValue>&& imageValue, std::reference_wrapper<CSSValue>&& filterValue)
     {
-        return adoptRef(*new CSSFilterImageValue(WTFMove(imageValue), WTFMove(filterValue)));
+        return adoptRef(*new CSSFilterImageValue(std::move(imageValue), std::move(filterValue)));
     }
 
     ~CSSFilterImageValue();
 
     std::string customCSSText() const;
 
-    RefPtr<Image> image(RenderElement*, const FloatSize&);
+    std::shared_ptr<Image> image(RenderElement*, const FloatSize&);
     bool isFixedSize() const { return true; }
     FloatSize fixedSize(const RenderElement*);
 
@@ -78,10 +78,10 @@ public:
     CachedImage* cachedImage() const { return m_cachedImage.get(); }
 
 private:
-    CSSFilterImageValue(Ref<CSSValue>&& imageValue, Ref<CSSValue>&& filterValue)
+    CSSFilterImageValue(std::reference_wrapper<CSSValue>&& imageValue, std::reference_wrapper<CSSValue>&& filterValue)
         : CSSImageGeneratorValue(FilterImageClass)
-        , m_imageValue(WTFMove(imageValue))
-        , m_filterValue(WTFMove(filterValue))
+        , m_imageValue(std::move(imageValue))
+        , m_filterValue(std::move(filterValue))
         , m_filterSubimageObserver(this)
     {
     }
@@ -104,8 +104,8 @@ private:
 
     void filterImageChanged(const IntRect&);
 
-    Ref<CSSValue> m_imageValue;
-    Ref<CSSValue> m_filterValue;
+    std::reference_wrapper<CSSValue> m_imageValue;
+    std::reference_wrapper<CSSValue> m_filterValue;
 
     FilterOperations m_filterOperations;
 

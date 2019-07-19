@@ -43,7 +43,7 @@ StyleSheetList::StyleSheetList(ShadowRoot& shadowRoot)
 
 StyleSheetList::~StyleSheetList() = default;
 
-inline const std::vector<RefPtr<StyleSheet>>& StyleSheetList::styleSheets() const
+inline const std::vector<std::shared_ptr<StyleSheet>>& StyleSheetList::styleSheets() const
 {
     if (m_document)
         return m_document->styleScope().styleSheetsForStyleSheetList();
@@ -62,11 +62,11 @@ Node* StyleSheetList::ownerNode() const
 void StyleSheetList::detach()
 {
     if (m_document) {
-        ASSERT(!m_shadowRoot);
+        assert(!m_shadowRoot);
         m_detachedStyleSheets = m_document->styleScope().styleSheetsForStyleSheetList();
         m_document = nullptr;
     } else if (m_shadowRoot) {
-        ASSERT(!m_document);
+        assert(!m_document);
         m_detachedStyleSheets = m_shadowRoot->styleScope().styleSheetsForStyleSheetList();
         m_shadowRoot = nullptr;
     } else
@@ -80,11 +80,11 @@ unsigned StyleSheetList::length() const
 
 StyleSheet* StyleSheetList::item(unsigned index)
 {
-    const std::vector<RefPtr<StyleSheet>>& sheets = styleSheets();
+    const std::vector<std::shared_ptr<StyleSheet>>& sheets = styleSheets();
     return index < sheets.size() ? sheets[index].get() : 0;
 }
 
-CSSStyleSheet* StyleSheetList::namedItem(const AtomString& name) const
+CSSStyleSheet* StyleSheetList::namedItem(const std::atomic<std::string>& name) const
 {
     // Support the named getter on document for backwards compatibility.
     if (!m_document)

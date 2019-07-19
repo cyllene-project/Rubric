@@ -37,24 +37,24 @@ class MediaQuerySet;
 
 class MediaQueryList final : public RefCounted<MediaQueryList> {
 public:
-    static Ref<MediaQueryList> create(MediaQueryMatcher&, Ref<MediaQuerySet>&&, bool);
+    static std::reference_wrapper<MediaQueryList> create(MediaQueryMatcher&, std::reference_wrapper<MediaQuerySet>&&, bool);
     ~MediaQueryList();
 
     std::string media() const;
     bool matches();
 
-    void addListener(RefPtr<MediaQueryListListener>&&);
-    void removeListener(RefPtr<MediaQueryListListener>&&);
+    void addListener(std::shared_ptr<MediaQueryListListener>&&);
+    void removeListener(std::shared_ptr<MediaQueryListListener>&&);
 
     void evaluate(MediaQueryEvaluator&, bool& notificationNeeded);
 
 private:
-    MediaQueryList(MediaQueryMatcher&, Ref<MediaQuerySet>&&, bool matches);
+    MediaQueryList(MediaQueryMatcher&, std::reference_wrapper<MediaQuerySet>&&, bool matches);
 
     void setMatches(bool);
 
-    Ref<MediaQueryMatcher> m_matcher;
-    Ref<MediaQuerySet> m_media;
+    std::reference_wrapper<MediaQueryMatcher> m_matcher;
+    std::reference_wrapper<MediaQuerySet> m_media;
     unsigned m_evaluationRound; // Indicates if the query has been evaluated after the last style selector change.
     unsigned m_changeRound; // Used to know if the query has changed in the last style selector change.
     bool m_matches;

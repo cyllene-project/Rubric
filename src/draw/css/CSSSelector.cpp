@@ -62,7 +62,7 @@ CSSSelector::CSSSelector(const QualifiedName& tagQName, bool tagIsForNamespaceRu
     , m_destructorHasBeenCalled(false)
 #endif
 {
-    const AtomString& tagLocalName = tagQName.localName();
+    const std::atomic<std::string>& tagLocalName = tagQName.localName();
     const AtomString tagLocalNameASCIILowercase = tagLocalName.convertToASCIILowercase();
 
     if (tagLocalName == tagLocalNameASCIILowercase) {
@@ -76,13 +76,13 @@ CSSSelector::CSSSelector(const QualifiedName& tagQName, bool tagIsForNamespaceRu
 
 void CSSSelector::createRareData()
 {
-    ASSERT(match() != Tag);
-    ASSERT(!m_hasNameWithCase);
+    assert(match() != Tag);
+    assert(!m_hasNameWithCase);
     if (m_hasRareData)
         return;
     // Move the value to the rare data stucture.
     AtomString value { adoptRef(m_data.m_value) };
-    m_data.m_rareData = &RareData::create(WTFMove(value)).leakRef();
+    m_data.m_rareData = &RareData::create(std::move(value)).leakRef();
     m_hasRareData = true;
 }
 
@@ -236,7 +236,7 @@ unsigned CSSSelector::addSpecificities(unsigned a, unsigned b)
 
 unsigned CSSSelector::specificityForPage() const
 {
-    ASSERT(isForPage());
+    assert(isForPage());
 
     // See http://dev.w3.org/csswg/css3-page/#cascading-and-page-context
     unsigned s = 0;
@@ -668,7 +668,7 @@ String CSSSelector::selectorText(const std::string& rightSide) const
             }
         } else if (cs->isAttributeSelector()) {
             str.append('[');
-            const AtomString& prefix = cs->attribute().prefix();
+            const std::atomic<std::string>& prefix = cs->attribute().prefix();
             if (!prefix.isEmpty()) {
                 str.append(prefix);
                 str.append('|');
@@ -756,7 +756,7 @@ void CSSSelector::setAttribute(const QualifiedName& value, bool convertToLowerca
     m_caseInsensitiveAttributeValueMatching = matchType == CaseInsensitive;
 }
     
-void CSSSelector::setArgument(const AtomString& value)
+void CSSSelector::setArgument(const std::atomic<std::string>& value)
 {
     createRareData();
     m_data.m_rareData->m_argument = value;
@@ -765,13 +765,13 @@ void CSSSelector::setArgument(const AtomString& value)
 void CSSSelector::setLangArgumentList(std::unique_ptr<std::vector<AtomString>> argumentList)
 {
     createRareData();
-    m_data.m_rareData->m_langArgumentList = WTFMove(argumentList);
+    m_data.m_rareData->m_langArgumentList = std::move(argumentList);
 }
 
 void CSSSelector::setSelectorList(std::unique_ptr<CSSSelectorList> selectorList)
 {
     createRareData();
-    m_data.m_rareData->m_selectorList = WTFMove(selectorList);
+    m_data.m_rareData->m_selectorList = std::move(selectorList);
 }
 
 void CSSSelector::setNth(int a, int b)
@@ -783,19 +783,19 @@ void CSSSelector::setNth(int a, int b)
 
 bool CSSSelector::matchNth(int count) const
 {
-    ASSERT(m_hasRareData);
+    assert(m_hasRareData);
     return m_data.m_rareData->matchNth(count);
 }
 
 int CSSSelector::nthA() const
 {
-    ASSERT(m_hasRareData);
+    assert(m_hasRareData);
     return m_data.m_rareData->m_a;
 }
 
 int CSSSelector::nthB() const
 {
-    ASSERT(m_hasRareData);
+    assert(m_hasRareData);
     return m_data.m_rareData->m_b;
 }
 

@@ -71,7 +71,7 @@ String MediaQuery::serialize() const
 
 MediaQuery::MediaQuery(Restrictor restrictor, const std::string& mediaType, std::vector<MediaQueryExpression>&& expressions)
     : m_mediaType(mediaType.convertToASCIILowercase())
-    , m_expressions(WTFMove(expressions))
+    , m_expressions(std::move(expressions))
     , m_restrictor(restrictor)
 {
     std::sort(m_expressions.begin(), m_expressions.end(), [](auto& a, auto& b) {

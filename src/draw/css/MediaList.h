@@ -40,17 +40,17 @@ class MediaQuery;
 
 class MediaQuerySet final : public RefCounted<MediaQuerySet> {
 public:
-    static Ref<MediaQuerySet> create()
+    static std::reference_wrapper<MediaQuerySet> create()
     {
         return adoptRef(*new MediaQuerySet);
     }
-    static Ref<MediaQuerySet> create(const std::string& mediaString, MediaQueryParserContext = MediaQueryParserContext());
+    static std::reference_wrapper<MediaQuerySet> create(const std::string& mediaString, MediaQueryParserContext = MediaQueryParserContext());
 
     ~MediaQuerySet();
 
-    bool set(const String&);
-    bool add(const String&);
-    bool remove(const String&);
+    bool set(const std::string&);
+    bool add(const std::string&);
+    bool remove(const std::string&);
 
     void addMediaQuery(MediaQuery&&);
 
@@ -61,7 +61,7 @@ public:
 
     std::string mediaText() const;
 
-    Ref<MediaQuerySet> copy() const { return adoptRef(*new MediaQuerySet(*this)); }
+    std::reference_wrapper<MediaQuerySet> copy() const { return adoptRef(*new MediaQuerySet(*this)); }
 
     void shrinkToFit();
 
@@ -76,11 +76,11 @@ private:
 
 class MediaList final : public RefCounted<MediaList> {
 public:
-    static Ref<MediaList> create(MediaQuerySet* mediaQueries, CSSStyleSheet* parentSheet)
+    static std::reference_wrapper<MediaList> create(MediaQuerySet* mediaQueries, CSSStyleSheet* parentSheet)
     {
         return adoptRef(*new MediaList(mediaQueries, parentSheet));
     }
-    static Ref<MediaList> create(MediaQuerySet* mediaQueries, CSSRule* parentRule)
+    static std::reference_wrapper<MediaList> create(MediaQuerySet* mediaQueries, CSSRule* parentRule)
     {
         return adoptRef(*new MediaList(mediaQueries, parentRule));
     }
@@ -93,12 +93,12 @@ public:
     void appendMedium(const std::string& newMedium);
 
     std::string mediaText() const { return m_mediaQueries->mediaText(); }
-    ExceptionOr<void> setMediaText(const String&);
+    ExceptionOr<void> setMediaText(const std::string&);
 
     CSSRule* parentRule() const { return m_parentRule; }
     CSSStyleSheet* parentStyleSheet() const { return m_parentStyleSheet; }
-    void clearParentStyleSheet() { ASSERT(m_parentStyleSheet); m_parentStyleSheet = nullptr; }
-    void clearParentRule() { ASSERT(m_parentRule); m_parentRule = nullptr; }
+    void clearParentStyleSheet() { assert(m_parentStyleSheet); m_parentStyleSheet = nullptr; }
+    void clearParentRule() { assert(m_parentRule); m_parentRule = nullptr; }
     const MediaQuerySet* queries() const { return m_mediaQueries.get(); }
 
     void reattach(MediaQuerySet*);
@@ -108,7 +108,7 @@ private:
     MediaList(MediaQuerySet*, CSSStyleSheet* parentSheet);
     MediaList(MediaQuerySet*, CSSRule* parentRule);
 
-    RefPtr<MediaQuerySet> m_mediaQueries;
+    std::shared_ptr<MediaQuerySet> m_mediaQueries;
     CSSStyleSheet* m_parentStyleSheet { nullptr };
     CSSRule* m_parentRule { nullptr };
 };

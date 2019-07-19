@@ -84,7 +84,7 @@ public:
     };
 
     static CSSParser::ParseResult parseValue(MutableStyleProperties*, CSSPropertyID, const std::string&, bool important, const CSSParserContext&);
-    static CSSParser::ParseResult parseCustomPropertyValue(MutableStyleProperties*, const AtomString& propertyName, const std::string&, bool important, const CSSParserContext&);
+    static CSSParser::ParseResult parseCustomPropertyValue(MutableStyleProperties*, const std::atomic<std::string>& propertyName, const std::string&, bool important, const CSSParserContext&);
     static std::shared_ptr<ImmutableStyleProperties> parseInlineStyleDeclaration(const std::string&, const Element*);
     static bool parseDeclarationList(MutableStyleProperties*, const std::string&, const CSSParserContext&);
     static std::shared_ptr<StyleRuleBase> parseRule(const std::string&, const CSSParserContext&, StyleSheetContents*, AllowedRulesType);
@@ -98,7 +98,7 @@ public:
     static void parseDeclarationListForInspector(const std::string&, const CSSParserContext&, CSSParserObserver&);
     static void parseStyleSheetForInspector(const std::string&, const CSSParserContext&, StyleSheetContents*, CSSParserObserver&);
 
-    static Ref<ImmutableStyleProperties> parseDeferredDeclaration(CSSParserTokenRange, const CSSParserContext&, StyleSheetContents*);
+    static std::reference_wrapper<ImmutableStyleProperties> parseDeferredDeclaration(CSSParserTokenRange, const CSSParserContext&, StyleSheetContents*);
     static void parseDeferredRuleList(CSSParserTokenRange, CSSDeferredParser&, std::vector<std::shared_ptr<StyleRuleBase>>&);
     static void parseDeferredKeyframeList(CSSParserTokenRange, CSSDeferredParser&, StyleRuleKeyframes&);
 
@@ -142,11 +142,11 @@ private:
     void consumeDeclarationList(CSSParserTokenRange, StyleRule::Type);
     void consumeDeclaration(CSSParserTokenRange, StyleRule::Type);
     void consumeDeclarationValue(CSSParserTokenRange, CSSPropertyID, bool important, StyleRule::Type);
-    void consumeCustomPropertyValue(CSSParserTokenRange, const AtomString& propertyName, bool important);
+    void consumeCustomPropertyValue(CSSParserTokenRange, const std::atomic<std::string>& propertyName, bool important);
 
     static std::unique_ptr<std::vector<double>> consumeKeyframeKeyList(CSSParserTokenRange);
 
-    Ref<DeferredStyleProperties> createDeferredStyleProperties(const CSSParserTokenRange& propertyRange);
+    std::reference_wrapper<DeferredStyleProperties> createDeferredStyleProperties(const CSSParserTokenRange& propertyRange);
     
     void adoptTokenizerEscapedStrings();
 

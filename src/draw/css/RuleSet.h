@@ -71,7 +71,7 @@ public:
     void disableSelectorFiltering() { m_descendantSelectorIdentifierHashes[0] = 0; }
 
 private:
-    RefPtr<StyleRule> m_rule;
+    std::shared_ptr<StyleRule> m_rule;
     unsigned m_selectorIndex : 16;
     unsigned m_selectorListIndex : 16;
     // This number was picked fairly arbitrarily. We can probably lower it if we need to.
@@ -99,7 +99,7 @@ class RuleSet {
         RuleSet& operator=(const RuleSet&) = delete;
 public:
     struct RuleSetSelectorPair {
-        RuleSetSelectorPair(const CSSSelector* selector, std::unique_ptr<RuleSet> ruleSet) : selector(selector), ruleSet(WTFMove(ruleSet)) { }
+        RuleSetSelectorPair(const CSSSelector* selector, std::unique_ptr<RuleSet> ruleSet) : selector(selector), ruleSet(std::move(ruleSet)) { }
         RuleSetSelectorPair(const RuleSetSelectorPair& pair) : selector(pair.selector), ruleSet(const_cast<RuleSetSelectorPair*>(&pair)->ruleSet.release()) { }
 
         const CSSSelector* selector;
@@ -110,23 +110,23 @@ public:
     ~RuleSet();
 
     typedef std::vector<RuleData, 1> RuleDataVector;
-    typedef HashMap<AtomString, std::unique_ptr<RuleDataVector>> AtomRuleMap;
+    typedef std::unordered_map<AtomString, std::unique_ptr<RuleDataVector>> AtomRuleMap;
 
     void addRulesFromSheet(StyleSheetContents&, const MediaQueryEvaluator&, StyleResolver* = 0);
 
     void addStyleRule(StyleRule*);
     void addRule(StyleRule*, unsigned selectorIndex, unsigned selectorListIndex);
     void addPageRule(StyleRulePage*);
-    void addToRuleSet(const AtomString& key, AtomRuleMap&, const RuleData&);
+    void addToRuleSet(const std::atomic<std::string>& key, AtomRuleMap&, const RuleData&);
     void shrinkToFit();
     void disableAutoShrinkToFit() { m_autoShrinkToFitEnabled = false; }
 
     const RuleFeatureSet& features() const { return m_features; }
 
-    const RuleDataVector* idRules(const AtomString& key) const { return m_idRules.get(key); }
-    const RuleDataVector* classRules(const AtomString& key) const { return m_classRules.get(key); }
-    const RuleDataVector* tagRules(const AtomString& key, bool isHTMLName) const;
-    const RuleDataVector* shadowPseudoElementRules(const AtomString& key) const { return m_shadowPseudoElementRules.get(key); }
+    const RuleDataVector* idRules(const std::atomic<std::string>& key) const { return m_idRules.get(key); }
+    const RuleDataVector* classRules(const std::atomic<std::string>& key) const { return m_classRules.get(key); }
+    const RuleDataVector* tagRules(const std::atomic<std::string>& key, bool isHTMLName) const;
+    const RuleDataVector* shadowPseudoElementRules(const std::atomic<std::string>& key) const { return m_shadowPseudoElementRules.get(key); }
     const RuleDataVector* linkPseudoClassRules() const { return &m_linkPseudoClassRules; }
     const RuleDataVector* cuePseudoRules() const { return &m_cuePseudoRules; }
     const RuleDataVector& hostPseudoClassRules() const { return m_hostPseudoClassRules; }
@@ -142,7 +142,7 @@ public:
     bool hasHostPseudoClassRulesMatchingInShadowTree() const { return m_hasHostPseudoClassRulesMatchingInShadowTree; }
 
 private:
-    void addChildRules(const std::vector<RefPtr<StyleRuleBase>>&, const MediaQueryEvaluator& medium, StyleResolver*, bool isInitiatingElementInUserAgentShadowTree);
+    void addChildRules(const std::vector<std::shared_ptr<StyleRuleBase>>&, const MediaQueryEvaluator& medium, StyleResolver*, bool isInitiatingElementInUserAgentShadowTree);
 
     AtomRuleMap m_idRules;
     AtomRuleMap m_classRules;
@@ -162,7 +162,7 @@ private:
     RuleFeatureSet m_features;
 };
 
-inline const RuleSet::RuleDataVector* RuleSet::tagRules(const AtomString& key, bool isHTMLName) const
+inline const RuleSet::RuleDataVector* RuleSet::tagRules(const std::atomic<std::string>& key, bool isHTMLName) const
 {
     const AtomRuleMap* tagRules;
     if (isHTMLName)

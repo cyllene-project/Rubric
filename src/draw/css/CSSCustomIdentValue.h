@@ -36,20 +36,20 @@ namespace WebCore {
 
 class CSSCustomIdentValue : public CSSValue {
 public:
-    static Ref<CSSCustomIdentValue> create(const std::string& str)
+    static std::reference_wrapper<CSSCustomIdentValue> create(const std::string& str)
     {
         return adoptRef(*new CSSCustomIdentValue(str));
     }
 
     // FIXME: Remove this and lazily parse the CSSPropertyID in isKnownPropertyID().
-    static Ref<CSSCustomIdentValue> create(CSSPropertyID id)
+    static std::reference_wrapper<CSSCustomIdentValue> create(CSSPropertyID id)
     {
         return adoptRef(*new CSSCustomIdentValue(id));
     }
 
-    std::string value() const { ASSERT(!isKnownPropertyID()); return m_string; }
+    std::string value() const { assert(!isKnownPropertyID()); return m_string; }
     bool isKnownPropertyID() const { return m_propertyId != CSSPropertyInvalid; }
-    CSSPropertyID valueAsPropertyID() const { ASSERT(isKnownPropertyID()); return m_propertyId; }
+    CSSPropertyID valueAsPropertyID() const { assert(isKnownPropertyID()); return m_propertyId; }
 
     std::string customCSSText() const;
 
@@ -59,7 +59,7 @@ public:
     }
 
 private:
-    CSSCustomIdentValue(const String&);
+    CSSCustomIdentValue(const std::string&);
     CSSCustomIdentValue(CSSPropertyID);
 
     // FIXME: Change this to an AtomString.

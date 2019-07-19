@@ -34,7 +34,7 @@ namespace WebCore {
 
 class CSSPaintSize : public RefCounted<CSSPaintSize> {
 public:
-    static Ref<CSSPaintSize> create(double width, double height)
+    static std::reference_wrapper<CSSPaintSize> create(double width, double height)
     {
         return adoptRef(*new CSSPaintSize(width, height));
     }

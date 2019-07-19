@@ -160,13 +160,13 @@ void CSSDefaultStyleSheets::loadFullDefaultStyle()
         return;
     
     if (simpleDefaultStyleSheet) {
-        ASSERT(defaultStyle);
-        ASSERT(defaultPrintStyle == defaultStyle);
+        assert(defaultStyle);
+        assert(defaultPrintStyle == defaultStyle);
         delete defaultStyle;
         simpleDefaultStyleSheet->deref();
         simpleDefaultStyleSheet = nullptr;
     } else {
-        ASSERT(!defaultStyle);
+        assert(!defaultStyle);
         defaultQuirksStyle = std::make_unique<RuleSet>().release();
     }
 
@@ -187,8 +187,8 @@ void CSSDefaultStyleSheets::loadFullDefaultStyle()
 
 void CSSDefaultStyleSheets::loadSimpleDefaultStyle()
 {
-    ASSERT(!defaultStyle);
-    ASSERT(!simpleDefaultStyleSheet);
+    assert(!defaultStyle);
+    assert(!simpleDefaultStyleSheet);
 
     defaultStyle = std::make_unique<RuleSet>().release();
     // There are no media-specific rules in the simple default style.
@@ -276,8 +276,8 @@ void CSSDefaultStyleSheets::ensureDefaultStyleSheetsForElement(const Element& el
     }
 #endif // ENABLE(FULLSCREEN_API)
 
-    ASSERT(defaultStyle->features().idsInRules.isEmpty());
-    ASSERT(mathMLStyleSheet || defaultStyle->features().siblingRules.isEmpty());
+    assert(defaultStyle->features().idsInRules.isEmpty());
+    assert(mathMLStyleSheet || defaultStyle->features().siblingRules.isEmpty());
 }
 
 } // namespace WebCore

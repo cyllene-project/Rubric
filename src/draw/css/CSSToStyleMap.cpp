@@ -65,7 +65,7 @@ bool CSSToStyleMap::useSVGZoomRules() const
     return m_resolver->useSVGZoomRules();
 }
 
-RefPtr<StyleImage> CSSToStyleMap::styleImage(CSSValue& value)
+std::shared_ptr<StyleImage> CSSToStyleMap::styleImage(CSSValue& value)
 {
     return m_resolver->styleImage(value);
 }
@@ -213,7 +213,7 @@ void CSSToStyleMap::mapFillSize(CSSPropertyID propertyID, FillLayer& layer, cons
         fillSize.type = FillSizeType::Cover;
         break;
     default:
-        ASSERT(fillSize.type == FillSizeType::Size);
+        assert(fillSize.type == FillSizeType::Size);
         if (!convertToLengthSize(primitiveValue, m_resolver->state().cssToLengthConversionData(), fillSize.size))
             return;
         break;

@@ -110,7 +110,7 @@ ImmutableStyleProperties::~ImmutableStyleProperties()
 MutableStyleProperties::MutableStyleProperties(const StyleProperties& other)
     : StyleProperties(other.cssParserMode(), MutablePropertiesType)
 {
-    ASSERT(other.type() != DeferredPropertiesType);
+    assert(other.type() != DeferredPropertiesType);
     if (is<MutableStyleProperties>(other))
         m_propertyVector = downcast<MutableStyleProperties>(other).m_propertyVector;
     else {
@@ -124,13 +124,13 @@ MutableStyleProperties::MutableStyleProperties(const StyleProperties& other)
 
 String StyleProperties::getPropertyValue(CSSPropertyID propertyID) const
 {
-    RefPtr<CSSValue> value = getPropertyCSSValue(propertyID);
+    std::shared_ptr<CSSValue> value = getPropertyCSSValue(propertyID);
     if (value)
         return value->cssText();
 
     const StylePropertyShorthand& shorthand = shorthandForProperty(propertyID);
     if (shorthand.length()) {
-        RefPtr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[0]);
+        std::shared_ptr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[0]);
         if (!value || value->isPendingSubstitutionValue())
             return String();
     // FIXME: If all longhands are the same css-generic keyword(e.g. initial or inherit),
@@ -271,7 +271,7 @@ String StyleProperties::getPropertyValue(CSSPropertyID propertyID) const
     case CSSPropertyTransformOrigin:
         return getShorthandValue(transformOriginShorthand());
     case CSSPropertyMarker: {
-        RefPtr<CSSValue> value = getPropertyCSSValueInternal(CSSPropertyMarkerStart);
+        std::shared_ptr<CSSValue> value = getPropertyCSSValueInternal(CSSPropertyMarkerStart);
         if (value)
             return value->cssText();
         return String();
@@ -307,7 +307,7 @@ CSSValueID StyleProperties::propertyAsValueID(CSSPropertyID property) const
 
 String StyleProperties::getCustomPropertyValue(const std::string& propertyName) const
 {
-    RefPtr<CSSValue> value = getCustomPropertyCSSValue(propertyName);
+    std::shared_ptr<CSSValue> value = getCustomPropertyCSSValue(propertyName);
     if (value)
         return value->cssText();
     return String();
@@ -315,8 +315,8 @@ String StyleProperties::getCustomPropertyValue(const std::string& propertyName) 
 
 String StyleProperties::borderSpacingValue(const StylePropertyShorthand& shorthand) const
 {
-    RefPtr<CSSValue> horizontalValue = getPropertyCSSValueInternal(shorthand.properties()[0]);
-    RefPtr<CSSValue> verticalValue = getPropertyCSSValueInternal(shorthand.properties()[1]);
+    std::shared_ptr<CSSValue> horizontalValue = getPropertyCSSValueInternal(shorthand.properties()[0]);
+    std::shared_ptr<CSSValue> verticalValue = getPropertyCSSValueInternal(shorthand.properties()[1]);
 
     // While standard border-spacing property does not allow specifying border-spacing-vertical without
     // specifying border-spacing-horizontal <http://www.w3.org/TR/CSS21/tables.html#separated-borders>,
@@ -497,7 +497,7 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
 
     const unsigned size = shorthand.length();
     // Begin by collecting the properties into an array.
-    std::vector< RefPtr<CSSValue>> values(size);
+    std::vector< std::shared_ptr<CSSValue>> values(size);
     size_t numLayers = 0;
 
     for (unsigned i = 0; i < size; ++i) {
@@ -526,7 +526,7 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
         bool useSingleWordShorthand = false;
         bool foundPositionYCSSProperty = false;
         for (unsigned j = 0; j < size; j++) {
-            RefPtr<CSSValue> value;
+            std::shared_ptr<CSSValue> value;
             if (values[j]) {
                 if (values[j]->isBaseValueList())
                     value = downcast<CSSValueList>(*values[j]).item(i);
@@ -551,8 +551,8 @@ String StyleProperties::getLayeredShorthandValue(const StylePropertyShorthand& s
                 // BUG 49055: make sure the value was not reset in the layer check just above.
                 if ((j < size - 1 && shorthand.properties()[j + 1] == CSSPropertyBackgroundRepeatY && value)
                     || (j < size - 1 && shorthand.properties()[j + 1] == CSSPropertyWebkitMaskRepeatY && value)) {
-                    RefPtr<CSSValue> yValue;
-                    RefPtr<CSSValue> nextValue = values[j + 1];
+                    std::shared_ptr<CSSValue> yValue;
+                    std::shared_ptr<CSSValue> nextValue = values[j + 1];
                     if (nextValue) {
                         if (is<CSSValueList>(*nextValue))
                             yValue = downcast<CSSValueList>(*nextValue).itemWithoutBoundsCheck(i);
@@ -643,7 +643,7 @@ String StyleProperties::getShorthandValue(const StylePropertyShorthand& shorthan
     StringBuilder result;
     for (unsigned i = 0; i < shorthand.length(); ++i) {
         if (!isPropertyImplicit(shorthand.properties()[i])) {
-            RefPtr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[i]);
+            std::shared_ptr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[i]);
             if (!value)
                 return String();
             std::string valueText = value->cssText();
@@ -672,7 +672,7 @@ String StyleProperties::getCommonValue(const StylePropertyShorthand& shorthand) 
     std::string res;
     bool lastPropertyWasImportant = false;
     for (unsigned i = 0; i < shorthand.length(); ++i) {
-        RefPtr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[i]);
+        std::shared_ptr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[i]);
         if (!value)
             return String();
         // FIXME: CSSInitialValue::cssText should generate the right value.
@@ -726,7 +726,7 @@ String StyleProperties::borderPropertyValue(const StylePropertyShorthand& width,
 
 String StyleProperties::pageBreakPropertyValue(const StylePropertyShorthand& shorthand) const
 {
-    RefPtr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[0]);
+    std::shared_ptr<CSSValue> value = getPropertyCSSValueInternal(shorthand.properties()[0]);
     // FIXME: Remove this isGlobalKeyword check after we do this consistently for all shorthands in getPropertyValue.
     if (value->isGlobalKeyword())
         return value->cssText();
@@ -744,12 +744,12 @@ String StyleProperties::pageBreakPropertyValue(const StylePropertyShorthand& sho
     }
 }
 
-RefPtr<CSSValue> StyleProperties::getPropertyCSSValue(CSSPropertyID propertyID) const
+std::shared_ptr<CSSValue> StyleProperties::getPropertyCSSValue(CSSPropertyID propertyID) const
 {
     return getPropertyCSSValueInternal(propertyID);
 }
 
-RefPtr<CSSValue> StyleProperties::getPropertyCSSValueInternal(CSSPropertyID propertyID) const
+std::shared_ptr<CSSValue> StyleProperties::getPropertyCSSValueInternal(CSSPropertyID propertyID) const
 {
     int foundPropertyIndex = findPropertyIndex(propertyID);
     if (foundPropertyIndex == -1)
@@ -757,7 +757,7 @@ RefPtr<CSSValue> StyleProperties::getPropertyCSSValueInternal(CSSPropertyID prop
     return propertyAt(foundPropertyIndex).value();
 }
 
-RefPtr<CSSValue> StyleProperties::getCustomPropertyCSSValue(const std::string& propertyName) const
+std::shared_ptr<CSSValue> StyleProperties::getCustomPropertyCSSValue(const std::string& propertyName) const
 {
     int foundPropertyIndex = findCustomPropertyIndex(propertyName);
     if (foundPropertyIndex == -1)
@@ -907,11 +907,11 @@ bool MutableStyleProperties::setCustomProperty(const Document* document, const s
     return CSSParser::parseCustomPropertyValue(*this, propertyName, value, important, parserContext) == CSSParser::ParseResult::Changed;
 }
 
-void MutableStyleProperties::setProperty(CSSPropertyID propertyID, RefPtr<CSSValue>&& value, bool important)
+void MutableStyleProperties::setProperty(CSSPropertyID propertyID, std::shared_ptr<CSSValue>&& value, bool important)
 {
     StylePropertyShorthand shorthand = shorthandForProperty(propertyID);
     if (!shorthand.length()) {
-        setProperty(CSSProperty(propertyID, WTFMove(value), important));
+        setProperty(CSSProperty(propertyID, std::move(value), important));
         return;
     }
 
@@ -958,7 +958,7 @@ bool MutableStyleProperties::setProperty(CSSPropertyID propertyID, CSSPropertyID
 
 bool MutableStyleProperties::parseDeclaration(const std::string& styleDeclaration, CSSParserContext context)
 {
-    auto oldProperties = WTFMove(m_propertyVector);
+    auto oldProperties = std::move(m_propertyVector);
     m_propertyVector.clear();
 
     context.mode = cssParserMode();
@@ -1016,7 +1016,7 @@ String StyleProperties::asText() const
         std::string value;
         auto serializeBorderShorthand = [&] (const CSSPropertyID borderProperty, const CSSPropertyID fallbackProperty) {
             // FIXME: Deal with cases where only some of border sides are specified.
-            ASSERT(borderProperty - firstCSSProperty < static_cast<CSSPropertyID>(shorthandPropertyAppeared.size()));
+            assert(borderProperty - firstCSSProperty < static_cast<CSSPropertyID>(shorthandPropertyAppeared.size()));
             if (!shorthandPropertyAppeared[borderProperty - firstCSSProperty] && isEnabledCSSProperty(borderProperty)) {
                 value = getPropertyValue(borderProperty);
                 if (value.isNull())
@@ -1235,7 +1235,7 @@ String StyleProperties::asText() const
 
         unsigned shortPropertyIndex = shorthandPropertyID - firstCSSProperty;
         if (shorthandPropertyID && isEnabledCSSProperty(shorthandPropertyID)) {
-            ASSERT(shortPropertyIndex < shorthandPropertyUsed.size());
+            assert(shortPropertyIndex < shorthandPropertyUsed.size());
             if (shorthandPropertyUsed[shortPropertyIndex])
                 continue;
             if (!shorthandPropertyAppeared[shortPropertyIndex] && value.isNull())
@@ -1332,7 +1332,7 @@ String StyleProperties::asText() const
         }
     }
 
-    ASSERT(!numDecls ^ !result.isEmpty());
+    assert(!numDecls ^ !result.isEmpty());
     return result.toString();
 }
 
@@ -1409,7 +1409,7 @@ bool MutableStyleProperties::removePropertiesInSet(const CSSPropertyID* set, uns
         return false;
 
     // FIXME: This is always used with static sets and in that case constructing the hash repeatedly is pretty pointless.
-    HashSet<CSSPropertyID> toRemove;
+    std::unordered_set<CSSPropertyID> toRemove;
     for (unsigned i = 0; i < length; ++i)
         toRemove.add(set[i]);
 
@@ -1513,7 +1513,7 @@ Ref<MutableStyleProperties> StyleProperties::copyPropertiesInSet(const CSSProper
     list.reserveInitialCapacity(length);
     for (unsigned i = 0; i < length; ++i) {
         if (auto value = getPropertyCSSValueInternal(set[i]))
-            list.uncheckedAppend(CSSProperty(set[i], WTFMove(value), false));
+            list.uncheckedAppend(CSSProperty(set[i], std::move(value), false));
     }
     return MutableStyleProperties::create(list.data(), list.size());
 }
@@ -1526,8 +1526,8 @@ PropertySetCSSStyleDeclaration* MutableStyleProperties::cssStyleDeclaration()
 CSSStyleDeclaration& MutableStyleProperties::ensureCSSStyleDeclaration()
 {
     if (m_cssomWrapper) {
-        ASSERT(!static_cast<CSSStyleDeclaration*>(m_cssomWrapper.get())->parentRule());
-        ASSERT(!m_cssomWrapper->parentElement());
+        assert(!static_cast<CSSStyleDeclaration*>(m_cssomWrapper.get())->parentRule());
+        assert(!m_cssomWrapper->parentElement());
         return *m_cssomWrapper;
     }
     m_cssomWrapper = std::make_unique<PropertySetCSSStyleDeclaration>(*this);
@@ -1537,7 +1537,7 @@ CSSStyleDeclaration& MutableStyleProperties::ensureCSSStyleDeclaration()
 CSSStyleDeclaration& MutableStyleProperties::ensureInlineCSSStyleDeclaration(StyledElement& parentElement)
 {
     if (m_cssomWrapper) {
-        ASSERT(m_cssomWrapper->parentElement() == &parentElement);
+        assert(m_cssomWrapper->parentElement() == &parentElement);
         return *m_cssomWrapper;
     }
     m_cssomWrapper = std::make_unique<InlineCSSStyleDeclaration>(*this, parentElement);

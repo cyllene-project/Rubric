@@ -70,7 +70,7 @@ public:
         CSS_VMAX = 29
     };
 
-    static Ref<DeprecatedCSSOMPrimitiveValue> create(const CSSPrimitiveValue& value, CSSStyleDeclaration& owner)
+    static std::reference_wrapper<DeprecatedCSSOMPrimitiveValue> create(const CSSPrimitiveValue& value, CSSStyleDeclaration& owner)
     {
         return adoptRef(*new DeprecatedCSSOMPrimitiveValue(value, owner));
     }
@@ -84,11 +84,11 @@ public:
     unsigned short primitiveType() const;
     ExceptionOr<void> setFloatValue(unsigned short unitType, double);
     ExceptionOr<float> getFloatValue(unsigned short unitType) const;
-    ExceptionOr<void> setStringValue(unsigned short stringType, const String&);
-    ExceptionOr<String> getStringValue() const;
-    ExceptionOr<Ref<DeprecatedCSSOMCounter>> getCounterValue() const;
-    ExceptionOr<Ref<DeprecatedCSSOMRect>> getRectValue() const;
-    ExceptionOr<Ref<DeprecatedCSSOMRGBColor>> getRGBColorValue() const;
+    ExceptionOr<void> setStringValue(unsigned short stringType, const std::string&);
+    ExceptionOr<std::string> getStringValue() const;
+    ExceptionOr<std::reference_wrapper<DeprecatedCSSOMCounter>> getCounterValue() const;
+    ExceptionOr<std::reference_wrapper<DeprecatedCSSOMRect>> getRectValue() const;
+    ExceptionOr<std::reference_wrapper<DeprecatedCSSOMRGBColor>> getRGBColorValue() const;
 
     std::string stringValue() const { return m_value->stringValue(); }
 
@@ -100,7 +100,7 @@ protected:
     }
 
 private:
-    Ref<CSSPrimitiveValue> m_value;
+    std::reference_wrapper<CSSPrimitiveValue> m_value;
 };
     
 } // namespace WebCore

@@ -34,9 +34,9 @@ class Rect;
 
 class CSSBorderImageSliceValue final : public CSSValue {
 public:
-    static Ref<CSSBorderImageSliceValue> create(RefPtr<CSSPrimitiveValue>&& slices, bool fill)
+    static std::reference_wrapper<CSSBorderImageSliceValue> create(std::shared_ptr<CSSPrimitiveValue>&& slices, bool fill)
     {
-        return adoptRef(*new CSSBorderImageSliceValue(WTFMove(slices), fill));
+        return adoptRef(*new CSSBorderImageSliceValue(std::move(slices), fill));
     }
 
     std::string customCSSText() const;
@@ -47,11 +47,11 @@ public:
 
     // These four values are used to make "cuts" in the border image. They can be numbers
     // or percentages.
-    RefPtr<CSSPrimitiveValue> m_slices;
+    std::shared_ptr<CSSPrimitiveValue> m_slices;
     bool m_fill;
 
 private:
-    CSSBorderImageSliceValue(RefPtr<CSSPrimitiveValue>&& slices, bool fill);
+    CSSBorderImageSliceValue(std::shared_ptr<CSSPrimitiveValue>&& slices, bool fill);
 };
 
 } // namespace WebCore

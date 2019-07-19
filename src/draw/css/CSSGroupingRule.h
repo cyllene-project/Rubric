@@ -49,10 +49,10 @@ protected:
 
     void appendCssTextForItems(StringBuilder&) const;
 
-    Ref<StyleRuleGroup> m_groupRule;
+    std::reference_wrapper<StyleRuleGroup> m_groupRule;
 
 private:
-    mutable std::vector<RefPtr<CSSRule>> m_childRuleCSSOMWrappers;
+    mutable std::vector<std::shared_ptr<CSSRule>> m_childRuleCSSOMWrappers;
     mutable std::unique_ptr<CSSRuleList> m_ruleListCSSOMWrapper;
 };
 

@@ -78,7 +78,7 @@ bool MediaQueryMatcher::evaluate(const MediaQuerySet& media)
     return MediaQueryEvaluator { mediaType(), *m_document, style.get() }.evaluate(media);
 }
 
-RefPtr<MediaQueryList> MediaQueryMatcher::matchMedia(const std::string& query)
+std::shared_ptr<MediaQueryList> MediaQueryMatcher::matchMedia(const std::string& query)
 {
     if (!m_document)
         return nullptr;
@@ -86,10 +86,10 @@ RefPtr<MediaQueryList> MediaQueryMatcher::matchMedia(const std::string& query)
     auto media = MediaQuerySet::create(query, MediaQueryParserContext(*m_document));
     reportMediaQueryWarningIfNeeded(m_document.get(), media.ptr());
     bool result = evaluate(media.get());
-    return MediaQueryList::create(*this, WTFMove(media), result);
+    return MediaQueryList::create(*this, std::move(media), result);
 }
 
-void MediaQueryMatcher::addListener(Ref<MediaQueryListListener>&& listener, MediaQueryList& query)
+void MediaQueryMatcher::addListener(std::reference_wrapper<MediaQueryListListener>&& listener, MediaQueryList& query)
 {
     if (!m_document)
         return;
@@ -99,7 +99,7 @@ void MediaQueryMatcher::addListener(Ref<MediaQueryListListener>&& listener, Medi
             return;
     }
 
-    m_listeners.append(Listener { WTFMove(listener), query });
+    m_listeners.append(Listener { std::move(listener), query });
 }
 
 void MediaQueryMatcher::removeListener(MediaQueryListListener& listener, MediaQueryList& query)
@@ -111,7 +111,7 @@ void MediaQueryMatcher::removeListener(MediaQueryListListener& listener, MediaQu
 
 void MediaQueryMatcher::styleResolverChanged()
 {
-    ASSERT(m_document);
+    assert(m_document);
 
     ++m_evaluationRound;
 

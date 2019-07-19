@@ -42,7 +42,7 @@ class CSSParserTokenRange;
 
 class CSSVariableReferenceValue : public CSSValue {
 public:
-    static Ref<CSSVariableReferenceValue> create(const CSSParserTokenRange& range)
+    static std::reference_wrapper<CSSVariableReferenceValue> create(const CSSParserTokenRange& range)
     {
         return adoptRef(*new CSSVariableReferenceValue(CSSVariableData::create(range)));
     }
@@ -50,16 +50,16 @@ public:
     bool equals(const CSSVariableReferenceValue& other) const { return m_data.get() == other.m_data.get(); }
     std::string customCSSText() const;
 
-    RefPtr<CSSVariableData> resolveVariableReferences(ApplyCascadedPropertyState&) const;
+    std::shared_ptr<CSSVariableData> resolveVariableReferences(ApplyCascadedPropertyState&) const;
 
 private:
-    CSSVariableReferenceValue(Ref<CSSVariableData>&& data)
+    CSSVariableReferenceValue(std::reference_wrapper<CSSVariableData>&& data)
         : CSSValue(VariableReferenceClass)
-        , m_data(WTFMove(data))
+        , m_data(std::move(data))
     {
     }
 
-    Ref<CSSVariableData> m_data;
+    std::reference_wrapper<CSSVariableData> m_data;
     mutable String m_stringValue;
     mutable bool m_serialized { false };
 };

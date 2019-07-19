@@ -514,7 +514,7 @@ CSSParserToken CSSTokenizer::nextToken()
 // http://www.w3.org/TR/css3-syntax/#convert-a-string-to-a-number
 CSSParserToken CSSTokenizer::consumeNumber()
 {
-    ASSERT(nextCharsAreNumber());
+    assert(nextCharsAreNumber());
 
     NumericValueType type = IntegerValueType;
     NumericSign sign = NoSign;
@@ -625,7 +625,7 @@ CSSParserToken CSSTokenizer::consumeStringTokenUntil(UChar endingCodePoint)
 
 CSSParserToken CSSTokenizer::consumeUnicodeRange()
 {
-    ASSERT(isASCIIHexDigit(m_input.peekWithoutReplacement(0)) || m_input.peekWithoutReplacement(0) == '?');
+    assert(isASCIIHexDigit(m_input.peekWithoutReplacement(0)) || m_input.peekWithoutReplacement(0) == '?');
     int lengthRemaining = 6;
     UChar32 start = 0;
 
@@ -751,7 +751,7 @@ bool CSSTokenizer::consumeIfNext(UChar character)
     // Since we're not doing replacement we can't tell the difference from
     // a NUL in the middle and the kEndOfFileMarker, so character must not be
     // NUL.
-    ASSERT(character);
+    assert(character);
     if (m_input.peekWithoutReplacement(0) == character) {
         m_input.advance();
         return true;
@@ -799,7 +799,7 @@ StringView CSSTokenizer::consumeName()
 UChar32 CSSTokenizer::consumeEscape()
 {
     UChar cc = consume();
-    ASSERT(!isNewLine(cc));
+    assert(!isNewLine(cc));
     if (isASCIIHexDigit(cc)) {
         unsigned consumedHexDigits = 1;
         StringBuilder hexChars;
@@ -812,7 +812,7 @@ UChar32 CSSTokenizer::consumeEscape()
         consumeSingleWhitespaceIfNext();
         bool ok = false;
         UChar32 codePoint = hexChars.toString().toUIntStrict(&ok, 16);
-        ASSERT(ok);
+        assert(ok);
         if (!codePoint || (0xD800 <= codePoint && codePoint <= 0xDFFF) || codePoint > 0x10FFFF)
             return replacementCharacter;
         return codePoint;

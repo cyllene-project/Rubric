@@ -30,7 +30,7 @@ class CSSValueList;
 
 class CSSFontValue final : public CSSValue {
 public:
-    static Ref<CSSFontValue> create()
+    static std::reference_wrapper<CSSFontValue> create()
     {
         return adoptRef(*new CSSFontValue);
     }
@@ -39,13 +39,13 @@ public:
 
     bool equals(const CSSFontValue&) const;
 
-    RefPtr<CSSFontStyleValue> style;
-    RefPtr<CSSPrimitiveValue> variant;
-    RefPtr<CSSPrimitiveValue> weight;
-    RefPtr<CSSPrimitiveValue> stretch;
-    RefPtr<CSSPrimitiveValue> size;
-    RefPtr<CSSPrimitiveValue> lineHeight;
-    RefPtr<CSSValueList> family;
+    std::shared_ptr<CSSFontStyleValue> style;
+    std::shared_ptr<CSSPrimitiveValue> variant;
+    std::shared_ptr<CSSPrimitiveValue> weight;
+    std::shared_ptr<CSSPrimitiveValue> stretch;
+    std::shared_ptr<CSSPrimitiveValue> size;
+    std::shared_ptr<CSSPrimitiveValue> lineHeight;
+    std::shared_ptr<CSSValueList> family;
 
 private:
     CSSFontValue()

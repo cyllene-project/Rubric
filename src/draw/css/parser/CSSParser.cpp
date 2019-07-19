@@ -135,7 +135,7 @@ std::shared_ptr<CSSValue> CSSParser::parseSingleValue(CSSPropertyID propertyID, 
 
 CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration, CSSPropertyID propertyID, const std::string& string, bool important, const CSSParserContext& context)
 {
-    ASSERT(!string.empty());
+    assert(!string.empty());
     std::shared_ptr<CSSValue> value = CSSParserFastPaths::maybeParseValue(propertyID, string, context.mode);
     if (value)
         return declaration.addParsedProperty(CSSProperty(propertyID, std::move(value), important)) ? CSSParser::ParseResult::Changed : CSSParser::ParseResult::Unchanged;
@@ -144,7 +144,7 @@ CSSParser::ParseResult CSSParser::parseValue(MutableStyleProperties& declaration
     return parser.parseValue(declaration, propertyID, string, important);
 }
 
-CSSParser::ParseResult CSSParser::parseCustomPropertyValue(MutableStyleProperties& declaration, const AtomString& propertyName, const std::string& string, bool important, const CSSParserContext& context)
+CSSParser::ParseResult CSSParser::parseCustomPropertyValue(MutableStyleProperties& declaration, const std::atomic<std::string>& propertyName, const std::string& string, bool important, const CSSParserContext& context)
 {
     return CSSParserImpl::parseCustomPropertyValue(&declaration, propertyName, string, important, context);
 }
@@ -177,7 +177,7 @@ void CSSParser::parseDeclarationForInspector(const CSSParserContext& context, co
 
 std::shared_ptr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropertyID propID, const CSSValue& value, ApplyCascadedPropertyState& state)
 {
-    ASSERT((propID == CSSPropertyCustom && value.isCustomPropertyValue()) || (propID != CSSPropertyCustom && !value.isCustomPropertyValue()));
+    assert((propID == CSSPropertyCustom && value.isCustomPropertyValue()) || (propID != CSSPropertyCustom && !value.isCustomPropertyValue()));
     auto& style = *state.styleResolver->style();
     auto direction = style.direction();
     auto writingMode = style.writingMode();
@@ -217,7 +217,7 @@ std::shared_ptr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropert
     }
 
     const auto& customPropValue = downcast<CSSCustomPropertyValue>(value);
-    const auto& valueWithReferences = WTF::get<Ref<CSSVariableReferenceValue>>(customPropValue.value()).get();
+    const auto& valueWithReferences = WTF::get<std::reference_wrapper<CSSVariableReferenceValue>>(customPropValue.value()).get();
 
     auto& name = downcast<CSSCustomPropertyValue>(value).name();
     auto* registered = state.styleResolver->document().getCSSRegisteredCustomPropertySet().get(name);
@@ -228,7 +228,7 @@ std::shared_ptr<CSSValue> CSSParser::parseValueWithVariableReferences(CSSPropert
         return nullptr;
 
     // FIXME handle REM cycles.
-    HashSet<CSSPropertyID> dependencies;
+    std::unordered_set<CSSPropertyID> dependencies;
     CSSPropertyParser::collectParsedCustomPropertyValueDependencies(syntax, false, dependencies, resolvedData->tokens(), m_context);
 
     for (auto id : dependencies)

@@ -42,7 +42,7 @@ SizesCalcParser::SizesCalcParser(CSSParserTokenRange range, const Document& docu
 
 float SizesCalcParser::result() const
 {
-    ASSERT(m_isValid);
+    assert(m_isValid);
     return m_result;
 }
 

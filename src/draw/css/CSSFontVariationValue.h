@@ -32,7 +32,7 @@ namespace WebCore {
 
 class CSSFontVariationValue final : public CSSValue {
 public:
-    static Ref<CSSFontVariationValue> create(FontTag tag, float value)
+    static std::reference_wrapper<CSSFontVariationValue> create(FontTag tag, float value)
     {
         return adoptRef(*new CSSFontVariationValue(tag, value));
     }

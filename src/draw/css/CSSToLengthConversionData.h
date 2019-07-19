@@ -45,7 +45,7 @@ public:
         , m_useEffectiveZoom(false)
         , m_computingFontSize(computingFontSize)
     {
-        ASSERT(zoom > 0);
+        assert(zoom > 0);
     }
 
     CSSToLengthConversionData(const RenderStyle* style, const RenderStyle* rootStyle, const RenderView* renderView, bool computingFontSize = false)

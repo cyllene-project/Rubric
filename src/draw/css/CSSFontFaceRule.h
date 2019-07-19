@@ -31,7 +31,7 @@ class StyleRuleCSSStyleDeclaration;
 
 class CSSFontFaceRule final : public CSSRule {
 public:
-    static Ref<CSSFontFaceRule> create(StyleRuleFontFace& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSFontFaceRule(rule, sheet)); }
+    static std::reference_wrapper<CSSFontFaceRule> create(StyleRuleFontFace& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSFontFaceRule(rule, sheet)); }
 
     virtual ~CSSFontFaceRule();
 
@@ -44,8 +44,8 @@ private:
     std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    Ref<StyleRuleFontFace> m_fontFaceRule;
-    RefPtr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
+    std::reference_wrapper<StyleRuleFontFace> m_fontFaceRule;
+    std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
 };
 
 } // namespace WebCore

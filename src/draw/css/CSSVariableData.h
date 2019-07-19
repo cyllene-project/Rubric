@@ -42,7 +42,7 @@ class CSSVariableData : public RefCounted<CSSVariableData> {
         CSSVariableData& operator=(const CSSVariableData&) = delete;
 
 public:
-    static Ref<CSSVariableData> create(const CSSParserTokenRange& range)
+    static std::reference_wrapper<CSSVariableData> create(const CSSParserTokenRange& range)
     {
         return adoptRef(*new CSSVariableData(range));
     }

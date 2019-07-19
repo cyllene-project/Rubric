@@ -39,7 +39,7 @@ StaticCSSRuleList::~StaticCSSRuleList() = default;
 
 void StaticCSSRuleList::deref()
 { 
-    ASSERT(m_refCount);
+    assert(m_refCount);
     if (!--m_refCount)
         delete this;
 }

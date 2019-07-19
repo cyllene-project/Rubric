@@ -32,7 +32,7 @@ class StyleRuleMedia;
 
 class CSSMediaRule final : public CSSGroupingRule {
 public:
-    static Ref<CSSMediaRule> create(StyleRuleMedia& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSMediaRule(rule, sheet)); }
+    static std::reference_wrapper<CSSMediaRule> create(StyleRuleMedia& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSMediaRule(rule, sheet)); }
 
     virtual ~CSSMediaRule();
 
@@ -47,7 +47,7 @@ private:
 
     MediaQuerySet* mediaQueries() const;
     
-    mutable RefPtr<MediaList> m_mediaCSSOMWrapper;
+    mutable std::shared_ptr<MediaList> m_mediaCSSOMWrapper;
 };
 
 } // namespace WebCore

@@ -76,7 +76,7 @@ void DocumentRuleSets::updateUserAgentMediaQueryStyleIfNeeded() const
     m_userAgentMediaQueryStyle->addRulesFromSheet(*CSSDefaultStyleSheets::mediaQueryStyleSheet, mediaQueryEvaluator, &m_styleResolver);
 
     // Viewport dependent queries are currently too inefficient to allow on UA sheet.
-    ASSERT(!m_styleResolver.hasViewportDependentMediaQueries() || hadViewportDependentMediaQueries);
+    assert(!m_styleResolver.hasViewportDependentMediaQueries() || hadViewportDependentMediaQueries);
 }
 
 RuleSet* DocumentRuleSets::userStyle() const
@@ -96,13 +96,13 @@ void DocumentRuleSets::initializeUserStyle()
     collectRulesFromUserStyleSheets(extensionStyleSheets.injectedUserStyleSheets(), *tempUserStyle, mediaQueryEvaluator, m_styleResolver);
     collectRulesFromUserStyleSheets(extensionStyleSheets.documentUserStyleSheets(), *tempUserStyle, mediaQueryEvaluator, m_styleResolver);
     if (tempUserStyle->ruleCount() > 0 || tempUserStyle->pageRules().size() > 0)
-        m_userStyle = WTFMove(tempUserStyle);
+        m_userStyle = std::move(tempUserStyle);
 }
 
-void DocumentRuleSets::collectRulesFromUserStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& userSheets, RuleSet& userStyle, const MediaQueryEvaluator& medium, StyleResolver& resolver)
+void DocumentRuleSets::collectRulesFromUserStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>& userSheets, RuleSet& userStyle, const MediaQueryEvaluator& medium, StyleResolver& resolver)
 {
     for (unsigned i = 0; i < userSheets.size(); ++i) {
-        ASSERT(userSheets[i]->contents().isUserStyleSheet());
+        assert(userSheets[i]->contents().isUserStyleSheet());
         userStyle.addRulesFromSheet(userSheets[i]->contents(), medium, &resolver);
     }
 }
@@ -131,12 +131,12 @@ void DocumentRuleSets::resetUserAgentMediaQueryStyle()
     m_userAgentMediaQueryStyle = nullptr;
 }
 
-void DocumentRuleSets::appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>& styleSheets, MediaQueryEvaluator* medium, InspectorCSSOMWrappers& inspectorCSSOMWrappers, StyleResolver* resolver)
+void DocumentRuleSets::appendAuthorStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>& styleSheets, MediaQueryEvaluator* medium, InspectorCSSOMWrappers& inspectorCSSOMWrappers, StyleResolver* resolver)
 {
     // This handles sheets added to the end of the stylesheet list only. In other cases the style resolver
     // needs to be reconstructed. To handle insertions too the rule order numbers would need to be updated.
     for (auto& cssSheet : styleSheets) {
-        ASSERT(!cssSheet->disabled());
+        assert(!cssSheet->disabled());
         if (cssSheet->mediaQueries() && !medium->evaluate(*cssSheet->mediaQueries(), resolver))
             continue;
         m_authorStyle->addRulesFromSheet(cssSheet->contents(), *medium, resolver);
@@ -174,7 +174,7 @@ void DocumentRuleSets::collectFeatures() const
     m_features.shrinkToFit();
 }
 
-static std::vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const AtomString& key, HashMap<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>>& ruleSetMap, const HashMap<AtomString, std::unique_ptr<std::vector<RuleFeature>>>& ruleFeatures)
+static std::vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const std::atomic<std::string>& key, std::unordered_map<AtomString, std::unique_ptr<std::vector<InvalidationRuleSet>>>& ruleSetMap, const std::unordered_map<AtomString, std::unique_ptr<std::vector<RuleFeature>>>& ruleFeatures)
 {
     return ruleSetMap.ensure(key, [&] () -> std::unique_ptr<std::vector<InvalidationRuleSet>> {
         auto* features = ruleFeatures.get(key);
@@ -195,18 +195,18 @@ static std::vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const AtomSt
         auto invalidationRuleSets = std::make_unique<std::vector<InvalidationRuleSet>>();
         for (unsigned i = 0; i < matchElementArray.size(); ++i) {
             if (matchElementArray[i])
-                invalidationRuleSets->append({ static_cast<MatchElement>(i), WTFMove(matchElementArray[i]), WTFMove(invalidationSelectorArray[i]) });
+                invalidationRuleSets->append({ static_cast<MatchElement>(i), std::move(matchElementArray[i]), std::move(invalidationSelectorArray[i]) });
         }
         return invalidationRuleSets;
     }).iterator->value.get();
 }
 
-const std::vector<InvalidationRuleSet>* DocumentRuleSets::classInvalidationRuleSets(const AtomString& className) const
+const std::vector<InvalidationRuleSet>* DocumentRuleSets::classInvalidationRuleSets(const std::atomic<std::string>& className) const
 {
     return ensureInvalidationRuleSets(className, m_classInvalidationRuleSets, m_features.classRules);
 }
 
-const std::vector<InvalidationRuleSet>* DocumentRuleSets::attributeInvalidationRuleSets(const AtomString& attributeName) const
+const std::vector<InvalidationRuleSet>* DocumentRuleSets::attributeInvalidationRuleSets(const std::atomic<std::string>& attributeName) const
 {
     return ensureInvalidationRuleSets(attributeName, m_attributeInvalidationRuleSets, m_features.attributeRules);
 }

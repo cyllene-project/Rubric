@@ -23,7 +23,7 @@
 
 #include "CSSPropertyNames.h"
 #include "CSSValue.h"
-//#include "WritingMode.h"
+#include "WritingMode.h"
 
 namespace WebCore {
 
@@ -60,9 +60,9 @@ struct StylePropertyMetadata {
 
 class CSSProperty {
 public:
-    CSSProperty(CSSPropertyID propertyID, RefPtr<CSSValue>&& value, bool important = false, bool isSetFromShorthand = false, int indexInShorthandsVector = 0, bool implicit = false)
+    CSSProperty(CSSPropertyID propertyID, std::shared_ptr<CSSValue>&& value, bool important = false, bool isSetFromShorthand = false, int indexInShorthandsVector = 0, bool implicit = false)
         : m_metadata(propertyID, isSetFromShorthand, indexInShorthandsVector, important, implicit, isInheritedProperty(propertyID))
-        , m_value(WTFMove(value))
+        , m_value(std::move(value))
     {
     }
 
@@ -77,7 +77,7 @@ public:
 
     static CSSPropertyID resolveDirectionAwareProperty(CSSPropertyID, TextDirection, WritingMode);
     static bool isInheritedProperty(CSSPropertyID);
-    static std::vector<String> aliasesForProperty(CSSPropertyID);
+    static std::vector<std::string> aliasesForProperty(CSSPropertyID);
     static bool isDirectionAwareProperty(CSSPropertyID);
     static bool isDescriptorOnly(CSSPropertyID);
 
@@ -99,16 +99,10 @@ public:
 
 private:
     StylePropertyMetadata m_metadata;
-    RefPtr<CSSValue> m_value;
+    std::shared_ptr<CSSValue> m_value;
 };
 
-typedef std::vector<CSSProperty, 256> ParsedPropertyVector;
+typedef std::vector<CSSProperty> ParsedPropertyVector;
 
 } // namespace WebCore
 
-namespace WTF {
-template <> struct VectorTraits<WebCore::CSSProperty> : VectorTraitsBase<false, WebCore::CSSProperty> {
-    static const bool canInitializeWithMemset = true;
-    static const bool canMoveWithMemcpy = true;
-};
-}

@@ -37,7 +37,7 @@ class StyleRuleSupports;
 
 class CSSSupportsRule final : public CSSGroupingRule {
 public:
-    static Ref<CSSSupportsRule> create(StyleRuleSupports& rule, CSSStyleSheet* sheet)
+    static std::reference_wrapper<CSSSupportsRule> create(StyleRuleSupports& rule, CSSStyleSheet* sheet)
     {
         return adoptRef(*new CSSSupportsRule(rule, sheet));
     }

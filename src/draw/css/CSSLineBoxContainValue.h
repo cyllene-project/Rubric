@@ -47,7 +47,7 @@ typedef unsigned LineBoxContain;
 // Used for text-CSSLineBoxContain and box-CSSLineBoxContain
 class CSSLineBoxContainValue final : public CSSValue {
 public:
-    static Ref<CSSLineBoxContainValue> create(LineBoxContain value)
+    static std::reference_wrapper<CSSLineBoxContainValue> create(LineBoxContain value)
     {
         return adoptRef(*new CSSLineBoxContainValue(value));
     }

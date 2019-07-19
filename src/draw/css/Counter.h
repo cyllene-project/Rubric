@@ -25,9 +25,9 @@ namespace WebCore {
 
 class Counter final : public RefCounted<Counter> {
 public:
-    static Ref<Counter> create(Ref<CSSPrimitiveValue>&& identifier, Ref<CSSPrimitiveValue>&& listStyle, Ref<CSSPrimitiveValue>&& separator)
+    static std::reference_wrapper<Counter> create(std::reference_wrapper<CSSPrimitiveValue>&& identifier, std::reference_wrapper<CSSPrimitiveValue>&& listStyle, std::reference_wrapper<CSSPrimitiveValue>&& separator)
     {
-        return adoptRef(*new Counter(WTFMove(identifier), WTFMove(listStyle), WTFMove(separator)));
+        return adoptRef(*new Counter(std::move(identifier), std::move(listStyle), std::move(separator)));
     }
 
     std::string identifier() const { return m_identifier->stringValue(); }
@@ -40,9 +40,9 @@ public:
     
     CSSValueID listStyleIdent() const { return m_listStyle->valueID(); }
 
-    void setIdentifier(Ref<CSSPrimitiveValue>&& identifier) { m_identifier = WTFMove(identifier); }
-    void setListStyle(Ref<CSSPrimitiveValue>&& listStyle) { m_listStyle = WTFMove(listStyle); }
-    void setSeparator(Ref<CSSPrimitiveValue>&& separator) { m_separator = WTFMove(separator); }
+    void setIdentifier(std::reference_wrapper<CSSPrimitiveValue>&& identifier) { m_identifier = std::move(identifier); }
+    void setListStyle(std::reference_wrapper<CSSPrimitiveValue>&& listStyle) { m_listStyle = std::move(listStyle); }
+    void setSeparator(std::reference_wrapper<CSSPrimitiveValue>&& separator) { m_separator = std::move(separator); }
 
     bool equals(const Counter& other) const
     {
@@ -52,16 +52,16 @@ public:
     }
 
 private:
-    Counter(Ref<CSSPrimitiveValue>&& identifier, Ref<CSSPrimitiveValue>&& listStyle, Ref<CSSPrimitiveValue>&& separator)
-        : m_identifier(WTFMove(identifier))
-        , m_listStyle(WTFMove(listStyle))
-        , m_separator(WTFMove(separator))
+    Counter(std::reference_wrapper<CSSPrimitiveValue>&& identifier, std::reference_wrapper<CSSPrimitiveValue>&& listStyle, std::reference_wrapper<CSSPrimitiveValue>&& separator)
+        : m_identifier(std::move(identifier))
+        , m_listStyle(std::move(listStyle))
+        , m_separator(std::move(separator))
     {
     }
 
-    Ref<CSSPrimitiveValue> m_identifier; // string
-    Ref<CSSPrimitiveValue> m_listStyle; // ident
-    Ref<CSSPrimitiveValue> m_separator; // string
+    std::reference_wrapper<CSSPrimitiveValue> m_identifier; // string
+    std::reference_wrapper<CSSPrimitiveValue> m_listStyle; // ident
+    std::reference_wrapper<CSSPrimitiveValue> m_separator; // string
 };
 
 } // namespace WebCore

@@ -33,13 +33,13 @@ namespace WebCore {
 
 class CSSFontStyleValue final : public CSSValue {
 public:
-    static Ref<CSSFontStyleValue> create(Ref<CSSPrimitiveValue>&& fontStyleValue)
+    static std::reference_wrapper<CSSFontStyleValue> create(std::reference_wrapper<CSSPrimitiveValue>&& fontStyleValue)
     {
-        return adoptRef(*new CSSFontStyleValue(WTFMove(fontStyleValue), nullptr));
+        return adoptRef(*new CSSFontStyleValue(std::move(fontStyleValue), nullptr));
     }
-    static Ref<CSSFontStyleValue> create(Ref<CSSPrimitiveValue>&& fontStyleValue, RefPtr<CSSPrimitiveValue>&& obliqueValue)
+    static std::reference_wrapper<CSSFontStyleValue> create(std::reference_wrapper<CSSPrimitiveValue>&& fontStyleValue, std::shared_ptr<CSSPrimitiveValue>&& obliqueValue)
     {
-        return adoptRef(*new CSSFontStyleValue(WTFMove(fontStyleValue), WTFMove(obliqueValue)));
+        return adoptRef(*new CSSFontStyleValue(std::move(fontStyleValue), std::move(obliqueValue)));
     }
 
     std::string customCSSText() const;
@@ -55,14 +55,14 @@ public:
         return obliqueValue->value<float>(CSSPrimitiveValue::CSS_DEG) >= static_cast<float>(italicValue());
     }
 
-    Ref<CSSPrimitiveValue> fontStyleValue;
-    RefPtr<CSSPrimitiveValue> obliqueValue;
+    std::reference_wrapper<CSSPrimitiveValue> fontStyleValue;
+    std::shared_ptr<CSSPrimitiveValue> obliqueValue;
 
 private:
-    CSSFontStyleValue(Ref<CSSPrimitiveValue>&& fontStyleValue, RefPtr<CSSPrimitiveValue>&& obliqueValue)
+    CSSFontStyleValue(std::reference_wrapper<CSSPrimitiveValue>&& fontStyleValue, std::shared_ptr<CSSPrimitiveValue>&& obliqueValue)
         : CSSValue(FontStyleClass)
-        , fontStyleValue(WTFMove(fontStyleValue))
-        , obliqueValue(WTFMove(obliqueValue))
+        , fontStyleValue(std::move(fontStyleValue))
+        , obliqueValue(std::move(obliqueValue))
     {
     }
 };

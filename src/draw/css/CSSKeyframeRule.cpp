@@ -34,15 +34,15 @@
 
 namespace WebCore {
 
-StyleRuleKeyframe::StyleRuleKeyframe(Ref<StyleProperties>&& properties)
+StyleRuleKeyframe::StyleRuleKeyframe(std::reference_wrapper<StyleProperties>&& properties)
     : StyleRuleBase(Keyframe)
-    , m_properties(WTFMove(properties))
+    , m_properties(std::move(properties))
 {
 }
 
-StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<std::vector<double>> keys, Ref<StyleProperties>&& properties)
+StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<std::vector<double>> keys, std::reference_wrapper<StyleProperties>&& properties)
     : StyleRuleBase(Keyframe)
-    , m_properties(WTFMove(properties))
+    , m_properties(std::move(properties))
     , m_keys(*keys)
 {
 }
@@ -72,7 +72,7 @@ String StyleRuleKeyframe::keyText() const
     
 bool StyleRuleKeyframe::setKeyText(const std::string& keyText)
 {
-    ASSERT(!keyText.isNull());
+    assert(!keyText.isNull());
     auto keys = CSSParser::parseKeyframeKeyList(keyText);
     if (!keys || keys->isEmpty())
         return false;

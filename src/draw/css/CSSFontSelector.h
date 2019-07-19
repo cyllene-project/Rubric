@@ -49,7 +49,7 @@ class StyleRuleFontFace;
 
 class CSSFontSelector final : public FontSelector, public CSSFontFaceSetClient, public CanMakeWeakPtr<CSSFontSelector> {
 public:
-    static Ref<CSSFontSelector> create(Document& document)
+    static std::reference_wrapper<CSSFontSelector> create(Document& document)
     {
         return adoptRef(*new CSSFontSelector(document));
     }
@@ -58,9 +58,9 @@ public:
     unsigned version() const final { return m_version; }
     unsigned uniqueId() const final { return m_uniqueId; }
 
-    FontRanges fontRangesForFamily(const FontDescription&, const AtomString&) final;
+    FontRanges fontRangesForFamily(const FontDescription&, const std::atomic<std::string>&) final;
     size_t fallbackFontCount() final;
-    RefPtr<Font> fallbackFontAt(const FontDescription&, size_t) final;
+    std::shared_ptr<Font> fallbackFontAt(const FontDescription&, size_t) final;
 
     void clearDocument();
     void emptyCaches();
@@ -91,7 +91,7 @@ private:
 
     void dispatchInvalidationCallbacks();
 
-    void opportunisticallyStartFontDataURLLoading(const FontCascadeDescription&, const AtomString& family) final;
+    void opportunisticallyStartFontDataURLLoading(const FontCascadeDescription&, const std::atomic<std::string>& family) final;
 
     void fontModified() final;
 
@@ -104,13 +104,13 @@ private:
     std::vector<PendingFontFaceRule> m_stagingArea;
 
     WeakPtr<Document> m_document;
-    RefPtr<FontFaceSet> m_fontFaceSet;
-    Ref<CSSFontFaceSet> m_cssFontFaceSet;
-    HashSet<FontSelectorClient*> m_clients;
+    std::shared_ptr<FontFaceSet> m_fontFaceSet;
+    std::reference_wrapper<CSSFontFaceSet> m_cssFontFaceSet;
+    std::unordered_set<FontSelectorClient*> m_clients;
 
     std::vector<CachedResourceHandle<CachedFont>> m_fontsToBeginLoading;
-    HashSet<RefPtr<CSSFontFace>> m_cssConnectionsPossiblyToRemove;
-    HashSet<RefPtr<StyleRuleFontFace>> m_cssConnectionsEncounteredDuringBuild;
+    std::unordered_set<std::shared_ptr<CSSFontFace>> m_cssConnectionsPossiblyToRemove;
+    std::unordered_set<std::shared_ptr<StyleRuleFontFace>> m_cssConnectionsEncounteredDuringBuild;
     Timer m_beginLoadingTimer;
 
     unsigned m_uniqueId;

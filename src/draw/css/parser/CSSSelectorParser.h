@@ -60,7 +60,7 @@ private:
     // This doesn't include element names, since they're handled specially
     std::unique_ptr<CSSParserSelector> consumeSimpleSelector(CSSParserTokenRange&);
 
-    bool consumeName(CSSParserTokenRange&, AtomString& name, AtomString& namespacePrefix);
+    bool consumeName(CSSParserTokenRange&, std::atomic<std::string>& name, std::atomic<std::string>& namespacePrefix);
 
     // These will return nullptr when the selector is invalid
     std::unique_ptr<CSSParserSelector> consumeId(CSSParserTokenRange&);
@@ -72,9 +72,9 @@ private:
     CSSSelector::Match consumeAttributeMatch(CSSParserTokenRange&);
     CSSSelector::AttributeMatchType consumeAttributeFlags(CSSParserTokenRange&);
 
-    const AtomString& defaultNamespace() const;
-    const AtomString& determineNamespace(const AtomString& prefix);
-    void prependTypeSelectorIfNeeded(const AtomString& namespacePrefix, const AtomString& elementName, CSSParserSelector*);
+    const std::atomic<std::string>& defaultNamespace() const;
+    const std::atomic<std::string>& determineNamespace(const std::atomic<std::string>& prefix);
+    void prependTypeSelectorIfNeeded(const std::atomic<std::string>& namespacePrefix, const std::atomic<std::string>& elementName, CSSParserSelector*);
     static std::unique_ptr<CSSParserSelector> addSimpleSelectorToCompound(std::unique_ptr<CSSParserSelector> compoundSelector, std::unique_ptr<CSSParserSelector> simpleSelector);
     static std::unique_ptr<CSSParserSelector> splitCompoundAtImplicitShadowCrossingCombinator(std::unique_ptr<CSSParserSelector> compoundSelector, const CSSParserContext&);
 

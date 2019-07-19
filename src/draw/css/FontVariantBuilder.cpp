@@ -132,7 +132,7 @@ FontVariantNumericValues extractFontVariantNumeric(const CSSValue& value)
             }
         }
     } else if (is<CSSPrimitiveValue>(value))
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
 
     return FontVariantNumericValues(figure, spacing, fraction, ordinal, slashedZero);
 }
@@ -179,7 +179,7 @@ FontVariantEastAsianValues extractFontVariantEastAsian(const CSSValue& value)
             }
         }
     } else if (is<CSSPrimitiveValue>(value))
-        ASSERT(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
+        assert(downcast<CSSPrimitiveValue>(value).valueID() == CSSValueNormal);
 
     return FontVariantEastAsianValues(variant, width, ruby);
 }

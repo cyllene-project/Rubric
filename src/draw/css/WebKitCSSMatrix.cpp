@@ -51,7 +51,7 @@ Ref<WebKitCSSMatrix> WebKitCSSMatrix::create(const TransformationMatrix& matrix)
     return adoptRef(*new WebKitCSSMatrix(matrix));
 }
 
-ExceptionOr<Ref<WebKitCSSMatrix>> WebKitCSSMatrix::create(const std::string& string)
+ExceptionOr<std::reference_wrapper<WebKitCSSMatrix>> WebKitCSSMatrix::create(const std::string& string)
 {
     auto result = adoptRef(*new WebKitCSSMatrix);
     auto setMatrixValueResult = result->setMatrixValue(string);
@@ -93,7 +93,7 @@ ExceptionOr<void> WebKitCSSMatrix::setMatrixValue(const std::string& string)
 }
 
 // Perform a concatenation of the matrices (this * secondMatrix)
-RefPtr<WebKitCSSMatrix> WebKitCSSMatrix::multiply(WebKitCSSMatrix* secondMatrix) const
+std::shared_ptr<WebKitCSSMatrix> WebKitCSSMatrix::multiply(WebKitCSSMatrix* secondMatrix) const
 {
     if (!secondMatrix)
         return nullptr;
@@ -103,7 +103,7 @@ RefPtr<WebKitCSSMatrix> WebKitCSSMatrix::multiply(WebKitCSSMatrix* secondMatrix)
     return matrix;
 }
 
-ExceptionOr<Ref<WebKitCSSMatrix>> WebKitCSSMatrix::inverse() const
+ExceptionOr<std::reference_wrapper<WebKitCSSMatrix>> WebKitCSSMatrix::inverse() const
 {
     auto inverse = m_matrix.inverse();
     if (!inverse)
@@ -198,7 +198,7 @@ Ref<WebKitCSSMatrix> WebKitCSSMatrix::skewY(double angle) const
     return matrix;
 }
 
-ExceptionOr<String> WebKitCSSMatrix::toString() const
+ExceptionOr<std::string> WebKitCSSMatrix::toString() const
 {
     if (!m_matrix.containsOnlyFiniteValues())
         return Exception { InvalidStateError, "Matrix contains non-finite values"_s };

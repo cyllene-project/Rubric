@@ -32,7 +32,7 @@ namespace WebCore {
     
 class DeprecatedCSSOMValueList : public DeprecatedCSSOMValue {
 public:
-    static Ref<DeprecatedCSSOMValueList> create(const CSSValueList& value, CSSStyleDeclaration& owner)
+    static std::reference_wrapper<DeprecatedCSSOMValueList> create(const CSSValueList& value, CSSStyleDeclaration& owner)
     {
         return adoptRef(*new DeprecatedCSSOMValueList(value, owner));
     }
@@ -55,7 +55,7 @@ protected:
     }
     
 private:
-    std::vector<Ref<DeprecatedCSSOMValue>, 4> m_values;
+    std::vector<std::reference_wrapper<DeprecatedCSSOMValue>, 4> m_values;
 };
 
 } // namespace WebCore

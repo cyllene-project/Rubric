@@ -214,7 +214,7 @@ CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::unitCategory(CSSPrimitiveValu
     }
 }
 
-typedef HashMap<const CSSPrimitiveValue*, String> CSSTextCache;
+typedef std::unordered_map<const CSSPrimitiveValue*, String> CSSTextCache;
 static CSSTextCache& cssTextCache()
 {
     static NeverDestroyed<CSSTextCache> cache;
@@ -255,14 +255,14 @@ unsigned short CSSPrimitiveValue::primitiveType() const
     return CSSPrimitiveValue::CSS_UNKNOWN;
 }
 
-static const AtomString& propertyName(CSSPropertyID propertyID)
+static const std::atomic<std::string>& propertyName(CSSPropertyID propertyID)
 {
     ASSERT_ARG(propertyID, (propertyID >= firstCSSProperty && propertyID < firstCSSProperty + numCSSProperties));
 
     return getPropertyNameAtomString(propertyID);
 }
 
-static const AtomString& valueName(CSSValueID valueID)
+static const std::atomic<std::string>& valueName(CSSValueID valueID)
 {
     ASSERT_ARG(valueID, (valueID >= firstCSSValueKeyword && valueID <= lastCSSValueKeyword));
 
@@ -287,14 +287,14 @@ CSSPrimitiveValue::CSSPrimitiveValue(double num, UnitType type)
     : CSSValue(PrimitiveClass)
 {
     m_primitiveUnitType = type;
-    ASSERT(std::isfinite(num));
+    assert(std::isfinite(num));
     m_value.num = num;
 }
 
 CSSPrimitiveValue::CSSPrimitiveValue(const std::string& string, UnitType type)
     : CSSValue(PrimitiveClass)
 {
-    ASSERT(isStringType(type));
+    assert(isStringType(type));
     m_primitiveUnitType = type;
     if ((m_value.string = string.impl()))
         m_value.string->ref();
@@ -386,7 +386,7 @@ void CSSPrimitiveValue::init(const Length& length)
         return;
     case Percent:
         m_primitiveUnitType = CSS_PERCENTAGE;
-        ASSERT(std::isfinite(length.percent()));
+        assert(std::isfinite(length.percent()));
         m_value.num = length.percent();
         return;
     case Calculated:
@@ -405,42 +405,42 @@ void CSSPrimitiveValue::init(const LengthSize& lengthSize, const RenderStyle& st
     m_value.pair = &Pair::create(create(lengthSize.width, style), create(lengthSize.height, style)).leakRef();
 }
 
-void CSSPrimitiveValue::init(Ref<Counter>&& counter)
+void CSSPrimitiveValue::init(std::reference_wrapper<Counter>&& counter)
 {
     m_primitiveUnitType = CSS_COUNTER;
     m_hasCachedCSSText = false;
     m_value.counter = &counter.leakRef();
 }
 
-void CSSPrimitiveValue::init(Ref<Rect>&& r)
+void CSSPrimitiveValue::init(std::reference_wrapper<Rect>&& r)
 {
     m_primitiveUnitType = CSS_RECT;
     m_hasCachedCSSText = false;
     m_value.rect = &r.leakRef();
 }
 
-void CSSPrimitiveValue::init(Ref<Quad>&& quad)
+void CSSPrimitiveValue::init(std::reference_wrapper<Quad>&& quad)
 {
     m_primitiveUnitType = CSS_QUAD;
     m_hasCachedCSSText = false;
     m_value.quad = &quad.leakRef();
 }
 
-void CSSPrimitiveValue::init(Ref<Pair>&& p)
+void CSSPrimitiveValue::init(std::reference_wrapper<Pair>&& p)
 {
     m_primitiveUnitType = CSS_PAIR;
     m_hasCachedCSSText = false;
     m_value.pair = &p.leakRef();
 }
 
-void CSSPrimitiveValue::init(Ref<CSSBasicShape>&& shape)
+void CSSPrimitiveValue::init(std::reference_wrapper<CSSBasicShape>&& shape)
 {
     m_primitiveUnitType = CSS_SHAPE;
     m_hasCachedCSSText = false;
     m_value.shape = &shape.leakRef();
 }
 
-void CSSPrimitiveValue::init(RefPtr<CSSCalcValue>&& c)
+void CSSPrimitiveValue::init(std::shared_ptr<CSSCalcValue>&& c)
 {
     m_primitiveUnitType = CSS_CALC;
     m_hasCachedCSSText = false;
@@ -487,12 +487,12 @@ void CSSPrimitiveValue::cleanup()
         m_value.shape->deref();
         break;
     case CSS_FONT_FAMILY:
-        ASSERT(m_value.fontFamily);
+        assert(m_value.fontFamily);
         delete m_value.fontFamily;
         m_value.fontFamily = nullptr;
         break;
     case CSS_RGBCOLOR:
-        ASSERT(m_value.color);
+        assert(m_value.color);
         delete m_value.color;
         m_value.color = nullptr;
         break;
@@ -530,7 +530,7 @@ void CSSPrimitiveValue::cleanup()
     case CSS_UNICODE_RANGE:
     case CSS_PROPERTY_ID:
     case CSS_VALUE_ID:
-        ASSERT(!isStringType(type));
+        assert(!isStringType(type));
         break;
     }
     m_primitiveUnitType = 0;
@@ -609,11 +609,11 @@ double CSSPrimitiveValue::computeNonCalcLengthDouble(const CSSToLengthConversion
     switch (primitiveType) {
     case CSS_EMS:
     case CSS_QUIRKY_EMS:
-        ASSERT(conversionData.style());
+        assert(conversionData.style());
         factor = conversionData.computingFontSize() ? conversionData.style()->fontDescription().specifiedSize() : conversionData.style()->fontDescription().computedSize();
         break;
     case CSS_EXS:
-        ASSERT(conversionData.style());
+        assert(conversionData.style());
         // FIXME: We have a bug right now where the zoom will be applied twice to EX units.
         // We really need to compute EX using fontMetrics for the original specifiedSize and not use
         // our actual constructed rendering font.
@@ -629,7 +629,7 @@ double CSSPrimitiveValue::computeNonCalcLengthDouble(const CSSToLengthConversion
             factor = 1.0;
         break;
     case CSS_CHS:
-        ASSERT(conversionData.style());
+        assert(conversionData.style());
         factor = conversionData.style()->fontMetrics().zeroWidth();
         break;
     case CSS_PX:
@@ -804,11 +804,11 @@ Optional<double> CSSPrimitiveValue::doubleValueInternal(UnitType requestedUnitTy
         return doubleValue();
 
     UnitCategory sourceCategory = unitCategory(sourceUnitType);
-    ASSERT(sourceCategory != UOther);
+    assert(sourceCategory != UOther);
 
     UnitType targetUnitType = requestedUnitType;
     UnitCategory targetCategory = unitCategory(targetUnitType);
-    ASSERT(targetCategory != UOther);
+    assert(targetCategory != UOther);
 
     // Cannot convert between unrelated unit categories if one of them is not UNumber.
     if (sourceCategory != targetCategory && sourceCategory != UNumber && targetCategory != UNumber)
@@ -841,7 +841,7 @@ Optional<double> CSSPrimitiveValue::doubleValueInternal(UnitType requestedUnitTy
     return convertedValue;
 }
 
-ExceptionOr<void> CSSPrimitiveValue::setStringValue(unsigned short, const String&)
+ExceptionOr<void> CSSPrimitiveValue::setStringValue(unsigned short, const std::string&)
 {
     // Keeping values immutable makes optimizations easier and allows sharing of the primitive value objects.
     // No other engine supports mutating style through this API. Computed style is always read-only anyway.
@@ -849,7 +849,7 @@ ExceptionOr<void> CSSPrimitiveValue::setStringValue(unsigned short, const String
     return Exception { NoModificationAllowedError };
 }
 
-ExceptionOr<String> CSSPrimitiveValue::getStringValue() const
+ExceptionOr<std::string> CSSPrimitiveValue::getStringValue() const
 {
     switch (m_primitiveUnitType) {
     case CSS_STRING:
@@ -899,7 +899,7 @@ ExceptionOr<Rect&> CSSPrimitiveValue::getRectValue() const
     return *m_value.rect;
 }
 
-ExceptionOr<Ref<RGBColor>> CSSPrimitiveValue::getRGBColorValue() const
+ExceptionOr<std::reference_wrapper<RGBColor>> CSSPrimitiveValue::getRGBColorValue() const
 {
     if (m_primitiveUnitType != CSS_RGBCOLOR)
         return Exception { InvalidAccessError };
@@ -1043,13 +1043,13 @@ String CSSPrimitiveValue::customCSSText() const
     CSSTextCache& cssTextCache = WebCore::cssTextCache();
 
     if (m_hasCachedCSSText) {
-        ASSERT(cssTextCache.contains(this));
+        assert(cssTextCache.contains(this));
         return cssTextCache.get(this);
     }
 
     std::string text = formatNumberForCustomCSSText();
 
-    ASSERT(!cssTextCache.contains(this));
+    assert(!cssTextCache.contains(this));
     m_hasCachedCSSText = true;
     cssTextCache.set(this, text);
     return text;
@@ -1129,7 +1129,7 @@ Ref<DeprecatedCSSOMPrimitiveValue> CSSPrimitiveValue::createDeprecatedCSSOMPrimi
 }
 
 // https://drafts.css-houdini.org/css-properties-values-api/#dependency-cycles-via-relative-units
-void CSSPrimitiveValue::collectDirectComputationalDependencies(HashSet<CSSPropertyID>& values) const
+void CSSPrimitiveValue::collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const
 {
     switch (m_primitiveUnitType) {
     case CSS_EMS:
@@ -1144,7 +1144,7 @@ void CSSPrimitiveValue::collectDirectComputationalDependencies(HashSet<CSSProper
     }
 }
 
-void CSSPrimitiveValue::collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>& values) const
+void CSSPrimitiveValue::collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const
 {
     switch (m_primitiveUnitType) {
     case CSS_REMS:

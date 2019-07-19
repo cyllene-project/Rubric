@@ -49,7 +49,7 @@ public:
     static std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, const CSSParserTokenRange&, const CSSParserContext&);
     static bool canParseTypedCustomPropertyValue(const std::string& syntax, const CSSParserTokenRange&, const CSSParserContext&);
     static std::shared_ptr<CSSCustomPropertyValue> parseTypedCustomPropertyValue(const std::string& name, const std::string& syntax, const CSSParserTokenRange&, const StyleResolver&, const CSSParserContext&);
-    static void collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies, const CSSParserTokenRange&, const CSSParserContext&);
+    static void collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, std::unordered_set<CSSPropertyID>& dependencies, const CSSParserTokenRange&, const CSSParserContext&);
 
 private:
     CSSPropertyParser(const CSSParserTokenRange&, const CSSParserContext&, std::vector<CSSProperty, 256>*, bool consumeWhitespace = true);
@@ -60,13 +60,13 @@ private:
     std::shared_ptr<CSSValue> parseSingleValue(CSSPropertyID, CSSPropertyID = CSSPropertyInvalid);
     bool canParseTypedCustomPropertyValue(const std::string& syntax);
     std::shared_ptr<CSSCustomPropertyValue> parseTypedCustomPropertyValue(const std::string& name, const std::string& syntax, const StyleResolver&);
-    void collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, HashSet<CSSPropertyID>& dependencies);
+    void collectParsedCustomPropertyValueDependencies(const std::string& syntax, bool isRoot, std::unordered_set<CSSPropertyID>& dependencies);
 
     bool parseViewportDescriptor(CSSPropertyID propId, bool important);
     bool parseFontFaceDescriptor(CSSPropertyID);
 
-    void addProperty(CSSPropertyID, CSSPropertyID, Ref<CSSValue>&&, bool important, bool implicit = false);
-    void addExpandedPropertyForValue(CSSPropertyID propId, Ref<CSSValue>&&, bool);
+    void addProperty(CSSPropertyID, CSSPropertyID, std::reference_wrapper<CSSValue>&&, bool important, bool implicit = false);
+    void addExpandedPropertyForValue(CSSPropertyID propId, std::reference_wrapper<CSSValue>&&, bool);
 
     bool consumeBorder(std::shared_ptr<CSSValue>& width, std::shared_ptr<CSSValue>& style, std::shared_ptr<CSSValue>& color);
 

@@ -53,20 +53,20 @@ struct RuleFeatureSet {
     void clear();
     void shrinkToFit();
     void collectFeatures(const RuleData&);
-    void registerContentAttribute(const AtomString&);
+    void registerContentAttribute(const std::atomic<std::string>&);
 
-    HashSet<AtomString> idsInRules;
-    HashSet<AtomString> idsMatchingAncestorsInRules;
-    HashSet<AtomString> attributeCanonicalLocalNamesInRules;
-    HashSet<AtomString> attributeLocalNamesInRules;
-    HashSet<AtomString> contentAttributeNamesInRules;
+    std::unordered_set<AtomString> idsInRules;
+    std::unordered_set<AtomString> idsMatchingAncestorsInRules;
+    std::unordered_set<AtomString> attributeCanonicalLocalNamesInRules;
+    std::unordered_set<AtomString> attributeLocalNamesInRules;
+    std::unordered_set<AtomString> contentAttributeNamesInRules;
     std::vector<RuleFeature> siblingRules;
     std::vector<RuleFeature> uncommonAttributeRules;
     
-    HashMap<AtomString, std::unique_ptr<std::vector<RuleFeature>>> classRules;
-    HashMap<AtomString, std::unique_ptr<std::vector<RuleFeature>>> attributeRules;
-    HashSet<AtomString> classesAffectingHost;
-    HashSet<AtomString> attributesAffectingHost;
+    std::unordered_map<AtomString, std::unique_ptr<std::vector<RuleFeature>>> classRules;
+    std::unordered_map<AtomString, std::unique_ptr<std::vector<RuleFeature>>> attributeRules;
+    std::unordered_set<AtomString> classesAffectingHost;
+    std::unordered_set<AtomString> attributesAffectingHost;
 
     bool usesFirstLineRules { false };
     bool usesFirstLetterRules { false };

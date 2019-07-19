@@ -133,7 +133,7 @@ Ref<StyleRuleBase> StyleRuleBase::copy() const
 
 Ref<CSSRule> StyleRuleBase::createCSSOMWrapper(CSSStyleSheet* parentSheet, CSSRule* parentRule) const
 {
-    RefPtr<CSSRule> rule;
+    std::shared_ptr<CSSRule> rule;
     StyleRuleBase& self = const_cast<StyleRuleBase&>(*this);
     switch (type()) {
     case Style:
@@ -171,7 +171,7 @@ Ref<CSSRule> StyleRuleBase::createCSSOMWrapper(CSSStyleSheet* parentSheet, CSSRu
         ASSERT_NOT_REACHED();
         break;
     }
-    ASSERT(rule);
+    assert(rule);
 
     if (parentRule)
         rule->setParentRule(parentRule);
@@ -183,10 +183,10 @@ unsigned StyleRule::averageSizeInBytes()
     return sizeof(StyleRule) + sizeof(CSSSelector) + StyleProperties::averageSizeInBytes();
 }
 
-StyleRule::StyleRule(Ref<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
+StyleRule::StyleRule(std::reference_wrapper<StylePropertiesBase>&& properties, bool hasDocumentSecurityOrigin, CSSSelectorList&& selectors)
     : StyleRuleBase(Style, hasDocumentSecurityOrigin)
-    , m_properties(WTFMove(properties))
-    , m_selectorList(WTFMove(selectors))
+    , m_properties(std::move(properties))
+    , m_selectorList(std::move(selectors))
 {
 }
 
@@ -213,21 +213,21 @@ MutableStyleProperties& StyleRule::mutableProperties()
     return downcast<MutableStyleProperties>(m_properties.get());
 }
 
-Ref<StyleRule> StyleRule::createForSplitting(const std::vector<const CSSSelector*>& selectors, Ref<StyleProperties>&& properties, bool hasDocumentSecurityOrigin)
+Ref<StyleRule> StyleRule::createForSplitting(const std::vector<const CSSSelector*>& selectors, std::reference_wrapper<StyleProperties>&& properties, bool hasDocumentSecurityOrigin)
 {
     ASSERT_WITH_SECURITY_IMPLICATION(!selectors.isEmpty());
     auto selectorListArray = makeUniqueArray<CSSSelector>(selectors.size());
     for (unsigned i = 0; i < selectors.size(); ++i)
         new (NotNull, &selectorListArray[i]) CSSSelector(*selectors.at(i));
     selectorListArray[selectors.size() - 1].setLastInSelectorList();
-    return StyleRule::create(WTFMove(properties), hasDocumentSecurityOrigin, CSSSelectorList(WTFMove(selectorListArray)));
+    return StyleRule::create(std::move(properties), hasDocumentSecurityOrigin, CSSSelectorList(std::move(selectorListArray)));
 }
 
-std::vector<RefPtr<StyleRule>> StyleRule::splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned maxCount) const
+std::vector<std::shared_ptr<StyleRule>> StyleRule::splitIntoMultipleRulesWithMaximumSelectorComponentCount(unsigned maxCount) const
 {
-    ASSERT(selectorList().componentCount() > maxCount);
+    assert(selectorList().componentCount() > maxCount);
 
-    std::vector<RefPtr<StyleRule>> rules;
+    std::vector<std::shared_ptr<StyleRule>> rules;
     std::vector<const CSSSelector*> componentsSinceLastSplit;
 
     for (const CSSSelector* selector = selectorList().first(); selector; selector = CSSSelectorList::next(selector)) {
@@ -249,10 +249,10 @@ std::vector<RefPtr<StyleRule>> StyleRule::splitIntoMultipleRulesWithMaximumSelec
     return rules;
 }
 
-StyleRulePage::StyleRulePage(Ref<StyleProperties>&& properties, CSSSelectorList&& selectors)
+StyleRulePage::StyleRulePage(std::reference_wrapper<StyleProperties>&& properties, CSSSelectorList&& selectors)
     : StyleRuleBase(Page)
-    , m_properties(WTFMove(properties))
-    , m_selectorList(WTFMove(selectors))
+    , m_properties(std::move(properties))
+    , m_selectorList(std::move(selectors))
 {
 }
 
@@ -272,9 +272,9 @@ MutableStyleProperties& StyleRulePage::mutableProperties()
     return downcast<MutableStyleProperties>(m_properties.get());
 }
 
-StyleRuleFontFace::StyleRuleFontFace(Ref<StyleProperties>&& properties)
+StyleRuleFontFace::StyleRuleFontFace(std::reference_wrapper<StyleProperties>&& properties)
     : StyleRuleBase(FontFace)
-    , m_properties(WTFMove(properties))
+    , m_properties(std::move(properties))
 {
 }
 
@@ -301,7 +301,7 @@ DeferredStyleGroupRuleList::DeferredStyleGroupRuleList(const CSSParserTokenRange
     m_tokens.append(range.begin(), length);
 }
 
-void DeferredStyleGroupRuleList::parseDeferredRules(std::vector<RefPtr<StyleRuleBase>>& childRules)
+void DeferredStyleGroupRuleList::parseDeferredRules(std::vector<std::shared_ptr<StyleRuleBase>>& childRules)
 {
     m_parser->parseRuleList(m_tokens, childRules);
 }
@@ -311,7 +311,7 @@ void DeferredStyleGroupRuleList::parseDeferredKeyframes(StyleRuleKeyframes& keyf
     m_parser->parseKeyframeList(m_tokens, keyframesRule);
 }
     
-StyleRuleGroup::StyleRuleGroup(Type type, std::vector<RefPtr<StyleRuleBase>>& adoptRule)
+StyleRuleGroup::StyleRuleGroup(Type type, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRule)
     : StyleRuleBase(type)
 {
     m_childRules.swap(adoptRule);
@@ -319,7 +319,7 @@ StyleRuleGroup::StyleRuleGroup(Type type, std::vector<RefPtr<StyleRuleBase>>& ad
 
 StyleRuleGroup::StyleRuleGroup(Type type, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
     : StyleRuleBase(type)
-    , m_deferredRules(WTFMove(deferredRules))
+    , m_deferredRules(std::move(deferredRules))
 {
 }
 
@@ -331,16 +331,16 @@ StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& o)
         m_childRules.uncheckedAppend(childRule->copy());
 }
 
-const std::vector<RefPtr<StyleRuleBase>>& StyleRuleGroup::childRules() const
+const std::vector<std::shared_ptr<StyleRuleBase>>& StyleRuleGroup::childRules() const
 {
     parseDeferredRulesIfNeeded();
     return m_childRules;
 }
 
-void StyleRuleGroup::wrapperInsertRule(unsigned index, Ref<StyleRuleBase>&& rule)
+void StyleRuleGroup::wrapperInsertRule(unsigned index, std::reference_wrapper<StyleRuleBase>&& rule)
 {
     parseDeferredRulesIfNeeded();
-    m_childRules.insert(index, WTFMove(rule));
+    m_childRules.insert(index, std::move(rule));
 }
     
 void StyleRuleGroup::wrapperRemoveRule(unsigned index)
@@ -358,15 +358,15 @@ void StyleRuleGroup::parseDeferredRulesIfNeeded() const
     m_deferredRules = nullptr;
 }
     
-StyleRuleMedia::StyleRuleMedia(Ref<MediaQuerySet>&& media, std::vector<RefPtr<StyleRuleBase>>& adoptRules)
+StyleRuleMedia::StyleRuleMedia(std::reference_wrapper<MediaQuerySet>&& media, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
     : StyleRuleGroup(Media, adoptRules)
-    , m_mediaQueries(WTFMove(media))
+    , m_mediaQueries(std::move(media))
 {
 }
 
-StyleRuleMedia::StyleRuleMedia(Ref<MediaQuerySet>&& media, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
-    : StyleRuleGroup(Media, WTFMove(deferredRules))
-    , m_mediaQueries(WTFMove(media))
+StyleRuleMedia::StyleRuleMedia(std::reference_wrapper<MediaQuerySet>&& media, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
+    : StyleRuleGroup(Media, std::move(deferredRules))
+    , m_mediaQueries(std::move(media))
 {
 }
 
@@ -378,7 +378,7 @@ StyleRuleMedia::StyleRuleMedia(const StyleRuleMedia& o)
 }
 
 
-StyleRuleSupports::StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported, std::vector<RefPtr<StyleRuleBase>>& adoptRules)
+StyleRuleSupports::StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported, std::vector<std::shared_ptr<StyleRuleBase>>& adoptRules)
     : StyleRuleGroup(Supports, adoptRules)
     , m_conditionText(conditionText)
     , m_conditionIsSupported(conditionIsSupported)
@@ -386,7 +386,7 @@ StyleRuleSupports::StyleRuleSupports(const std::string& conditionText, bool cond
 }
 
 StyleRuleSupports::StyleRuleSupports(const std::string& conditionText, bool conditionIsSupported,  std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules)
-    : StyleRuleGroup(Supports, WTFMove(deferredRules))
+    : StyleRuleGroup(Supports, std::move(deferredRules))
     , m_conditionText(conditionText)
     , m_conditionIsSupported(conditionIsSupported)
 {
@@ -400,9 +400,9 @@ StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& o)
 }
 
 #if ENABLE(CSS_DEVICE_ADAPTATION)
-StyleRuleViewport::StyleRuleViewport(Ref<StyleProperties>&& properties)
+StyleRuleViewport::StyleRuleViewport(std::reference_wrapper<StyleProperties>&& properties)
     : StyleRuleBase(Viewport)
-    , m_properties(WTFMove(properties))
+    , m_properties(std::move(properties))
 {
 }
 

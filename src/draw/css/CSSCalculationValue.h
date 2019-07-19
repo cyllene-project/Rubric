@@ -69,8 +69,8 @@ public:
     virtual Type type() const = 0;
     virtual CSSPrimitiveValue::UnitType primitiveType() const = 0;
 
-    virtual void collectDirectComputationalDependencies(HashSet<CSSPropertyID>&) const = 0;
-    virtual void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>&) const = 0;
+    virtual void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>&) const = 0;
+    virtual void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>&) const = 0;
 
     CalculationCategory category() const { return m_category; }
     bool isInteger() const { return m_isInteger; }
@@ -89,9 +89,9 @@ private:
 
 class CSSCalcValue final : public CSSValue {
 public:
-    static RefPtr<CSSCalcValue> create(CSSValueID function, const CSSParserTokenRange&, CalculationCategory destinationCategory, ValueRange);
+    static std::shared_ptr<CSSCalcValue> create(CSSValueID function, const CSSParserTokenRange&, CalculationCategory destinationCategory, ValueRange);
 
-    static RefPtr<CSSCalcValue> create(const CalculationValue&, const RenderStyle&);
+    static std::shared_ptr<CSSCalcValue> create(const CalculationValue&, const RenderStyle&);
 
     CalculationCategory category() const { return m_expression->category(); }
     bool isInt() const { return m_expression->isInteger(); }
@@ -101,32 +101,32 @@ public:
     double computeLengthPx(const CSSToLengthConversionData&) const;
     unsigned short primitiveType() const { return m_expression->primitiveType(); }
 
-    Ref<CalculationValue> createCalculationValue(const CSSToLengthConversionData&) const;
+    std::reference_wrapper<CalculationValue> createCalculationValue(const CSSToLengthConversionData&) const;
     void setPermittedValueRange(ValueRange);
 
-    void collectDirectComputationalDependencies(HashSet<CSSPropertyID>&) const;
-    void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>&) const;
+    void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
+    void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
 
     std::string customCSSText() const;
     bool equals(const CSSCalcValue&) const;
 
 private:
-    CSSCalcValue(Ref<CSSCalcExpressionNode>&&, bool shouldClampToNonNegative);
+    CSSCalcValue(std::reference_wrapper<CSSCalcExpressionNode>&&, bool shouldClampToNonNegative);
 
     double clampToPermittedRange(double) const;
 
-    const Ref<CSSCalcExpressionNode> m_expression;
+    const std::reference_wrapper<CSSCalcExpressionNode> m_expression;
     bool m_shouldClampToNonNegative;
 };
 
-inline CSSCalcValue::CSSCalcValue(Ref<CSSCalcExpressionNode>&& expression, bool shouldClampToNonNegative)
+inline CSSCalcValue::CSSCalcValue(std::reference_wrapper<CSSCalcExpressionNode>&& expression, bool shouldClampToNonNegative)
     : CSSValue(CalculationClass)
-    , m_expression(WTFMove(expression))
+    , m_expression(std::move(expression))
     , m_shouldClampToNonNegative(shouldClampToNonNegative)
 {
 }
 
-inline Ref<CalculationValue> CSSCalcValue::createCalculationValue(const CSSToLengthConversionData& conversionData) const
+inline std::reference_wrapper<CalculationValue> CSSCalcValue::createCalculationValue(const CSSToLengthConversionData& conversionData) const
 {
     return CalculationValue::create(m_expression->createCalcExpression(conversionData),
         m_shouldClampToNonNegative ? ValueRangeNonNegative : ValueRangeAll);
@@ -137,12 +137,12 @@ inline void CSSCalcValue::setPermittedValueRange(ValueRange range)
     m_shouldClampToNonNegative = range != ValueRangeAll;
 }
 
-inline void CSSCalcValue::collectDirectComputationalDependencies(HashSet<CSSPropertyID>& values) const
+inline void CSSCalcValue::collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const
 {
     m_expression->collectDirectComputationalDependencies(values);
 }
 
-inline void CSSCalcValue::collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>& values) const
+inline void CSSCalcValue::collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>& values) const
 {
     m_expression->collectDirectRootComputationalDependencies(values);
 }

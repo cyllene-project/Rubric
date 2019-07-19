@@ -46,7 +46,7 @@ public:
     void removeClient(RenderElement&);
     const HashCountedSet<RenderElement*>& clients() const { return m_clients; }
 
-    RefPtr<Image> image(RenderElement&, const FloatSize&);
+    std::shared_ptr<Image> image(RenderElement&, const FloatSize&);
 
     bool isFixedSize() const;
     FloatSize fixedSize(const RenderElement&);
@@ -72,7 +72,7 @@ private:
     void evictCachedGeneratedImage(FloatSize);
 
     HashCountedSet<RenderElement*> m_clients;
-    HashMap<FloatSize, std::unique_ptr<CachedGeneratedImage>> m_images;
+    std::unordered_map<FloatSize, std::unique_ptr<CachedGeneratedImage>> m_images;
 };
 
 } // namespace WebCore

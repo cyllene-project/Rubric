@@ -30,15 +30,15 @@
 
 namespace WebCore {
 
-CSSRegisteredCustomProperty::CSSRegisteredCustomProperty(const std::string& name, const std::string& syntax, bool inherits, RefPtr<CSSCustomPropertyValue>&& initialValue)
+CSSRegisteredCustomProperty::CSSRegisteredCustomProperty(const std::string& name, const std::string& syntax, bool inherits, std::shared_ptr<CSSCustomPropertyValue>&& initialValue)
     : name(name)
     , syntax(syntax)
     , inherits(inherits)
-    , m_initialValue(WTFMove(initialValue))
+    , m_initialValue(std::move(initialValue))
 {
 }
 
-RefPtr<CSSCustomPropertyValue> CSSRegisteredCustomProperty::initialValueCopy() const
+std::shared_ptr<CSSCustomPropertyValue> CSSRegisteredCustomProperty::initialValueCopy() const
 {
     if (m_initialValue)
         return CSSCustomPropertyValue::create(*m_initialValue);

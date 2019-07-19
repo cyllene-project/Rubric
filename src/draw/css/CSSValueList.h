@@ -32,18 +32,18 @@ class CSSParserValueList;
 
 class CSSValueList : public CSSValue {
 public:
-    typedef std::vector<Ref<CSSValue>, 4>::iterator iterator;
-    typedef std::vector<Ref<CSSValue>, 4>::const_iterator const_iterator;
+    typedef std::vector<std::reference_wrapper<CSSValue>>::iterator iterator;
+    typedef std::vector<std::reference_wrapper<CSSValue>>::const_iterator const_iterator;
 
-    static Ref<CSSValueList> createCommaSeparated()
+    static std::reference_wrapper<CSSValueList> createCommaSeparated()
     {
         return adoptRef(*new CSSValueList(CommaSeparator));
     }
-    static Ref<CSSValueList> createSpaceSeparated()
+    static std::reference_wrapper<CSSValueList> createSpaceSeparated()
     {
         return adoptRef(*new CSSValueList(SpaceSeparator));
     }
-    static Ref<CSSValueList> createSlashSeparated()
+    static std::reference_wrapper<CSSValueList> createSlashSeparated()
     {
         return adoptRef(*new CSSValueList(SlashSeparator));
     }
@@ -52,24 +52,24 @@ public:
     CSSValue* item(size_t index) { return index < m_values.size() ? m_values[index].ptr() : nullptr; }
     const CSSValue* item(size_t index) const { return index < m_values.size() ? m_values[index].ptr() : nullptr; }
     CSSValue* itemWithoutBoundsCheck(size_t index) { return m_values[index].ptr(); }
-    const CSSValue* itemWithoutBoundsCheck(size_t index) const { ASSERT(index < m_values.size()); return m_values[index].ptr(); }
+    const CSSValue* itemWithoutBoundsCheck(size_t index) const { assert(index < m_values.size()); return m_values[index].ptr(); }
 
     const_iterator begin() const { return m_values.begin(); }
     const_iterator end() const { return m_values.end(); }
     iterator begin() { return m_values.begin(); }
     iterator end() { return m_values.end(); }
 
-    void append(Ref<CSSValue>&&);
-    void prepend(Ref<CSSValue>&&);
+    void append(std::reference_wrapper<CSSValue>&&);
+    void prepend(std::reference_wrapper<CSSValue>&&);
     bool removeAll(CSSValue*);
     bool hasValue(CSSValue*) const;
-    Ref<CSSValueList> copy();
+    std::reference_wrapper<CSSValueList> copy();
 
     std::string customCSSText() const;
     bool equals(const CSSValueList&) const;
     bool equals(const CSSValue&) const;
 
-    bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
+    bool traverseSubresources(const std::function<bool (const CachedResource&)>& handler) const;
 
     unsigned separator() const { return m_valueListSeparator; }
 
@@ -79,17 +79,17 @@ protected:
 private:
     explicit CSSValueList(ValueListSeparator);
 
-    std::vector<Ref<CSSValue>, 4> m_values;
+    std::vector<std::reference_wrapper<CSSValue>> m_values;
 };
 
-inline void CSSValueList::append(Ref<CSSValue>&& value)
+inline void CSSValueList::append(std::reference_wrapper<CSSValue>&& value)
 {
-    m_values.append(WTFMove(value));
+    m_values.push_back(std::move(value));
 }
 
-inline void CSSValueList::prepend(Ref<CSSValue>&& value)
+inline void CSSValueList::prepend(std::reference_wrapper<CSSValue>&& value)
 {
-    m_values.insert(0, WTFMove(value));
+    m_values.insert(m_values.begin(), std::move(value));
 }
 
 } // namespace WebCore

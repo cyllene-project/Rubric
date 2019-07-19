@@ -44,7 +44,7 @@ CSSCustomIdentValue::CSSCustomIdentValue(CSSPropertyID id)
     , m_string()
     , m_propertyId(id)
 {
-    ASSERT(isKnownPropertyID());
+    assert(isKnownPropertyID());
 }
 
 

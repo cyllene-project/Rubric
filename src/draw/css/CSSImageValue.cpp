@@ -36,7 +36,7 @@ namespace WebCore {
 
 CSSImageValue::CSSImageValue(URL&& url, LoadedFromOpaqueSource loadedFromOpaqueSource)
     : CSSValue(ImageClass)
-    , m_url(WTFMove(url))
+    , m_url(std::move(url))
     , m_accessedImage(false)
     , m_loadedFromOpaqueSource(loadedFromOpaqueSource)
 {
@@ -72,10 +72,10 @@ CachedImage* CSSImageValue::loadImage(CachedResourceLoader& loader, const Resour
             request.setInitiator(m_initiatorName);
 
         if (options.mode == FetchOptions::Mode::Cors) {
-            ASSERT(loader.document());
+            assert(loader.document());
             request.updateForAccessControl(*loader.document());
         }
-        m_cachedImage = loader.requestImage(WTFMove(request)).value_or(nullptr);
+        m_cachedImage = loader.requestImage(std::move(request)).value_or(nullptr);
     }
     return m_cachedImage.get();
 }

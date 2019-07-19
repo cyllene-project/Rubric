@@ -81,7 +81,7 @@ static bool classifyBlock(CSSParserTokenRange range, bool& hasReferences, bool& 
             continue;
         }
 
-        ASSERT(range.peek().getBlockType() != CSSParserToken::BlockEnd);
+        assert(range.peek().getBlockType() != CSSParserToken::BlockEnd);
 
         const CSSParserToken& token = range.consume();
         switch (token.type()) {
@@ -177,7 +177,7 @@ bool CSSVariableParser::containsValidVariableReferences(CSSParserTokenRange rang
     return type == CSSValueInternalVariableValue && hasReferences && !hasAtApplyRule;
 }
 
-std::shared_ptr<CSSCustomPropertyValue> CSSVariableParser::parseDeclarationValue(const AtomString& variableName, CSSParserTokenRange range, const CSSParserContext& parserContext)
+std::shared_ptr<CSSCustomPropertyValue> CSSVariableParser::parseDeclarationValue(const std::atomic<std::string>& variableName, CSSParserTokenRange range, const CSSParserContext& parserContext)
 {
     if (range.atEnd())
         return nullptr;

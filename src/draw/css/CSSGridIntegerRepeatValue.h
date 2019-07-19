@@ -45,7 +45,7 @@ namespace WebCore {
 //                          [ <line-names>? <fixed-size> ]+ <line-names>? )
 class CSSGridIntegerRepeatValue final : public CSSValueList {
 public:
-    static Ref<CSSGridIntegerRepeatValue> create(size_t repetitions)
+    static std::reference_wrapper<CSSGridIntegerRepeatValue> create(size_t repetitions)
     {
         return adoptRef(*new CSSGridIntegerRepeatValue(repetitions));
     }
@@ -60,7 +60,7 @@ private:
         : CSSValueList(GridIntegerRepeatClass, SpaceSeparator)
         , m_repetitions(repetitions)
     {
-        ASSERT(repetitions > 0);
+        assert(repetitions > 0);
     }
 
     const size_t m_repetitions;

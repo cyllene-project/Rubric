@@ -26,6 +26,6 @@ namespace WebCore {
 class CSSValue;
 class CSSValueList;
 
-Ref<CSSValueList> createBorderImageValue(RefPtr<CSSValue>&& image, RefPtr<CSSValue>&& imageSlice, RefPtr<CSSValue>&& borderSlice, RefPtr<CSSValue>&& outset, RefPtr<CSSValue>&& repeat);
+Ref<CSSValueList> createBorderImageValue(std::shared_ptr<CSSValue>&& image, std::shared_ptr<CSSValue>&& imageSlice, std::shared_ptr<CSSValue>&& borderSlice, std::shared_ptr<CSSValue>&& outset, std::shared_ptr<CSSValue>&& repeat);
 
 } // namespace WebCore

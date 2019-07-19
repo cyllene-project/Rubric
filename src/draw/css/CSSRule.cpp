@@ -40,7 +40,7 @@ COMPILE_ASSERT(sizeof(CSSRule) == sizeof(SameSizeAsCSSRule), CSSRule_should_stay
 COMPILE_ASSERT(StyleRuleBase::Viewport == static_cast<StyleRuleBase::Type>(CSSRule::WEBKIT_VIEWPORT_RULE), enums_should_match);
 #endif
 
-ExceptionOr<void> CSSRule::setCssText(const String&)
+ExceptionOr<void> CSSRule::setCssText(const std::string&)
 {
     return { };
 }

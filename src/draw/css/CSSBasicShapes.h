@@ -56,12 +56,12 @@ public:
 
 protected:
     CSSBasicShape() = default;
-    RefPtr<CSSPrimitiveValue> m_referenceBox;
+    std::shared_ptr<CSSPrimitiveValue> m_referenceBox;
 };
 
 class CSSBasicShapeInset final : public CSSBasicShape {
 public:
-    static Ref<CSSBasicShapeInset> create() { return adoptRef(*new CSSBasicShapeInset); }
+    static std::reference_wrapper<CSSBasicShapeInset> create() { return adoptRef(*new CSSBasicShapeInset); }
 
     CSSPrimitiveValue* top() const { return m_top.get(); }
     CSSPrimitiveValue* right() const { return m_right.get(); }
@@ -73,38 +73,38 @@ public:
     CSSPrimitiveValue* bottomRightRadius() const { return m_bottomRightRadius.get(); }
     CSSPrimitiveValue* bottomLeftRadius() const { return m_bottomLeftRadius.get(); }
 
-    void setTop(Ref<CSSPrimitiveValue>&& top) { m_top = WTFMove(top); }
-    void setRight(Ref<CSSPrimitiveValue>&& right) { m_right = WTFMove(right); }
-    void setBottom(Ref<CSSPrimitiveValue>&& bottom) { m_bottom = WTFMove(bottom); }
-    void setLeft(Ref<CSSPrimitiveValue>&& left) { m_left = WTFMove(left); }
+    void setTop(std::reference_wrapper<CSSPrimitiveValue>&& top) { m_top = std::move(top); }
+    void setRight(std::reference_wrapper<CSSPrimitiveValue>&& right) { m_right = std::move(right); }
+    void setBottom(std::reference_wrapper<CSSPrimitiveValue>&& bottom) { m_bottom = std::move(bottom); }
+    void setLeft(std::reference_wrapper<CSSPrimitiveValue>&& left) { m_left = std::move(left); }
 
-    void updateShapeSize4Values(Ref<CSSPrimitiveValue>&& top, Ref<CSSPrimitiveValue>&& right, Ref<CSSPrimitiveValue>&& bottom, Ref<CSSPrimitiveValue>&& left)
+    void updateShapeSize4Values(std::reference_wrapper<CSSPrimitiveValue>&& top, std::reference_wrapper<CSSPrimitiveValue>&& right, std::reference_wrapper<CSSPrimitiveValue>&& bottom, std::reference_wrapper<CSSPrimitiveValue>&& left)
     {
-        setTop(WTFMove(top));
-        setRight(WTFMove(right));
-        setBottom(WTFMove(bottom));
-        setLeft(WTFMove(left));
+        setTop(std::move(top));
+        setRight(std::move(right));
+        setBottom(std::move(bottom));
+        setLeft(std::move(left));
     }
 
-    void updateShapeSize1Value(Ref<CSSPrimitiveValue>&& value1)
+    void updateShapeSize1Value(std::reference_wrapper<CSSPrimitiveValue>&& value1)
     {
         updateShapeSize4Values(value1.copyRef(), value1.copyRef(), value1.copyRef(), value1.copyRef());
     }
 
-    void updateShapeSize2Values(Ref<CSSPrimitiveValue>&& value1, Ref<CSSPrimitiveValue>&& value2)
+    void updateShapeSize2Values(std::reference_wrapper<CSSPrimitiveValue>&& value1, std::reference_wrapper<CSSPrimitiveValue>&& value2)
     {
         updateShapeSize4Values(value1.copyRef(), value2.copyRef(), value1.copyRef(), value2.copyRef());
     }
 
-    void updateShapeSize3Values(Ref<CSSPrimitiveValue>&& value1, Ref<CSSPrimitiveValue>&& value2,  Ref<CSSPrimitiveValue>&& value3)
+    void updateShapeSize3Values(std::reference_wrapper<CSSPrimitiveValue>&& value1, std::reference_wrapper<CSSPrimitiveValue>&& value2,  std::reference_wrapper<CSSPrimitiveValue>&& value3)
     {
-        updateShapeSize4Values(WTFMove(value1), value2.copyRef(), WTFMove(value3), value2.copyRef());
+        updateShapeSize4Values(std::move(value1), value2.copyRef(), std::move(value3), value2.copyRef());
     }
 
-    void setTopLeftRadius(RefPtr<CSSPrimitiveValue>&& radius) { m_topLeftRadius = WTFMove(radius); }
-    void setTopRightRadius(RefPtr<CSSPrimitiveValue>&& radius) { m_topRightRadius = WTFMove(radius); }
-    void setBottomRightRadius(RefPtr<CSSPrimitiveValue>&& radius) { m_bottomRightRadius = WTFMove(radius); }
-    void setBottomLeftRadius(RefPtr<CSSPrimitiveValue>&& radius) { m_bottomLeftRadius = WTFMove(radius); }
+    void setTopLeftRadius(std::shared_ptr<CSSPrimitiveValue>&& radius) { m_topLeftRadius = std::move(radius); }
+    void setTopRightRadius(std::shared_ptr<CSSPrimitiveValue>&& radius) { m_topRightRadius = std::move(radius); }
+    void setBottomRightRadius(std::shared_ptr<CSSPrimitiveValue>&& radius) { m_bottomRightRadius = std::move(radius); }
+    void setBottomLeftRadius(std::shared_ptr<CSSPrimitiveValue>&& radius) { m_bottomLeftRadius = std::move(radius); }
 
 private:
     CSSBasicShapeInset() = default;
@@ -113,28 +113,28 @@ private:
     std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
-    RefPtr<CSSPrimitiveValue> m_top;
-    RefPtr<CSSPrimitiveValue> m_right;
-    RefPtr<CSSPrimitiveValue> m_bottom;
-    RefPtr<CSSPrimitiveValue> m_left;
+    std::shared_ptr<CSSPrimitiveValue> m_top;
+    std::shared_ptr<CSSPrimitiveValue> m_right;
+    std::shared_ptr<CSSPrimitiveValue> m_bottom;
+    std::shared_ptr<CSSPrimitiveValue> m_left;
 
-    RefPtr<CSSPrimitiveValue> m_topLeftRadius;
-    RefPtr<CSSPrimitiveValue> m_topRightRadius;
-    RefPtr<CSSPrimitiveValue> m_bottomRightRadius;
-    RefPtr<CSSPrimitiveValue> m_bottomLeftRadius;
+    std::shared_ptr<CSSPrimitiveValue> m_topLeftRadius;
+    std::shared_ptr<CSSPrimitiveValue> m_topRightRadius;
+    std::shared_ptr<CSSPrimitiveValue> m_bottomRightRadius;
+    std::shared_ptr<CSSPrimitiveValue> m_bottomLeftRadius;
 };
 
 class CSSBasicShapeCircle final : public CSSBasicShape {
 public:
-    static Ref<CSSBasicShapeCircle> create() { return adoptRef(*new CSSBasicShapeCircle); }
+    static std::reference_wrapper<CSSBasicShapeCircle> create() { return adoptRef(*new CSSBasicShapeCircle); }
 
     CSSPrimitiveValue* centerX() const { return m_centerX.get(); }
     CSSPrimitiveValue* centerY() const { return m_centerY.get(); }
     CSSPrimitiveValue* radius() const { return m_radius.get(); }
 
-    void setCenterX(Ref<CSSPrimitiveValue>&& centerX) { m_centerX = WTFMove(centerX); }
-    void setCenterY(Ref<CSSPrimitiveValue>&& centerY) { m_centerY = WTFMove(centerY); }
-    void setRadius(Ref<CSSPrimitiveValue>&& radius) { m_radius = WTFMove(radius); }
+    void setCenterX(std::reference_wrapper<CSSPrimitiveValue>&& centerX) { m_centerX = std::move(centerX); }
+    void setCenterY(std::reference_wrapper<CSSPrimitiveValue>&& centerY) { m_centerY = std::move(centerY); }
+    void setRadius(std::reference_wrapper<CSSPrimitiveValue>&& radius) { m_radius = std::move(radius); }
 
 private:
     CSSBasicShapeCircle() = default;
@@ -143,24 +143,24 @@ private:
     std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
-    RefPtr<CSSPrimitiveValue> m_centerX;
-    RefPtr<CSSPrimitiveValue> m_centerY;
-    RefPtr<CSSPrimitiveValue> m_radius;
+    std::shared_ptr<CSSPrimitiveValue> m_centerX;
+    std::shared_ptr<CSSPrimitiveValue> m_centerY;
+    std::shared_ptr<CSSPrimitiveValue> m_radius;
 };
 
 class CSSBasicShapeEllipse final : public CSSBasicShape {
 public:
-    static Ref<CSSBasicShapeEllipse> create() { return adoptRef(*new CSSBasicShapeEllipse); }
+    static std::reference_wrapper<CSSBasicShapeEllipse> create() { return adoptRef(*new CSSBasicShapeEllipse); }
 
     CSSPrimitiveValue* centerX() const { return m_centerX.get(); }
     CSSPrimitiveValue* centerY() const { return m_centerY.get(); }
     CSSPrimitiveValue* radiusX() const { return m_radiusX.get(); }
     CSSPrimitiveValue* radiusY() const { return m_radiusY.get(); }
 
-    void setCenterX(Ref<CSSPrimitiveValue>&& centerX) { m_centerX = WTFMove(centerX); }
-    void setCenterY(Ref<CSSPrimitiveValue>&& centerY) { m_centerY = WTFMove(centerY); }
-    void setRadiusX(Ref<CSSPrimitiveValue>&& radiusX) { m_radiusX = WTFMove(radiusX); }
-    void setRadiusY(Ref<CSSPrimitiveValue>&& radiusY) { m_radiusY = WTFMove(radiusY); }
+    void setCenterX(std::reference_wrapper<CSSPrimitiveValue>&& centerX) { m_centerX = std::move(centerX); }
+    void setCenterY(std::reference_wrapper<CSSPrimitiveValue>&& centerY) { m_centerY = std::move(centerY); }
+    void setRadiusX(std::reference_wrapper<CSSPrimitiveValue>&& radiusX) { m_radiusX = std::move(radiusX); }
+    void setRadiusY(std::reference_wrapper<CSSPrimitiveValue>&& radiusY) { m_radiusY = std::move(radiusY); }
 
 private:
     CSSBasicShapeEllipse() = default;
@@ -169,23 +169,23 @@ private:
     std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
-    RefPtr<CSSPrimitiveValue> m_centerX;
-    RefPtr<CSSPrimitiveValue> m_centerY;
-    RefPtr<CSSPrimitiveValue> m_radiusX;
-    RefPtr<CSSPrimitiveValue> m_radiusY;
+    std::shared_ptr<CSSPrimitiveValue> m_centerX;
+    std::shared_ptr<CSSPrimitiveValue> m_centerY;
+    std::shared_ptr<CSSPrimitiveValue> m_radiusX;
+    std::shared_ptr<CSSPrimitiveValue> m_radiusY;
 };
 
 class CSSBasicShapePolygon final : public CSSBasicShape {
 public:
-    static Ref<CSSBasicShapePolygon> create() { return adoptRef(*new CSSBasicShapePolygon); }
+    static std::reference_wrapper<CSSBasicShapePolygon> create() { return adoptRef(*new CSSBasicShapePolygon); }
 
-    void appendPoint(Ref<CSSPrimitiveValue>&& x, Ref<CSSPrimitiveValue>&& y)
+    void appendPoint(std::reference_wrapper<CSSPrimitiveValue>&& x, std::reference_wrapper<CSSPrimitiveValue>&& y)
     {
-        m_values.append(WTFMove(x));
-        m_values.append(WTFMove(y));
+        m_values.append(std::move(x));
+        m_values.append(std::move(y));
     }
 
-    const std::vector<Ref<CSSPrimitiveValue>>& values() const { return m_values; }
+    const std::vector<std::reference_wrapper<CSSPrimitiveValue>>& values() const { return m_values; }
 
     void setWindRule(WindRule rule) { m_windRule = rule; }
     WindRule windRule() const { return m_windRule; }
@@ -200,15 +200,15 @@ private:
     std::string cssText() const final;
     bool equals(const CSSBasicShape&) const final;
 
-    std::vector<Ref<CSSPrimitiveValue>> m_values;
+    std::vector<std::reference_wrapper<CSSPrimitiveValue>> m_values;
     WindRule m_windRule;
 };
 
 class CSSBasicShapePath final : public CSSBasicShape {
 public:
-    static Ref<CSSBasicShapePath> create(std::unique_ptr<SVGPathByteStream>&& pathData)
+    static std::reference_wrapper<CSSBasicShapePath> create(std::unique_ptr<SVGPathByteStream>&& pathData)
     {
-        return adoptRef(*new CSSBasicShapePath(WTFMove(pathData)));
+        return adoptRef(*new CSSBasicShapePath(std::move(pathData)));
     }
 
     const SVGPathByteStream& pathData() const

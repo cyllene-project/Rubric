@@ -64,7 +64,7 @@ struct CSSPropertySourceData {
 };
 
 struct CSSStyleSourceData : public RefCounted<CSSStyleSourceData> {
-    static Ref<CSSStyleSourceData> create()
+    static std::reference_wrapper<CSSStyleSourceData> create()
     {
         return adoptRef(*new CSSStyleSourceData);
     }
@@ -73,16 +73,16 @@ struct CSSStyleSourceData : public RefCounted<CSSStyleSourceData> {
 };
 
 struct CSSRuleSourceData;
-typedef std::vector<Ref<CSSRuleSourceData>> RuleSourceDataList;
+typedef std::vector<std::reference_wrapper<CSSRuleSourceData>> RuleSourceDataList;
 typedef std::vector<SourceRange> SelectorRangeList;
 
 struct CSSRuleSourceData : public RefCounted<CSSRuleSourceData> {
-    static Ref<CSSRuleSourceData> create(StyleRule::Type type)
+    static std::reference_wrapper<CSSRuleSourceData> create(StyleRule::Type type)
     {
         return adoptRef(*new CSSRuleSourceData(type));
     }
 
-    static Ref<CSSRuleSourceData> createUnknown()
+    static std::reference_wrapper<CSSRuleSourceData> createUnknown()
     {
         return adoptRef(*new CSSRuleSourceData(StyleRule::Unknown));
     }
@@ -106,7 +106,7 @@ struct CSSRuleSourceData : public RefCounted<CSSRuleSourceData> {
     SelectorRangeList selectorRanges;
 
     // Only for CSSStyleRules, CSSFontFaceRules, and CSSPageRules.
-    RefPtr<CSSStyleSourceData> styleSourceData;
+    std::shared_ptr<CSSStyleSourceData> styleSourceData;
 
     // Only for CSSMediaRules.
     RuleSourceDataList childRules;

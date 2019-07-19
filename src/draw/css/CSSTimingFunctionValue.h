@@ -31,7 +31,7 @@ namespace WebCore {
 
 class CSSCubicBezierTimingFunctionValue final : public CSSValue {
 public:
-    static Ref<CSSCubicBezierTimingFunctionValue> create(double x1, double y1, double x2, double y2)
+    static std::reference_wrapper<CSSCubicBezierTimingFunctionValue> create(double x1, double y1, double x2, double y2)
     {
         return adoptRef(*new CSSCubicBezierTimingFunctionValue(x1, y1, x2, y2));
     }
@@ -63,7 +63,7 @@ private:
 
 class CSSStepsTimingFunctionValue final : public CSSValue {
 public:
-    static Ref<CSSStepsTimingFunctionValue> create(int steps, bool stepAtStart)
+    static std::reference_wrapper<CSSStepsTimingFunctionValue> create(int steps, bool stepAtStart)
     {
         return adoptRef(*new CSSStepsTimingFunctionValue(steps, stepAtStart));
     }
@@ -89,7 +89,7 @@ private:
 
 class CSSSpringTimingFunctionValue final : public CSSValue {
 public:
-    static Ref<CSSSpringTimingFunctionValue> create(double mass, double stiffness, double damping, double initialVelocity)
+    static std::reference_wrapper<CSSSpringTimingFunctionValue> create(double mass, double stiffness, double damping, double initialVelocity)
     {
         return adoptRef(*new CSSSpringTimingFunctionValue(mass, stiffness, damping, initialVelocity));
     }

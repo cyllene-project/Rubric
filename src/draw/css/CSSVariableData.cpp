@@ -52,7 +52,7 @@ template<typename CharacterType> void CSSVariableData::updateTokens(const CSSPar
         } else
             m_tokens.append(token);
     }
-    ASSERT(currentOffset == m_backingString.characters<CharacterType>() + m_backingString.length());
+    assert(currentOffset == m_backingString.characters<CharacterType>() + m_backingString.length());
 }
 
 bool CSSVariableData::operator==(const CSSVariableData& other) const

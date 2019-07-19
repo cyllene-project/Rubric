@@ -23,7 +23,7 @@
 
 namespace WebCore {
 
-Ref<CSSValueList> createBorderImageValue(RefPtr<CSSValue>&& image, RefPtr<CSSValue>&& imageSlice, RefPtr<CSSValue>&& borderSlice, RefPtr<CSSValue>&& outset, RefPtr<CSSValue>&& repeat)
+Ref<CSSValueList> createBorderImageValue(std::shared_ptr<CSSValue>&& image, std::shared_ptr<CSSValue>&& imageSlice, std::shared_ptr<CSSValue>&& borderSlice, std::shared_ptr<CSSValue>&& outset, std::shared_ptr<CSSValue>&& repeat)
 {
     auto list = CSSValueList::createSpaceSeparated();
     if (image)
@@ -40,7 +40,7 @@ Ref<CSSValueList> createBorderImageValue(RefPtr<CSSValue>&& image, RefPtr<CSSVal
         if (outset)
             listSlash.get().append(outset.releaseNonNull());
 
-        list.get().append(WTFMove(listSlash));
+        list.get().append(std::move(listSlash));
     } else if (imageSlice)
         list.get().append(imageSlice.releaseNonNull());
     if (repeat)

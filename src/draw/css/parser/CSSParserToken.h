@@ -125,11 +125,11 @@ public:
     NumericSign numericSign() const;
     NumericValueType numericValueType() const;
     double numericValue() const;
-    HashTokenType getHashTokenType() const { ASSERT(m_type == HashToken); return m_hashTokenType; }
+    HashTokenType getHashTokenType() const { assert(m_type == HashToken); return m_hashTokenType; }
     BlockType getBlockType() const { return static_cast<BlockType>(m_blockType); }
     CSSPrimitiveValue::UnitType unitType() const { return static_cast<CSSPrimitiveValue::UnitType>(m_unit); }
-    UChar32 unicodeRangeStart() const { ASSERT(m_type == UnicodeRangeToken); return m_unicodeRange.start; }
-    UChar32 unicodeRangeEnd() const { ASSERT(m_type == UnicodeRangeToken); return m_unicodeRange.end; }
+    UChar32 unicodeRangeStart() const { assert(m_type == UnicodeRangeToken); return m_unicodeRange.start; }
+    UChar32 unicodeRangeEnd() const { assert(m_type == UnicodeRangeToken); return m_unicodeRange.end; }
     CSSValueID id() const;
     CSSValueID functionId() const;
 

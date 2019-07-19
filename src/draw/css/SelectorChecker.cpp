@@ -80,7 +80,7 @@ struct SelectorChecker::LocalContext {
 
 static inline void addStyleRelation(SelectorChecker::CheckingContext& checkingContext, const Element& element, Style::Relation::Type type, unsigned value = 1)
 {
-    ASSERT(value == 1 || type == Style::Relation::NthChildIndex || type == Style::Relation::AffectedByEmpty);
+    assert(value == 1 || type == Style::Relation::NthChildIndex || type == Style::Relation::AffectedByEmpty);
     if (checkingContext.resolvingMode != SelectorChecker::Mode::ResolvingStyle)
         return;
     if (type == Style::Relation::AffectsNextSibling && !checkingContext.styleRelations.isEmpty()) {
@@ -177,7 +177,7 @@ bool SelectorChecker::match(const CSSSelector& selector, const Element& element,
     LocalContext context(selector, element, checkingContext.resolvingMode == SelectorChecker::Mode::QueryingRules ? VisitedMatchType::Disabled : VisitedMatchType::Enabled, checkingContext.pseudoId);
 
     if (checkingContext.isMatchingHostPseudoClass) {
-        ASSERT(element.shadowRoot());
+        assert(element.shadowRoot());
         context.mayMatchHostPseudoClass = true;
     }
 
@@ -202,8 +202,8 @@ bool SelectorChecker::match(const CSSSelector& selector, const Element& element,
 
 bool SelectorChecker::matchHostPseudoClass(const CSSSelector& selector, const Element& element, CheckingContext& checkingContext, unsigned& specificity) const
 {
-    ASSERT(element.shadowRoot());
-    ASSERT(selector.match() == CSSSelector::PseudoClass && selector.pseudoClassType() == CSSSelector::PseudoClassHost);
+    assert(element.shadowRoot());
+    assert(selector.match() == CSSSelector::PseudoClass && selector.pseudoClassType() == CSSSelector::PseudoClassHost);
 
     specificity = selector.simpleSelectorSpecificity();
 
@@ -333,7 +333,7 @@ SelectorChecker::MatchResult SelectorChecker::matchRecursively(CheckingContext& 
             PseudoIdSet ignoreDynamicPseudo;
             unsigned descendantsSpecificity = 0;
             MatchResult result = matchRecursively(checkingContext, nextContext, ignoreDynamicPseudo, descendantsSpecificity);
-            ASSERT(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
+            assert(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
 
             if (result.match == Match::SelectorMatches)
                 specificity = CSSSelector::addSpecificities(specificity, descendantsSpecificity);
@@ -352,7 +352,7 @@ SelectorChecker::MatchResult SelectorChecker::matchRecursively(CheckingContext& 
             PseudoIdSet ignoreDynamicPseudo;
             unsigned childSpecificity = 0;
             MatchResult result = matchRecursively(checkingContext, nextContext, ignoreDynamicPseudo, childSpecificity);
-            ASSERT(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
+            assert(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
 
             if (result.match == Match::SelectorMatches)
                 specificity = CSSSelector::addSpecificities(specificity, childSpecificity);
@@ -378,7 +378,7 @@ SelectorChecker::MatchResult SelectorChecker::matchRecursively(CheckingContext& 
             PseudoIdSet ignoreDynamicPseudo;
             unsigned adjacentSpecificity = 0;
             MatchResult result = matchRecursively(checkingContext, nextContext, ignoreDynamicPseudo, adjacentSpecificity);
-            ASSERT(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
+            assert(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
 
             if (result.match == Match::SelectorMatches)
                 specificity = CSSSelector::addSpecificities(specificity, adjacentSpecificity);
@@ -397,7 +397,7 @@ SelectorChecker::MatchResult SelectorChecker::matchRecursively(CheckingContext& 
             PseudoIdSet ignoreDynamicPseudo;
             unsigned indirectAdjacentSpecificity = 0;
             MatchResult result = matchRecursively(checkingContext, nextContext, ignoreDynamicPseudo, indirectAdjacentSpecificity);
-            ASSERT(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
+            assert(!nextContext.pseudoElementEffective && !ignoreDynamicPseudo);
 
             if (result.match == Match::SelectorMatches)
                 specificity = CSSSelector::addSpecificities(specificity, indirectAdjacentSpecificity);
@@ -451,10 +451,10 @@ SelectorChecker::MatchResult SelectorChecker::matchRecursively(CheckingContext& 
     return MatchResult::fails(Match::SelectorFailsCompletely);
 }
 
-static bool attributeValueMatches(const Attribute& attribute, CSSSelector::Match match, const AtomString& selectorValue, bool caseSensitive)
+static bool attributeValueMatches(const Attribute& attribute, CSSSelector::Match match, const std::atomic<std::string>& selectorValue, bool caseSensitive)
 {
-    const AtomString& value = attribute.value();
-    ASSERT(!value.isNull());
+    const std::atomic<std::string>& value = attribute.value();
+    assert(!value.isNull());
 
     switch (match) {
     case CSSSelector::Set:
@@ -547,7 +547,7 @@ static bool attributeValueMatches(const Attribute& attribute, CSSSelector::Match
 
 static bool anyAttributeMatches(const Element& element, const CSSSelector& selector, const QualifiedName& selectorAttr, bool caseSensitive)
 {
-    ASSERT(element.hasAttributesWithoutUpdate());
+    assert(element.hasAttributesWithoutUpdate());
     for (const Attribute& attribute : element.attributesIterator()) {
         if (!attribute.matches(selectorAttr.prefix(), element.isHTMLElement() ? selector.attributeCanonicalLocalName() : selectorAttr.localName(), selectorAttr.namespaceURI()))
             continue;
@@ -559,9 +559,9 @@ static bool anyAttributeMatches(const Element& element, const CSSSelector& selec
     return false;
 }
 
-bool SelectorChecker::attributeSelectorMatches(const Element& element, const QualifiedName& attributeName, const AtomString& attributeValue, const CSSSelector& selector)
+bool SelectorChecker::attributeSelectorMatches(const Element& element, const QualifiedName& attributeName, const std::atomic<std::string>& attributeValue, const CSSSelector& selector)
 {
-    ASSERT(selector.isAttributeSelector());
+    assert(selector.isAttributeSelector());
     auto& selectorAttribute = selector.attribute();
     auto& selectorName = element.isHTMLElement() ? selector.attributeCanonicalLocalName() : selectorAttribute.localName();
     if (!Attribute::nameMatchesFilter(attributeName, selectorAttribute.prefix(), selectorName, selectorAttribute.namespaceURI()))
@@ -636,11 +636,11 @@ static inline bool tagMatches(const Element& element, const CSSSelector& simpleS
     if (tagQName == anyQName())
         return true;
 
-    const AtomString& localName = (element.isHTMLElement() && element.document().isHTMLDocument()) ? simpleSelector.tagLowercaseLocalName() : tagQName.localName();
+    const std::atomic<std::string>& localName = (element.isHTMLElement() && element.document().isHTMLDocument()) ? simpleSelector.tagLowercaseLocalName() : tagQName.localName();
 
     if (localName != starAtom() && localName != element.localName())
         return false;
-    const AtomString& namespaceURI = tagQName.namespaceURI();
+    const std::atomic<std::string>& namespaceURI = tagQName.namespaceURI();
     return namespaceURI == starAtom() || namespaceURI == element.namespaceURI();
 }
 
@@ -666,7 +666,7 @@ bool SelectorChecker::checkOne(CheckingContext& checkingContext, const LocalCont
         return element.hasClass() && element.classNames().contains(selector.value());
 
     if (selector.match() == CSSSelector::Id) {
-        ASSERT(!selector.value().isNull());
+        assert(!selector.value().isNull());
         return element.idForStyleResolution() == selector.value();
     }
 
@@ -699,7 +699,7 @@ bool SelectorChecker::checkOne(CheckingContext& checkingContext, const LocalCont
 
                 unsigned ignoredSpecificity;
                 if (matchRecursively(checkingContext, subcontext, ignoreDynamicPseudo, ignoredSpecificity).match == Match::SelectorMatches) {
-                    ASSERT(!ignoreDynamicPseudo);
+                    assert(!ignoreDynamicPseudo);
                     return false;
                 }
             }
@@ -1043,7 +1043,7 @@ bool SelectorChecker::checkOne(CheckingContext& checkingContext, const LocalCont
             break;
         case CSSSelector::PseudoClassLang:
             {
-                ASSERT(selector.langArgumentList() && !selector.langArgumentList()->isEmpty());
+                assert(selector.langArgumentList() && !selector.langArgumentList()->isEmpty());
                 return matchesLangPseudoClass(element, *selector.langArgumentList());
             }
 #if ENABLE(FULLSCREEN_API)
@@ -1141,7 +1141,7 @@ bool SelectorChecker::checkOne(CheckingContext& checkingContext, const LocalCont
 #endif
     if (selector.match() == CSSSelector::PseudoElement && selector.pseudoElementType() == CSSSelector::PseudoElementSlotted) {
         // We see ::slotted() pseudo elements when collecting slotted rules from the slot shadow tree only.
-        ASSERT(checkingContext.resolvingMode == Mode::CollectingRules);
+        assert(checkingContext.resolvingMode == Mode::CollectingRules);
         return is<HTMLSlotElement>(element);
     }
     return true;
@@ -1162,7 +1162,7 @@ bool SelectorChecker::matchSelectorList(CheckingContext& checkingContext, const 
         PseudoIdSet ignoreDynamicPseudo;
         unsigned localSpecificity = 0;
         if (matchRecursively(checkingContext, subcontext, ignoreDynamicPseudo, localSpecificity).match == Match::SelectorMatches) {
-            ASSERT(!ignoreDynamicPseudo);
+            assert(!ignoreDynamicPseudo);
 
             hasMatchedAnything = true;
             specificity = std::max(specificity, localSpecificity);
@@ -1173,7 +1173,7 @@ bool SelectorChecker::matchSelectorList(CheckingContext& checkingContext, const 
 
 bool SelectorChecker::checkScrollbarPseudoClass(const CheckingContext& checkingContext, const Element& element, const CSSSelector& selector) const
 {
-    ASSERT(selector.match() == CSSSelector::PseudoClass);
+    assert(selector.match() == CSSSelector::PseudoClass);
 
     switch (selector.pseudoClassType()) {
     case CSSSelector::PseudoClassWindowInactive:

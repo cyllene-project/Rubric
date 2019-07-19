@@ -28,7 +28,7 @@ namespace WebCore {
 
 class DeprecatedCSSOMRGBColor final : public RefCounted<DeprecatedCSSOMRGBColor> {
 public:
-    static Ref<DeprecatedCSSOMRGBColor> create(const RGBColor& color, CSSStyleDeclaration& owner)
+    static std::reference_wrapper<DeprecatedCSSOMRGBColor> create(const RGBColor& color, CSSStyleDeclaration& owner)
     {
         return adoptRef(*new DeprecatedCSSOMRGBColor(color, owner));
     }
@@ -66,10 +66,10 @@ private:
     }
     
     RGBA32 m_rgbColor;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_red;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_green;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_blue;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_alpha;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_red;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_green;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_blue;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_alpha;
 };
 
 } // namespace WebCore

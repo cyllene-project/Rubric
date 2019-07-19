@@ -82,7 +82,7 @@ public:
 
     CSSRule* parentRule() const { return m_parentIsRule ? m_parentRule : 0; }
 
-    ExceptionOr<void> setCssText(const String&);
+    ExceptionOr<void> setCssText(const std::string&);
 
 protected:
     CSSRule(CSSStyleSheet* parent)

@@ -236,7 +236,6 @@ add_library(RubricCSS SHARED
         src/draw/css/parser/SizesCalcParser.cpp
         src/draw/css/parser/SizesCalcParser.h
 
-        #[[
         # css sources
         SelectorPseudoClassAndCompatibilityElementMap.cpp
         SelectorPseudoElementTypeMap.cpp
@@ -362,8 +361,7 @@ add_library(RubricCSS SHARED
         src/draw/css/ViewportStyleResolver.cpp
         src/draw/css/WebKitCSSMatrix.cpp
         src/draw/css/WebKitCSSViewportRule.cpp
-        ]]#
-        #src/draw/css/CSSPropertyNames.cpp src/draw/css/CSSPropertyNames.h src/draw/css/CSSValueKeywords.cpp src/draw/css/CSSValueKeywords.h
+        src/draw/css/WritingMode.h
         )
 
 add_library(RubricUI SHARED

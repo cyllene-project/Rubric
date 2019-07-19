@@ -50,11 +50,11 @@ public:
         ++s_scopeCount;
 
         if (s_scopeCount != 1) {
-            ASSERT(s_currentDecl == decl);
+            assert(s_currentDecl == decl);
             return;
         }
 
-        ASSERT(!s_currentDecl);
+        assert(!s_currentDecl);
         s_currentDecl = decl;
 
         auto* element = s_currentDecl->parentElement();
@@ -88,7 +88,7 @@ public:
         if (s_shouldDeliver) {
             if (m_mutationRecipients) {
                 auto mutation = MutationRecord::createAttributes(*s_currentDecl->parentElement(), HTMLNames::styleAttr, m_oldValue);
-                m_mutationRecipients->enqueueMutationRecord(WTFMove(mutation));
+                m_mutationRecipients->enqueueMutationRecord(std::move(mutation));
             }
             if (m_customElement) {
                 auto& newValue = m_customElement->getAttribute(HTMLNames::styleAttr);
@@ -128,7 +128,7 @@ private:
 
     std::unique_ptr<MutationObserverInterestGroup> m_mutationRecipients;
     AtomString m_oldValue;
-    RefPtr<Element> m_customElement;
+    std::shared_ptr<Element> m_customElement;
 };
 
 unsigned StyleAttributeMutationScope::s_scopeCount = 0;
@@ -177,10 +177,10 @@ ExceptionOr<void> PropertySetCSSStyleDeclaration::setCssText(const std::string& 
     return { };
 }
 
-RefPtr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue(const std::string& propertyName)
+std::shared_ptr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::getPropertyCSSValue(const std::string& propertyName)
 {
     if (isCustomPropertyName(propertyName)) {
-        RefPtr<CSSValue> value = m_propertySet->getCustomPropertyCSSValue(propertyName);
+        std::shared_ptr<CSSValue> value = m_propertySet->getCustomPropertyCSSValue(propertyName);
         if (!value)
             return nullptr;
         return wrapForDeprecatedCSSOM(value.get());
@@ -271,7 +271,7 @@ ExceptionOr<void> PropertySetCSSStyleDeclaration::setProperty(const std::string&
     return { };
 }
 
-ExceptionOr<String> PropertySetCSSStyleDeclaration::removeProperty(const std::string& propertyName)
+ExceptionOr<std::string> PropertySetCSSStyleDeclaration::removeProperty(const std::string& propertyName)
 {
     StyleAttributeMutationScope mutationScope(this);
     CSSPropertyID propertyID = cssPropertyID(propertyName);
@@ -293,7 +293,7 @@ ExceptionOr<String> PropertySetCSSStyleDeclaration::removeProperty(const std::st
     return result;
 }
 
-RefPtr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValueInternal(CSSPropertyID propertyID)
+std::shared_ptr<CSSValue> PropertySetCSSStyleDeclaration::getPropertyCSSValueInternal(CSSPropertyID propertyID)
 {
     return m_propertySet->getPropertyCSSValue(propertyID);
 }
@@ -322,7 +322,7 @@ ExceptionOr<bool> PropertySetCSSStyleDeclaration::setPropertyInternal(CSSPropert
     return changed;
 }
 
-RefPtr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::wrapForDeprecatedCSSOM(CSSValue* internalValue)
+std::shared_ptr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::wrapForDeprecatedCSSOM(CSSValue* internalValue)
 {
     if (!internalValue)
         return nullptr;
@@ -330,13 +330,13 @@ RefPtr<DeprecatedCSSOMValue> PropertySetCSSStyleDeclaration::wrapForDeprecatedCS
     // The map is here to maintain the object identity of the CSSValues over multiple invocations.
     // FIXME: It is likely that the identity is not important for web compatibility and this code should be removed.
     if (!m_cssomValueWrappers)
-        m_cssomValueWrappers = std::make_unique<HashMap<CSSValue*, WeakPtr<DeprecatedCSSOMValue>>>();
+        m_cssomValueWrappers = std::make_unique<std::unordered_map<CSSValue*, WeakPtr<DeprecatedCSSOMValue>>>();
     
     auto& clonedValue = m_cssomValueWrappers->add(internalValue, WeakPtr<DeprecatedCSSOMValue>()).iterator->value;
     if (clonedValue)
         return clonedValue.get();
 
-    RefPtr<DeprecatedCSSOMValue> wrapper = internalValue->createDeprecatedCSSOMWrapper(*this);
+    std::shared_ptr<DeprecatedCSSOMValue> wrapper = internalValue->createDeprecatedCSSOMWrapper(*this);
     clonedValue = makeWeakPtr(wrapper.get());
     return wrapper;
 }
@@ -377,7 +377,7 @@ void StyleRuleCSSStyleDeclaration::ref()
 
 void StyleRuleCSSStyleDeclaration::deref()
 { 
-    ASSERT(m_refCount);
+    assert(m_refCount);
     if (!--m_refCount)
         delete this;
 }
@@ -392,8 +392,8 @@ bool StyleRuleCSSStyleDeclaration::willMutate()
 
 void StyleRuleCSSStyleDeclaration::didMutate(MutationType type)
 {
-    ASSERT(m_parentRule);
-    ASSERT(m_parentRule->parentStyleSheet());
+    assert(m_parentRule);
+    assert(m_parentRule->parentStyleSheet());
 
     if (type == PropertyChanged)
         m_cssomValueWrappers = nullptr;

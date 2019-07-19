@@ -91,10 +91,10 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
     , m_usesStyleBasedEditability(o.m_usesStyleBasedEditability)
     , m_parserContext(o.m_parserContext)
 {
-    ASSERT(o.isCacheable());
+    assert(o.isCacheable());
 
     // FIXME: Copy import rules.
-    ASSERT(o.m_importRules.isEmpty());
+    assert(o.m_importRules.isEmpty());
 
     for (unsigned i = 0; i < m_childRules.size(); ++i)
         m_childRules[i] = o.m_childRules[i]->copy();
@@ -130,11 +130,11 @@ bool StyleSheetContents::isCacheable() const
 
 void StyleSheetContents::parserAppendRule(StyleRuleBase& rule)
 {
-    ASSERT(!rule->isCharsetRule());
+    assert(!rule->isCharsetRule());
 
     if (is<StyleRuleImport>(rule)) {
         // Parser enforces that @import rules come before anything else except @charset.
-        ASSERT(m_childRules.isEmpty());
+        assert(m_childRules.isEmpty());
         m_importRules.append(downcast<StyleRuleImport>(rule.ptr()));
         m_importRules.last()->setParentStyleSheet(this);
         m_importRules.last()->requestStyleSheet();
@@ -144,7 +144,7 @@ void StyleSheetContents::parserAppendRule(StyleRuleBase& rule)
     if (is<StyleRuleNamespace>(rule)) {
         // Parser enforces that @namespace rules come before all rules other than
         // import/charset rules
-        ASSERT(m_childRules.isEmpty());
+        assert(m_childRules.isEmpty());
         StyleRuleNamespace& namespaceRule = downcast<StyleRuleNamespace>(rule.get());
         parserAddNamespace(namespaceRule.prefix(), namespaceRule.uri());
         m_namespaceRules.append(downcast<StyleRuleNamespace>(rule.ptr()));
@@ -161,7 +161,7 @@ void StyleSheetContents::parserAppendRule(StyleRuleBase& rule)
         return;
     }
 
-    m_childRules.append(WTFMove(rule));
+    m_childRules.append(std::move(rule));
 }
 
 StyleRuleBase* StyleSheetContents::ruleAt(unsigned index) const
@@ -199,7 +199,7 @@ void StyleSheetContents::clearCharsetRule()
 void StyleSheetContents::clearRules()
 {
     for (unsigned i = 0; i < m_importRules.size(); ++i) {
-        ASSERT(m_importRules.at(i)->parentStyleSheet() == this);
+        assert(m_importRules.at(i)->parentStyleSheet() == this);
         m_importRules[i]->clearParentStyleSheet();
     }
     m_importRules.clear();
@@ -211,16 +211,16 @@ void StyleSheetContents::clearRules()
 void StyleSheetContents::parserSetEncodingFromCharsetRule(const std::string& encoding)
 {
     // Parser enforces that there is ever only one @charset.
-    ASSERT(m_encodingFromCharsetRule.isNull());
+    assert(m_encodingFromCharsetRule.isNull());
     m_encodingFromCharsetRule = encoding; 
 }
 
-bool StyleSheetContents::wrapperInsertRule(Ref<StyleRuleBase>&& rule, unsigned index)
+bool StyleSheetContents::wrapperInsertRule(std::reference_wrapper<StyleRuleBase>&& rule, unsigned index)
 {
-    ASSERT(m_isMutable);
+    assert(m_isMutable);
     ASSERT_WITH_SECURITY_IMPLICATION(index <= ruleCount());
     // Parser::parseRule doesn't currently allow @charset so we don't need to deal with it.
-    ASSERT(!rule->isCharsetRule());
+    assert(!rule->isCharsetRule());
     
     unsigned childVectorIndex = index;
     if (childVectorIndex < m_importRules.size() || (childVectorIndex == m_importRules.size() && rule->isImportRule())) {
@@ -267,13 +267,13 @@ bool StyleSheetContents::wrapperInsertRule(Ref<StyleRuleBase>&& rule, unsigned i
     if (is<StyleRule>(rule) && downcast<StyleRule>(rule.get()).selectorList().componentCount() > RuleData::maximumSelectorComponentCount)
         return false;
 
-    m_childRules.insert(childVectorIndex, WTFMove(rule));
+    m_childRules.insert(childVectorIndex, std::move(rule));
     return true;
 }
 
 void StyleSheetContents::wrapperDeleteRule(unsigned index)
 {
-    ASSERT(m_isMutable);
+    assert(m_isMutable);
     ASSERT_WITH_SECURITY_IMPLICATION(index < ruleCount());
 
     unsigned childVectorIndex = index;
@@ -295,9 +295,9 @@ void StyleSheetContents::wrapperDeleteRule(unsigned index)
     m_childRules.remove(childVectorIndex);
 }
 
-void StyleSheetContents::parserAddNamespace(const AtomString& prefix, const AtomString& uri)
+void StyleSheetContents::parserAddNamespace(const std::atomic<std::string>& prefix, const std::atomic<std::string>& uri)
 {
-    ASSERT(!uri.isNull());
+    assert(!uri.isNull());
     if (prefix.isNull()) {
         m_defaultNamespace = uri;
         return;
@@ -308,7 +308,7 @@ void StyleSheetContents::parserAddNamespace(const AtomString& prefix, const Atom
     result.iterator->value = uri;
 }
 
-const AtomString& StyleSheetContents::namespaceURIFromPrefix(const AtomString& prefix)
+const std::atomic<std::string>& StyleSheetContents::namespaceURIFromPrefix(const std::atomic<std::string>& prefix)
 {
     PrefixNamespaceURIMap::const_iterator it = m_namespaces.find(prefix);
     if (it == m_namespaces.end())
@@ -324,7 +324,7 @@ void StyleSheetContents::parseAuthorStyleSheet(const CachedCSSStyleSheet* cached
     std::string sheetText = cachedStyleSheet->sheetText(mimeTypeCheckHint, &hasValidMIMEType);
 
     if (!hasValidMIMEType) {
-        ASSERT(sheetText.isNull());
+        assert(sheetText.isNull());
         if (auto* document = singleOwnerDocument()) {
             if (auto* page = document->page()) {
                 if (isStrictParserMode(m_parserContext.mode))
@@ -362,14 +362,14 @@ void StyleSheetContents::checkLoaded()
     if (isLoading())
         return;
 
-    Ref<StyleSheetContents> protectedThis(*this);
+    std::reference_wrapper<StyleSheetContents> protectedThis(*this);
     StyleSheetContents* parentSheet = parentStyleSheet();
     if (parentSheet) {
         parentSheet->checkLoaded();
         m_loadCompleted = true;
         return;
     }
-    RefPtr<Node> ownerNode = singleOwnerNode();
+    std::shared_ptr<Node> ownerNode = singleOwnerNode();
     if (!ownerNode) {
         m_loadCompleted = true;
         return;
@@ -381,7 +381,7 @@ void StyleSheetContents::checkLoaded()
 
 void StyleSheetContents::notifyLoadedSheet(const CachedCSSStyleSheet* sheet)
 {
-    ASSERT(sheet);
+    assert(sheet);
     m_didLoadErrorOccur |= sheet->errorOccurred();
     m_didLoadErrorOccur |= !sheet->mimeTypeAllowedByNosniff();
 }
@@ -405,7 +405,7 @@ Node* StyleSheetContents::singleOwnerNode() const
     StyleSheetContents* root = rootStyleSheet();
     if (root->m_clients.isEmpty())
         return 0;
-    ASSERT(root->m_clients.size() == 1);
+    assert(root->m_clients.size() == 1);
     return root->m_clients[0]->ownerNode();
 }
 
@@ -420,7 +420,7 @@ URL StyleSheetContents::completeURL(const std::string& url) const
     return m_parserContext.completeURL(url);
 }
 
-static bool traverseRulesInVector(const std::vector<RefPtr<StyleRuleBase>>& rules, const WTF::Function<bool (const StyleRuleBase&)>& handler)
+static bool traverseRulesInVector(const std::vector<std::shared_ptr<StyleRuleBase>>& rules, const WTF::Function<bool (const StyleRuleBase&)>& handler)
 {
     for (auto& rule : rules) {
         if (handler(*rule))
@@ -539,7 +539,7 @@ StyleSheetContents* StyleSheetContents::parentStyleSheet() const
 
 void StyleSheetContents::registerClient(CSSStyleSheet* sheet)
 {
-    ASSERT(!m_clients.contains(sheet));
+    assert(!m_clients.contains(sheet));
     m_clients.append(sheet);
 }
 
@@ -551,14 +551,14 @@ void StyleSheetContents::unregisterClient(CSSStyleSheet* sheet)
 
 void StyleSheetContents::addedToMemoryCache()
 {
-    ASSERT(isCacheable());
+    assert(isCacheable());
     ++m_inMemoryCacheCount;
 }
 
 void StyleSheetContents::removedFromMemoryCache()
 {
-    ASSERT(m_inMemoryCacheCount);
-    ASSERT(isCacheable());
+    assert(m_inMemoryCacheCount);
+    assert(isCacheable());
     --m_inMemoryCacheCount;
 }
 

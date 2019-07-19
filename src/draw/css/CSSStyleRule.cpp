@@ -33,7 +33,7 @@
 
 namespace WebCore {
 
-typedef HashMap<const CSSStyleRule*, String> SelectorTextCache;
+typedef std::unordered_map<const CSSStyleRule*, String> SelectorTextCache;
 static SelectorTextCache& selectorTextCache()
 {
     static NeverDestroyed<SelectorTextCache> cache;
@@ -72,11 +72,11 @@ String CSSStyleRule::generateSelectorText() const
 String CSSStyleRule::selectorText() const
 {
     if (hasCachedSelectorText()) {
-        ASSERT(selectorTextCache().contains(this));
+        assert(selectorTextCache().contains(this));
         return selectorTextCache().get(this);
     }
 
-    ASSERT(!selectorTextCache().contains(this));
+    assert(!selectorTextCache().contains(this));
     std::string text = generateSelectorText();
     selectorTextCache().set(this, text);
     setHasCachedSelectorText(true);
@@ -102,7 +102,7 @@ void CSSStyleRule::setSelectorText(const std::string& selectorText)
 
     CSSStyleSheet::RuleMutationScope mutationScope(this);
 
-    m_styleRule->wrapperAdoptSelectorList(WTFMove(selectorList));
+    m_styleRule->wrapperAdoptSelectorList(std::move(selectorList));
 
     if (hasCachedSelectorText()) {
         selectorTextCache().remove(this);

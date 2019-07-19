@@ -157,7 +157,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CSSReflectionDirection e)
 
 template<> inline CSSPrimitiveValue::operator CSSReflectionDirection() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAbove:
@@ -222,7 +222,7 @@ template<> inline CSSPrimitiveValue::operator ColumnSpan() const
     if (m_primitiveUnitType == CSS_NUMBER && m_value.num == 1)
         return ColumnSpan::None;
 
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAll:
@@ -254,7 +254,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(PrintColorAdjust value)
 
 template<> inline CSSPrimitiveValue::operator PrintColorAdjust() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueEconomy:
@@ -310,7 +310,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BorderStyle e)
 
 template<> inline CSSPrimitiveValue::operator BorderStyle() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     if (m_value.valueID == CSSValueAuto) // Valid for CSS outline-style
         return BorderStyle::Dotted;
@@ -319,7 +319,7 @@ template<> inline CSSPrimitiveValue::operator BorderStyle() const
 
 template<> inline CSSPrimitiveValue::operator OutlineIsAuto() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     if (m_value.valueID == CSSValueAuto)
         return OutlineIsAuto::On;
@@ -378,7 +378,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CompositeOperator e)
 
 template<> inline CSSPrimitiveValue::operator CompositeOperator() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueClear:
@@ -614,7 +614,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ControlPart e)
 
 template<> inline CSSPrimitiveValue::operator ControlPart() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     if (m_value.valueID == CSSValueNone)
         return NoControlPart;
@@ -637,7 +637,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BackfaceVisibility e)
 
 template<> inline CSSPrimitiveValue::operator BackfaceVisibility() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueVisible:
@@ -672,7 +672,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FillAttachment e)
 
 template<> inline CSSPrimitiveValue::operator FillAttachment() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueScroll:
@@ -711,7 +711,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FillBox e)
 
 template<> inline CSSPrimitiveValue::operator FillBox() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBorder:
@@ -756,7 +756,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FillRepeat e)
 
 template<> inline CSSPrimitiveValue::operator FillRepeat() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueRepeat:
@@ -797,7 +797,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxPack e)
 
 template<> inline CSSPrimitiveValue::operator BoxPack() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueStart:
@@ -841,7 +841,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxAlignment e)
 
 template<> inline CSSPrimitiveValue::operator BoxAlignment() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueStretch:
@@ -885,7 +885,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Edge e)
 
 template<> inline CSSPrimitiveValue::operator Edge() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueTop:
@@ -920,7 +920,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxSizing e)
 
 template<> inline CSSPrimitiveValue::operator BoxSizing() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBorderBox:
@@ -951,7 +951,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxDirection e)
 
 template<> inline CSSPrimitiveValue::operator BoxDirection() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNormal:
@@ -982,7 +982,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxLines e)
 
 template<> inline CSSPrimitiveValue::operator BoxLines() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSingle:
@@ -1013,7 +1013,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BoxOrient e)
 
 template<> inline CSSPrimitiveValue::operator BoxOrient() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueHorizontal:
@@ -1052,7 +1052,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CaptionSide e)
 
 template<> inline CSSPrimitiveValue::operator CaptionSide() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueLeft:
@@ -1093,7 +1093,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Clear e)
 
 template<> inline CSSPrimitiveValue::operator Clear() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -1230,7 +1230,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CursorType e)
 
 template<> inline CSSPrimitiveValue::operator CursorType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueCopy:
         return CursorType::Copy;
@@ -1265,7 +1265,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CursorVisibility e)
 
 template<> inline CSSPrimitiveValue::operator CursorVisibility() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     if (m_value.valueID == CSSValueAuto)
         return CursorVisibility::Auto;
@@ -1360,13 +1360,13 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(DisplayType e)
 
 template<> inline CSSPrimitiveValue::operator DisplayType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     if (m_value.valueID == CSSValueNone)
         return DisplayType::None;
 
     DisplayType display = static_cast<DisplayType>(m_value.valueID - CSSValueInline);
-    ASSERT(display >= DisplayType::Inline && display <= DisplayType::None);
+    assert(display >= DisplayType::Inline && display <= DisplayType::None);
     if (display == DisplayType::WebKitFlex)
         return DisplayType::Flex;
     if (display == DisplayType::WebKitInlineFlex)
@@ -1390,7 +1390,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(EmptyCell e)
 
 template<> inline CSSPrimitiveValue::operator EmptyCell() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueShow:
@@ -1427,7 +1427,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FlexDirection e)
 
 template<> inline CSSPrimitiveValue::operator FlexDirection() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueRow:
@@ -1474,7 +1474,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(AlignContent e)
 
 template<> inline CSSPrimitiveValue::operator AlignContent() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueFlexStart:
@@ -1516,7 +1516,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FlexWrap e)
 
 template<> inline CSSPrimitiveValue::operator FlexWrap() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNowrap:
@@ -1552,7 +1552,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Float e)
 
 template<> inline CSSPrimitiveValue::operator Float() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueLeft:
@@ -1598,7 +1598,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(LineBreak e)
 
 template<> inline CSSPrimitiveValue::operator OptionSet<HangingPunctuation>() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -1621,7 +1621,7 @@ template<> inline CSSPrimitiveValue::operator OptionSet<HangingPunctuation>() co
 
 template<> inline CSSPrimitiveValue::operator LineBreak() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -1660,7 +1660,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ListStylePosition e)
 
 template<> inline CSSPrimitiveValue::operator ListStylePosition() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueOutside:
@@ -1928,7 +1928,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ListStyleType e)
 
 template<> inline CSSPrimitiveValue::operator ListStyleType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -1957,7 +1957,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(MarginCollapse e)
 
 template<> inline CSSPrimitiveValue::operator MarginCollapse() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueCollapse:
@@ -1996,7 +1996,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(MarqueeBehavior e)
 
 template<> inline CSSPrimitiveValue::operator MarqueeBehavior() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -2046,7 +2046,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(MarqueeDirection directio
 
 template<> inline CSSPrimitiveValue::operator MarqueeDirection() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueForwards:
@@ -2089,7 +2089,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(NBSPMode e)
 
 template<> inline CSSPrimitiveValue::operator NBSPMode() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSpace:
@@ -2132,7 +2132,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Overflow e)
 
 template<> inline CSSPrimitiveValue::operator Overflow() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueVisible:
@@ -2196,7 +2196,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BreakBetween e)
 
 template<> inline CSSPrimitiveValue::operator BreakBetween() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2249,7 +2249,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BreakInside e)
 
 template<> inline CSSPrimitiveValue::operator BreakInside() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2293,7 +2293,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(PositionType e)
 
 template<> inline CSSPrimitiveValue::operator PositionType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueStatic:
@@ -2337,7 +2337,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Resize e)
 
 template<> inline CSSPrimitiveValue::operator Resize() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBoth:
@@ -2375,7 +2375,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TableLayoutType e)
 
 template<> inline CSSPrimitiveValue::operator TableLayoutType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueFixed:
@@ -2427,7 +2427,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextAlignMode e)
 
 template<> inline CSSPrimitiveValue::operator TextAlignMode() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueWebkitAuto: // Legacy -webkit-auto. Eqiuvalent to start.
@@ -2471,7 +2471,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextAlignLast e)
 
 template<> inline CSSPrimitiveValue::operator TextAlignLast() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2518,7 +2518,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextJustify e)
 
 template<> inline CSSPrimitiveValue::operator TextJustify() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2540,7 +2540,7 @@ template<> inline CSSPrimitiveValue::operator TextJustify() const
 
 template<> inline CSSPrimitiveValue::operator OptionSet<TextDecoration>() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -2563,7 +2563,7 @@ template<> inline CSSPrimitiveValue::operator OptionSet<TextDecoration>() const
 
 template<> inline CSSPrimitiveValue::operator TextDecorationStyle() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSolid:
@@ -2605,7 +2605,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextUnderlinePosition pos
 
 template<> inline CSSPrimitiveValue::operator TextUnderlinePosition() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2645,7 +2645,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextSecurity e)
 
 template<> inline CSSPrimitiveValue::operator TextSecurity() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -2686,7 +2686,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextTransform e)
 
 template<> inline CSSPrimitiveValue::operator TextTransform() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueCapitalize:
@@ -2733,7 +2733,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(EUnicodeBidi e)
 
 template<> inline CSSPrimitiveValue::operator EUnicodeBidi() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNormal:
@@ -2780,7 +2780,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(UserDrag e)
 
 template<> inline CSSPrimitiveValue::operator UserDrag() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2816,7 +2816,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(UserModify e)
 
 template<> inline CSSPrimitiveValue::operator UserModify() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueReadOnly:
@@ -2852,7 +2852,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(UserSelect e)
 
 template<> inline CSSPrimitiveValue::operator UserSelect() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -2910,7 +2910,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(VerticalAlign a)
 
 template<> inline CSSPrimitiveValue::operator VerticalAlign() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueTop:
@@ -2958,7 +2958,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Visibility e)
 
 template<> inline CSSPrimitiveValue::operator Visibility() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueHidden:
@@ -3006,7 +3006,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(WhiteSpace e)
 
 template<> inline CSSPrimitiveValue::operator WhiteSpace() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueWebkitNowrap:
@@ -3053,7 +3053,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(WordBreak e)
 
 template<> inline CSSPrimitiveValue::operator WordBreak() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBreakAll:
@@ -3088,7 +3088,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(OverflowWrap e)
 
 template<> inline CSSPrimitiveValue::operator OverflowWrap() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBreakWord:
@@ -3119,7 +3119,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextDirection e)
 
 template<> inline CSSPrimitiveValue::operator TextDirection() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueLtr:
@@ -3156,7 +3156,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(WritingMode e)
 
 template<> inline CSSPrimitiveValue::operator WritingMode() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueHorizontalTb:
@@ -3197,7 +3197,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextCombine e)
 
 template<> inline CSSPrimitiveValue::operator TextCombine() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -3231,7 +3231,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(RubyPosition position)
 
 template<> inline CSSPrimitiveValue::operator RubyPosition() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBefore:
@@ -3264,7 +3264,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextOverflow overflow)
 
 template<> inline CSSPrimitiveValue::operator TextOverflow() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueClip:
@@ -3295,7 +3295,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextEmphasisFill fill)
 
 template<> inline CSSPrimitiveValue::operator TextEmphasisFill() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueFilled:
@@ -3341,7 +3341,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextEmphasisMark mark)
 
 template<> inline CSSPrimitiveValue::operator TextEmphasisMark() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -3383,7 +3383,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextOrientation e)
 
 template<> inline CSSPrimitiveValue::operator TextOrientation() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSideways:
@@ -3444,7 +3444,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(PointerEvents e)
 
 template<> inline CSSPrimitiveValue::operator PointerEvents() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAll:
@@ -3497,7 +3497,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Kerning kerning)
 
 template<> inline CSSPrimitiveValue::operator Kerning() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -3539,7 +3539,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ObjectFit fit)
 
 template<> inline CSSPrimitiveValue::operator ObjectFit() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueFill:
@@ -3583,7 +3583,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontSmoothingMode smoothi
 
 template<> inline CSSPrimitiveValue::operator FontSmoothingMode() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -3621,7 +3621,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontSmallCaps smallCaps)
 
 template<> inline CSSPrimitiveValue::operator FontSmallCaps() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSmallCaps:
@@ -3657,7 +3657,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextRenderingMode e)
 
 template<> inline CSSPrimitiveValue::operator TextRenderingMode() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -3695,7 +3695,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Hyphens hyphens)
 
 template<> inline CSSPrimitiveValue::operator Hyphens() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -3731,7 +3731,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(LineSnap gridSnap)
 
 template<> inline CSSPrimitiveValue::operator LineSnap() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -3764,7 +3764,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(LineAlign lineAlign)
 
 template<> inline CSSPrimitiveValue::operator LineAlign() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -3804,7 +3804,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(SpeakAs e)
 
 template<> inline CSSPrimitiveValue::operator Order() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueLogical:
@@ -3835,7 +3835,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Order e)
 
 template<> inline CSSPrimitiveValue::operator OptionSet<SpeakAs>() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNormal:
@@ -3920,7 +3920,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BlendMode blendMode)
 
 template<> inline CSSPrimitiveValue::operator BlendMode() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNormal:
@@ -3985,7 +3985,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(Isolation isolation)
 
 template<> inline CSSPrimitiveValue::operator Isolation() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueAuto:
         return Isolation::Auto;
@@ -4018,7 +4018,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(LineCap e)
 
 template<> inline CSSPrimitiveValue::operator LineCap() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueButt:
@@ -4054,7 +4054,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(LineJoin e)
 
 template<> inline CSSPrimitiveValue::operator LineJoin() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueMiter:
@@ -4087,7 +4087,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(WindRule e)
 
 template<> inline CSSPrimitiveValue::operator WindRule() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNonzero:
@@ -4149,7 +4149,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(AlignmentBaseline e)
 
 template<> inline CSSPrimitiveValue::operator AlignmentBaseline() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -4200,7 +4200,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BorderCollapse e)
 
 template<> inline CSSPrimitiveValue::operator BorderCollapse() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSeparate:
@@ -4231,7 +4231,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BorderFit e)
 
 template<> inline CSSPrimitiveValue::operator BorderFit() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBorder:
@@ -4271,7 +4271,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ImageRendering imageRende
 
 template<> inline CSSPrimitiveValue::operator ImageRendering() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -4310,7 +4310,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TransformStyle3D e)
 
 template<> inline CSSPrimitiveValue::operator TransformStyle3D() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueFlat:
@@ -4344,7 +4344,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TransformBox box)
 
 template<> inline CSSPrimitiveValue::operator TransformBox() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueBorderBox:
@@ -4380,7 +4380,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ColumnAxis e)
 
 template<> inline CSSPrimitiveValue::operator ColumnAxis() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueHorizontal:
@@ -4413,7 +4413,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ColumnProgression e)
 
 template<> inline CSSPrimitiveValue::operator ColumnProgression() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNormal:
@@ -4439,7 +4439,7 @@ enum LengthConversion {
 
 inline bool CSSPrimitiveValue::convertingToLengthRequiresNonNullStyle(int lengthConversion) const
 {
-    ASSERT(isFontRelativeLength());
+    assert(isFontRelativeLength());
     // This matches the implementation in CSSPrimitiveValue::computeLengthDouble().
     switch (m_primitiveUnitType) {
     case CSS_EMS:
@@ -4487,7 +4487,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(BufferedRendering e)
 
 template<> inline CSSPrimitiveValue::operator BufferedRendering() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -4523,7 +4523,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ColorInterpolation e)
 
 template<> inline CSSPrimitiveValue::operator ColorInterpolation() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueSRGB:
@@ -4559,7 +4559,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ColorRendering e)
 
 template<> inline CSSPrimitiveValue::operator ColorRendering() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueOptimizeSpeed:
@@ -4622,7 +4622,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(DominantBaseline e)
 
 template<> inline CSSPrimitiveValue::operator DominantBaseline() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -4679,7 +4679,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ShapeRendering e)
 
 template<> inline CSSPrimitiveValue::operator ShapeRendering() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueAuto:
@@ -4717,7 +4717,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TextAnchor e)
 
 template<> inline CSSPrimitiveValue::operator TextAnchor() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueStart:
@@ -4745,7 +4745,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(CSSFontFamily fontFamily)
     : CSSValue(PrimitiveClass)
 {
     m_primitiveUnitType = CSS_FONT_FAMILY;
-    m_value.fontFamily = new CSSFontFamily(WTFMove(fontFamily));
+    m_value.fontFamily = new CSSFontFamily(std::move(fontFamily));
 }
 
 template<> inline CSSPrimitiveValue::CSSPrimitiveValue(VectorEffect e)
@@ -4764,7 +4764,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(VectorEffect e)
 
 template<> inline CSSPrimitiveValue::operator VectorEffect() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNone:
@@ -4795,7 +4795,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(MaskType e)
 
 template<> inline CSSPrimitiveValue::operator MaskType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueLuminance:
@@ -4838,7 +4838,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ImageOrientationEnum e)
 
 template<> inline CSSPrimitiveValue::operator ImageOrientationEnum() const
 {
-    ASSERT(isAngle());
+    assert(isAngle());
     double quarters = 4 * doubleValue(CSS_TURN);
     int orientation = 3 & static_cast<int>(quarters < 0 ? floor(quarters) : ceil(quarters));
     switch (orientation) {
@@ -5153,7 +5153,7 @@ template<> inline CSSPrimitiveValue::operator ContentDistribution() const
 
 template<> inline CSSPrimitiveValue::operator TextZoom() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
 
     switch (m_value.valueID) {
     case CSSValueNormal:
@@ -5214,7 +5214,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(TouchAction touchAction)
 
 template<> inline CSSPrimitiveValue::operator OptionSet<TouchAction>() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueAuto:
         return TouchAction::Auto;
@@ -5254,7 +5254,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ScrollSnapStrictness stri
 
 template<> inline CSSPrimitiveValue::operator ScrollSnapStrictness() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueNone:
         return ScrollSnapStrictness::None;
@@ -5293,7 +5293,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ScrollSnapAxis axis)
 
 template<> inline CSSPrimitiveValue::operator ScrollSnapAxis() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueX:
         return ScrollSnapAxis::XAxis;
@@ -5333,7 +5333,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(ScrollSnapAxisAlignType t
 
 template<> inline CSSPrimitiveValue::operator ScrollSnapAxisAlignType() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueNone:
         return ScrollSnapAxisAlignType::None;
@@ -5371,7 +5371,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontVariantPosition posit
 
 template<> inline CSSPrimitiveValue::operator FontVariantPosition() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueNormal:
         return FontVariantPosition::Normal;
@@ -5420,7 +5420,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontVariantCaps caps)
 
 template<> inline CSSPrimitiveValue::operator FontVariantCaps() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueNormal:
         return FontVariantCaps::Normal;
@@ -5462,7 +5462,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontVariantAlternates alt
 
 template<> inline CSSPrimitiveValue::operator FontVariantAlternates() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueNormal:
         return FontVariantAlternates::Normal;
@@ -5494,7 +5494,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontOpticalSizing sizing)
 
 template<> inline CSSPrimitiveValue::operator FontOpticalSizing() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueAuto:
         return FontOpticalSizing::Enabled;
@@ -5535,7 +5535,7 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(FontLoadingBehavior behav
 
 template<> inline CSSPrimitiveValue::operator FontLoadingBehavior() const
 {
-    ASSERT(isValueID());
+    assert(isValueID());
     switch (m_value.valueID) {
     case CSSValueAuto:
         return FontLoadingBehavior::Auto;

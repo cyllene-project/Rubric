@@ -38,36 +38,36 @@ class CSSKeyframeRule;
 
 class StyleRuleKeyframes final : public StyleRuleBase {
 public:
-    static Ref<StyleRuleKeyframes> create(const AtomString& name) { return adoptRef(*new StyleRuleKeyframes(name)); }
-    static Ref<StyleRuleKeyframes> create(const AtomString& name, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules) { return adoptRef(*new StyleRuleKeyframes(name, WTFMove(deferredRules))); }
+    static std::reference_wrapper<StyleRuleKeyframes> create(const std::atomic<std::string>& name) { return adoptRef(*new StyleRuleKeyframes(name)); }
+    static std::reference_wrapper<StyleRuleKeyframes> create(const std::atomic<std::string>& name, std::unique_ptr<DeferredStyleGroupRuleList>&& deferredRules) { return adoptRef(*new StyleRuleKeyframes(name, std::move(deferredRules))); }
     
     ~StyleRuleKeyframes();
     
-    const std::vector<Ref<StyleRuleKeyframe>>& keyframes() const;
-    const std::vector<Ref<StyleRuleKeyframe>>* keyframesWithoutDeferredParsing() const
+    const std::vector<std::reference_wrapper<StyleRuleKeyframe>>& keyframes() const;
+    const std::vector<std::reference_wrapper<StyleRuleKeyframe>>* keyframesWithoutDeferredParsing() const
     {
         return !m_deferredRules ? &m_keyframes : nullptr;
     }
 
-    void parserAppendKeyframe(RefPtr<StyleRuleKeyframe>&&);
-    void wrapperAppendKeyframe(Ref<StyleRuleKeyframe>&&);
+    void parserAppendKeyframe(std::shared_ptr<StyleRuleKeyframe>&&);
+    void wrapperAppendKeyframe(std::reference_wrapper<StyleRuleKeyframe>&&);
     void wrapperRemoveKeyframe(unsigned);
 
-    const AtomString& name() const { return m_name; }
-    void setName(const AtomString& name) { m_name = name; }
+    const std::atomic<std::string>& name() const { return m_name; }
+    void setName(const std::atomic<std::string>& name) { m_name = name; }
 
     size_t findKeyframeIndex(const std::string& key) const;
 
-    Ref<StyleRuleKeyframes> copy() const { return adoptRef(*new StyleRuleKeyframes(*this)); }
+    std::reference_wrapper<StyleRuleKeyframes> copy() const { return adoptRef(*new StyleRuleKeyframes(*this)); }
 
 private:
-    StyleRuleKeyframes(const AtomString&);
-    StyleRuleKeyframes(const AtomString&, std::unique_ptr<DeferredStyleGroupRuleList>&&);
+    StyleRuleKeyframes(const std::atomic<std::string>&);
+    StyleRuleKeyframes(const std::atomic<std::string>&, std::unique_ptr<DeferredStyleGroupRuleList>&&);
     StyleRuleKeyframes(const StyleRuleKeyframes&);
 
     void parseDeferredRulesIfNeeded() const;
     
-    mutable std::vector<Ref<StyleRuleKeyframe>> m_keyframes;
+    mutable std::vector<std::reference_wrapper<StyleRuleKeyframe>> m_keyframes;
     AtomString m_name;
     
     mutable std::unique_ptr<DeferredStyleGroupRuleList> m_deferredRules;
@@ -75,7 +75,7 @@ private:
 
 class CSSKeyframesRule final : public CSSRule {
 public:
-    static Ref<CSSKeyframesRule> create(StyleRuleKeyframes& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSKeyframesRule(rule, sheet)); }
+    static std::reference_wrapper<CSSKeyframesRule> create(StyleRuleKeyframes& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSKeyframesRule(rule, sheet)); }
 
     virtual ~CSSKeyframesRule();
 
@@ -84,7 +84,7 @@ public:
     void reattach(StyleRuleBase&) final;
 
     std::string name() const { return m_keyframesRule->name(); }
-    void setName(const String&);
+    void setName(const std::string&);
 
     CSSRuleList& cssRules();
 
@@ -100,8 +100,8 @@ public:
 private:
     CSSKeyframesRule(StyleRuleKeyframes&, CSSStyleSheet* parent);
 
-    Ref<StyleRuleKeyframes> m_keyframesRule;
-    mutable std::vector<RefPtr<CSSKeyframeRule>> m_childRuleCSSOMWrappers;
+    std::reference_wrapper<StyleRuleKeyframes> m_keyframesRule;
+    mutable std::vector<std::shared_ptr<CSSKeyframeRule>> m_childRuleCSSOMWrappers;
     mutable std::unique_ptr<CSSRuleList> m_ruleListCSSOMWrapper;
 };
 

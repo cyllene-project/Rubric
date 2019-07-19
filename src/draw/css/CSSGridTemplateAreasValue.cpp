@@ -43,13 +43,13 @@ CSSGridTemplateAreasValue::CSSGridTemplateAreasValue(const NamedGridAreaMap& gri
     , m_rowCount(rowCount)
     , m_columnCount(columnCount)
 {
-    ASSERT(m_rowCount);
-    ASSERT(m_columnCount);
+    assert(m_rowCount);
+    assert(m_columnCount);
 }
 
 static String stringForPosition(const NamedGridAreaMap& gridAreaMap, size_t row, size_t column)
 {
-    std::vector<String> candidates;
+    std::vector<std::string> candidates;
 
     for (const auto& it : gridAreaMap) {
         const GridArea& area = it.value;

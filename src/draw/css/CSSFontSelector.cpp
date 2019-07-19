@@ -68,7 +68,7 @@ CSSFontSelector::CSSFontSelector(Document& document)
     , m_uniqueId(++fontSelectorId)
     , m_version(0)
 {
-    ASSERT(m_document);
+    assert(m_document);
     FontCache::singleton().addClient(*this);
     m_cssFontFaceSet->addClient(*this);
     LOG(Fonts, "CSSFontSelector %p ctor", this);
@@ -86,7 +86,7 @@ CSSFontSelector::~CSSFontSelector()
 FontFaceSet& CSSFontSelector::fontFaceSet()
 {
     if (!m_fontFaceSet) {
-        ASSERT(m_document);
+        assert(m_document);
         m_fontFaceSet = FontFaceSet::create(*m_document, m_cssFontFaceSet.get());
     }
 
@@ -109,9 +109,9 @@ void CSSFontSelector::buildStarted()
     m_cssFontFaceSet->purge();
     ++m_version;
 
-    ASSERT(m_cssConnectionsPossiblyToRemove.isEmpty());
-    ASSERT(m_cssConnectionsEncounteredDuringBuild.isEmpty());
-    ASSERT(m_stagingArea.isEmpty());
+    assert(m_cssConnectionsPossiblyToRemove.isEmpty());
+    assert(m_cssConnectionsEncounteredDuringBuild.isEmpty());
+    assert(m_stagingArea.isEmpty());
     for (size_t i = 0; i < m_cssFontFaceSet->faceCount(); ++i) {
         CSSFontFace& face = m_cssFontFaceSet.get()[i];
         if (face.cssConnection())
@@ -129,7 +129,7 @@ void CSSFontSelector::buildCompleted()
     // Some font faces weren't re-added during the build process.
     for (auto& face : m_cssConnectionsPossiblyToRemove) {
         auto* connection = face->cssConnection();
-        ASSERT(connection);
+        assert(connection);
         if (!m_cssConnectionsEncounteredDuringBuild.contains(connection))
             m_cssFontFaceSet->remove(*face);
     }
@@ -150,20 +150,20 @@ void CSSFontSelector::addFontFaceRule(StyleRuleFontFace& fontFaceRule, bool isIn
     }
 
     const StyleProperties& style = fontFaceRule.properties();
-    RefPtr<CSSValue> fontFamily = style.getPropertyCSSValue(CSSPropertyFontFamily);
-    RefPtr<CSSValue> fontStyle = style.getPropertyCSSValue(CSSPropertyFontStyle);
-    RefPtr<CSSValue> fontWeight = style.getPropertyCSSValue(CSSPropertyFontWeight);
-    RefPtr<CSSValue> fontStretch = style.getPropertyCSSValue(CSSPropertyFontStretch);
-    RefPtr<CSSValue> src = style.getPropertyCSSValue(CSSPropertySrc);
-    RefPtr<CSSValue> unicodeRange = style.getPropertyCSSValue(CSSPropertyUnicodeRange);
-    RefPtr<CSSValue> featureSettings = style.getPropertyCSSValue(CSSPropertyFontFeatureSettings);
-    RefPtr<CSSValue> variantLigatures = style.getPropertyCSSValue(CSSPropertyFontVariantLigatures);
-    RefPtr<CSSValue> variantPosition = style.getPropertyCSSValue(CSSPropertyFontVariantPosition);
-    RefPtr<CSSValue> variantCaps = style.getPropertyCSSValue(CSSPropertyFontVariantCaps);
-    RefPtr<CSSValue> variantNumeric = style.getPropertyCSSValue(CSSPropertyFontVariantNumeric);
-    RefPtr<CSSValue> variantAlternates = style.getPropertyCSSValue(CSSPropertyFontVariantAlternates);
-    RefPtr<CSSValue> variantEastAsian = style.getPropertyCSSValue(CSSPropertyFontVariantEastAsian);
-    RefPtr<CSSValue> loadingBehavior = style.getPropertyCSSValue(CSSPropertyFontDisplay);
+    std::shared_ptr<CSSValue> fontFamily = style.getPropertyCSSValue(CSSPropertyFontFamily);
+    std::shared_ptr<CSSValue> fontStyle = style.getPropertyCSSValue(CSSPropertyFontStyle);
+    std::shared_ptr<CSSValue> fontWeight = style.getPropertyCSSValue(CSSPropertyFontWeight);
+    std::shared_ptr<CSSValue> fontStretch = style.getPropertyCSSValue(CSSPropertyFontStretch);
+    std::shared_ptr<CSSValue> src = style.getPropertyCSSValue(CSSPropertySrc);
+    std::shared_ptr<CSSValue> unicodeRange = style.getPropertyCSSValue(CSSPropertyUnicodeRange);
+    std::shared_ptr<CSSValue> featureSettings = style.getPropertyCSSValue(CSSPropertyFontFeatureSettings);
+    std::shared_ptr<CSSValue> variantLigatures = style.getPropertyCSSValue(CSSPropertyFontVariantLigatures);
+    std::shared_ptr<CSSValue> variantPosition = style.getPropertyCSSValue(CSSPropertyFontVariantPosition);
+    std::shared_ptr<CSSValue> variantCaps = style.getPropertyCSSValue(CSSPropertyFontVariantCaps);
+    std::shared_ptr<CSSValue> variantNumeric = style.getPropertyCSSValue(CSSPropertyFontVariantNumeric);
+    std::shared_ptr<CSSValue> variantAlternates = style.getPropertyCSSValue(CSSPropertyFontVariantAlternates);
+    std::shared_ptr<CSSValue> variantEastAsian = style.getPropertyCSSValue(CSSPropertyFontVariantEastAsian);
+    std::shared_ptr<CSSValue> loadingBehavior = style.getPropertyCSSValue(CSSPropertyFontDisplay);
     if (!is<CSSValueList>(fontFamily) || !is<CSSValueList>(src) || (unicodeRange && !is<CSSValueList>(*unicodeRange)))
         return;
 
@@ -178,7 +178,7 @@ void CSSFontSelector::addFontFaceRule(StyleRuleFontFace& fontFaceRule, bool isIn
         return;
 
     SetForScope<bool> creatingFont(m_creatingFont, true);
-    Ref<CSSFontFace> fontFace = CSSFontFace::create(this, &fontFaceRule);
+    std::reference_wrapper<CSSFontFace> fontFace = CSSFontFace::create(this, &fontFaceRule);
 
     if (!fontFace->setFamilies(*fontFamily))
         return;
@@ -211,7 +211,7 @@ void CSSFontSelector::addFontFaceRule(StyleRuleFontFace& fontFaceRule, bool isIn
     if (fontFace->computeFailureState())
         return;
 
-    if (RefPtr<CSSFontFace> existingFace = m_cssFontFaceSet->lookUpByCSSConnection(fontFaceRule)) {
+    if (std::shared_ptr<CSSFontFace> existingFace = m_cssFontFaceSet->lookUpByCSSConnection(fontFaceRule)) {
         // This adoption is fairly subtle. Script can trigger a purge of m_cssFontFaceSet at any time,
         // which will cause us to just rely on the memory cache to retain the bytes of the file the next
         // time we build up the CSSFontFaceSet. However, when the CSS Font Loading API is involved,
@@ -249,7 +249,7 @@ void CSSFontSelector::dispatchInvalidationCallbacks()
         client->fontsNeedUpdate(*this);
 }
 
-void CSSFontSelector::opportunisticallyStartFontDataURLLoading(const FontCascadeDescription& description, const AtomString& familyName)
+void CSSFontSelector::opportunisticallyStartFontDataURLLoading(const FontCascadeDescription& description, const std::atomic<std::string>& familyName)
 {
     const auto& segmentedFontFace = m_cssFontFaceSet->fontFace(description.fontSelectionRequest(), familyName);
     if (!segmentedFontFace)
@@ -274,7 +274,7 @@ void CSSFontSelector::fontCacheInvalidated()
     dispatchInvalidationCallbacks();
 }
 
-static AtomString resolveGenericFamily(Document* document, const FontDescription& fontDescription, const AtomString& familyName)
+static AtomString resolveGenericFamily(Document* document, const FontDescription& fontDescription, const std::atomic<std::string>& familyName)
 {
     auto platformResult = FontDescription::platformResolveGenericFamily(fontDescription.script(), fontDescription.locale(), familyName);
     if (!platformResult.isNull())
@@ -304,10 +304,10 @@ static AtomString resolveGenericFamily(Document* document, const FontDescription
     return familyName;
 }
 
-FontRanges CSSFontSelector::fontRangesForFamily(const FontDescription& fontDescription, const AtomString& familyName)
+FontRanges CSSFontSelector::fontRangesForFamily(const FontDescription& fontDescription, const std::atomic<std::string>& familyName)
 {
-    // If this ASSERT() fires, it usually means you forgot a document.updateStyleIfNeeded() somewhere.
-    ASSERT(!m_buildIsUnderway || m_computingRootStyleFontCount);
+    // If this assert() fires, it usually means you forgot a document.updateStyleIfNeeded() somewhere.
+    assert(!m_buildIsUnderway || m_computingRootStyleFontCount);
 
     // FIXME: The spec (and Firefox) says user specified generic families (sans-serif etc.) should be resolved before the @font-face lookup too.
     bool resolveGenericFamilyFirst = familyName == standardFamily;
@@ -328,14 +328,14 @@ FontRanges CSSFontSelector::fontRangesForFamily(const FontDescription& fontDescr
         if (m_document)
             ResourceLoadObserver::shared().logFontLoad(*m_document, familyForLookup.string(), !!font);
     }
-    return FontRanges { WTFMove(font) };
+    return FontRanges { std::move(font) };
 }
 
 void CSSFontSelector::clearDocument()
 {
     if (!m_document) {
-        ASSERT(!m_beginLoadingTimer.isActive());
-        ASSERT(m_fontsToBeginLoading.isEmpty());
+        assert(!m_beginLoadingTimer.isActive());
+        assert(m_fontsToBeginLoading.isEmpty());
         return;
     }
 
@@ -374,7 +374,7 @@ void CSSFontSelector::beginLoadTimerFired()
     fontsToBeginLoading.swap(m_fontsToBeginLoading);
 
     // CSSFontSelector could get deleted via beginLoadIfNeeded() or loadDone() unless protected.
-    Ref<CSSFontSelector> protectedThis(*this);
+    std::reference_wrapper<CSSFontSelector> protectedThis(*this);
 
     CachedResourceLoader& cachedResourceLoader = m_document->cachedResourceLoader();
     for (auto& fontHandle : fontsToBeginLoading) {
@@ -399,7 +399,7 @@ size_t CSSFontSelector::fallbackFontCount()
     return m_document->settings().fontFallbackPrefersPictographs() ? 1 : 0;
 }
 
-RefPtr<Font> CSSFontSelector::fallbackFontAt(const FontDescription& fontDescription, size_t index)
+std::shared_ptr<Font> CSSFontSelector::fallbackFontAt(const FontDescription& fontDescription, size_t index)
 {
     ASSERT_UNUSED(index, !index);
 

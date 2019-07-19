@@ -78,9 +78,9 @@ HTMLCanvasElement* CSSCanvasValue::element(Document& document)
     return m_element;
 }
 
-RefPtr<Image> CSSCanvasValue::image(RenderElement* renderer, const FloatSize& /*size*/)
+std::shared_ptr<Image> CSSCanvasValue::image(RenderElement* renderer, const FloatSize& /*size*/)
 {
-    ASSERT(clients().contains(renderer));
+    assert(clients().contains(renderer));
     HTMLCanvasElement* element = this->element(renderer->document());
     if (!element || !element->buffer())
         return nullptr;

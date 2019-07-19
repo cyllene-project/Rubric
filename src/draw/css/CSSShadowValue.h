@@ -29,34 +29,34 @@ class CSSPrimitiveValue;
 // Used for text-shadow and box-shadow
 class CSSShadowValue final : public CSSValue {
 public:
-    static Ref<CSSShadowValue> create(RefPtr<CSSPrimitiveValue>&& x,
-        RefPtr<CSSPrimitiveValue>&& y,
-        RefPtr<CSSPrimitiveValue>&& blur,
-        RefPtr<CSSPrimitiveValue>&& spread,
-        RefPtr<CSSPrimitiveValue>&& style,
-        RefPtr<CSSPrimitiveValue>&& color)
+    static std::reference_wrapper<CSSShadowValue> create(std::shared_ptr<CSSPrimitiveValue>&& x,
+        std::shared_ptr<CSSPrimitiveValue>&& y,
+        std::shared_ptr<CSSPrimitiveValue>&& blur,
+        std::shared_ptr<CSSPrimitiveValue>&& spread,
+        std::shared_ptr<CSSPrimitiveValue>&& style,
+        std::shared_ptr<CSSPrimitiveValue>&& color)
     {
-        return adoptRef(*new CSSShadowValue(WTFMove(x), WTFMove(y), WTFMove(blur), WTFMove(spread), WTFMove(style), WTFMove(color)));
+        return adoptRef(*new CSSShadowValue(std::move(x), std::move(y), std::move(blur), std::move(spread), std::move(style), std::move(color)));
     }
 
     std::string customCSSText() const;
 
     bool equals(const CSSShadowValue&) const;
 
-    RefPtr<CSSPrimitiveValue> x;
-    RefPtr<CSSPrimitiveValue> y;
-    RefPtr<CSSPrimitiveValue> blur;
-    RefPtr<CSSPrimitiveValue> spread;
-    RefPtr<CSSPrimitiveValue> style;
-    RefPtr<CSSPrimitiveValue> color;
+    std::shared_ptr<CSSPrimitiveValue> x;
+    std::shared_ptr<CSSPrimitiveValue> y;
+    std::shared_ptr<CSSPrimitiveValue> blur;
+    std::shared_ptr<CSSPrimitiveValue> spread;
+    std::shared_ptr<CSSPrimitiveValue> style;
+    std::shared_ptr<CSSPrimitiveValue> color;
 
 private:
-    CSSShadowValue(RefPtr<CSSPrimitiveValue>&& x,
-        RefPtr<CSSPrimitiveValue>&& y,
-        RefPtr<CSSPrimitiveValue>&& blur,
-        RefPtr<CSSPrimitiveValue>&& spread,
-        RefPtr<CSSPrimitiveValue>&& style,
-        RefPtr<CSSPrimitiveValue>&& color);
+    CSSShadowValue(std::shared_ptr<CSSPrimitiveValue>&& x,
+        std::shared_ptr<CSSPrimitiveValue>&& y,
+        std::shared_ptr<CSSPrimitiveValue>&& blur,
+        std::shared_ptr<CSSPrimitiveValue>&& spread,
+        std::shared_ptr<CSSPrimitiveValue>&& style,
+        std::shared_ptr<CSSPrimitiveValue>&& color);
 };
 
 } // namespace WebCore

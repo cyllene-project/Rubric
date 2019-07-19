@@ -37,21 +37,21 @@ namespace WebCore {
 
 WTF_MAKE_ISO_ALLOCATED_IMPL(FontFaceSet);
 
-Ref<FontFaceSet> FontFaceSet::create(Document& document, const std::vector<RefPtr<FontFace>>& initialFaces)
+Ref<FontFaceSet> FontFaceSet::create(Document& document, const std::vector<std::shared_ptr<FontFace>>& initialFaces)
 {
-    Ref<FontFaceSet> result = adoptRef(*new FontFaceSet(document, initialFaces));
+    std::reference_wrapper<FontFaceSet> result = adoptRef(*new FontFaceSet(document, initialFaces));
     result->suspendIfNeeded();
     return result;
 }
 
 Ref<FontFaceSet> FontFaceSet::create(Document& document, CSSFontFaceSet& backing)
 {
-    Ref<FontFaceSet> result = adoptRef(*new FontFaceSet(document, backing));
+    std::reference_wrapper<FontFaceSet> result = adoptRef(*new FontFaceSet(document, backing));
     result->suspendIfNeeded();
     return result;
 }
 
-FontFaceSet::FontFaceSet(Document& document, const std::vector<RefPtr<FontFace>>& initialFaces)
+FontFaceSet::FontFaceSet(Document& document, const std::vector<std::shared_ptr<FontFace>>& initialFaces)
     : ActiveDOMObject(document)
     , m_backing(CSSFontFaceSet::create())
     , m_readyPromise(*this, &FontFaceSet::readyPromiseResolve)
@@ -81,7 +81,7 @@ FontFaceSet::Iterator::Iterator(FontFaceSet& set)
 {
 }
 
-RefPtr<FontFace> FontFaceSet::Iterator::next()
+std::shared_ptr<FontFace> FontFaceSet::Iterator::next()
 {
     if (m_index == m_target->size())
         return nullptr;
@@ -89,7 +89,7 @@ RefPtr<FontFace> FontFaceSet::Iterator::next()
 }
 
 FontFaceSet::PendingPromise::PendingPromise(LoadPromise&& promise)
-    : promise(WTFMove(promise))
+    : promise(std::move(promise))
 {
 }
 
@@ -150,7 +150,7 @@ void FontFaceSet::load(const std::string& font, const std::string& text, LoadPro
         }
     }
 
-    auto pendingPromise = PendingPromise::create(WTFMove(promise));
+    auto pendingPromise = PendingPromise::create(std::move(promise));
     bool waiting = false;
 
     for (auto& face : matchingFaces) {
@@ -158,8 +158,8 @@ void FontFaceSet::load(const std::string& font, const std::string& text, LoadPro
         if (face.get().status() == CSSFontFace::Status::Success)
             continue;
         waiting = true;
-        ASSERT(face.get().existingWrapper());
-        m_pendingPromises.add(face.get().existingWrapper(), std::vector<Ref<PendingPromise>>()).iterator->value.append(pendingPromise.copyRef());
+        assert(face.get().existingWrapper());
+        m_pendingPromises.add(face.get().existingWrapper(), std::vector<std::reference_wrapper<PendingPromise>>()).iterator->value.append(pendingPromise.copyRef());
     }
 
     if (!waiting)
@@ -217,7 +217,7 @@ void FontFaceSet::faceFinished(CSSFontFace& face, CSSFontFace::Status newStatus)
                 pendingPromise->hasReachedTerminalState = true;
             }
         } else {
-            ASSERT(newStatus == CSSFontFace::Status::Failure);
+            assert(newStatus == CSSFontFace::Status::Failure);
             pendingPromise->promise.reject(NetworkError);
             pendingPromise->hasReachedTerminalState = true;
         }

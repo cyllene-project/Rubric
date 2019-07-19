@@ -34,8 +34,8 @@ class RenderElement;
 
 class CSSImageValue final : public CSSValue {
 public:
-    static Ref<CSSImageValue> create(URL&& url, LoadedFromOpaqueSource loadedFromOpaqueSource) { return adoptRef(*new CSSImageValue(WTFMove(url), loadedFromOpaqueSource)); }
-    static Ref<CSSImageValue> create(CachedImage& image) { return adoptRef(*new CSSImageValue(image)); }
+    static std::reference_wrapper<CSSImageValue> create(URL&& url, LoadedFromOpaqueSource loadedFromOpaqueSource) { return adoptRef(*new CSSImageValue(std::move(url), loadedFromOpaqueSource)); }
+    static std::reference_wrapper<CSSImageValue> create(CachedImage& image) { return adoptRef(*new CSSImageValue(image)); }
     ~CSSImageValue();
 
     bool isPending() const;
@@ -46,7 +46,7 @@ public:
 
     std::string customCSSText() const;
 
-    Ref<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
+    std::reference_wrapper<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
 
     bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
 
@@ -54,7 +54,7 @@ public:
 
     bool knownToBeOpaque(const RenderElement&) const;
 
-    void setInitiator(const AtomString& name) { m_initiatorName = name; }
+    void setInitiator(const std::atomic<std::string>& name) { m_initiatorName = name; }
 
 private:
     CSSImageValue(URL&&, LoadedFromOpaqueSource);

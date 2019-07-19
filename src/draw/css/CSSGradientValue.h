@@ -47,8 +47,8 @@ enum CSSGradientType {
 enum CSSGradientRepeat { NonRepeating, Repeating };
 
 struct CSSGradientColorStop {
-    RefPtr<CSSPrimitiveValue> m_position; // percentage or length
-    RefPtr<CSSPrimitiveValue> m_color;
+    std::shared_ptr<CSSPrimitiveValue> m_position; // percentage or length
+    std::shared_ptr<CSSPrimitiveValue> m_color;
     Color m_resolvedColor;
     bool m_colorIsDerivedFromElement = false;
     bool isMidpoint = false;
@@ -61,12 +61,12 @@ struct CSSGradientColorStop {
 
 class CSSGradientValue : public CSSImageGeneratorValue {
 public:
-    RefPtr<Image> image(RenderElement&, const FloatSize&);
+    std::shared_ptr<Image> image(RenderElement&, const FloatSize&);
 
-    void setFirstX(RefPtr<CSSPrimitiveValue>&& val) { m_firstX = WTFMove(val); }
-    void setFirstY(RefPtr<CSSPrimitiveValue>&& val) { m_firstY = WTFMove(val); }
-    void setSecondX(RefPtr<CSSPrimitiveValue>&& val) { m_secondX = WTFMove(val); }
-    void setSecondY(RefPtr<CSSPrimitiveValue>&& val) { m_secondY = WTFMove(val); }
+    void setFirstX(std::shared_ptr<CSSPrimitiveValue>&& val) { m_firstX = std::move(val); }
+    void setFirstY(std::shared_ptr<CSSPrimitiveValue>&& val) { m_firstY = std::move(val); }
+    void setSecondX(std::shared_ptr<CSSPrimitiveValue>&& val) { m_secondX = std::move(val); }
+    void setSecondY(std::shared_ptr<CSSPrimitiveValue>&& val) { m_secondY = std::move(val); }
 
     void addStop(const CSSGradientColorStop& stop) { m_stops.append(stop); }
     void doneAddingStops() { m_stops.shrinkToFit(); }
@@ -86,7 +86,7 @@ public:
     bool knownToBeOpaque(const RenderElement&) const;
 
     void loadSubimages(CachedResourceLoader&, const ResourceLoaderOptions&) { }
-    Ref<CSSGradientValue> gradientWithStylesResolved(const StyleResolver&);
+    std::reference_wrapper<CSSGradientValue> gradientWithStylesResolved(const StyleResolver&);
 
 protected:
     CSSGradientValue(ClassType classType, CSSGradientRepeat repeat, CSSGradientType gradientType)
@@ -119,11 +119,11 @@ protected:
     bool isCacheable() const;
 
     // Points. Some of these may be null.
-    RefPtr<CSSPrimitiveValue> m_firstX;
-    RefPtr<CSSPrimitiveValue> m_firstY;
+    std::shared_ptr<CSSPrimitiveValue> m_firstX;
+    std::shared_ptr<CSSPrimitiveValue> m_firstY;
 
-    RefPtr<CSSPrimitiveValue> m_secondX;
-    RefPtr<CSSPrimitiveValue> m_secondY;
+    std::shared_ptr<CSSPrimitiveValue> m_secondX;
+    std::shared_ptr<CSSPrimitiveValue> m_secondY;
 
     // Stops
     std::vector<CSSGradientColorStop, 2> m_stops;
@@ -134,19 +134,19 @@ protected:
 
 class CSSLinearGradientValue final : public CSSGradientValue {
 public:
-    static Ref<CSSLinearGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSLinearGradient)
+    static std::reference_wrapper<CSSLinearGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSLinearGradient)
     {
         return adoptRef(*new CSSLinearGradientValue(repeat, gradientType));
     }
 
-    void setAngle(Ref<CSSPrimitiveValue>&& val) { m_angle = WTFMove(val); }
+    void setAngle(std::reference_wrapper<CSSPrimitiveValue>&& val) { m_angle = std::move(val); }
 
     std::string customCSSText() const;
 
     // Create the gradient for a given size.
-    Ref<Gradient> createGradient(RenderElement&, const FloatSize&);
+    std::reference_wrapper<Gradient> createGradient(RenderElement&, const FloatSize&);
 
-    Ref<CSSLinearGradientValue> clone() const
+    std::reference_wrapper<CSSLinearGradientValue> clone() const
     {
         return adoptRef(*new CSSLinearGradientValue(*this));
     }
@@ -165,34 +165,34 @@ private:
     {
     }
 
-    RefPtr<CSSPrimitiveValue> m_angle; // may be null.
+    std::shared_ptr<CSSPrimitiveValue> m_angle; // may be null.
 };
 
 class CSSRadialGradientValue final : public CSSGradientValue {
 public:
-    static Ref<CSSRadialGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSRadialGradient)
+    static std::reference_wrapper<CSSRadialGradientValue> create(CSSGradientRepeat repeat, CSSGradientType gradientType = CSSRadialGradient)
     {
         return adoptRef(*new CSSRadialGradientValue(repeat, gradientType));
     }
 
-    Ref<CSSRadialGradientValue> clone() const
+    std::reference_wrapper<CSSRadialGradientValue> clone() const
     {
         return adoptRef(*new CSSRadialGradientValue(*this));
     }
 
     std::string customCSSText() const;
 
-    void setFirstRadius(RefPtr<CSSPrimitiveValue>&& val) { m_firstRadius = WTFMove(val); }
-    void setSecondRadius(RefPtr<CSSPrimitiveValue>&& val) { m_secondRadius = WTFMove(val); }
+    void setFirstRadius(std::shared_ptr<CSSPrimitiveValue>&& val) { m_firstRadius = std::move(val); }
+    void setSecondRadius(std::shared_ptr<CSSPrimitiveValue>&& val) { m_secondRadius = std::move(val); }
 
-    void setShape(RefPtr<CSSPrimitiveValue>&& val) { m_shape = WTFMove(val); }
-    void setSizingBehavior(RefPtr<CSSPrimitiveValue>&& val) { m_sizingBehavior = WTFMove(val); }
+    void setShape(std::shared_ptr<CSSPrimitiveValue>&& val) { m_shape = std::move(val); }
+    void setSizingBehavior(std::shared_ptr<CSSPrimitiveValue>&& val) { m_sizingBehavior = std::move(val); }
 
-    void setEndHorizontalSize(RefPtr<CSSPrimitiveValue>&& val) { m_endHorizontalSize = WTFMove(val); }
-    void setEndVerticalSize(RefPtr<CSSPrimitiveValue>&& val) { m_endVerticalSize = WTFMove(val); }
+    void setEndHorizontalSize(std::shared_ptr<CSSPrimitiveValue>&& val) { m_endHorizontalSize = std::move(val); }
+    void setEndVerticalSize(std::shared_ptr<CSSPrimitiveValue>&& val) { m_endVerticalSize = std::move(val); }
 
     // Create the gradient for a given size.
-    Ref<Gradient> createGradient(RenderElement&, const FloatSize&);
+    std::reference_wrapper<Gradient> createGradient(RenderElement&, const FloatSize&);
 
     bool equals(const CSSRadialGradientValue&) const;
 
@@ -217,35 +217,35 @@ private:
     float resolveRadius(CSSPrimitiveValue&, const CSSToLengthConversionData&, float* widthOrHeight = 0);
 
     // These may be null for non-deprecated gradients.
-    RefPtr<CSSPrimitiveValue> m_firstRadius;
-    RefPtr<CSSPrimitiveValue> m_secondRadius;
+    std::shared_ptr<CSSPrimitiveValue> m_firstRadius;
+    std::shared_ptr<CSSPrimitiveValue> m_secondRadius;
 
     // The below are only used for non-deprecated gradients. Any of them may be null.
-    RefPtr<CSSPrimitiveValue> m_shape;
-    RefPtr<CSSPrimitiveValue> m_sizingBehavior;
+    std::shared_ptr<CSSPrimitiveValue> m_shape;
+    std::shared_ptr<CSSPrimitiveValue> m_sizingBehavior;
 
-    RefPtr<CSSPrimitiveValue> m_endHorizontalSize;
-    RefPtr<CSSPrimitiveValue> m_endVerticalSize;
+    std::shared_ptr<CSSPrimitiveValue> m_endHorizontalSize;
+    std::shared_ptr<CSSPrimitiveValue> m_endVerticalSize;
 };
 
 class CSSConicGradientValue final : public CSSGradientValue {
 public:
-    static Ref<CSSConicGradientValue> create(CSSGradientRepeat repeat)
+    static std::reference_wrapper<CSSConicGradientValue> create(CSSGradientRepeat repeat)
     {
         return adoptRef(*new CSSConicGradientValue(repeat));
     }
 
-    Ref<CSSConicGradientValue> clone() const
+    std::reference_wrapper<CSSConicGradientValue> clone() const
     {
         return adoptRef(*new CSSConicGradientValue(*this));
     }
 
     std::string customCSSText() const;
 
-    void setAngle(RefPtr<CSSPrimitiveValue>&& val) { m_angle = WTFMove(val); }
+    void setAngle(std::shared_ptr<CSSPrimitiveValue>&& val) { m_angle = std::move(val); }
 
     // Create the gradient for a given size.
-    Ref<Gradient> createGradient(RenderElement&, const FloatSize&);
+    std::reference_wrapper<Gradient> createGradient(RenderElement&, const FloatSize&);
 
     bool equals(const CSSConicGradientValue&) const;
 
@@ -261,7 +261,7 @@ private:
     {
     }
 
-    RefPtr<CSSPrimitiveValue> m_angle; // may be null.
+    std::shared_ptr<CSSPrimitiveValue> m_angle; // may be null.
 };
 
 } // namespace WebCore

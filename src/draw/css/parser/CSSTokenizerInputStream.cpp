@@ -57,7 +57,7 @@ void CSSTokenizerInputStream::advanceUntilNonWhitespace()
 
 double CSSTokenizerInputStream::getDouble(unsigned start, unsigned end) const
 {
-    ASSERT(start <= end && ((m_offset + end) <= m_stringLength));
+    assert(start <= end && ((m_offset + end) <= m_stringLength));
     bool isResultOK = false;
     double result = 0.0;
     if (start < end) {

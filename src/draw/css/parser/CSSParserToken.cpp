@@ -42,8 +42,8 @@ namespace WebCore {
 template<typename CharacterType>
 CSSPrimitiveValue::UnitType cssPrimitiveValueUnitFromTrie(const CharacterType* data, unsigned length)
 {
-    ASSERT(data);
-    ASSERT(length);
+    assert(data);
+    assert(length);
     switch (length) {
     case 1:
         switch (toASCIILower(data[0])) {
@@ -216,7 +216,7 @@ CSSParserToken::CSSParserToken(CSSParserTokenType type, UChar c)
     , m_blockType(NotBlock)
     , m_delimiter(c)
 {
-    ASSERT(m_type == DelimiterToken);
+    assert(m_type == DelimiterToken);
 }
 
 CSSParserToken::CSSParserToken(CSSParserTokenType type, StringView value, BlockType blockType)
@@ -234,7 +234,7 @@ CSSParserToken::CSSParserToken(CSSParserTokenType type, double numericValue, Num
     , m_numericSign(sign)
     , m_unit(static_cast<unsigned>(CSSPrimitiveValue::UnitType::CSS_NUMBER))
 {
-    ASSERT(type == NumberToken);
+    assert(type == NumberToken);
     m_numericValue = numericValue;
 }
 
@@ -257,7 +257,7 @@ CSSParserToken::CSSParserToken(HashTokenType type, StringView value)
 
 void CSSParserToken::convertToDimensionWithUnit(StringView unit)
 {
-    ASSERT(m_type == NumberToken);
+    assert(m_type == NumberToken);
     m_type = DimensionToken;
     initValueFromStringView(unit);
     m_unit = static_cast<unsigned>(stringToUnitType(unit));
@@ -265,14 +265,14 @@ void CSSParserToken::convertToDimensionWithUnit(StringView unit)
 
 void CSSParserToken::convertToPercentage()
 {
-    ASSERT(m_type == NumberToken);
+    assert(m_type == NumberToken);
     m_type = PercentageToken;
     m_unit = static_cast<unsigned>(CSSPrimitiveValue::UnitType::CSS_PERCENTAGE);
 }
 
 UChar CSSParserToken::delimiter() const
 {
-    ASSERT(m_type == DelimiterToken);
+    assert(m_type == DelimiterToken);
     return m_delimiter;
 }
 
@@ -280,25 +280,25 @@ NumericSign CSSParserToken::numericSign() const
 {
     // This is valid for DimensionToken and PercentageToken, but only used
     // in <an+b> parsing on NumberTokens.
-    ASSERT(m_type == NumberToken);
+    assert(m_type == NumberToken);
     return static_cast<NumericSign>(m_numericSign);
 }
 
 NumericValueType CSSParserToken::numericValueType() const
 {
-    ASSERT(m_type == NumberToken || m_type == PercentageToken || m_type == DimensionToken);
+    assert(m_type == NumberToken || m_type == PercentageToken || m_type == DimensionToken);
     return static_cast<NumericValueType>(m_numericValueType);
 }
 
 double CSSParserToken::numericValue() const
 {
-    ASSERT(m_type == NumberToken || m_type == PercentageToken || m_type == DimensionToken);
+    assert(m_type == NumberToken || m_type == PercentageToken || m_type == DimensionToken);
     return m_numericValue;
 }
 
 CSSPropertyID CSSParserToken::parseAsCSSPropertyID() const
 {
-    ASSERT(m_type == IdentToken);
+    assert(m_type == IdentToken);
     return cssPropertyID(value());
 }
 

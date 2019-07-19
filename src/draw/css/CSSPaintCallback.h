@@ -45,7 +45,7 @@ class CSSPaintCallback : public RefCounted<CSSPaintCallback>, public CanMakeWeak
 public:
     using ActiveDOMCallback::ActiveDOMCallback;
 
-    virtual CallbackResult<void> handleEvent(JSC::JSValue, PaintRenderingContext2D&, CSSPaintSize&, StylePropertyMapReadOnly&, const std::vector<String>&) = 0;
+    virtual CallbackResult<void> handleEvent(JSC::JSValue, PaintRenderingContext2D&, CSSPaintSize&, StylePropertyMapReadOnly&, const std::vector<std::string>&) = 0;
 
     virtual ~CSSPaintCallback()
     {

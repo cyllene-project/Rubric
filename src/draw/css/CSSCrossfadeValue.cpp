@@ -66,19 +66,19 @@ void CSSCrossfadeValue::SubimageObserver::imageChanged(CachedImage*, const IntRe
     m_owner.crossfadeChanged();
 }
 
-inline CSSCrossfadeValue::CSSCrossfadeValue(Ref<CSSValue>&& fromValue, Ref<CSSValue>&& toValue, Ref<CSSPrimitiveValue>&& percentageValue, bool prefixed)
+inline CSSCrossfadeValue::CSSCrossfadeValue(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed)
     : CSSImageGeneratorValue(CrossfadeClass)
-    , m_fromValue(WTFMove(fromValue))
-    , m_toValue(WTFMove(toValue))
-    , m_percentageValue(WTFMove(percentageValue))
+    , m_fromValue(std::move(fromValue))
+    , m_toValue(std::move(toValue))
+    , m_percentageValue(std::move(percentageValue))
     , m_subimageObserver(*this)
     , m_isPrefixed(prefixed)
 {
 }
 
-Ref<CSSCrossfadeValue> CSSCrossfadeValue::create(Ref<CSSValue>&& fromValue, Ref<CSSValue>&& toValue, Ref<CSSPrimitiveValue>&& percentageValue, bool prefixed)
+Ref<CSSCrossfadeValue> CSSCrossfadeValue::create(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed)
 {
-    return adoptRef(*new CSSCrossfadeValue(WTFMove(fromValue), WTFMove(toValue), WTFMove(percentageValue), prefixed));
+    return adoptRef(*new CSSCrossfadeValue(std::move(fromValue), std::move(toValue), std::move(percentageValue), prefixed));
 }
 
 CSSCrossfadeValue::~CSSCrossfadeValue()
@@ -213,9 +213,9 @@ bool CSSCrossfadeValue::traverseSubresources(const WTF::Function<bool (const Cac
     return false;
 }
 
-RefPtr<CSSCrossfadeValue> CSSCrossfadeValue::blend(const CSSCrossfadeValue& from, double progress) const
+std::shared_ptr<CSSCrossfadeValue> CSSCrossfadeValue::blend(const CSSCrossfadeValue& from, double progress) const
 {
-    ASSERT(equalInputImages(from));
+    assert(equalInputImages(from));
 
     if (!m_cachedToImage || !m_cachedFromImage)
         return nullptr;
@@ -231,7 +231,7 @@ RefPtr<CSSCrossfadeValue> CSSCrossfadeValue::blend(const CSSCrossfadeValue& from
         toPercentage /= 100.0;
     auto percentageValue = CSSPrimitiveValue::create(blendFunc(fromPercentage, toPercentage, progress), CSSPrimitiveValue::CSS_NUMBER);
 
-    return CSSCrossfadeValue::create(WTFMove(fromImageValue), WTFMove(toImageValue), WTFMove(percentageValue), from.isPrefixed() && isPrefixed());
+    return CSSCrossfadeValue::create(std::move(fromImageValue), std::move(toImageValue), std::move(percentageValue), from.isPrefixed() && isPrefixed());
 }
 
 bool CSSCrossfadeValue::equals(const CSSCrossfadeValue& other) const

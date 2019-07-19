@@ -55,7 +55,7 @@ enum class ExternalResourceDownloadPolicy;
 
 class CSSFontFace final : public RefCounted<CSSFontFace> {
 public:
-    static Ref<CSSFontFace> create(CSSFontSelector* fontSelector, StyleRuleFontFace* cssConnection = nullptr, FontFace* wrapper = nullptr, bool isLocalFallback = false)
+    static std::reference_wrapper<CSSFontFace> create(CSSFontSelector* fontSelector, StyleRuleFontFace* cssConnection = nullptr, FontFace* wrapper = nullptr, bool isLocalFallback = false)
     {
         return adoptRef(*new CSSFontFace(fontSelector, cssConnection, wrapper, isLocalFallback));
     }
@@ -112,7 +112,7 @@ public:
 
     void load();
 
-    RefPtr<Font> font(const FontDescription&, bool syntheticBold, bool syntheticItalic, ExternalResourceDownloadPolicy);
+    std::shared_ptr<Font> font(const FontDescription&, bool syntheticBold, bool syntheticItalic, ExternalResourceDownloadPolicy);
 
     static void appendSources(CSSFontFace&, CSSValueList&, Document*, bool isInitiatingElementInUserAgentShadowTree);
 
@@ -147,7 +147,7 @@ public:
     bool rangesMatchCodePoint(UChar32) const;
 
     // We don't guarantee that the FontFace wrapper will be the same every time you ask for it.
-    Ref<FontFace> wrapper();
+    std::reference_wrapper<FontFace> wrapper();
     void setWrapper(FontFace&);
     FontFace* existingWrapper();
 
@@ -181,7 +181,7 @@ private:
     void fontLoadEventOccurred();
     void timeoutFired();
 
-    RefPtr<CSSValueList> m_families;
+    std::shared_ptr<CSSValueList> m_families;
     std::vector<UnicodeRange> m_ranges;
 
     FontFeatureSettings m_featureSettings;
@@ -189,9 +189,9 @@ private:
     FontLoadingBehavior m_loadingBehavior { FontLoadingBehavior::Auto };
 
     std::vector<std::unique_ptr<CSSFontFaceSource>, 0, CrashOnOverflow, 0> m_sources;
-    RefPtr<CSSFontSelector> m_fontSelector; // FIXME: https://bugs.webkit.org/show_bug.cgi?id=196437 There's a retain cycle: CSSFontSelector -> CSSFontFaceSet -> CSSFontFace -> CSSFontSelector
-    RefPtr<StyleRuleFontFace> m_cssConnection;
-    HashSet<Client*> m_clients;
+    std::shared_ptr<CSSFontSelector> m_fontSelector; // FIXME: https://bugs.webkit.org/show_bug.cgi?id=196437 There's a retain cycle: CSSFontSelector -> CSSFontFaceSet -> CSSFontFace -> CSSFontSelector
+    std::shared_ptr<StyleRuleFontFace> m_cssConnection;
+    std::unordered_set<Client*> m_clients;
     WeakPtr<FontFace> m_wrapper;
     FontSelectionSpecifiedCapabilities m_fontSelectionCapabilities;
     

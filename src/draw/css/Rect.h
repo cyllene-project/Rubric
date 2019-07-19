@@ -31,10 +31,10 @@ public:
     CSSPrimitiveValue* bottom() const { return m_bottom.get(); }
     CSSPrimitiveValue* left() const { return m_left.get(); }
 
-    void setTop(RefPtr<CSSPrimitiveValue>&& top) { m_top = WTFMove(top); }
-    void setRight(RefPtr<CSSPrimitiveValue>&& right) { m_right = WTFMove(right); }
-    void setBottom(RefPtr<CSSPrimitiveValue>&& bottom) { m_bottom = WTFMove(bottom); }
-    void setLeft(RefPtr<CSSPrimitiveValue>&& left) { m_left = WTFMove(left); }
+    void setTop(std::shared_ptr<CSSPrimitiveValue>&& top) { m_top = std::move(top); }
+    void setRight(std::shared_ptr<CSSPrimitiveValue>&& right) { m_right = std::move(right); }
+    void setBottom(std::shared_ptr<CSSPrimitiveValue>&& bottom) { m_bottom = std::move(bottom); }
+    void setLeft(std::shared_ptr<CSSPrimitiveValue>&& left) { m_left = std::move(left); }
 
     bool equals(const RectBase& other) const
     {
@@ -49,15 +49,15 @@ protected:
     ~RectBase() = default;
 
 private:
-    RefPtr<CSSPrimitiveValue> m_top;
-    RefPtr<CSSPrimitiveValue> m_right;
-    RefPtr<CSSPrimitiveValue> m_bottom;
-    RefPtr<CSSPrimitiveValue> m_left;
+    std::shared_ptr<CSSPrimitiveValue> m_top;
+    std::shared_ptr<CSSPrimitiveValue> m_right;
+    std::shared_ptr<CSSPrimitiveValue> m_bottom;
+    std::shared_ptr<CSSPrimitiveValue> m_left;
 };
 
 class Rect final : public RectBase, public RefCounted<Rect> {
 public:
-    static Ref<Rect> create() { return adoptRef(*new Rect); }
+    static std::reference_wrapper<Rect> create() { return adoptRef(*new Rect); }
 
     std::string cssText() const
     {
@@ -74,7 +74,7 @@ private:
 
 class Quad final : public RectBase, public RefCounted<Quad> {
 public:
-    static Ref<Quad> create() { return adoptRef(*new Quad); }
+    static std::reference_wrapper<Quad> create() { return adoptRef(*new Quad); }
 
     std::string cssText() const
     {

@@ -25,6 +25,10 @@
 
 #pragma once
 
+#include <string>
+#include <memory>
+#include <unordered_map>
+
 namespace WebCore {
 
 class CSSCustomPropertyValue;
@@ -35,15 +39,15 @@ struct CSSRegisteredCustomProperty {
     const std::string syntax;
     const bool inherits;
 
-    CSSRegisteredCustomProperty(const std::string& name, const std::string& syntax, bool inherits, RefPtr<CSSCustomPropertyValue>&& initialValue);
+    CSSRegisteredCustomProperty(const std::string& name, const std::string& syntax, bool inherits, std::shared_ptr<CSSCustomPropertyValue>&& initialValue);
 
     const CSSCustomPropertyValue* initialValue() const { return m_initialValue.get(); }
-    RefPtr<CSSCustomPropertyValue> initialValueCopy() const;
+    std::shared_ptr<CSSCustomPropertyValue> initialValueCopy() const;
 
 private:
-    const RefPtr<CSSCustomPropertyValue> m_initialValue;
+    const std::shared_ptr<CSSCustomPropertyValue> m_initialValue;
 };
 
-using CSSRegisteredCustomPropertySet = HashMap<String, std::unique_ptr<CSSRegisteredCustomProperty>>;
+using CSSRegisteredCustomPropertySet = std::unordered_map<std::string, std::unique_ptr<CSSRegisteredCustomProperty>>;
 
 }

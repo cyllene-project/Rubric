@@ -96,7 +96,7 @@ Ref<CSSPrimitiveValue> CSSValuePool::createColorValue(const Color& color)
 
 Ref<CSSPrimitiveValue> CSSValuePool::createValue(double value, CSSPrimitiveValue::UnitType type)
 {
-    ASSERT(std::isfinite(value));
+    assert(std::isfinite(value));
 
     if (value < 0 || value > maximumCacheableIntegerValue)
         return CSSPrimitiveValue::create(value, type);
@@ -131,7 +131,7 @@ Ref<CSSPrimitiveValue> CSSValuePool::createFontFamilyValue(const std::string& fa
     }).iterator->value;
 }
 
-RefPtr<CSSValueList> CSSValuePool::createFontFaceValue(const AtomString& string)
+std::shared_ptr<CSSValueList> CSSValuePool::createFontFaceValue(const std::atomic<std::string>& string)
 {
     // Remove one entry at random if the cache grows too large.
     // FIXME: Use TinyLRUCache instead?
@@ -139,7 +139,7 @@ RefPtr<CSSValueList> CSSValuePool::createFontFaceValue(const AtomString& string)
     if (m_fontFaceValueCache.size() >= maximumFontFaceCacheSize)
         m_fontFaceValueCache.remove(m_fontFaceValueCache.random());
 
-    return m_fontFaceValueCache.ensure(string, [&string] () -> RefPtr<CSSValueList> {
+    return m_fontFaceValueCache.ensure(string, [&string] () -> std::shared_ptr<CSSValueList> {
         auto result = CSSParser::parseSingleValue(CSSPropertyFontFamily, string);
         if (!is<CSSValueList>(result))
             return nullptr;

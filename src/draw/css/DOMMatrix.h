@@ -33,36 +33,36 @@ class ScriptExecutionContext;
 
 class DOMMatrix : public DOMMatrixReadOnly {
 public:
-    static ExceptionOr<Ref<DOMMatrix>> create(ScriptExecutionContext&, Optional<Variant<String, std::vector<double>>>&&);
+    static ExceptionOr<std::reference_wrapper<DOMMatrix>> create(ScriptExecutionContext&, Optional<Variant<String, std::vector<double>>>&&);
 
-    static Ref<DOMMatrix> create(const TransformationMatrix& matrix, Is2D is2D)
+    static std::reference_wrapper<DOMMatrix> create(const TransformationMatrix& matrix, Is2D is2D)
     {
         return adoptRef(*new DOMMatrix(matrix, is2D));
     }
 
-    static Ref<DOMMatrix> create(TransformationMatrix&& matrix, Is2D is2D)
+    static std::reference_wrapper<DOMMatrix> create(TransformationMatrix&& matrix, Is2D is2D)
     {
-        return adoptRef(*new DOMMatrix(WTFMove(matrix), is2D));
+        return adoptRef(*new DOMMatrix(std::move(matrix), is2D));
     }
 
-    static ExceptionOr<Ref<DOMMatrix>> fromMatrix(DOMMatrixInit&&);
+    static ExceptionOr<std::reference_wrapper<DOMMatrix>> fromMatrix(DOMMatrixInit&&);
 
-    static ExceptionOr<Ref<DOMMatrix>> fromFloat32Array(Ref<Float32Array>&&);
-    static ExceptionOr<Ref<DOMMatrix>> fromFloat64Array(Ref<Float64Array>&&);
+    static ExceptionOr<std::reference_wrapper<DOMMatrix>> fromFloat32Array(std::reference_wrapper<Float32Array>&&);
+    static ExceptionOr<std::reference_wrapper<DOMMatrix>> fromFloat64Array(std::reference_wrapper<Float64Array>&&);
 
-    ExceptionOr<Ref<DOMMatrix>> multiplySelf(DOMMatrixInit&& other);
-    ExceptionOr<Ref<DOMMatrix>> preMultiplySelf(DOMMatrixInit&& other);
-    Ref<DOMMatrix> translateSelf(double tx = 0, double ty = 0, double tz = 0);
-    Ref<DOMMatrix> scaleSelf(double scaleX = 1, Optional<double> scaleY = WTF::nullopt, double scaleZ = 1, double originX = 0, double originY = 0, double originZ = 0);
-    Ref<DOMMatrix> scale3dSelf(double scale = 1, double originX = 0, double originY = 0, double originZ = 0);
-    Ref<DOMMatrix> rotateSelf(double rotX = 0, Optional<double> rotY = WTF::nullopt, Optional<double> rotZ = WTF::nullopt); // Angles are in degrees.
-    Ref<DOMMatrix> rotateFromVectorSelf(double x = 0, double y = 0);
-    Ref<DOMMatrix> rotateAxisAngleSelf(double x = 0, double y = 0, double z = 0, double angle = 0); // Angle is in degrees.
-    Ref<DOMMatrix> skewXSelf(double sx = 0); // Angle is in degrees.
-    Ref<DOMMatrix> skewYSelf(double sy = 0); // Angle is in degrees.
-    Ref<DOMMatrix> invertSelf();
+    ExceptionOr<std::reference_wrapper<DOMMatrix>> multiplySelf(DOMMatrixInit&& other);
+    ExceptionOr<std::reference_wrapper<DOMMatrix>> preMultiplySelf(DOMMatrixInit&& other);
+    std::reference_wrapper<DOMMatrix> translateSelf(double tx = 0, double ty = 0, double tz = 0);
+    std::reference_wrapper<DOMMatrix> scaleSelf(double scaleX = 1, Optional<double> scaleY = WTF::nullopt, double scaleZ = 1, double originX = 0, double originY = 0, double originZ = 0);
+    std::reference_wrapper<DOMMatrix> scale3dSelf(double scale = 1, double originX = 0, double originY = 0, double originZ = 0);
+    std::reference_wrapper<DOMMatrix> rotateSelf(double rotX = 0, Optional<double> rotY = WTF::nullopt, Optional<double> rotZ = WTF::nullopt); // Angles are in degrees.
+    std::reference_wrapper<DOMMatrix> rotateFromVectorSelf(double x = 0, double y = 0);
+    std::reference_wrapper<DOMMatrix> rotateAxisAngleSelf(double x = 0, double y = 0, double z = 0, double angle = 0); // Angle is in degrees.
+    std::reference_wrapper<DOMMatrix> skewXSelf(double sx = 0); // Angle is in degrees.
+    std::reference_wrapper<DOMMatrix> skewYSelf(double sy = 0); // Angle is in degrees.
+    std::reference_wrapper<DOMMatrix> invertSelf();
 
-    ExceptionOr<Ref<DOMMatrix>> setMatrixValueForBindings(const String&);
+    ExceptionOr<std::reference_wrapper<DOMMatrix>> setMatrixValueForBindings(const std::string&);
 
     void setA(double f) { m_matrix.setA(f); }
     void setB(double f) { m_matrix.setB(f); }

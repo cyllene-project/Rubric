@@ -33,27 +33,27 @@ namespace WebCore {
 
 class CSSFontStyleRangeValue final : public CSSValue {
 public:
-    static Ref<CSSFontStyleRangeValue> create(Ref<CSSPrimitiveValue>&& fontStyleValue)
+    static std::reference_wrapper<CSSFontStyleRangeValue> create(std::reference_wrapper<CSSPrimitiveValue>&& fontStyleValue)
     {
-        return adoptRef(*new CSSFontStyleRangeValue(WTFMove(fontStyleValue), nullptr));
+        return adoptRef(*new CSSFontStyleRangeValue(std::move(fontStyleValue), nullptr));
     }
-    static Ref<CSSFontStyleRangeValue> create(Ref<CSSPrimitiveValue>&& fontStyleValue, RefPtr<CSSValueList>&& obliqueValues)
+    static std::reference_wrapper<CSSFontStyleRangeValue> create(std::reference_wrapper<CSSPrimitiveValue>&& fontStyleValue, std::shared_ptr<CSSValueList>&& obliqueValues)
     {
-        return adoptRef(*new CSSFontStyleRangeValue(WTFMove(fontStyleValue), WTFMove(obliqueValues)));
+        return adoptRef(*new CSSFontStyleRangeValue(std::move(fontStyleValue), std::move(obliqueValues)));
     }
 
     std::string customCSSText() const;
 
     bool equals(const CSSFontStyleRangeValue&) const;
 
-    Ref<CSSPrimitiveValue> fontStyleValue;
-    RefPtr<CSSValueList> obliqueValues;
+    std::reference_wrapper<CSSPrimitiveValue> fontStyleValue;
+    std::shared_ptr<CSSValueList> obliqueValues;
 
 private:
-    CSSFontStyleRangeValue(Ref<CSSPrimitiveValue>&& fontStyleValue, RefPtr<CSSValueList>&& obliqueValues)
+    CSSFontStyleRangeValue(std::reference_wrapper<CSSPrimitiveValue>&& fontStyleValue, std::shared_ptr<CSSValueList>&& obliqueValues)
         : CSSValue(FontStyleRangeClass)
-        , fontStyleValue(WTFMove(fontStyleValue))
-        , obliqueValues(WTFMove(obliqueValues))
+        , fontStyleValue(std::move(fontStyleValue))
+        , obliqueValues(std::move(obliqueValues))
     {
     }
 };

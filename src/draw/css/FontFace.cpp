@@ -46,14 +46,14 @@
 
 namespace WebCore {
 
-static bool populateFontFaceWithArrayBuffer(CSSFontFace& fontFace, Ref<JSC::ArrayBufferView>&& arrayBufferView)
+static bool populateFontFaceWithArrayBuffer(CSSFontFace& fontFace, std::reference_wrapper<JSC::ArrayBufferView>&& arrayBufferView)
 {
-    auto source = std::make_unique<CSSFontFaceSource>(fontFace, String(), nullptr, nullptr, WTFMove(arrayBufferView));
-    fontFace.adoptSource(WTFMove(source));
+    auto source = std::make_unique<CSSFontFaceSource>(fontFace, String(), nullptr, nullptr, std::move(arrayBufferView));
+    fontFace.adoptSource(std::move(source));
     return false;
 }
 
-ExceptionOr<Ref<FontFace>> FontFace::create(Document& document, const std::string& family, Source&& source, const Descriptors& descriptors)
+ExceptionOr<std::reference_wrapper<FontFace>> FontFace::create(Document& document, const std::string& family, Source&& source, const Descriptors& descriptors)
 {
     auto result = adoptRef(*new FontFace(document.fontSelector()));
 
@@ -71,14 +71,14 @@ ExceptionOr<Ref<FontFace>> FontFace::create(Document& document, const std::strin
             CSSFontFace::appendSources(result->backing(), downcast<CSSValueList>(*value), &document, false);
             return { };
         },
-        [&] (RefPtr<ArrayBufferView>& arrayBufferView) -> ExceptionOr<void> {
+        [&] (std::shared_ptr<ArrayBufferView>& arrayBufferView) -> ExceptionOr<void> {
             dataRequiresAsynchronousLoading = populateFontFaceWithArrayBuffer(result->backing(), arrayBufferView.releaseNonNull());
             return { };
         },
-        [&] (RefPtr<ArrayBuffer>& arrayBuffer) -> ExceptionOr<void> {
+        [&] (std::shared_ptr<ArrayBuffer>& arrayBuffer) -> ExceptionOr<void> {
             unsigned byteLength = arrayBuffer->byteLength();
-            auto arrayBufferView = JSC::Uint8Array::create(WTFMove(arrayBuffer), 0, byteLength);
-            dataRequiresAsynchronousLoading = populateFontFaceWithArrayBuffer(result->backing(), WTFMove(arrayBufferView));
+            auto arrayBufferView = JSC::Uint8Array::create(std::move(arrayBuffer), 0, byteLength);
+            dataRequiresAsynchronousLoading = populateFontFaceWithArrayBuffer(result->backing(), std::move(arrayBufferView));
             return { };
         }
     );
@@ -142,7 +142,7 @@ FontFace::~FontFace()
     m_backing->removeClient(*this);
 }
 
-RefPtr<CSSValue> FontFace::parseString(const std::string& string, CSSPropertyID propertyID)
+std::shared_ptr<CSSValue> FontFace::parseString(const std::string& string, CSSPropertyID propertyID)
 {
     // FIXME: Should use the Document to get the right parsing mode.
     return CSSParser::parseFontFaceDescriptor(propertyID, string, HTMLStandardMode);
@@ -327,8 +327,8 @@ String FontFace::style() const
     auto minimumNonKeyword = ComputedStyleExtractor::fontNonKeywordStyleFromStyleValue(style.minimum);
     auto maximumNonKeyword = ComputedStyleExtractor::fontNonKeywordStyleFromStyleValue(style.maximum);
 
-    ASSERT(minimumNonKeyword->fontStyleValue->valueID() == CSSValueOblique);
-    ASSERT(maximumNonKeyword->fontStyleValue->valueID() == CSSValueOblique);
+    assert(minimumNonKeyword->fontStyleValue->valueID() == CSSValueOblique);
+    assert(maximumNonKeyword->fontStyleValue->valueID() == CSSValueOblique);
 
     StringBuilder builder;
     builder.append(minimumNonKeyword->fontStyleValue->cssText());

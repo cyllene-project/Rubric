@@ -64,7 +64,7 @@ void CSSFontFaceSet::addClient(CSSFontFaceSetClient& client)
 
 void CSSFontFaceSet::removeClient(CSSFontFaceSetClient& client)
 {
-    ASSERT(m_clients.contains(&client));
+    assert(m_clients.contains(&client));
     m_clients.remove(&client);
 }
 
@@ -100,7 +100,7 @@ bool CSSFontFaceSet::hasFace(const CSSFontFace& face) const
 
 void CSSFontFaceSet::ensureLocalFontFacesForFamilyRegistered(const std::string& familyName)
 {
-    ASSERT(m_owningFontSelector);
+    assert(m_owningFontSelector);
     if (m_locallyInstalledFacesLookupTable.contains(familyName))
         return;
 
@@ -111,19 +111,19 @@ void CSSFontFaceSet::ensureLocalFontFacesForFamilyRegistered(const std::string& 
     if (capabilities.isEmpty())
         return;
 
-    std::vector<Ref<CSSFontFace>> faces;
+    std::vector<std::reference_wrapper<CSSFontFace>> faces;
     for (auto item : capabilities) {
-        Ref<CSSFontFace> face = CSSFontFace::create(m_owningFontSelector.get(), nullptr, nullptr, true);
+        std::reference_wrapper<CSSFontFace> face = CSSFontFace::create(m_owningFontSelector.get(), nullptr, nullptr, true);
         
-        Ref<CSSValueList> familyList = CSSValueList::createCommaSeparated();
+        std::reference_wrapper<CSSValueList> familyList = CSSValueList::createCommaSeparated();
         familyList->append(CSSValuePool::singleton().createFontFamilyValue(familyName));
         face->setFamilies(familyList.get());
         face->setFontSelectionCapabilities(item);
         face->adoptSource(std::make_unique<CSSFontFaceSource>(face.get(), familyName));
-        ASSERT(!face->computeFailureState());
-        faces.append(WTFMove(face));
+        assert(!face->computeFailureState());
+        faces.append(std::move(face));
     }
-    m_locallyInstalledFacesLookupTable.add(familyName, WTFMove(faces));
+    m_locallyInstalledFacesLookupTable.add(familyName, std::move(faces));
 }
 
 String CSSFontFaceSet::familyNameFromPrimitive(const CSSPrimitiveValue& value)
@@ -165,7 +165,7 @@ void CSSFontFaceSet::addToFacesLookupTable(CSSFontFace& face)
         if (familyName.isEmpty())
             continue;
 
-        auto addResult = m_facesLookupTable.add(familyName, std::vector<Ref<CSSFontFace>>());
+        auto addResult = m_facesLookupTable.add(familyName, std::vector<std::reference_wrapper<CSSFontFace>>());
         auto& familyFontFaces = addResult.iterator->value;
         if (addResult.isNewEntry) {
             // m_locallyInstalledFontFaces grows without bound, eventually encorporating every font installed on the system.
@@ -181,7 +181,7 @@ void CSSFontFaceSet::addToFacesLookupTable(CSSFontFace& face)
 
 void CSSFontFaceSet::add(CSSFontFace& face)
 {
-    ASSERT(!hasFace(face));
+    assert(!hasFace(face));
 
     for (auto* client : m_clients)
         client->fontModified();
@@ -200,7 +200,7 @@ void CSSFontFaceSet::add(CSSFontFace& face)
         incrementActiveCount();
 
     if (face.cssConnection()) {
-        ASSERT(!m_constituentCSSConnections.contains(face.cssConnection()));
+        assert(!m_constituentCSSConnections.contains(face.cssConnection()));
         m_constituentCSSConnections.add(face.cssConnection(), &face);
     }
 }
@@ -213,7 +213,7 @@ void CSSFontFaceSet::removeFromFacesLookupTable(const CSSFontFace& face, const C
             continue;
 
         auto iterator = m_facesLookupTable.find(familyName);
-        ASSERT(iterator != m_facesLookupTable.end());
+        assert(iterator != m_facesLookupTable.end());
         bool found = false;
         for (size_t i = 0; i < iterator->value.size(); ++i) {
             if (iterator->value[i].ptr() == &face) {
@@ -241,7 +241,7 @@ void CSSFontFaceSet::remove(const CSSFontFace& face)
         removeFromFacesLookupTable(face, *face.families());
 
     if (face.cssConnection()) {
-        ASSERT(m_constituentCSSConnections.get(face.cssConnection()) == &face);
+        assert(m_constituentCSSConnections.get(face.cssConnection()) == &face);
         m_constituentCSSConnections.remove(face.cssConnection());
     }
 
@@ -266,7 +266,7 @@ CSSFontFace* CSSFontFaceSet::lookUpByCSSConnection(StyleRuleFontFace& target)
 
 void CSSFontFaceSet::purge()
 {
-    std::vector<Ref<CSSFontFace>> toRemove;
+    std::vector<std::reference_wrapper<CSSFontFace>> toRemove;
     for (auto& face : m_faces) {
         if (face->purgeable())
             toRemove.append(face.copyRef());
@@ -296,21 +296,21 @@ void CSSFontFaceSet::clear()
 
 CSSFontFace& CSSFontFaceSet::operator[](size_t i)
 {
-    ASSERT(i < faceCount());
+    assert(i < faceCount());
     return m_faces[i];
 }
 
 static FontSelectionRequest computeFontSelectionRequest(MutableStyleProperties& style)
 {
-    RefPtr<CSSValue> weightValue = style.getPropertyCSSValue(CSSPropertyFontWeight).get();
+    std::shared_ptr<CSSValue> weightValue = style.getPropertyCSSValue(CSSPropertyFontWeight).get();
     if (!weightValue)
         weightValue = CSSValuePool::singleton().createIdentifierValue(CSSValueNormal).ptr();
 
-    RefPtr<CSSValue> stretchValue = style.getPropertyCSSValue(CSSPropertyFontStretch).get();
+    std::shared_ptr<CSSValue> stretchValue = style.getPropertyCSSValue(CSSPropertyFontStretch).get();
     if (!stretchValue)
         stretchValue = CSSValuePool::singleton().createIdentifierValue(CSSValueNormal).ptr();
 
-    RefPtr<CSSValue> styleValue = style.getPropertyCSSValue(CSSPropertyFontStyle).get();
+    std::shared_ptr<CSSValue> styleValue = style.getPropertyCSSValue(CSSPropertyFontStyle).get();
     if (!styleValue)
         styleValue = CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(CSSValueNormal));
 
@@ -321,12 +321,12 @@ static FontSelectionRequest computeFontSelectionRequest(MutableStyleProperties& 
     return { weightSelectionValue, stretchSelectionValue, styleSelectionValue };
 }
 
-static HashSet<UChar32> codePointsFromString(StringView stringView)
+static std::unordered_set<UChar32> codePointsFromString(StringView stringView)
 {
-    HashSet<UChar32> result;
+    std::unordered_set<UChar32> result;
     auto graphemeClusters = stringView.graphemeClusters();
     for (auto cluster : graphemeClusters) {
-        ASSERT(cluster.length() > 0);
+        assert(cluster.length() > 0);
         UChar32 character = 0;
         if (cluster.is8Bit())
             character = cluster[0];
@@ -351,7 +351,7 @@ ExceptionOr<std::vector<std::reference_wrapper<CSSFontFace>>> CSSFontFaceSet::ma
         return Exception { SyntaxError };
     CSSValueList& familyList = downcast<CSSValueList>(*family);
 
-    HashSet<AtomString> uniqueFamilies;
+    std::unordered_set<AtomString> uniqueFamilies;
     std::vector<AtomString> familyOrder;
     for (auto& family : familyList) {
         auto& primitive = downcast<CSSPrimitiveValue>(family.get());
@@ -361,7 +361,7 @@ ExceptionOr<std::vector<std::reference_wrapper<CSSFontFace>>> CSSFontFaceSet::ma
             familyOrder.append(primitive.fontFamily().familyName);
     }
 
-    HashSet<CSSFontFace*> resultConstituents;
+    std::unordered_set<CSSFontFace*> resultConstituents;
     for (auto codePoint : codePointsFromString(string)) {
         bool found = false;
         for (auto& family : familyOrder) {
@@ -402,7 +402,7 @@ ExceptionOr<bool> CSSFontFaceSet::check(const std::string& font, const std::stri
     return true;
 }
 
-CSSSegmentedFontFace* CSSFontFaceSet::fontFace(FontSelectionRequest request, const AtomString& family)
+CSSSegmentedFontFace* CSSFontFaceSet::fontFace(FontSelectionRequest request, const std::atomic<std::string>& family)
 {
     auto iterator = m_facesLookupTable.find(family);
     if (iterator == m_facesLookupTable.end())
@@ -475,13 +475,13 @@ CSSSegmentedFontFace* CSSFontFaceSet::fontFace(FontSelectionRequest request, con
 
 void CSSFontFaceSet::fontStateChanged(CSSFontFace& face, CSSFontFace::Status oldState, CSSFontFace::Status newState)
 {
-    ASSERT(hasFace(face));
+    assert(hasFace(face));
     if (oldState == CSSFontFace::Status::Pending) {
-        ASSERT(newState == CSSFontFace::Status::Loading);
+        assert(newState == CSSFontFace::Status::Loading);
         incrementActiveCount();
     }
     if (newState == CSSFontFace::Status::Success || newState == CSSFontFace::Status::Failure) {
-        ASSERT(oldState == CSSFontFace::Status::Loading || oldState == CSSFontFace::Status::TimedOut);
+        assert(oldState == CSSFontFace::Status::Loading || oldState == CSSFontFace::Status::TimedOut);
         for (auto* client : m_clients)
             client->faceFinished(face, newState);
         decrementActiveCount();

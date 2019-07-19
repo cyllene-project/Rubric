@@ -29,9 +29,9 @@
 
 namespace WebCore {
 
-CSSBorderImageSliceValue::CSSBorderImageSliceValue(RefPtr<CSSPrimitiveValue>&& slices, bool fill)
+CSSBorderImageSliceValue::CSSBorderImageSliceValue(std::shared_ptr<CSSPrimitiveValue>&& slices, bool fill)
     : CSSValue(BorderImageSliceClass)
-    , m_slices(WTFMove(slices))
+    , m_slices(std::move(slices))
     , m_fill(fill)
 {
 }

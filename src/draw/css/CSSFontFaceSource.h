@@ -49,7 +49,7 @@ typedef FontTaggedSettings<int> FontFeatureSettings;
 class CSSFontFaceSource final : public CachedFontClient {
 
 public:
-    CSSFontFaceSource(CSSFontFace& owner, const std::string& familyNameOrURI, CachedFont* = nullptr, SVGFontFaceElement* = nullptr, RefPtr<JSC::ArrayBufferView>&& = nullptr);
+    CSSFontFaceSource(CSSFontFace& owner, const std::string& familyNameOrURI, CachedFont* = nullptr, SVGFontFaceElement* = nullptr, std::shared_ptr<JSC::ArrayBufferView>&& = nullptr);
     virtual ~CSSFontFaceSource();
 
     //                      => Success
@@ -65,12 +65,12 @@ public:
     };
     Status status() const { return m_status; }
 
-    const AtomString& familyNameOrURI() const { return m_familyNameOrURI; }
+    const std::atomic<std::string>& familyNameOrURI() const { return m_familyNameOrURI; }
 
     void opportunisticallyStartFontDataURLLoading(CSSFontSelector&);
 
     void load(CSSFontSelector*);
-    RefPtr<Font> font(const FontDescription&, bool syntheticBold, bool syntheticItalic, const FontFeatureSettings&, const FontVariantSettings&, FontSelectionSpecifiedCapabilities);
+    std::shared_ptr<Font> font(const FontDescription&, bool syntheticBold, bool syntheticItalic, const FontFeatureSettings&, const FontVariantSettings&, FontSelectionSpecifiedCapabilities);
 
     bool requiresExternalResource() const { return m_font; }
 
@@ -89,8 +89,8 @@ private:
     CachedResourceHandle<CachedFont> m_font; // For remote fonts, a pointer to our cached resource.
     CSSFontFace& m_face; // Our owning font face.
 
-    RefPtr<SharedBuffer> m_generatedOTFBuffer;
-    RefPtr<JSC::ArrayBufferView> m_immediateSource;
+    std::shared_ptr<SharedBuffer> m_generatedOTFBuffer;
+    std::shared_ptr<JSC::ArrayBufferView> m_immediateSource;
     std::unique_ptr<FontCustomPlatformData> m_immediateFontCustomPlatformData;
 
 #if ENABLE(SVG_FONTS)

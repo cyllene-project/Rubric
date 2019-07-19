@@ -22,6 +22,8 @@
 
 #include "CSSPropertyNames.h"
 #include <functional>
+#include <unordered_set>
+#include <memory>
 
 namespace WebCore {
 
@@ -44,14 +46,6 @@ public:
         CSS_UNSET = 5,
         CSS_REVERT = 6
     };
-
-    // Override RefCounted's deref() to ensure operator delete is called on
-    // the appropriate subclass type.
-    void deref()
-    {
-        if (derefBase())
-            destroy();
-    }
 
     Type cssValueType() const;
     std::string cssText() const;
@@ -115,14 +109,12 @@ public:
     
     bool hasVariableReferences() const { return isVariableReferenceValue() || isPendingSubstitutionValue(); }
 
-    Ref<DeprecatedCSSOMValue> createDeprecatedCSSOMWrapper(CSSStyleDeclaration&) const;
-
     bool traverseSubresources(const std::function<bool (const CachedResource&)>& handler) const;
 
     // What properties does this value rely on (eg, font-size for em units)
-    void collectDirectComputationalDependencies(HashSet<CSSPropertyID>&) const;
+    void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
     // What properties in the root element does this value rely on (eg. font-size for rem units)
-    void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>&) const;
+    void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
 
     bool equals(const CSSValue&) const;
     bool operator==(const CSSValue& other) const { return equals(other); }
@@ -242,7 +234,7 @@ friend class CSSValueList;
 };
 
 template<typename CSSValueType>
-inline bool compareCSSValueVector(const std::vector<Ref<CSSValueType>>& firstVector, const std::vector<Ref<CSSValueType>>& secondVector)
+inline bool compareCSSValueVector(const std::vector<std::reference_wrapper<CSSValueType>>& firstVector, const std::vector<std::reference_wrapper<CSSValueType>>& secondVector)
 {
     size_t size = firstVector.size();
     if (size != secondVector.size())
@@ -259,18 +251,18 @@ inline bool compareCSSValueVector(const std::vector<Ref<CSSValueType>>& firstVec
 }
 
 template<typename CSSValueType>
-inline bool compareCSSValuePtr(const RefPtr<CSSValueType>& first, const RefPtr<CSSValueType>& second)
+inline bool compareCSSValuePtr(const std::shared_ptr<CSSValueType>& first, const std::shared_ptr<CSSValueType>& second)
 {
     return first ? second && first->equals(*second) : !second;
 }
 
 template<typename CSSValueType>
-inline bool compareCSSValue(const Ref<CSSValueType>& first, const Ref<CSSValueType>& second)
+inline bool compareCSSValue(const std::reference_wrapper<CSSValueType>& first, const std::reference_wrapper<CSSValueType>& second)
 {
     return first.get().equals(second);
 }
 
-typedef HashMap<AtomString, RefPtr<CSSCustomPropertyValue>> CustomPropertyValueMap;
+typedef std::unordered_map<std::atomic<std::string>, std::shared_ptr<CSSCustomPropertyValue>> CustomPropertyValueMap;
 
 } // namespace WebCore
 

@@ -57,12 +57,12 @@ ExceptionOr<void> DeprecatedCSSOMPrimitiveValue::setStringValue(unsigned short s
     return m_value->setStringValue(stringType, stringValue);
 }
 
-ExceptionOr<String> DeprecatedCSSOMPrimitiveValue::getStringValue() const
+ExceptionOr<std::string> DeprecatedCSSOMPrimitiveValue::getStringValue() const
 {
     return m_value->getStringValue();
 }
 
-ExceptionOr<Ref<DeprecatedCSSOMCounter>> DeprecatedCSSOMPrimitiveValue::getCounterValue() const
+ExceptionOr<std::reference_wrapper<DeprecatedCSSOMCounter>> DeprecatedCSSOMPrimitiveValue::getCounterValue() const
 {
     ExceptionOr<Counter&> counter = m_value->getCounterValue();
     if (counter.hasException())
@@ -70,7 +70,7 @@ ExceptionOr<Ref<DeprecatedCSSOMCounter>> DeprecatedCSSOMPrimitiveValue::getCount
     return DeprecatedCSSOMCounter::create(counter.releaseReturnValue(), m_owner.get());
 }
     
-ExceptionOr<Ref<DeprecatedCSSOMRect>> DeprecatedCSSOMPrimitiveValue::getRectValue() const
+ExceptionOr<std::reference_wrapper<DeprecatedCSSOMRect>> DeprecatedCSSOMPrimitiveValue::getRectValue() const
 {
     ExceptionOr<Rect&> rect = m_value->getRectValue();
     if (rect.hasException())
@@ -78,9 +78,9 @@ ExceptionOr<Ref<DeprecatedCSSOMRect>> DeprecatedCSSOMPrimitiveValue::getRectValu
     return DeprecatedCSSOMRect::create(rect.releaseReturnValue(), m_owner.get());
 }
 
-ExceptionOr<Ref<DeprecatedCSSOMRGBColor>> DeprecatedCSSOMPrimitiveValue::getRGBColorValue() const
+ExceptionOr<std::reference_wrapper<DeprecatedCSSOMRGBColor>> DeprecatedCSSOMPrimitiveValue::getRGBColorValue() const
 {
-    ExceptionOr<Ref<RGBColor>> color = m_value->getRGBColorValue();
+    ExceptionOr<std::reference_wrapper<RGBColor>> color = m_value->getRGBColorValue();
     if (color.hasException())
         return Exception { InvalidAccessError };
     return DeprecatedCSSOMRGBColor::create(color.releaseReturnValue(), m_owner.get());

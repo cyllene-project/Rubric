@@ -189,7 +189,7 @@ ALWAYS_INLINE bool matchesLangPseudoClass(const Element& element, const std::vec
     // as specified in www.ietf.org/rfc/rfc4647.txt.
     std::string_view languageStringView = language.string();
     unsigned languageLength = language.length();
-    for (const AtomString& range : argumentList) {
+    for (const std::atomic<std::string>& range : argumentList) {
         if (range.isEmpty())
             continue;
 

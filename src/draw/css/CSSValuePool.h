@@ -46,34 +46,34 @@ class CSSValuePool {
 public:
     static CSSValuePool& singleton();
 
-    RefPtr<CSSValueList> createFontFaceValue(const AtomString&);
-    Ref<CSSPrimitiveValue> createFontFamilyValue(const String&, FromSystemFontID = FromSystemFontID::No);
-    Ref<CSSInheritedValue> createInheritedValue() { return m_inheritedValue.get(); }
-    Ref<CSSInitialValue> createImplicitInitialValue() { return m_implicitInitialValue.get(); }
-    Ref<CSSInitialValue> createExplicitInitialValue() { return m_explicitInitialValue.get(); }
-    Ref<CSSUnsetValue> createUnsetValue() { return m_unsetValue.get(); }
-    Ref<CSSRevertValue> createRevertValue() { return m_revertValue.get(); }
-    Ref<CSSPrimitiveValue> createIdentifierValue(CSSValueID identifier);
-    Ref<CSSPrimitiveValue> createIdentifierValue(CSSPropertyID identifier);
-    Ref<CSSPrimitiveValue> createColorValue(const Color&);
-    Ref<CSSPrimitiveValue> createValue(double value, CSSPrimitiveValue::UnitType);
-    Ref<CSSPrimitiveValue> createValue(const std::string& value, CSSPrimitiveValue::UnitType type) { return CSSPrimitiveValue::create(value, type); }
-    Ref<CSSPrimitiveValue> createValue(const Length& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
-    Ref<CSSPrimitiveValue> createValue(const LengthSize& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
-    template<typename T> static Ref<CSSPrimitiveValue> createValue(T&& value) { return CSSPrimitiveValue::create(std::forward<T>(value)); }
+    std::shared_ptr<CSSValueList> createFontFaceValue(const std::atomic<std::string>&);
+    std::reference_wrapper<CSSPrimitiveValue> createFontFamilyValue(const std::string&, FromSystemFontID = FromSystemFontID::No);
+    std::reference_wrapper<CSSInheritedValue> createInheritedValue() { return m_inheritedValue.get(); }
+    std::reference_wrapper<CSSInitialValue> createImplicitInitialValue() { return m_implicitInitialValue.get(); }
+    std::reference_wrapper<CSSInitialValue> createExplicitInitialValue() { return m_explicitInitialValue.get(); }
+    std::reference_wrapper<CSSUnsetValue> createUnsetValue() { return m_unsetValue.get(); }
+    std::reference_wrapper<CSSRevertValue> createRevertValue() { return m_revertValue.get(); }
+    std::reference_wrapper<CSSPrimitiveValue> createIdentifierValue(CSSValueID identifier);
+    std::reference_wrapper<CSSPrimitiveValue> createIdentifierValue(CSSPropertyID identifier);
+    std::reference_wrapper<CSSPrimitiveValue> createColorValue(const Color&);
+    std::reference_wrapper<CSSPrimitiveValue> createValue(double value, CSSPrimitiveValue::UnitType);
+    std::reference_wrapper<CSSPrimitiveValue> createValue(const std::string& value, CSSPrimitiveValue::UnitType type) { return CSSPrimitiveValue::create(value, type); }
+    std::reference_wrapper<CSSPrimitiveValue> createValue(const Length& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
+    std::reference_wrapper<CSSPrimitiveValue> createValue(const LengthSize& value, const RenderStyle& style) { return CSSPrimitiveValue::create(value, style); }
+    template<typename T> static std::reference_wrapper<CSSPrimitiveValue> createValue(T&& value) { return CSSPrimitiveValue::create(std::forward<T>(value)); }
 
     void drain();
 
 private:
     CSSValuePool();
 
-    typedef HashMap<Color, RefPtr<CSSPrimitiveValue>> ColorValueCache;
+    typedef std::unordered_map<Color, std::shared_ptr<CSSPrimitiveValue>> ColorValueCache;
     ColorValueCache m_colorValueCache;
 
-    typedef HashMap<AtomString, RefPtr<CSSValueList>> FontFaceValueCache;
+    typedef std::unordered_map<AtomString, std::shared_ptr<CSSValueList>> FontFaceValueCache;
     FontFaceValueCache m_fontFaceValueCache;
 
-    typedef HashMap<std::pair<String, bool>, RefPtr<CSSPrimitiveValue>> FontFamilyValueCache;
+    typedef std::unordered_map<std::pair<String, bool>, std::shared_ptr<CSSPrimitiveValue>> FontFamilyValueCache;
     FontFamilyValueCache m_fontFamilyValueCache;
 
     friend class WTF::NeverDestroyed<CSSValuePool>;

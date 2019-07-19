@@ -61,7 +61,7 @@ bool StyleMedia::matchMedium(const std::string& query) const
         return false;
 
     Document* document = frame->document();
-    ASSERT(document);
+    assert(document);
     Element* documentElement = document->documentElement();
     if (!documentElement)
         return false;

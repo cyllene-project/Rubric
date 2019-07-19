@@ -36,12 +36,12 @@ class Document;
 
 class CSSCanvasValue final : public CSSImageGeneratorValue {
 public:
-    static Ref<CSSCanvasValue> create(const std::string& name) { return adoptRef(*new CSSCanvasValue(name)); }
+    static std::reference_wrapper<CSSCanvasValue> create(const std::string& name) { return adoptRef(*new CSSCanvasValue(name)); }
     ~CSSCanvasValue();
 
     std::string customCSSText() const;
 
-    RefPtr<Image> image(RenderElement*, const FloatSize&);
+    std::shared_ptr<Image> image(RenderElement*, const FloatSize&);
     bool isFixedSize() const { return true; }
     FloatSize fixedSize(const RenderElement*);
 

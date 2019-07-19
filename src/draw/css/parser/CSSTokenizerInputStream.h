@@ -95,7 +95,7 @@ public:
 
     std::string_view rangeAt(unsigned start, unsigned length) const
     {
-        ASSERT(start + length <= m_stringLength);
+        assert(start + length <= m_stringLength);
         return StringView(m_string.get()).substring(start, length); // FIXME: Should make a constructor on StringView for this.
     }
 

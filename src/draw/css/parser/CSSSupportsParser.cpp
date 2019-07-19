@@ -99,7 +99,7 @@ CSSSupportsParser::SupportsResult CSSSupportsParser::consumeCondition(CSSParserT
 
 CSSSupportsParser::SupportsResult CSSSupportsParser::consumeNegation(CSSParserTokenRange range)
 {
-    ASSERT(range.peek().type() == IdentToken || range.peek().type() == FunctionToken);
+    assert(range.peek().type() == IdentToken || range.peek().type() == FunctionToken);
     auto tokenType = range.peek().type();
     if (!equalIgnoringASCIICase(range.peek().value(), "not"))
         return Invalid;

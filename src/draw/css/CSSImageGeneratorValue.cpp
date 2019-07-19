@@ -55,7 +55,7 @@ private:
 
     CSSImageGeneratorValue& m_owner;
     const FloatSize m_size;
-    const Ref<GeneratedImage> m_image;
+    const std::reference_wrapper<GeneratedImage> m_image;
     DeferrableOneShotTimer m_evictionTimer;
 };
 
@@ -81,7 +81,7 @@ void CSSImageGeneratorValue::addClient(RenderElement& renderer)
 
 void CSSImageGeneratorValue::removeClient(RenderElement& renderer)
 {
-    ASSERT(m_clients.contains(&renderer));
+    assert(m_clients.contains(&renderer));
     if (!m_clients.remove(&renderer))
         return;
 
@@ -109,13 +109,13 @@ GeneratedImage* CSSImageGeneratorValue::cachedImageForSize(FloatSize size)
 
 void CSSImageGeneratorValue::saveCachedImageForSize(FloatSize size, GeneratedImage& image)
 {
-    ASSERT(!m_images.contains(size));
+    assert(!m_images.contains(size));
     m_images.add(size, std::make_unique<CachedGeneratedImage>(*this, size, image));
 }
 
 void CSSImageGeneratorValue::evictCachedGeneratedImage(FloatSize size)
 {
-    ASSERT(m_images.contains(size));
+    assert(m_images.contains(size));
     m_images.remove(size);
 }
 
@@ -134,7 +134,7 @@ void CSSImageGeneratorValue::CachedGeneratedImage::evictionTimerFired()
     m_owner.evictCachedGeneratedImage(m_size);
 }
 
-RefPtr<Image> CSSImageGeneratorValue::image(RenderElement& renderer, const FloatSize& size)
+std::shared_ptr<Image> CSSImageGeneratorValue::image(RenderElement& renderer, const FloatSize& size)
 {
     switch (classType()) {
     case CanvasClass:

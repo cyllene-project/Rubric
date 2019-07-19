@@ -216,22 +216,22 @@ namespace WebCore {
         const CSSSelector* tagHistory() const { return m_isLastInTagHistory ? 0 : const_cast<CSSSelector*>(this + 1); }
 
         const QualifiedName& tagQName() const;
-        const AtomString& tagLowercaseLocalName() const;
+        const std::atomic<std::string>& tagLowercaseLocalName() const;
 
-        const AtomString& value() const;
-        const AtomString& serializingValue() const;
+        const std::atomic<std::string>& value() const;
+        const std::atomic<std::string>& serializingValue() const;
         const QualifiedName& attribute() const;
-        const AtomString& attributeCanonicalLocalName() const;
-        const AtomString& argument() const { return m_hasRareData ? m_data.m_rareData->m_argument : nullAtom(); }
+        const std::atomic<std::string>& attributeCanonicalLocalName() const;
+        const std::atomic<std::string>& argument() const { return m_hasRareData ? m_data.m_rareData->m_argument : nullAtom(); }
         bool attributeValueMatchingIsCaseInsensitive() const;
         const std::vector<AtomString>* langArgumentList() const { return m_hasRareData ? m_data.m_rareData->m_langArgumentList.get() : nullptr; }
         const CSSSelectorList* selectorList() const { return m_hasRareData ? m_data.m_rareData->m_selectorList.get() : nullptr; }
 
-        void setValue(const AtomString&, bool matchLowerCase = false);
+        void setValue(const std::atomic<std::string>&, bool matchLowerCase = false);
         
         void setAttribute(const QualifiedName&, bool convertToLowercase, AttributeMatchType);
         void setNth(int a, int b);
-        void setArgument(const AtomString&);
+        void setArgument(const std::atomic<std::string>&);
         void setLangArgumentList(std::unique_ptr<std::vector<AtomString>>);
         void setSelectorList(std::unique_ptr<CSSSelectorList>);
 
@@ -245,35 +245,35 @@ namespace WebCore {
 
         PseudoClassType pseudoClassType() const
         {
-            ASSERT(match() == PseudoClass);
+            assert(match() == PseudoClass);
             return static_cast<PseudoClassType>(m_pseudoType);
         }
         void setPseudoClassType(PseudoClassType pseudoType)
         {
             m_pseudoType = pseudoType;
-            ASSERT(m_pseudoType == pseudoType);
+            assert(m_pseudoType == pseudoType);
         }
 
         PseudoElementType pseudoElementType() const
         {
-            ASSERT(match() == PseudoElement);
+            assert(match() == PseudoElement);
             return static_cast<PseudoElementType>(m_pseudoType);
         }
         void setPseudoElementType(PseudoElementType pseudoElementType)
         {
             m_pseudoType = pseudoElementType;
-            ASSERT(m_pseudoType == pseudoElementType);
+            assert(m_pseudoType == pseudoElementType);
         }
 
         PagePseudoClassType pagePseudoClassType() const
         {
-            ASSERT(match() == PagePseudoClass);
+            assert(match() == PagePseudoClass);
             return static_cast<PagePseudoClassType>(m_pseudoType);
         }
         void setPagePseudoType(PagePseudoClassType pagePseudoType)
         {
             m_pseudoType = pagePseudoType;
-            ASSERT(m_pseudoType == pagePseudoType);
+            assert(m_pseudoType == pagePseudoType);
         }
 
         bool matchesPseudoElement() const;
@@ -287,14 +287,14 @@ namespace WebCore {
         void setRelation(RelationType relation)
         {
             m_relation = relation;
-            ASSERT(m_relation == relation);
+            assert(m_relation == relation);
         }
 
         Match match() const { return static_cast<Match>(m_match); }
         void setMatch(Match match)
         {
             m_match = match;
-            ASSERT(m_match == match);
+            assert(m_match == match);
         }
 
         bool isLastInSelectorList() const { return m_isLastInSelectorList; }
@@ -326,7 +326,7 @@ namespace WebCore {
         CSSSelector& operator=(const CSSSelector&);
 
         struct RareData : public RefCounted<RareData> {
-            static Ref<RareData> create(AtomString&& value) { return adoptRef(*new RareData(WTFMove(value))); }
+            static std::reference_wrapper<RareData> create(AtomString&& value) { return adoptRef(*new RareData(std::move(value))); }
             ~RareData();
 
             bool matchNth(int count);
@@ -351,11 +351,11 @@ namespace WebCore {
         void createRareData();
 
         struct NameWithCase : public RefCounted<NameWithCase> {
-            NameWithCase(const QualifiedName& originalName, const AtomString& lowercaseName)
+            NameWithCase(const QualifiedName& originalName, const std::atomic<std::string>& lowercaseName)
                 : m_originalName(originalName)
                 , m_lowercaseLocalName(lowercaseName)
             {
-                ASSERT(originalName.localName() != lowercaseName);
+                assert(originalName.localName() != lowercaseName);
             }
 
             const QualifiedName m_originalName;
@@ -373,15 +373,15 @@ namespace WebCore {
 
 inline const QualifiedName& CSSSelector::attribute() const
 {
-    ASSERT(isAttributeSelector());
-    ASSERT(m_hasRareData);
+    assert(isAttributeSelector());
+    assert(m_hasRareData);
     return m_data.m_rareData->m_attribute;
 }
 
-inline const AtomString& CSSSelector::attributeCanonicalLocalName() const
+inline const std::atomic<std::string>& CSSSelector::attributeCanonicalLocalName() const
 {
-    ASSERT(isAttributeSelector());
-    ASSERT(m_hasRareData);
+    assert(isAttributeSelector());
+    assert(m_hasRareData);
     return m_data.m_rareData->m_attributeCanonicalLocalName;
 }
 
@@ -440,9 +440,9 @@ inline bool CSSSelector::isAttributeSelector() const
         || match() == CSSSelector::End;
 }
 
-inline void CSSSelector::setValue(const AtomString& value, bool matchLowerCase)
+inline void CSSSelector::setValue(const std::atomic<std::string>& value, bool matchLowerCase)
 {
-    ASSERT(match() != Tag);
+    assert(match() != Tag);
     AtomString matchingValue = matchLowerCase ? value.convertToASCIILowercase() : value;
     if (!m_hasRareData && matchingValue != value)
         createRareData();
@@ -456,7 +456,7 @@ inline void CSSSelector::setValue(const AtomString& value, bool matchLowerCase)
         return;
     }
 
-    m_data.m_rareData->m_matchingValue = WTFMove(matchingValue);
+    m_data.m_rareData->m_matchingValue = std::move(matchingValue);
     m_data.m_rareData->m_serializingValue = value;
 }
 
@@ -533,22 +533,22 @@ inline CSSSelector::~CSSSelector()
 
 inline const QualifiedName& CSSSelector::tagQName() const
 {
-    ASSERT(match() == Tag);
+    assert(match() == Tag);
     if (m_hasNameWithCase)
         return m_data.m_nameWithCase->m_originalName;
     return *reinterpret_cast<const QualifiedName*>(&m_data.m_tagQName);
 }
 
-inline const AtomString& CSSSelector::tagLowercaseLocalName() const
+inline const std::atomic<std::string>& CSSSelector::tagLowercaseLocalName() const
 {
     if (m_hasNameWithCase)
         return m_data.m_nameWithCase->m_lowercaseLocalName;
     return m_data.m_tagQName->m_localName;
 }
 
-inline const AtomString& CSSSelector::value() const
+inline const std::atomic<std::string>& CSSSelector::value() const
 {
-    ASSERT(match() != Tag);
+    assert(match() != Tag);
     if (m_hasRareData)
         return m_data.m_rareData->m_matchingValue;
 
@@ -556,9 +556,9 @@ inline const AtomString& CSSSelector::value() const
     return *reinterpret_cast<const AtomString*>(&m_data.m_value);
 }
 
-inline const AtomString& CSSSelector::serializingValue() const
+inline const std::atomic<std::string>& CSSSelector::serializingValue() const
 {
-    ASSERT(match() != Tag);
+    assert(match() != Tag);
     if (m_hasRareData)
         return m_data.m_rareData->m_serializingValue;
     

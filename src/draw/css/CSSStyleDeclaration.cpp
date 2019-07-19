@@ -53,14 +53,14 @@ static inline bool matchesCSSPropertyNamePrefix(const StringImpl& propertyName, 
 {
     size_t prefixLength = prefixCStringLength - 1;
 
-    ASSERT(toASCIILower(propertyName[0]) == prefix[0]);
+    assert(toASCIILower(propertyName[0]) == prefix[0]);
     const size_t offset = 1;
 
 #ifndef NDEBUG
     for (size_t i = 0; i < prefixLength; ++i)
-        ASSERT(isASCIILower(prefix[i]));
-    ASSERT(!prefix[prefixLength]);
-    ASSERT(propertyName.length());
+        assert(isASCIILower(prefix[i]));
+    assert(!prefix[prefixLength]);
+    assert(propertyName.length());
 #endif
 
     // The prefix within the property name must be followed by a capital letter.
@@ -81,7 +81,7 @@ static inline bool matchesCSSPropertyNamePrefix(const StringImpl& propertyName, 
 
 static PropertyNamePrefix propertyNamePrefix(const StringImpl& propertyName)
 {
-    ASSERT(propertyName.length());
+    assert(propertyName.length());
 
     // First character of the prefix within the property name may be upper or lowercase.
     UChar firstChar = toASCIILower(propertyName[0]);
@@ -149,9 +149,9 @@ struct CSSPropertyInfo {
     bool hadPixelOrPosPrefix;
 };
 
-static CSSPropertyInfo parseJavaScriptCSSPropertyName(const AtomString& propertyName)
+static CSSPropertyInfo parseJavaScriptCSSPropertyName(const std::atomic<std::string>& propertyName)
 {
-    using CSSPropertyInfoMap = HashMap<String, CSSPropertyInfo>;
+    using CSSPropertyInfoMap = std::unordered_map<String, CSSPropertyInfo>;
     static NeverDestroyed<CSSPropertyInfoMap> propertyInfoCache;
 
     CSSPropertyInfo propertyInfo = { CSSPropertyInvalid, false };
@@ -197,7 +197,7 @@ static CSSPropertyInfo parseJavaScriptCSSPropertyName(const AtomString& property
 #if ENABLE(LEGACY_CSS_VENDOR_PREFIXES)
     case PropertyNamePrefix::Apple:
     case PropertyNamePrefix::KHTML:
-        ASSERT(RuntimeEnabledFeatures::sharedFeatures().legacyCSSVendorPrefixesEnabled());
+        assert(RuntimeEnabledFeatures::sharedFeatures().legacyCSSVendorPrefixesEnabled());
         writeWebKitPrefix(bufferPtr);
         i += 5;
         break;
@@ -258,12 +258,12 @@ static CSSPropertyInfo parseJavaScriptCSSPropertyName(const AtomString& property
 
 }
 
-CSSPropertyID CSSStyleDeclaration::getCSSPropertyIDFromJavaScriptPropertyName(const AtomString& propertyName)
+CSSPropertyID CSSStyleDeclaration::getCSSPropertyIDFromJavaScriptPropertyName(const std::atomic<std::string>& propertyName)
 {
     return parseJavaScriptCSSPropertyName(propertyName).propertyID;
 }
 
-Optional<Variant<String, double>> CSSStyleDeclaration::namedItem(const AtomString& propertyName)
+Optional<Variant<String, double>> CSSStyleDeclaration::namedItem(const std::atomic<std::string>& propertyName)
 {
     auto propertyInfo = parseJavaScriptCSSPropertyName(propertyName);
     if (!propertyInfo.propertyID)
@@ -285,7 +285,7 @@ Optional<Variant<String, double>> CSSStyleDeclaration::namedItem(const AtomStrin
     return Variant<String, double> { value->cssText() };
 }
 
-ExceptionOr<void> CSSStyleDeclaration::setNamedItem(const AtomString& propertyName, String value, bool& propertySupported)
+ExceptionOr<void> CSSStyleDeclaration::setNamedItem(const std::atomic<std::string>& propertyName, String value, bool& propertySupported)
 {
     auto propertyInfo = parseJavaScriptCSSPropertyName(propertyName);
     if (!propertyInfo.propertyID) {

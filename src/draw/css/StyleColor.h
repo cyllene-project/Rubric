@@ -46,7 +46,7 @@ public:
     static StyleColor currentColor() { return StyleColor(); }
 
     bool isCurrentColor() const { return m_currentColor; }
-    const Color& getColor() const { ASSERT(!isCurrentColor()); return m_color; }
+    const Color& getColor() const { assert(!isCurrentColor()); return m_color; }
 
     const Color& resolve(const Color& currentColor) const { return m_currentColor ? currentColor : m_color; }
 

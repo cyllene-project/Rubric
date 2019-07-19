@@ -61,24 +61,24 @@ inline void CSSFontFaceSource::setStatus(Status newStatus)
         ASSERT_NOT_REACHED();
         break;
     case Status::Loading:
-        ASSERT(status() == Status::Pending);
+        assert(status() == Status::Pending);
         break;
     case Status::Success:
-        ASSERT(status() == Status::Loading);
+        assert(status() == Status::Loading);
         break;
     case Status::Failure:
-        ASSERT(status() == Status::Loading);
+        assert(status() == Status::Loading);
         break;
     }
 
     m_status = newStatus;
 }
 
-CSSFontFaceSource::CSSFontFaceSource(CSSFontFace& owner, const std::string& familyNameOrURI, CachedFont* font, SVGFontFaceElement* fontFace, RefPtr<JSC::ArrayBufferView>&& arrayBufferView)
+CSSFontFaceSource::CSSFontFaceSource(CSSFontFace& owner, const std::string& familyNameOrURI, CachedFont* font, SVGFontFaceElement* fontFace, std::shared_ptr<JSC::ArrayBufferView>&& arrayBufferView)
     : m_familyNameOrURI(familyNameOrURI)
     , m_font(font)
     , m_face(owner)
-    , m_immediateSource(WTFMove(arrayBufferView))
+    , m_immediateSource(std::move(arrayBufferView))
 #if ENABLE(SVG_FONTS)
     , m_svgFontFaceElement(makeWeakPtr(fontFace))
     , m_hasSVGFontFaceElement(m_svgFontFaceElement)
@@ -127,14 +127,14 @@ void CSSFontFaceSource::fontLoaded(CachedFont& loadedFont)
     if (shouldIgnoreFontLoadCompletions())
         return;
 
-    Ref<CSSFontFace> protectedFace(m_face);
+    std::reference_wrapper<CSSFontFace> protectedFace(m_face);
 
     // If the font is in the cache, this will be synchronously called from CachedFont::addClient().
     if (m_status == Status::Pending)
         setStatus(Status::Loading);
     else if (m_status == Status::Failure) {
         // This function may be called twice if loading was cancelled.
-        ASSERT(m_font->errorOccurred());
+        assert(m_font->errorOccurred());
         return;
     }
 
@@ -151,17 +151,17 @@ void CSSFontFaceSource::load(CSSFontSelector* fontSelector)
     setStatus(Status::Loading);
 
     if (m_font) {
-        ASSERT(fontSelector);
+        assert(fontSelector);
         fontSelector->beginLoadingFontSoon(*m_font);
     } else {
         bool success = false;
 #if ENABLE(SVG_FONTS)
         if (m_hasSVGFontFaceElement) {
             if (m_svgFontFaceElement && is<SVGFontElement>(m_svgFontFaceElement->parentNode())) {
-                ASSERT(!m_inDocumentCustomPlatformData);
+                assert(!m_inDocumentCustomPlatformData);
                 SVGFontElement& fontElement = downcast<SVGFontElement>(*m_svgFontFaceElement->parentNode());
                 if (auto otfFont = convertSVGToOTFFont(fontElement))
-                    m_generatedOTFBuffer = SharedBuffer::create(WTFMove(otfFont.value()));
+                    m_generatedOTFBuffer = SharedBuffer::create(std::move(otfFont.value()));
                 if (m_generatedOTFBuffer) {
                     m_inDocumentCustomPlatformData = createFontCustomPlatformData(*m_generatedOTFBuffer, String());
                     success = static_cast<bool>(m_inDocumentCustomPlatformData);
@@ -170,7 +170,7 @@ void CSSFontFaceSource::load(CSSFontSelector* fontSelector)
         } else
 #endif
         if (m_immediateSource) {
-            ASSERT(!m_immediateFontCustomPlatformData);
+            assert(!m_immediateFontCustomPlatformData);
             bool wrapping;
             auto buffer = SharedBuffer::create(static_cast<const char*>(m_immediateSource->baseAddress()), m_immediateSource->byteLength());
             m_immediateFontCustomPlatformData = CachedFont::createCustomFontData(buffer.get(), String(), wrapping);
@@ -194,9 +194,9 @@ void CSSFontFaceSource::load(CSSFontSelector* fontSelector)
     }
 }
 
-RefPtr<Font> CSSFontFaceSource::font(const FontDescription& fontDescription, bool syntheticBold, bool syntheticItalic, const FontFeatureSettings& fontFaceFeatures, const FontVariantSettings& fontFaceVariantSettings, FontSelectionSpecifiedCapabilities fontFaceCapabilities)
+std::shared_ptr<Font> CSSFontFaceSource::font(const FontDescription& fontDescription, bool syntheticBold, bool syntheticItalic, const FontFeatureSettings& fontFaceFeatures, const FontVariantSettings& fontFaceVariantSettings, FontSelectionSpecifiedCapabilities fontFaceCapabilities)
 {
-    ASSERT(status() == Status::Success);
+    assert(status() == Status::Success);
 
 #if ENABLE(SVG_FONTS)
     bool usesInDocumentSVGFont = m_hasSVGFontFaceElement;
@@ -220,9 +220,9 @@ RefPtr<Font> CSSFontFaceSource::font(const FontDescription& fontDescription, boo
         auto success = m_font->ensureCustomFontData(m_familyNameOrURI);
         ASSERT_UNUSED(success, success);
 
-        ASSERT(status() == Status::Success);
+        assert(status() == Status::Success);
         auto result = m_font->createFont(fontDescription, m_familyNameOrURI, syntheticBold, syntheticItalic, fontFaceFeatures, fontFaceVariantSettings, fontFaceCapabilities);
-        ASSERT(result);
+        assert(result);
         return result;
     }
 

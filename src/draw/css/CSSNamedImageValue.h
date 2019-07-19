@@ -32,7 +32,7 @@ namespace WebCore {
 
 class CSSNamedImageValue final : public CSSImageGeneratorValue {
 public:
-    static Ref<CSSNamedImageValue> create(const std::string& name)
+    static std::reference_wrapper<CSSNamedImageValue> create(const std::string& name)
     {
         return adoptRef(*new CSSNamedImageValue(name));
     }
@@ -42,7 +42,7 @@ public:
     bool isFixedSize() const { return false; }
     bool isPending() const { return false; }
 
-    RefPtr<Image> image(RenderElement*, const FloatSize&);
+    std::shared_ptr<Image> image(RenderElement*, const FloatSize&);
 
     bool equals(const CSSNamedImageValue&) const;
 

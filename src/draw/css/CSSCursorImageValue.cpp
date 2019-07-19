@@ -33,9 +33,9 @@
 #include <wtf/text/StringBuilder.h>
 namespace WebCore {
 
-CSSCursorImageValue::CSSCursorImageValue(Ref<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
+CSSCursorImageValue::CSSCursorImageValue(std::reference_wrapper<CSSValue>&& imageValue, bool hasHotSpot, const IntPoint& hotSpot, LoadedFromOpaqueSource loadedFromOpaqueSource)
     : CSSValue(CursorImageClass)
-    , m_imageValue(WTFMove(imageValue))
+    , m_imageValue(std::move(imageValue))
     , m_hasHotSpot(hasHotSpot)
     , m_hotSpot(hotSpot)
     , m_loadedFromOpaqueSource(loadedFromOpaqueSource)

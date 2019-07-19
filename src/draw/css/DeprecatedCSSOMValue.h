@@ -55,7 +55,7 @@ public:
     unsigned cssValueType() const;
 
     std::string cssText() const;
-    ExceptionOr<void> setCssText(const String&) { return { }; } // Will never implement.
+    ExceptionOr<void> setCssText(const std::string&) { return { }; } // Will never implement.
 
     bool isComplexValue() const { return m_classType == DeprecatedComplexValueClass; }
     bool isPrimitiveValue() const { return m_classType == DeprecatedPrimitiveValueClass; }
@@ -90,12 +90,12 @@ protected:
     unsigned m_valueListSeparator : CSSValue::ValueListSeparatorBits;
     unsigned m_classType : ClassTypeBits; // ClassType
     
-    Ref<CSSStyleDeclaration> m_owner;
+    std::reference_wrapper<CSSStyleDeclaration> m_owner;
 };
 
 class DeprecatedCSSOMComplexValue : public DeprecatedCSSOMValue {
 public:
-    static Ref<DeprecatedCSSOMComplexValue> create(const CSSValue& value, CSSStyleDeclaration& owner)
+    static std::reference_wrapper<DeprecatedCSSOMComplexValue> create(const CSSValue& value, CSSStyleDeclaration& owner)
     {
         return adoptRef(*new DeprecatedCSSOMComplexValue(value, owner));
     }
@@ -112,7 +112,7 @@ protected:
     }
 
 private:
-    Ref<CSSValue> m_value;
+    std::reference_wrapper<CSSValue> m_value;
 };
     
 } // namespace WebCore

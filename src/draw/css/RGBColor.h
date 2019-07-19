@@ -35,7 +35,7 @@ class CSSPrimitiveValue;
 
 class RGBColor final : public RefCounted<RGBColor> {
 public:
-    static Ref<RGBColor> create(unsigned rgbColor);
+    static std::reference_wrapper<RGBColor> create(unsigned rgbColor);
 
     Color color() const { return Color(m_rgbColor); }
 

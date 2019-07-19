@@ -96,7 +96,7 @@ private:
 
         MediaQuery::Restrictor restrictor() const { return m_restrictor; }
         std::vector<MediaQueryExpression>& expressions() { return m_expressions; }
-        const Optional<String>& mediaType() const { return m_mediaType; }
+        const Optional<std::string>& mediaType() const { return m_mediaType; }
 
         bool currentMediaQueryChanged() const
         {
@@ -112,7 +112,7 @@ private:
 
     private:
         MediaQuery::Restrictor m_restrictor { MediaQuery::None };
-        Optional<String> m_mediaType;
+        Optional<std::string> m_mediaType;
         std::vector<MediaQueryExpression> m_expressions;
         std::string m_mediaFeature;
         MediaQueryParserContext m_context;

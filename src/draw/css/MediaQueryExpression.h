@@ -44,7 +44,7 @@ class MediaQueryExpression {
 public:
     explicit MediaQueryExpression(const std::string& mediaFeature, CSSParserTokenRange&, MediaQueryParserContext&);
 
-    const AtomString& mediaFeature() const;
+    const std::atomic<std::string>& mediaFeature() const;
     CSSValue* value() const;
 
     bool isValid() const;
@@ -55,12 +55,12 @@ public:
 
 private:
     AtomString m_mediaFeature;
-    RefPtr<CSSValue> m_value;
+    std::shared_ptr<CSSValue> m_value;
     bool m_isValid { false };
     mutable String m_serializationCache;
 };
 
-inline const AtomString& MediaQueryExpression::mediaFeature() const
+inline const std::atomic<std::string>& MediaQueryExpression::mediaFeature() const
 {
     return m_mediaFeature;
 }

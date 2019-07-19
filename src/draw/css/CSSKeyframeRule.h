@@ -37,22 +37,22 @@ class CSSKeyframesRule;
 
 class StyleRuleKeyframe final : public StyleRuleBase {
 public:
-    static Ref<StyleRuleKeyframe> create(Ref<StyleProperties>&& properties)
+    static std::reference_wrapper<StyleRuleKeyframe> create(std::reference_wrapper<StyleProperties>&& properties)
     {
-        return adoptRef(*new StyleRuleKeyframe(WTFMove(properties)));
+        return adoptRef(*new StyleRuleKeyframe(std::move(properties)));
     }
 
-    static Ref<StyleRuleKeyframe> create(std::unique_ptr<std::vector<double>> keys, Ref<StyleProperties>&& properties)
+    static std::reference_wrapper<StyleRuleKeyframe> create(std::unique_ptr<std::vector<double>> keys, std::reference_wrapper<StyleProperties>&& properties)
     {
-        return adoptRef(*new StyleRuleKeyframe(WTFMove(keys), WTFMove(properties)));
+        return adoptRef(*new StyleRuleKeyframe(std::move(keys), std::move(properties)));
     }
     ~StyleRuleKeyframe();
 
     std::string keyText() const;
-    bool setKeyText(const String&);
+    bool setKeyText(const std::string&);
     void setKey(double key)
     {
-        ASSERT(m_keys.isEmpty());
+        assert(m_keys.isEmpty());
         m_keys.clear();
         m_keys.append(key);
     }
@@ -65,10 +65,10 @@ public:
     std::string cssText() const;
 
 private:
-    explicit StyleRuleKeyframe(Ref<StyleProperties>&&);
-    StyleRuleKeyframe(std::unique_ptr<std::vector<double>>, Ref<StyleProperties>&&);
+    explicit StyleRuleKeyframe(std::reference_wrapper<StyleProperties>&&);
+    StyleRuleKeyframe(std::unique_ptr<std::vector<double>>, std::reference_wrapper<StyleProperties>&&);
 
-    Ref<StyleProperties> m_properties;
+    std::reference_wrapper<StyleProperties> m_properties;
     std::vector<double> m_keys;
 };
 
@@ -89,8 +89,8 @@ private:
 
     CSSRule::Type type() const final { return KEYFRAME_RULE; }
 
-    Ref<StyleRuleKeyframe> m_keyframe;
-    mutable RefPtr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
+    std::reference_wrapper<StyleRuleKeyframe> m_keyframe;
+    mutable std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
     
     friend class CSSKeyframesRule;
 };

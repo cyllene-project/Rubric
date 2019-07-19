@@ -43,7 +43,7 @@ void MediaQueryBlockWatcher::handleToken(const CSSParserToken& token)
     if (token.getBlockType() == CSSParserToken::BlockStart)
         ++m_blockLevel;
     else if (token.getBlockType() == CSSParserToken::BlockEnd) {
-        ASSERT(m_blockLevel);
+        assert(m_blockLevel);
         --m_blockLevel;
     }
 }

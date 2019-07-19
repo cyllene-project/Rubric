@@ -44,7 +44,7 @@ class StyleRuleViewport;
 
 class ViewportStyleResolver final : public RefCounted<ViewportStyleResolver> {
 public:
-    static Ref<ViewportStyleResolver> create(Document* document)
+    static std::reference_wrapper<ViewportStyleResolver> create(Document* document)
     {
         return adoptRef(*new ViewportStyleResolver(document));
     }
@@ -62,7 +62,7 @@ private:
     float getViewportArgumentValue(CSSPropertyID) const;
 
     WeakPtr<Document> m_document;
-    RefPtr<MutableStyleProperties> m_propertySet;
+    std::shared_ptr<MutableStyleProperties> m_propertySet;
 };
 
 } // namespace WebCore

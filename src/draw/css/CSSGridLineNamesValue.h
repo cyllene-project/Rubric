@@ -36,7 +36,7 @@ namespace WebCore {
 
 class CSSGridLineNamesValue final : public CSSValueList {
 public:
-    static Ref<CSSGridLineNamesValue> create()
+    static std::reference_wrapper<CSSGridLineNamesValue> create()
     {
         return adoptRef(*new CSSGridLineNamesValue);
     }

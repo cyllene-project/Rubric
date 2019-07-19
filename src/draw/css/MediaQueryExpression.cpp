@@ -39,7 +39,7 @@
 
 namespace WebCore {
 
-static inline bool featureWithValidIdent(const AtomString& mediaFeature, const CSSPrimitiveValue& value, const MediaQueryParserContext& context)
+static inline bool featureWithValidIdent(const std::atomic<std::string>& mediaFeature, const CSSPrimitiveValue& value, const MediaQueryParserContext& context)
 {
     if (value.primitiveType() != CSSPrimitiveValue::UnitType::CSS_IDENT)
         return false;
@@ -132,7 +132,7 @@ static inline bool featureWithZeroOrOne(const std::string& mediaFeature, const C
     return mediaFeature == MediaFeatureNames::grid;
 }
 
-static inline bool isAspectRatioFeature(const AtomString& mediaFeature)
+static inline bool isAspectRatioFeature(const std::atomic<std::string>& mediaFeature)
 {
     return mediaFeature == MediaFeatureNames::aspectRatio
         || mediaFeature == MediaFeatureNames::deviceAspectRatio
@@ -142,7 +142,7 @@ static inline bool isAspectRatioFeature(const AtomString& mediaFeature)
         || mediaFeature == MediaFeatureNames::maxDeviceAspectRatio;
 }
 
-static inline bool isFeatureValidWithoutValue(const AtomString& mediaFeature, const MediaQueryParserContext& context)
+static inline bool isFeatureValidWithoutValue(const std::atomic<std::string>& mediaFeature, const MediaQueryParserContext& context)
 {
     // Media features that are prefixed by min/max cannot be used without a value.
     return mediaFeature == MediaFeatureNames::anyHover
@@ -178,7 +178,7 @@ static inline bool isFeatureValidWithoutValue(const AtomString& mediaFeature, co
         || mediaFeature == MediaFeatureNames::videoPlayableInline;
 }
 
-inline RefPtr<CSSPrimitiveValue> consumeFirstValue(const std::string& mediaFeature, CSSParserTokenRange& range)
+inline std::shared_ptr<CSSPrimitiveValue> consumeFirstValue(const std::string& mediaFeature, CSSParserTokenRange& range)
 {
     if (auto value = CSSPropertyParserHelpers::consumeInteger(range, 0))
         return value;
@@ -204,7 +204,7 @@ MediaQueryExpression::MediaQueryExpression(const std::string& feature, CSSParser
     : m_mediaFeature(feature.convertToASCIILowercase())
     , m_isValid(false)
 {
-    RefPtr<CSSPrimitiveValue> firstValue = consumeFirstValue(m_mediaFeature, range);
+    std::shared_ptr<CSSPrimitiveValue> firstValue = consumeFirstValue(m_mediaFeature, range);
     if (!firstValue) {
         if (isFeatureValidWithoutValue(m_mediaFeature, context)) {
             // Valid, creates a MediaQueryExp with an 'invalid' MediaQueryExpValue
@@ -218,7 +218,7 @@ MediaQueryExpression::MediaQueryExpression(const std::string& feature, CSSParser
             return;
         if (!CSSPropertyParserHelpers::consumeSlashIncludingWhitespace(range))
             return;
-        RefPtr<CSSPrimitiveValue> denominatorValue = CSSPropertyParserHelpers::consumePositiveInteger(range);
+        std::shared_ptr<CSSPrimitiveValue> denominatorValue = CSSPropertyParserHelpers::consumePositiveInteger(range);
         if (!denominatorValue)
             return;
 

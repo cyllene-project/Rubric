@@ -28,6 +28,8 @@
 //#include "ExceptionOr.h"
 //#include "LayoutUnit.h"
 #include <utility>
+#include <cmath>
+#include <climits>
 
 namespace WebCore {
 
@@ -46,6 +48,10 @@ struct CSSFontFamily;
 struct Length;
 struct LengthSize;
 
+static const int kFixedPointDenominator = 64;
+const int intMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
+const int intMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
+
 // Max/min values for CSS, needs to slightly smaller/larger than the true max/min values to allow for rounding without overflowing.
 // Subtract two (rather than one) to allow for values to be converted to float and back without exceeding the LayoutUnit::max.
 const int maxValueForCssLength = intMaxForLayoutUnit - 2;
@@ -61,7 +67,7 @@ template<typename T> inline T roundForImpreciseConversion(double value)
 
 template<> inline float roundForImpreciseConversion(double value)
 {
-    double ceiledValue = ceil(value);
+    double ceiledValue = std::ceil(value);
     double proximityToNextInt = ceiledValue - value;
     if (proximityToNextInt <= 0.01 && value > 0)
         return static_cast<float>(ceiledValue);
@@ -195,21 +201,21 @@ public:
     bool isValueID() const { return m_primitiveUnitType == CSS_VALUE_ID; }
     bool isFlex() const { return primitiveType() == CSS_FR; }
 
-    static Ref<CSSPrimitiveValue> createIdentifier(CSSValueID valueID) { return adoptRef(*new CSSPrimitiveValue(valueID)); }
-    static Ref<CSSPrimitiveValue> createIdentifier(CSSPropertyID propertyID) { return adoptRef(*new CSSPrimitiveValue(propertyID)); }
+    static std::reference_wrapper<CSSPrimitiveValue> createIdentifier(CSSValueID valueID) { return adoptRef(*new CSSPrimitiveValue(valueID)); }
+    static std::reference_wrapper<CSSPrimitiveValue> createIdentifier(CSSPropertyID propertyID) { return adoptRef(*new CSSPrimitiveValue(propertyID)); }
 
-    static Ref<CSSPrimitiveValue> create(double value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
-    static Ref<CSSPrimitiveValue> create(const std::string& value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
-    static Ref<CSSPrimitiveValue> create(const Length& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
-    static Ref<CSSPrimitiveValue> create(const LengthSize& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
+    static std::reference_wrapper<CSSPrimitiveValue> create(double value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
+    static std::reference_wrapper<CSSPrimitiveValue> create(const std::string& value, UnitType type) { return adoptRef(*new CSSPrimitiveValue(value, type)); }
+    static std::reference_wrapper<CSSPrimitiveValue> create(const Length& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
+    static std::reference_wrapper<CSSPrimitiveValue> create(const LengthSize& value, const RenderStyle& style) { return adoptRef(*new CSSPrimitiveValue(value, style)); }
 
-    template<typename T> static Ref<CSSPrimitiveValue> create(T&&);
+    template<typename T> static std::reference_wrapper<CSSPrimitiveValue> create(T&&);
 
     // This value is used to handle quirky margins in reflow roots (body, td, and th) like WinIE.
     // The basic idea is that a stylesheet can use the value __qem (for quirky em) instead of em.
     // When the quirky value is used, if you're in quirks mode, the margin will collapse away
     // inside a table cell.
-    static Ref<CSSPrimitiveValue> createAllowingMarginQuirk(double value, UnitType);
+    static std::reference_wrapper<CSSPrimitiveValue> createAllowingMarginQuirk(double value, UnitType);
 
     ~CSSPrimitiveValue();
 
@@ -219,10 +225,10 @@ public:
     ExceptionOr<void> setFloatValue(unsigned short unitType, double floatValue);
     ExceptionOr<float> getFloatValue(unsigned short unitType) const;
     ExceptionOr<void> setStringValue(unsigned short stringType, const std::string& stringValue);
-    ExceptionOr<String> getStringValue() const;
+    ExceptionOr<std::string> getStringValue() const;
     ExceptionOr<Counter&> getCounterValue() const;
     ExceptionOr<Rect&> getRectValue() const;
-    ExceptionOr<Ref<RGBColor>> getRGBColorValue() const;
+    ExceptionOr<std::reference_wrapper<RGBColor>> getRGBColorValue() const;
 
     double computeDegrees() const;
     
@@ -248,10 +254,10 @@ public:
 
     std::string stringValue() const;
 
-    const Color& color() const { ASSERT(m_primitiveUnitType == CSS_RGBCOLOR); return *m_value.color; }
+    const Color& color() const { assert(m_primitiveUnitType == CSS_RGBCOLOR); return *m_value.color; }
     Counter* counterValue() const { return m_primitiveUnitType != CSS_COUNTER ? nullptr : m_value.counter; }
     CSSCalcValue* cssCalcValue() const { return m_primitiveUnitType != CSS_CALC ? nullptr : m_value.calc; }
-    const CSSFontFamily& fontFamily() const { ASSERT(m_primitiveUnitType == CSS_FONT_FAMILY); return *m_value.fontFamily; }
+    const CSSFontFamily& fontFamily() const { assert(m_primitiveUnitType == CSS_FONT_FAMILY); return *m_value.fontFamily; }
     Pair* pairValue() const { return m_primitiveUnitType != CSS_PAIR ? nullptr : m_value.pair; }
     CSSPropertyID propertyID() const { return m_primitiveUnitType == CSS_PROPERTY_ID ? m_value.propertyID : CSSPropertyInvalid; }
     Quad* quadValue() const { return m_primitiveUnitType != CSS_QUAD ? nullptr : m_value.quad; }
@@ -273,14 +279,14 @@ public:
 
     static double computeNonCalcLengthDouble(const CSSToLengthConversionData&, UnitType, double value);
 
-    Ref<DeprecatedCSSOMPrimitiveValue> createDeprecatedCSSOMPrimitiveWrapper(CSSStyleDeclaration&) const;
+    std::reference_wrapper<DeprecatedCSSOMPrimitiveValue> createDeprecatedCSSOMPrimitiveWrapper(CSSStyleDeclaration&) const;
 
-    void collectDirectComputationalDependencies(HashSet<CSSPropertyID>&) const;
-    void collectDirectRootComputationalDependencies(HashSet<CSSPropertyID>&) const;
+    void collectDirectComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
+    void collectDirectRootComputationalDependencies(std::unordered_set<CSSPropertyID>&) const;
 
 private:
     friend class CSSValuePool;
-    friend LazyNeverDestroyed<CSSPrimitiveValue>;
+    //friend LazyNeverDestroyed<CSSPrimitiveValue>;
 
     CSSPrimitiveValue(CSSValueID);
     CSSPrimitiveValue(CSSPropertyID);
@@ -288,12 +294,12 @@ private:
     CSSPrimitiveValue(const Length&);
     CSSPrimitiveValue(const Length&, const RenderStyle&);
     CSSPrimitiveValue(const LengthSize&, const RenderStyle&);
-    CSSPrimitiveValue(const String&, UnitType);
+    CSSPrimitiveValue(const std::string&, UnitType);
     CSSPrimitiveValue(double, UnitType);
 
     template<typename T> CSSPrimitiveValue(T); // Defined in CSSPrimitiveValueMappings.h
-    template<typename T> CSSPrimitiveValue(RefPtr<T>&&);
-    template<typename T> CSSPrimitiveValue(Ref<T>&&);
+    template<typename T> CSSPrimitiveValue(std::shared_ptr<T>&&);
+    template<typename T> CSSPrimitiveValue(std::reference_wrapper<T>&&);
 
     static void create(int); // compile-time guard
     static void create(unsigned); // compile-time guard
@@ -301,19 +307,19 @@ private:
 
     void init(const Length&);
     void init(const LengthSize&, const RenderStyle&);
-    void init(Ref<CSSBasicShape>&&);
-    void init(RefPtr<CSSCalcValue>&&);
-    void init(Ref<Counter>&&);
-    void init(Ref<Pair>&&);
-    void init(Ref<Quad>&&);
-    void init(Ref<Rect>&&);
+    void init(std::reference_wrapper<CSSBasicShape>&&);
+    void init(std::shared_ptr<CSSCalcValue>&&);
+    void init(std::reference_wrapper<Counter>&&);
+    void init(std::reference_wrapper<Pair>&&);
+    void init(std::reference_wrapper<Quad>&&);
+    void init(std::reference_wrapper<Rect>&&);
 
     Optional<double> doubleValueInternal(UnitType targetUnitType) const;
 
     double computeLengthDouble(const CSSToLengthConversionData&) const;
 
-    ALWAYS_INLINE String formatNumberForCustomCSSText() const;
-    NEVER_INLINE String formatNumberValue(StringView) const;
+    inline std::string formatNumberForCustomCSSText() const;
+    std::string formatNumberValue(std::string_view) const;
 
     union {
         CSSPropertyID propertyID;
@@ -363,16 +369,16 @@ inline bool CSSPrimitiveValue::isResolution(UnitType type)
     return type >= CSS_DPPX && type <= CSS_DPCM;
 }
 
-template<typename T> inline Ref<CSSPrimitiveValue> CSSPrimitiveValue::create(T&& value)
+template<typename T> inline std::reference_wrapper<CSSPrimitiveValue> CSSPrimitiveValue::create(T&& value)
 {
     return adoptRef(*new CSSPrimitiveValue(std::forward<T>(value)));
 }
 
-inline Ref<CSSPrimitiveValue> CSSPrimitiveValue::createAllowingMarginQuirk(double value, UnitType type)
+inline std::reference_wrapper<CSSPrimitiveValue> CSSPrimitiveValue::createAllowingMarginQuirk(double value, UnitType type)
 {
-    auto result = adoptRef(*new CSSPrimitiveValue(value, type));
+    auto* result = new CSSPrimitiveValue(value, type);
     result->m_isQuirkValue = true;
-    return result;
+    return std::reference_wrapper(*result);
 }
 
 template<typename T, CSSPrimitiveValue::TimeUnit timeUnit> inline T CSSPrimitiveValue::computeTime() const
@@ -385,20 +391,19 @@ template<typename T, CSSPrimitiveValue::TimeUnit timeUnit> inline T CSSPrimitive
         return value<T>();
     if (timeUnit == Milliseconds && primitiveType() == CSS_S)
         return value<T>() * 1000;
-    ASSERT_NOT_REACHED();
     return 0;
 }
 
-template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(RefPtr<T>&& value)
+template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(std::shared_ptr<T>&& value)
     : CSSValue(PrimitiveClass)
 {
-    init(WTFMove(value));
+    init(std::move(value));
 }
 
-template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(Ref<T>&& value)
+template<typename T> inline CSSPrimitiveValue::CSSPrimitiveValue(std::reference_wrapper<T>&& value)
     : CSSValue(PrimitiveClass)
 {
-    init(WTFMove(value));
+    init(std::move(value));
 }
 
 } // namespace WebCore

@@ -86,7 +86,7 @@ ElementRuleCollector::ElementRuleCollector(const Element& element, const Documen
     , m_userAgentMediaQueryStyle(ruleSets.userAgentMediaQueryStyle())
     , m_selectorFilter(selectorFilter)
 {
-    ASSERT(!m_selectorFilter || m_selectorFilter->parentStackIsConsistent(element.parentNode()));
+    assert(!m_selectorFilter || m_selectorFilter->parentStackIsConsistent(element.parentNode()));
 }
 
 ElementRuleCollector::ElementRuleCollector(const Element& element, const RuleSet& authorStyle, const SelectorFilter* selectorFilter)
@@ -94,18 +94,18 @@ ElementRuleCollector::ElementRuleCollector(const Element& element, const RuleSet
     , m_authorStyle(authorStyle)
     , m_selectorFilter(selectorFilter)
 {
-    ASSERT(!m_selectorFilter || m_selectorFilter->parentStackIsConsistent(element.parentNode()));
+    assert(!m_selectorFilter || m_selectorFilter->parentStackIsConsistent(element.parentNode()));
 }
 
 StyleResolver::MatchResult& ElementRuleCollector::matchedResult()
 {
-    ASSERT(m_mode == SelectorChecker::Mode::ResolvingStyle);
+    assert(m_mode == SelectorChecker::Mode::ResolvingStyle);
     return m_result;
 }
 
-const std::vector<RefPtr<StyleRule>>& ElementRuleCollector::matchedRuleList() const
+const std::vector<std::shared_ptr<StyleRule>>& ElementRuleCollector::matchedRuleList() const
 {
-    ASSERT(m_mode == SelectorChecker::Mode::CollectingRules);
+    assert(m_mode == SelectorChecker::Mode::CollectingRules);
     return m_matchedRuleList;
 }
 
@@ -139,7 +139,7 @@ inline void ElementRuleCollector::addElementStyleProperties(const StylePropertie
 
 void ElementRuleCollector::collectMatchingRules(const MatchRequest& matchRequest, StyleResolver::RuleRange& ruleRange)
 {
-    ASSERT(matchRequest.ruleSet);
+    assert(matchRequest.ruleSet);
     ASSERT_WITH_MESSAGE(!(m_mode == SelectorChecker::Mode::CollectingRulesIgnoringVirtualPseudoElements && m_pseudoStyleRequest.pseudoId != PseudoId::None), "When in StyleInvalidation or SharingRules, SelectorChecker does not try to match the pseudo ID. While ElementRuleCollector supports matching a particular pseudoId in this case, this would indicate a error at the call site since matching a particular element should be unnecessary.");
 
     auto* shadowRoot = m_element.containingShadowRoot();
@@ -209,7 +209,7 @@ void ElementRuleCollector::matchAuthorRules(bool includeEmptyRules)
 
 void ElementRuleCollector::matchAuthorShadowPseudoElementRules(bool includeEmptyRules, StyleResolver::RuleRange& ruleRange)
 {
-    ASSERT(m_element.isInShadowTree());
+    assert(m_element.isInShadowTree());
     auto& shadowRoot = *m_element.containingShadowRoot();
     if (shadowRoot.mode() != ShadowRootMode::UserAgent)
         return;
@@ -221,7 +221,7 @@ void ElementRuleCollector::matchAuthorShadowPseudoElementRules(bool includeEmpty
 
 void ElementRuleCollector::matchHostPseudoClassRules(bool includeEmptyRules, StyleResolver::RuleRange& ruleRange)
 {
-    ASSERT(m_element.shadowRoot());
+    assert(m_element.shadowRoot());
 
     auto& shadowAuthorStyle = m_element.shadowRoot()->styleScope().resolver().ruleSets().authorStyle();
     auto& shadowHostRules = shadowAuthorStyle.hostPseudoClassRules();
@@ -255,14 +255,14 @@ void ElementRuleCollector::matchSlottedPseudoElementRules(bool includeEmptyRules
         MatchRequest scopeMatchRequest(nullptr, includeEmptyRules, styleScopeOrdinal);
         collectMatchingRulesForList(slottedPseudoElementRules.get(), scopeMatchRequest, ruleRange);
 
-        m_keepAliveSlottedPseudoElementRules.append(WTFMove(slottedPseudoElementRules));
+        m_keepAliveSlottedPseudoElementRules.append(std::move(slottedPseudoElementRules));
     }
 }
 
 void ElementRuleCollector::collectMatchingShadowPseudoElementRules(const MatchRequest& matchRequest, StyleResolver::RuleRange& ruleRange)
 {
-    ASSERT(matchRequest.ruleSet);
-    ASSERT(m_element.containingShadowRoot()->mode() == ShadowRootMode::UserAgent);
+    assert(matchRequest.ruleSet);
+    assert(m_element.containingShadowRoot()->mode() == ShadowRootMode::UserAgent);
 
     auto& rules = *matchRequest.ruleSet;
 #if ENABLE(VIDEO_TRACK)
@@ -277,7 +277,7 @@ void ElementRuleCollector::collectMatchingShadowPseudoElementRules(const MatchRe
 
 std::unique_ptr<RuleSet::RuleDataVector> ElementRuleCollector::collectSlottedPseudoElementRulesForSlot(bool includeEmptyRules)
 {
-    ASSERT(is<HTMLSlotElement>(m_element));
+    assert(is<HTMLSlotElement>(m_element));
 
     clearMatchedRules();
 
@@ -418,7 +418,7 @@ inline bool ElementRuleCollector::ruleMatches(const RuleData& ruleData, unsigned
     bool selectorMatches;
 #if ENABLE(CSS_SELECTOR_JIT)
     if (compiledSelectorChecker) {
-        ASSERT(compiledSelector.status == SelectorCompilationStatus::SelectorCheckerWithCheckingContext);
+        assert(compiledSelector.status == SelectorCompilationStatus::SelectorCheckerWithCheckingContext);
 
         auto selectorChecker = SelectorCompiler::ruleCollectorSelectorCheckerFunctionWithCheckingContext(compiledSelectorChecker, compiledSelector.status);
 

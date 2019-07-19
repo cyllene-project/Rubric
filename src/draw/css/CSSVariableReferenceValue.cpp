@@ -50,7 +50,7 @@ static bool resolveVariableFallback(CSSParserTokenRange range, std::vector<CSSPa
 {
     if (range.atEnd())
         return false;
-    ASSERT(range.peek().type() == CommaToken);
+    assert(range.peek().type() == CommaToken);
     range.consume();
     return resolveTokenRange(range, result, state);
 }
@@ -61,9 +61,9 @@ static bool resolveVariableReference(CSSParserTokenRange range, std::vector<CSSP
     auto& style = *state.styleResolver->style();
 
     range.consumeWhitespace();
-    ASSERT(range.peek().type() == IdentToken);
+    assert(range.peek().type() == IdentToken);
     std::string variableName = range.consumeIncludingWhitespace().value().toString();
-    ASSERT(range.atEnd() || (range.peek().type() == CommaToken));
+    assert(range.atEnd() || (range.peek().type() == CommaToken));
 
     // Apply this variable first, in case it is still unresolved
     state.styleResolver->applyCascadedCustomProperty(variableName, state);
@@ -86,7 +86,7 @@ static bool resolveVariableReference(CSSParserTokenRange range, std::vector<CSSP
         return fallbackReturn;
     }
 
-    ASSERT(property->isResolved());
+    assert(property->isResolved());
     result.appendVector(property->tokens());
 
     return true;
@@ -104,7 +104,7 @@ static bool resolveTokenRange(CSSParserTokenRange range, std::vector<CSSParserTo
     return success;
 }
 
-RefPtr<CSSVariableData> CSSVariableReferenceValue::resolveVariableReferences(ApplyCascadedPropertyState& state) const
+std::shared_ptr<CSSVariableData> CSSVariableReferenceValue::resolveVariableReferences(ApplyCascadedPropertyState& state) const
 {
     std::vector<CSSParserToken> resolvedTokens;
     CSSParserTokenRange range = m_data->tokenRange();

@@ -107,7 +107,7 @@ public:
     bool isEmpty() const { return !propertyCount(); }
     PropertyReference propertyAt(unsigned) const;
 
-    RefPtr<CSSValue> getPropertyCSSValue(CSSPropertyID) const;
+    std::shared_ptr<CSSValue> getPropertyCSSValue(CSSPropertyID) const;
     std::string getPropertyValue(CSSPropertyID) const;
 
     Optional<Color> propertyAsColor(CSSPropertyID) const;
@@ -117,16 +117,16 @@ public:
     std::string getPropertyShorthand(CSSPropertyID) const;
     bool isPropertyImplicit(CSSPropertyID) const;
 
-    RefPtr<CSSValue> getCustomPropertyCSSValue(const std::string& propertyName) const;
+    std::shared_ptr<CSSValue> getCustomPropertyCSSValue(const std::string& propertyName) const;
     std::string getCustomPropertyValue(const std::string& propertyName) const;
     bool customPropertyIsImportant(const std::string& propertyName) const;
 
-    Ref<MutableStyleProperties> copyBlockProperties() const;
+    std::reference_wrapper<MutableStyleProperties> copyBlockProperties() const;
 
-    Ref<MutableStyleProperties> mutableCopy() const;
-    Ref<ImmutableStyleProperties> immutableCopyIfNeeded() const;
+    std::reference_wrapper<MutableStyleProperties> mutableCopy() const;
+    std::reference_wrapper<ImmutableStyleProperties> immutableCopyIfNeeded() const;
 
-    Ref<MutableStyleProperties> copyPropertiesInSet(const CSSPropertyID* set, unsigned length) const;
+    std::reference_wrapper<MutableStyleProperties> copyPropertiesInSet(const CSSPropertyID* set, unsigned length) const;
     
     std::string asText() const;
 
@@ -168,7 +168,7 @@ private:
     std::string fontValue() const;
     void appendFontLonghandValueIfExplicit(CSSPropertyID, StringBuilder& result, String& value) const;
     
-    RefPtr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) const;
+    std::shared_ptr<CSSValue> getPropertyCSSValueInternal(CSSPropertyID) const;
     
     friend class PropertySetCSSStyleDeclaration;
 };
@@ -176,7 +176,7 @@ private:
 class ImmutableStyleProperties final : public StyleProperties {
 public:
     ~ImmutableStyleProperties();
-    static Ref<ImmutableStyleProperties> create(const CSSProperty* properties, unsigned count, CSSParserMode);
+    static std::reference_wrapper<ImmutableStyleProperties> create(const CSSProperty* properties, unsigned count, CSSParserMode);
 
     unsigned propertyCount() const { return m_arraySize; }
     bool isEmpty() const { return !propertyCount(); }
@@ -205,8 +205,8 @@ inline const StylePropertyMetadata* ImmutableStyleProperties::metadataArray() co
 
 class MutableStyleProperties final : public StyleProperties {
 public:
-    static Ref<MutableStyleProperties> create(CSSParserMode = HTMLQuirksMode);
-    static Ref<MutableStyleProperties> create(const CSSProperty* properties, unsigned count);
+    static std::reference_wrapper<MutableStyleProperties> create(CSSParserMode = HTMLQuirksMode);
+    static std::reference_wrapper<MutableStyleProperties> create(const CSSProperty* properties, unsigned count);
 
     ~MutableStyleProperties();
 
@@ -222,7 +222,7 @@ public:
     // These expand shorthand properties into multiple properties.
     bool setProperty(CSSPropertyID, const std::string& value, bool important, CSSParserContext);
     bool setProperty(CSSPropertyID, const std::string& value, bool important = false);
-    void setProperty(CSSPropertyID, RefPtr<CSSValue>&&, bool important = false);
+    void setProperty(CSSPropertyID, std::shared_ptr<CSSValue>&&, bool important = false);
 
     // These do not. FIXME: This is too messy, we can do better.
     bool setProperty(CSSPropertyID, CSSValueID identifier, bool important = false);
@@ -257,7 +257,7 @@ private:
 
     bool removeShorthandProperty(CSSPropertyID);
     CSSProperty* findCSSPropertyWithID(CSSPropertyID);
-    CSSProperty* findCustomCSSPropertyWithName(const String&);
+    CSSProperty* findCustomCSSPropertyWithName(const std::string&);
     std::unique_ptr<PropertySetCSSStyleDeclaration> m_cssomWrapper;
 
     friend class StyleProperties;
@@ -266,15 +266,15 @@ private:
 class DeferredStyleProperties final : public StylePropertiesBase {
 public:
     ~DeferredStyleProperties();
-    static Ref<DeferredStyleProperties> create(const CSSParserTokenRange&, CSSDeferredParser&);
+    static std::reference_wrapper<DeferredStyleProperties> create(const CSSParserTokenRange&, CSSDeferredParser&);
 
-    Ref<ImmutableStyleProperties> parseDeferredProperties();
+    std::reference_wrapper<ImmutableStyleProperties> parseDeferredProperties();
     
 private:
     DeferredStyleProperties(const CSSParserTokenRange&, CSSDeferredParser&);
     
     std::vector<CSSParserToken> m_tokens;
-    Ref<CSSDeferredParser> m_parser;
+    std::reference_wrapper<CSSDeferredParser> m_parser;
 };
 
 inline ImmutableStyleProperties::PropertyReference ImmutableStyleProperties::propertyAt(unsigned index) const

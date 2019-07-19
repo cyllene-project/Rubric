@@ -33,7 +33,7 @@ namespace WebCore {
 
 class DeprecatedCSSOMRect final : public RefCounted<DeprecatedCSSOMRect> {
 public:
-    static Ref<DeprecatedCSSOMRect> create(const Rect& rect, CSSStyleDeclaration& owner)
+    static std::reference_wrapper<DeprecatedCSSOMRect> create(const Rect& rect, CSSStyleDeclaration& owner)
     {
         return adoptRef(*new DeprecatedCSSOMRect(rect, owner));
     }
@@ -56,10 +56,10 @@ private:
             m_left = rect.left()->createDeprecatedCSSOMPrimitiveWrapper(owner);
     }
     
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_top;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_right;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_bottom;
-    RefPtr<DeprecatedCSSOMPrimitiveValue> m_left;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_top;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_right;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_bottom;
+    std::shared_ptr<DeprecatedCSSOMPrimitiveValue> m_left;
 };
 
 } // namespace WebCore

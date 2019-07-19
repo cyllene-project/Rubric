@@ -41,7 +41,7 @@ ExceptionOr<void> DOMCSSRegisterCustomProperty::registerProperty(Document& docum
     if (!isCustomPropertyName(descriptor.name))
         return Exception { SyntaxError, "The name of this property is not a custom property name." };
 
-    RefPtr<CSSCustomPropertyValue> initialValue;
+    std::shared_ptr<CSSCustomPropertyValue> initialValue;
     if (!descriptor.initialValue.isEmpty()) {
         CSSTokenizer tokenizer(descriptor.initialValue);
         StyleResolver styleResolver(document);
@@ -51,7 +51,7 @@ ExceptionOr<void> DOMCSSRegisterCustomProperty::registerProperty(Document& docum
         styleResolver.applyPropertyToStyle(CSSPropertyInvalid, nullptr, styleResolver.defaultStyleForElement());
         styleResolver.updateFont();
 
-        HashSet<CSSPropertyID> dependencies;
+        std::unordered_set<CSSPropertyID> dependencies;
         CSSPropertyParser::collectParsedCustomPropertyValueDependencies(descriptor.syntax, false, dependencies, tokenizer.tokenRange(), strictCSSParserContext());
 
         if (!dependencies.isEmpty())
@@ -69,8 +69,8 @@ ExceptionOr<void> DOMCSSRegisterCustomProperty::registerProperty(Document& docum
             return Exception { SyntaxError, "The given initial value must be computationally independent." };
     }
 
-    CSSRegisteredCustomProperty property { descriptor.name, descriptor.syntax, descriptor.inherits, WTFMove(initialValue) };
-    if (!document.registerCSSProperty(WTFMove(property)))
+    CSSRegisteredCustomProperty property { descriptor.name, descriptor.syntax, descriptor.inherits, std::move(initialValue) };
+    if (!document.registerCSSProperty(std::move(property)))
         return Exception { InvalidModificationError, "This property has already been registered." };
 
     document.styleScope().didChangeStyleSheetEnvironment();
@@ -84,7 +84,7 @@ DOMCSSRegisterCustomProperty* DOMCSSRegisterCustomProperty::from(DOMCSSNamespace
     if (!supplement) {
         auto newSupplement = std::make_unique<DOMCSSRegisterCustomProperty>(css);
         supplement = newSupplement.get();
-        provideTo(&css, supplementName(), WTFMove(newSupplement));
+        provideTo(&css, supplementName(), std::move(newSupplement));
     }
     return supplement;
 }

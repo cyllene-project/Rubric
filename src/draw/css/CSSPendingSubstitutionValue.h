@@ -37,9 +37,9 @@ namespace WebCore {
 
 class CSSPendingSubstitutionValue : public CSSValue {
 public:
-    static Ref<CSSPendingSubstitutionValue> create(CSSPropertyID shorthandPropertyId, Ref<CSSVariableReferenceValue>&& shorthandValue)
+    static std::reference_wrapper<CSSPendingSubstitutionValue> create(CSSPropertyID shorthandPropertyId, std::reference_wrapper<CSSVariableReferenceValue>&& shorthandValue)
     {
-        return adoptRef(*new CSSPendingSubstitutionValue(shorthandPropertyId, WTFMove(shorthandValue)));
+        return adoptRef(*new CSSPendingSubstitutionValue(shorthandPropertyId, std::move(shorthandValue)));
     }
 
     CSSVariableReferenceValue* shorthandValue() const
@@ -56,15 +56,15 @@ public:
     std::string customCSSText() const;
 
 private:
-    CSSPendingSubstitutionValue(CSSPropertyID shorthandPropertyId, Ref<CSSVariableReferenceValue>&& shorthandValue)
+    CSSPendingSubstitutionValue(CSSPropertyID shorthandPropertyId, std::reference_wrapper<CSSVariableReferenceValue>&& shorthandValue)
         : CSSValue(PendingSubstitutionValueClass)
         , m_shorthandPropertyId(shorthandPropertyId)
-        , m_shorthandValue(WTFMove(shorthandValue))
+        , m_shorthandValue(std::move(shorthandValue))
     {
     }
 
     CSSPropertyID m_shorthandPropertyId;
-    RefPtr<CSSVariableReferenceValue> m_shorthandValue;
+    std::shared_ptr<CSSVariableReferenceValue> m_shorthandValue;
 };
 
 } // namespace WebCore

@@ -61,7 +61,7 @@ static inline MatchBasedOnRuleHash computeMatchBasedOnRuleHash(const CSSSelector
 
     if (selector.match() == CSSSelector::Tag) {
         const QualifiedName& tagQualifiedName = selector.tagQName();
-        const AtomString& selectorNamespace = tagQualifiedName.namespaceURI();
+        const std::atomic<std::string>& selectorNamespace = tagQualifiedName.namespaceURI();
         if (selectorNamespace == starAtom() || selectorNamespace == xhtmlNamespaceURI) {
             if (tagQualifiedName == anyQName())
                 return MatchBasedOnRuleHash::Universal;
@@ -168,15 +168,15 @@ RuleData::RuleData(StyleRule* rule, unsigned selectorIndex, unsigned selectorLis
     , m_propertyWhitelistType(determinePropertyWhitelistType(selector()))
     , m_descendantSelectorIdentifierHashes(SelectorFilter::collectHashes(*selector()))
 {
-    ASSERT(m_position == position);
-    ASSERT(m_selectorIndex == selectorIndex);
+    assert(m_position == position);
+    assert(m_selectorIndex == selectorIndex);
 }
 
 RuleSet::RuleSet() = default;
 
 RuleSet::~RuleSet() = default;
 
-void RuleSet::addToRuleSet(const AtomString& key, AtomRuleMap& map, const RuleData& ruleData)
+void RuleSet::addToRuleSet(const std::atomic<std::string>& key, AtomRuleMap& map, const RuleData& ruleData)
 {
     if (key.isNull())
         return;
@@ -186,7 +186,7 @@ void RuleSet::addToRuleSet(const AtomString& key, AtomRuleMap& map, const RuleDa
     rules->append(ruleData);
 }
 
-static unsigned rulesCountForName(const RuleSet::AtomRuleMap& map, const AtomString& name)
+static unsigned rulesCountForName(const RuleSet::AtomRuleMap& map, const std::atomic<std::string>& name)
 {
     if (const auto* rules = map.get(name))
         return rules->size();
@@ -364,7 +364,7 @@ void RuleSet::addPageRule(StyleRulePage* rule)
     m_pageRules.append(rule);
 }
 
-void RuleSet::addChildRules(const std::vector<RefPtr<StyleRuleBase>>& rules, const MediaQueryEvaluator& medium, StyleResolver* resolver, bool isInitiatingElementInUserAgentShadowTree)
+void RuleSet::addChildRules(const std::vector<std::shared_ptr<StyleRuleBase>>& rules, const MediaQueryEvaluator& medium, StyleResolver* resolver, bool isInitiatingElementInUserAgentShadowTree)
 {
     for (auto& rule : rules) {
         if (is<StyleRule>(*rule))

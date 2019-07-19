@@ -32,14 +32,14 @@ class StyleRuleCSSStyleDeclaration;
 
 class CSSPageRule final : public CSSRule {
 public:
-    static Ref<CSSPageRule> create(StyleRulePage& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSPageRule(rule, sheet)); }
+    static std::reference_wrapper<CSSPageRule> create(StyleRulePage& rule, CSSStyleSheet* sheet) { return adoptRef(*new CSSPageRule(rule, sheet)); }
 
     virtual ~CSSPageRule();
 
     CSSStyleDeclaration& style();
 
     std::string selectorText() const;
-    void setSelectorText(const String&);
+    void setSelectorText(const std::string&);
 
 private:
     CSSPageRule(StyleRulePage&, CSSStyleSheet*);
@@ -48,8 +48,8 @@ private:
     std::string cssText() const final;
     void reattach(StyleRuleBase&) final;
 
-    Ref<StyleRulePage> m_pageRule;
-    mutable RefPtr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
+    std::reference_wrapper<StyleRulePage> m_pageRule;
+    mutable std::shared_ptr<StyleRuleCSSStyleDeclaration> m_propertiesCSSOMWrapper;
 };
 
 } // namespace WebCore

@@ -110,8 +110,8 @@ public:
 
 struct ElementStyle {
     ElementStyle(std::unique_ptr<RenderStyle> renderStyle, std::unique_ptr<Style::Relations> relations = { })
-        : renderStyle(WTFMove(renderStyle))
-        , relations(WTFMove(relations))
+        : renderStyle(std::move(renderStyle))
+        , relations(std::move(relations))
     { }
 
     std::unique_ptr<RenderStyle> renderStyle;
@@ -143,7 +143,7 @@ public:
     const Document& document() const { return m_document; }
     const Settings& settings() const { return m_document.settings(); }
 
-    void appendAuthorStyleSheets(const std::vector<RefPtr<CSSStyleSheet>>&);
+    void appendAuthorStyleSheets(const std::vector<std::shared_ptr<CSSStyleSheet>>&);
 
     DocumentRuleSets& ruleSets() { return m_ruleSets; }
     const DocumentRuleSets& ruleSets() const { return m_ruleSets; }
@@ -158,7 +158,7 @@ public:
 
     void setNewStateWithElement(const Element&);
     std::unique_ptr<RenderStyle> styleForKeyframe(const RenderStyle*, const StyleRuleKeyframe*, KeyframeValue&);
-    bool isAnimationNameValid(const String&);
+    bool isAnimationNameValid(const std::string&);
 
 public:
     // These methods will give back the set of rules that matched for a given element (or a pseudo-element).
@@ -169,8 +169,8 @@ public:
         AllButEmptyCSSRules = UAAndUserCSSRules | AuthorCSSRules,
         AllCSSRules         = AllButEmptyCSSRules | EmptyCSSRules,
     };
-    std::vector<RefPtr<StyleRule>> styleRulesForElement(const Element*, unsigned rulesToInclude = AllButEmptyCSSRules);
-    std::vector<RefPtr<StyleRule>> pseudoStyleRulesForElement(const Element*, PseudoId, unsigned rulesToInclude = AllButEmptyCSSRules);
+    std::vector<std::shared_ptr<StyleRule>> styleRulesForElement(const Element*, unsigned rulesToInclude = AllButEmptyCSSRules);
+    std::vector<std::shared_ptr<StyleRule>> pseudoStyleRulesForElement(const Element*, PseudoId, unsigned rulesToInclude = AllButEmptyCSSRules);
 
 public:
     struct MatchResult;
@@ -190,8 +190,8 @@ public:
     static bool colorFromPrimitiveValueIsDerivedFromElement(const CSSPrimitiveValue&);
     Color colorFromPrimitiveValue(const CSSPrimitiveValue&, bool forVisitedLink = false) const;
 
-    bool hasSelectorForId(const AtomString&) const;
-    bool hasSelectorForAttribute(const Element&, const AtomString&) const;
+    bool hasSelectorForId(const std::atomic<std::string>&) const;
+    bool hasSelectorForAttribute(const Element&, const std::atomic<std::string>&) const;
 
     void addViewportDependentMediaQueryResult(const MediaQueryExpression&, bool result);
     bool hasViewportDependentMediaQueries() const { return !m_viewportDependentMediaQueryResults.isEmpty(); }
@@ -205,7 +205,7 @@ public:
     bool hasAppearanceDependentMediaQueries() const { return !m_appearanceDependentMediaQueryResults.isEmpty(); }
     bool hasMediaQueriesAffectedByAppearanceChange() const;
 
-    void addKeyframeStyle(Ref<StyleRuleKeyframes>&&);
+    void addKeyframeStyle(std::reference_wrapper<StyleRuleKeyframes>&&);
 
     bool usesFirstLineRules() const { return m_ruleSets.features().usesFirstLineRules; }
     bool usesFirstLetterRules() const { return m_ruleSets.features().usesFirstLetterRules; }
@@ -239,7 +239,7 @@ public:
         MatchedProperties();
         ~MatchedProperties();
         
-        RefPtr<StyleProperties> properties;
+        std::shared_ptr<StyleProperties> properties;
         uint16_t linkMatchType;
         uint16_t whitelistType;
         Style::ScopeOrdinal styleScopeOrdinal;
@@ -280,9 +280,9 @@ public:
 
         void applyDeferredProperties(StyleResolver&, ApplyCascadedPropertyState&);
 
-        HashMap<AtomString, Property>& customProperties() { return m_customProperties; }
-        bool hasCustomProperty(const String&) const;
-        Property customProperty(const String&) const;
+        std::unordered_map<AtomString, Property>& customProperties() { return m_customProperties; }
+        bool hasCustomProperty(const std::string&) const;
+        Property customProperty(const std::string&) const;
         
     private:
         void addMatch(const MatchResult&, unsigned index, bool isImportant, bool inheritedOnly);
@@ -294,7 +294,7 @@ public:
         std::bitset<numCSSProperties + 2> m_propertyIsPresent;
 
         std::vector<Property, 8> m_deferredProperties;
-        HashMap<AtomString, Property> m_customProperties;
+        std::unordered_map<AtomString, Property> m_customProperties;
 
         TextDirection m_direction;
         WritingMode m_writingMode;
@@ -337,11 +337,11 @@ private:
 
     DocumentRuleSets m_ruleSets;
 
-    typedef HashMap<AtomStringImpl*, RefPtr<StyleRuleKeyframes>> KeyframesRuleMap;
+    typedef std::unordered_map<AtomStringImpl*, std::shared_ptr<StyleRuleKeyframes>> KeyframesRuleMap;
     KeyframesRuleMap m_keyframesRuleMap;
 
 public:
-    typedef HashMap<CSSPropertyID, RefPtr<CSSValue>> PendingImagePropertyMap;
+    typedef std::unordered_map<CSSPropertyID, std::shared_ptr<CSSValue>> PendingImagePropertyMap;
 
     class State {
     public:
@@ -355,7 +355,7 @@ public:
 
         void setStyle(std::unique_ptr<RenderStyle>);
         RenderStyle* style() const { return m_style.get(); }
-        std::unique_ptr<RenderStyle> takeStyle() { return WTFMove(m_style); }
+        std::unique_ptr<RenderStyle> takeStyle() { return std::move(m_style); }
 
         void setParentStyle(std::unique_ptr<RenderStyle>);
         const RenderStyle* parentStyle() const { return m_parentStyle; }
@@ -381,7 +381,7 @@ public:
 
         const FontCascadeDescription& fontDescription() { return m_style->fontDescription(); }
         const FontCascadeDescription& parentFontDescription() { return m_parentStyle->fontDescription(); }
-        void setFontDescription(FontCascadeDescription&& fontDescription) { m_fontDirty |= m_style->setFontDescription(WTFMove(fontDescription)); }
+        void setFontDescription(FontCascadeDescription&& fontDescription) { m_fontDirty |= m_style->setFontDescription(std::move(fontDescription)); }
         void setZoom(float f) { m_fontDirty |= m_style->setZoom(f); }
         void setEffectiveZoom(float f) { m_fontDirty |= m_style->setEffectiveZoom(f); }
         void setWritingMode(WritingMode writingMode) { m_fontDirty |= m_style->setWritingMode(writingMode); }
@@ -399,8 +399,8 @@ public:
         CascadedProperties* authorRollback() const { return m_authorRollback.get(); }
         CascadedProperties* userRollback() const { return m_userRollback.get(); }
         
-        void setAuthorRollback(std::unique_ptr<CascadedProperties>& rollback) { m_authorRollback = WTFMove(rollback); }
-        void setUserRollback(std::unique_ptr<CascadedProperties>& rollback) { m_userRollback = WTFMove(rollback); }
+        void setAuthorRollback(std::unique_ptr<CascadedProperties>& rollback) { m_authorRollback = std::move(rollback); }
+        void setUserRollback(std::unique_ptr<CascadedProperties>& rollback) { m_userRollback = std::move(rollback); }
 
         const SelectorFilter* selectorFilter() const { return m_selectorFilter; }
         
@@ -438,7 +438,7 @@ public:
     State& state() { return m_state; }
     const State& state() const { return m_state; }
 
-    RefPtr<StyleImage> styleImage(CSSValue&);
+    std::shared_ptr<StyleImage> styleImage(CSSValue&);
 
     bool applyPropertyToRegularStyle() const { return m_state.applyPropertyToRegularStyle(); }
     bool applyPropertyToVisitedLinkStyle() const { return m_state.applyPropertyToVisitedLinkStyle(); }
@@ -452,13 +452,13 @@ public:
     InspectorCSSOMWrappers& inspectorCSSOMWrappers() { return m_inspectorCSSOMWrappers; }
     const FontCascadeDescription& fontDescription() { return m_state.fontDescription(); }
     const FontCascadeDescription& parentFontDescription() { return m_state.parentFontDescription(); }
-    void setFontDescription(FontCascadeDescription&& fontDescription) { m_state.setFontDescription(WTFMove(fontDescription)); }
+    void setFontDescription(FontCascadeDescription&& fontDescription) { m_state.setFontDescription(std::move(fontDescription)); }
     void setZoom(float f) { m_state.setZoom(f); }
     void setEffectiveZoom(float f) { m_state.setEffectiveZoom(f); }
     void setWritingMode(WritingMode writingMode) { m_state.setWritingMode(writingMode); }
     void setTextOrientation(TextOrientation textOrientation) { m_state.setTextOrientation(textOrientation); }
 
-    RefPtr<CSSValue> resolvedVariableValue(CSSPropertyID, const CSSValue&, ApplyCascadedPropertyState&) const;
+    std::shared_ptr<CSSValue> resolvedVariableValue(CSSPropertyID, const CSSValue&, ApplyCascadedPropertyState&) const;
 
 private:
     void cacheBorderAndBackground();
@@ -493,7 +493,7 @@ private:
 
     void adjustRenderStyleForTextAutosizing(RenderStyle&, const Element&);
 
-    typedef HashMap<unsigned, MatchedPropertiesCacheItem> MatchedPropertiesCache;
+    typedef std::unordered_map<unsigned, MatchedPropertiesCacheItem> MatchedPropertiesCache;
     MatchedPropertiesCache m_matchedPropertiesCache;
 
     Timer m_matchedPropertiesCacheSweepTimer;
@@ -533,23 +533,23 @@ struct ApplyCascadedPropertyState {
     StyleResolver::CascadedProperties* cascade;
     const StyleResolver::MatchResult* matchResult;
     Bitmap<numCSSProperties> appliedProperties = { };
-    HashSet<String> appliedCustomProperties = { };
+    std::unordered_set<std::string> appliedCustomProperties = { };
     Bitmap<numCSSProperties> inProgressProperties = { };
-    HashSet<String> inProgressPropertiesCustom = { };
+    std::unordered_set<std::string> inProgressPropertiesCustom = { };
 };
 
 
 inline bool StyleResolver::hasSelectorForAttribute(const Element& element, const AtomString &attributeName) const
 {
-    ASSERT(!attributeName.isEmpty());
+    assert(!attributeName.isEmpty());
     if (element.isHTMLElement())
         return m_ruleSets.features().attributeCanonicalLocalNamesInRules.contains(attributeName);
     return m_ruleSets.features().attributeLocalNamesInRules.contains(attributeName);
 }
 
-inline bool StyleResolver::hasSelectorForId(const AtomString& idValue) const
+inline bool StyleResolver::hasSelectorForId(const std::atomic<std::string>& idValue) const
 {
-    ASSERT(!idValue.isEmpty());
+    assert(!idValue.isEmpty());
     return m_ruleSets.features().idsInRules.contains(idValue);
 }
 

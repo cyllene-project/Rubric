@@ -37,13 +37,13 @@ public:
         Coalesce
     };
 
-    static Ref<Pair> create(RefPtr<CSSPrimitiveValue>&& first, RefPtr<CSSPrimitiveValue>&& second)
+    static std::reference_wrapper<Pair> create(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second)
     {
-        return adoptRef(*new Pair(WTFMove(first), WTFMove(second)));
+        return adoptRef(*new Pair(std::move(first), std::move(second)));
     }
-    static Ref<Pair> create(RefPtr<CSSPrimitiveValue>&& first, RefPtr<CSSPrimitiveValue>&& second, IdenticalValueEncoding encoding)
+    static std::reference_wrapper<Pair> create(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second, IdenticalValueEncoding encoding)
     {
-        return adoptRef(*new Pair(WTFMove(first), WTFMove(second), encoding));
+        return adoptRef(*new Pair(std::move(first), std::move(second), encoding));
     }
     CSSPrimitiveValue* first() const { return m_first.get(); }
     CSSPrimitiveValue* second() const { return m_second.get(); }
@@ -60,20 +60,20 @@ public:
     bool equals(const Pair& other) const { return compareCSSValuePtr(m_first, other.m_first) && compareCSSValuePtr(m_second, other.m_second); }
 
 private:
-    Pair(RefPtr<CSSPrimitiveValue>&& first, RefPtr<CSSPrimitiveValue>&& second)
-        : m_first(WTFMove(first))
-        , m_second(WTFMove(second))
+    Pair(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second)
+        : m_first(std::move(first))
+        , m_second(std::move(second))
     { }
 
-    Pair(RefPtr<CSSPrimitiveValue>&& first, RefPtr<CSSPrimitiveValue>&& second, IdenticalValueEncoding encoding)
+    Pair(std::shared_ptr<CSSPrimitiveValue>&& first, std::shared_ptr<CSSPrimitiveValue>&& second, IdenticalValueEncoding encoding)
         : m_encoding(encoding)
-        , m_first(WTFMove(first))
-        , m_second(WTFMove(second))
+        , m_first(std::move(first))
+        , m_second(std::move(second))
     { }
 
     IdenticalValueEncoding m_encoding { IdenticalValueEncoding::Coalesce };
-    RefPtr<CSSPrimitiveValue> m_first;
-    RefPtr<CSSPrimitiveValue> m_second;
+    std::shared_ptr<CSSPrimitiveValue> m_first;
+    std::shared_ptr<CSSPrimitiveValue> m_second;
 };
 
 } // namespace

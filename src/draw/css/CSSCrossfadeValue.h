@@ -36,7 +36,7 @@ class CSSPrimitiveValue;
 
 class CSSCrossfadeValue final : public CSSImageGeneratorValue {
 public:
-    static Ref<CSSCrossfadeValue> create(Ref<CSSValue>&& fromValue, Ref<CSSValue>&& toValue, Ref<CSSPrimitiveValue>&& percentageValue, bool prefixed = false);
+    static std::reference_wrapper<CSSCrossfadeValue> create(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed = false);
 
     ~CSSCrossfadeValue();
 
@@ -54,13 +54,13 @@ public:
 
     bool traverseSubresources(const WTF::Function<bool (const CachedResource&)>& handler) const;
 
-    RefPtr<CSSCrossfadeValue> blend(const CSSCrossfadeValue&, double) const;
+    std::shared_ptr<CSSCrossfadeValue> blend(const CSSCrossfadeValue&, double) const;
 
     bool equals(const CSSCrossfadeValue&) const;
     bool equalInputImages(const CSSCrossfadeValue&) const;
 
 private:
-    CSSCrossfadeValue(Ref<CSSValue>&& fromValue, Ref<CSSValue>&& toValue, Ref<CSSPrimitiveValue>&& percentageValue, bool prefixed);
+    CSSCrossfadeValue(std::reference_wrapper<CSSValue>&& fromValue, std::reference_wrapper<CSSValue>&& toValue, std::reference_wrapper<CSSPrimitiveValue>&& percentageValue, bool prefixed);
 
     class SubimageObserver final : public CachedImageClient {
     public:
@@ -72,14 +72,14 @@ private:
 
     void crossfadeChanged();
 
-    Ref<CSSValue> m_fromValue;
-    Ref<CSSValue> m_toValue;
-    Ref<CSSPrimitiveValue> m_percentageValue;
+    std::reference_wrapper<CSSValue> m_fromValue;
+    std::reference_wrapper<CSSValue> m_toValue;
+    std::reference_wrapper<CSSPrimitiveValue> m_percentageValue;
 
     CachedResourceHandle<CachedImage> m_cachedFromImage;
     CachedResourceHandle<CachedImage> m_cachedToImage;
 
-    RefPtr<Image> m_generatedImage;
+    std::shared_ptr<Image> m_generatedImage;
 
     SubimageObserver m_subimageObserver;
     bool m_isPrefixed { false };

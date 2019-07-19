@@ -39,15 +39,15 @@ class StyleRuleNamespace;
 
 class StyleSheetContents final : public RefCounted<StyleSheetContents>, public CanMakeWeakPtr<StyleSheetContents> {
 public:
-    static Ref<StyleSheetContents> create(const CSSParserContext& context = CSSParserContext())
+    static std::reference_wrapper<StyleSheetContents> create(const CSSParserContext& context = CSSParserContext())
     {
         return adoptRef(*new StyleSheetContents(0, String(), context));
     }
-    static Ref<StyleSheetContents> create(const std::string& originalURL, const CSSParserContext& context)
+    static std::reference_wrapper<StyleSheetContents> create(const std::string& originalURL, const CSSParserContext& context)
     {
         return adoptRef(*new StyleSheetContents(0, originalURL, context));
     }
-    static Ref<StyleSheetContents> create(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext& context)
+    static std::reference_wrapper<StyleSheetContents> create(StyleRuleImport* ownerRule, const std::string& originalURL, const CSSParserContext& context)
     {
         return adoptRef(*new StyleSheetContents(ownerRule, originalURL, context));
     }
@@ -56,11 +56,11 @@ public:
     
     const CSSParserContext& parserContext() const { return m_parserContext; }
     
-    const AtomString& defaultNamespace() { return m_defaultNamespace; }
-    const AtomString& namespaceURIFromPrefix(const AtomString& prefix);
+    const std::atomic<std::string>& defaultNamespace() { return m_defaultNamespace; }
+    const std::atomic<std::string>& namespaceURIFromPrefix(const std::atomic<std::string>& prefix);
 
     void parseAuthorStyleSheet(const CachedCSSStyleSheet*, const SecurityOrigin*);
-    bool parseString(const String&);
+    bool parseString(const std::string&);
 
     bool isCacheable() const;
 
@@ -88,7 +88,7 @@ public:
     void setHasSyntacticallyValidCSSHeader(bool b) { m_hasSyntacticallyValidCSSHeader = b; }
     bool hasSyntacticallyValidCSSHeader() const { return m_hasSyntacticallyValidCSSHeader; }
 
-    void parserAddNamespace(const AtomString& prefix, const AtomString& uri);
+    void parserAddNamespace(const std::atomic<std::string>& prefix, const std::atomic<std::string>& uri);
     void parserAppendRule(StyleRuleBase&);
     void parserSetEncodingFromCharsetRule(const std::string& encoding);
     void parserSetUsesStyleBasedEditability() { m_usesStyleBasedEditability = true; }
@@ -97,9 +97,9 @@ public:
 
     std::string encodingFromCharsetRule() const { return m_encodingFromCharsetRule; }
     // Rules other than @charset and @import.
-    const std::vector<RefPtr<StyleRuleBase>>& childRules() const { return m_childRules; }
-    const std::vector<RefPtr<StyleRuleImport>>& importRules() const { return m_importRules; }
-    const std::vector<RefPtr<StyleRuleNamespace>>& namespaceRules() const { return m_namespaceRules; }
+    const std::vector<std::shared_ptr<StyleRuleBase>>& childRules() const { return m_childRules; }
+    const std::vector<std::shared_ptr<StyleRuleImport>>& importRules() const { return m_importRules; }
+    const std::vector<std::shared_ptr<StyleRuleNamespace>>& namespaceRules() const { return m_namespaceRules; }
 
     void notifyLoadedSheet(const CachedCSSStyleSheet*);
     
@@ -120,10 +120,10 @@ public:
 
     unsigned estimatedSizeInBytes() const;
     
-    bool wrapperInsertRule(Ref<StyleRuleBase>&&, unsigned index);
+    bool wrapperInsertRule(std::reference_wrapper<StyleRuleBase>&&, unsigned index);
     void wrapperDeleteRule(unsigned index);
 
-    Ref<StyleSheetContents> copy() const { return adoptRef(*new StyleSheetContents(*this)); }
+    std::reference_wrapper<StyleSheetContents> copy() const { return adoptRef(*new StyleSheetContents(*this)); }
 
     void registerClient(CSSStyleSheet*);
     void unregisterClient(CSSStyleSheet*);
@@ -152,10 +152,10 @@ private:
     std::string m_originalURL;
 
     std::string m_encodingFromCharsetRule;
-    std::vector<RefPtr<StyleRuleImport>> m_importRules;
-    std::vector<RefPtr<StyleRuleNamespace>> m_namespaceRules;
-    std::vector<RefPtr<StyleRuleBase>> m_childRules;
-    typedef HashMap<AtomString, AtomString> PrefixNamespaceURIMap;
+    std::vector<std::shared_ptr<StyleRuleImport>> m_importRules;
+    std::vector<std::shared_ptr<StyleRuleNamespace>> m_namespaceRules;
+    std::vector<std::shared_ptr<StyleRuleBase>> m_childRules;
+    typedef std::unordered_map<AtomString, AtomString> PrefixNamespaceURIMap;
     PrefixNamespaceURIMap m_namespaces;
     AtomString m_defaultNamespace;
 

@@ -143,7 +143,7 @@ static inline bool parseSimpleAngle(const CharacterType* characters, unsigned le
 
 static std::shared_ptr<CSSValue> parseSimpleLengthValue(CSSPropertyID propertyId, const std::string& string, CSSParserMode cssParserMode)
 {
-    ASSERT(!string.empty());
+    assert(!string.empty());
     bool acceptsNegativeNumbers = false;
 
     // In @viewport, width and height are shorthands, not simple length values.
@@ -496,7 +496,7 @@ static Color fastParseColorInternal(const CharacterType* characters, unsigned le
 
 std::shared_ptr<CSSValue> CSSParserFastPaths::parseColor(const std::string& string, CSSParserMode parserMode)
 {
-    ASSERT(!string.empty());
+    assert(!string.empty());
     CSSValueID valueID = cssValueKeywordID(string);
     if (StyleColor::isColorKeyword(valueID)) {
         if (!isValueAllowedInMode(valueID, parserMode))
@@ -627,7 +627,7 @@ bool CSSParserFastPaths::isValidKeywordPropertyAndValue(CSSPropertyID propertyId
         return valueID == CSSValueNone || valueID == CSSValueBoth || valueID == CSSValueHorizontal || valueID == CSSValueVertical || valueID == CSSValueAuto;
     // FIXME-NEWPARSER: Investigate this property.
     // case CSSPropertyScrollBehavior: // auto | smooth
-    //     ASSERT(RuntimeEnabledFeatures::cssomSmoothScrollEnabled());
+    //     assert(RuntimeEnabledFeatures::cssomSmoothScrollEnabled());
     //   return valueID == CSSValueAuto || valueID == CSSValueSmooth;
     case CSSPropertyShapeRendering:
         return valueID == CSSValueAuto || valueID == CSSValueOptimizeSpeed || valueID == CSSValueCrispedges || valueID == CSSValueGeometricPrecision;
@@ -914,7 +914,7 @@ static bool isUniversalKeyword(const std::string& string)
 
 static std::shared_ptr<CSSValue> parseKeywordValue(CSSPropertyID propertyId, const std::string& string, const CSSParserContext& context)
 {
-    ASSERT(!string.empty());
+    assert(!string.empty());
 
     if (!CSSParserFastPaths::isKeywordPropertyID(propertyId)) {
         // All properties accept the values of "initial" and "inherit".
@@ -1206,7 +1206,7 @@ static std::shared_ptr<CSSValueList> parseSimpleTransformList(const CharType* ch
 
 static std::shared_ptr<CSSValue> parseSimpleTransform(CSSPropertyID propertyID, const std::string& string)
 {
-    ASSERT(!string.empty());
+    assert(!string.empty());
     if (propertyID != CSSPropertyTransform)
         return nullptr;
     if (string.is8Bit())
@@ -1216,7 +1216,7 @@ static std::shared_ptr<CSSValue> parseSimpleTransform(CSSPropertyID propertyID, 
 
 static std::shared_ptr<CSSValue> parseCaretColor(const std::string& string, CSSParserMode parserMode)
 {
-    ASSERT(!string.empty());
+    assert(!string.empty());
     CSSValueID valueID = cssValueKeywordID(string);
     if (valueID == CSSValueAuto)
         return CSSValuePool::singleton().createIdentifierValue(valueID);
